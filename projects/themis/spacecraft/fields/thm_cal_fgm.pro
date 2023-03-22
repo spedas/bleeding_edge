@@ -79,8 +79,8 @@
 ;
 ;Written by Hannes Schwarzl.
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2016-12-20 16:18:08 -0800 (Tue, 20 Dec 2016) $
-; $LastChangedRevision: 22467 $
+; $LastChangedDate: 2023-03-21 14:19:02 -0700 (Tue, 21 Mar 2023) $
+; $LastChangedRevision: 31646 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_fgm.pro $
 ;Changes by Edita Georgescu
 ;eg 6/3/2007     - matrix multiplication
@@ -185,7 +185,6 @@ pro thm_cal_fgm,$
          name_thx_fgx_out,$
          pathfile,$
          interpolate_cal=interpolate_cal,$
-         interpolate_state=interpolate_state,$
          cal_spin_harmonics=cal_spin_harmonics,$
          cal_dac_offset=cal_dac_offset,$
          cal_tone_removal=cal_tone_removal,$
@@ -344,30 +343,23 @@ get_data, name_thx_spinphase, data = thx_spinphase
 ;  thm_load_state, probe = probe_letter[0], /get_support_data, trange = minmax(thx_fgx_in.x)
 ;endif 
 
-if keyword_set(interpolate_state) then begin
-   DPRINT, dlevel=4, 'take spin period from state file ...'
-   thx_spinper_interp=thm_interpolate_state(thx_xxx_in=thx_fgx_in,thx_spinper=thx_spinper) ;--> linear interpolation
-   thx_spinphase_interp=thm_interpolate_state(thx_xxx_in=thx_fgx_in,thx_spinper=thx_spinphase) ;--> linear interpolation
-   thx_spinphase_model = tha_spinphase_interp.y 
-   ;end Hannes 30/3/2007
-endif else begin
-   DPRINT, dlevel=4, 'take spin period from spin model ...'
-   spinmodel_ptr=spinmodel_get_ptr(probe_letter,use_eclipse_corrections=use_eclipse_corrections)
-   if ~obj_valid(spinmodel_ptr) then begin
-      message,'No valid state data'
-   endif
+DPRINT, dlevel=4, 'take spin period from spin model ...'
+spinmodel_ptr=spinmodel_get_ptr(probe_letter,use_eclipse_corrections=use_eclipse_corrections)
+if ~obj_valid(spinmodel_ptr) then begin
+   message,'No valid state data'
+endif
        
-   spinmodel_interp_t,model=spinmodel_ptr,time=thx_fgx_in.X,spinper=thx_spinper_model,spinphase=thx_spinphase_model,use_spinphase_correction=1
-   spinmodel_get_info,model=spinmodel_ptr,shadow_start=shadow_start,shadow_end=shadow_stop,shadow_count=shadow_count
+spinmodel_interp_t,model=spinmodel_ptr,time=thx_fgx_in.X,spinper=thx_spinper_model,spinphase=thx_spinphase_model,use_spinphase_correction=1
+spinmodel_get_info,model=spinmodel_ptr,shadow_start=shadow_start,shadow_end=shadow_stop,shadow_count=shadow_count
    
-   if shadow_count gt 0 then begin
-     shadow_struct = {start:shadow_start,stop:shadow_stop}
-   endif
-   ; thx_spinper_model is an array of interpolated spin periods, but the
-   ; following code wants a tplot structure thx_spinper_interp
-   thx_spinper_interp={X:thx_fgx_in.X, Y:thx_spinper_model}
+if shadow_count gt 0 then begin
+  shadow_struct = {start:shadow_start,stop:shadow_stop}
+endif
+; thx_spinper_model is an array of interpolated spin periods, but the
+; following code wants a tplot structure thx_spinper_interp
+thx_spinper_interp={X:thx_fgx_in.X, Y:thx_spinper_model}
    
-endelse
+
 
 ; make STRUCTRE thx_fgx; converting egineering units from LONG to DOUBLE
 thx_fgx = CREATE_STRUCT('X',thx_fgx_in.X , 'Y', DOUBLE(thx_fgx_in.Y))     ;, 'V', thx_fgx_in.V) -mattd,5/2
