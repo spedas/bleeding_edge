@@ -16,8 +16,8 @@
 ;  Davin Larson
 ;  
 ; $LastChangedBy: pulupa $
-; $LastChangedDate: 2023-03-21 09:58:40 -0700 (Tue, 21 Mar 2023) $
-; $LastChangedRevision: 31645 $
+; $LastChangedDate: 2023-03-22 11:04:33 -0700 (Wed, 22 Mar 2023) $
+; $LastChangedRevision: 31647 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/stereo/st_swaves_load.pro $
 ; 
 ;-
@@ -83,7 +83,10 @@ pro st_swaves_load,type,all=all,files=files,trange=trange, $
 
     if level EQ 3 then begin
 
-      cdf2tplot, files, prefix = pref
+      cdf2tplot, files, prefix = pref, tplotnames = tnames
+      
+      options, tnames(pref+['PSD*','WAVE*','STOKES*','SOURCE_SIZE']), $
+        'ystyle', 1
 
     endif else begin
       spectrums = replicate(!values.f_nan,n*1440,367)
