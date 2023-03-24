@@ -45,8 +45,8 @@
 ;HISTORY:
 ; 2019-11-04, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-11-08 11:30:01 -0800 (Fri, 08 Nov 2019) $
-; $LastChangedRevision: 27993 $
+; $LastChangedDate: 2023-03-23 13:23:01 -0700 (Thu, 23 Mar 2023) $
+; $LastChangedRevision: 31653 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot_fill_time_intv.pro $
 ;-
 Pro tplot_fill_time_intv, routine, data, newlim, time_offset
@@ -99,6 +99,8 @@ Pro tplot_fill_time_intv, routine, data, newlim, time_offset
      For j = 0, n_intv-1 Do Begin
         x_rct = [t_rct[0,j], t_rct[1,j], $
                  t_rct[1,j], t_rct[0,j]]
+        x_rct = x_rct > !cxmin ;assure that limits are within plot limits, jmm, 2023-03-23
+        x_rct = x_rct < !cxmax
         If(tag_exist(newlim, 'ylog') && newlim.ylog Eq 1) Then Begin
            y_rct = 10.0^[!cymin, !cymin, !cymax, !cymax]
         Endif Else y_rct = [!cymin, !cymin, !cymax, !cymax]
