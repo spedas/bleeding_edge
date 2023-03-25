@@ -143,12 +143,12 @@
 ;
 ;       MISSION:  Restore save files that span from Mars orbit insertion to the 
 ;                 present.  These files are updated periodically.  Together, the
-;                 save files are 12.6 GB in size (as of July 2022), so this 
+;                 save files are 13.7 GB in size (as of March 2023), so this 
 ;                 keyword is only useful for computers with sufficient memory.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 09:25:47 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31555 $
+; $LastChangedDate: 2023-03-24 07:39:20 -0700 (Fri, 24 Mar 2023) $
+; $LastChangedRevision: 31660 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11

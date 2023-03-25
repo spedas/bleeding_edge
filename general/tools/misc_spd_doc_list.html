@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 23 18:16:44 2023.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 24 18:16:42 2023.<P>
  
 <HR>
  
@@ -365,6 +365,8 @@ KEYWORDS:
                 the second dimension.  Otherwise, sum over the second dimension.
                 NaN's are treated as missing data (see MEAN and TOTAL).
 
+       ZERO:    Treat NaN's as zeroes.  This affects the mean but not the sum.
+
        OFFSET:  Value to subtract from the data before calculating statistics.
                 Default = 0.
 
@@ -422,8 +424,8 @@ KEYWORDS:
        SILENT:  Shhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-09 14:39:45 -0800 (Thu, 09 Mar 2023) $
- $LastChangedRevision: 31615 $
+ $LastChangedDate: 2023-03-24 07:38:27 -0700 (Fri, 24 Mar 2023) $
+ $LastChangedRevision: 31659 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/tmean.pro $
 
 CREATED BY:    David L. Mitchell

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 23 18:16:44 2023.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 24 18:16:42 2023.<P>
  
 <HR>
  
@@ -58,8 +58,11 @@ ROUTINES:
 
 OVERVIEW:
 
-   Tplot and many associated routines assume that there are 256 RGB colors, organized as
-   follows:
+   Chances are you have a TrueColor display that can produce 256^3 = 16,777,216 colors by
+   adding red, green and blue levels, each from 0 to 255.  Tplot and many associated 
+   routines use a color table, which is a 3x256 array consisting of a small subset of the
+   possible colors.  Tplot reserves eight colors: one for the foreground color, one for the
+   background color, and six for drawing lines.  The rest make up the color table:
 
        Color           Purpose                             Modify With
       --------------------------------------------------------------------------
@@ -73,10 +76,11 @@ OVERVIEW:
    background, set !p.background = 255 and !p.color = 0.  Do the opposite for a dark
    background.  Use revvid to toggle between these options.
 
-   The standard catalog has table numbers from 0 to 74, while the CSV catalog has table 
-   numbers from 0 to 118.  These ranges overlap, so we need some way to separate them.  
-   I chose to add 1000 to the CSV table numbers, so CSV table 78 becomes 1078, etc.
-   There is also substantial overlap in the tables themselves:
+   There are many possible color tables, because each table uses only 248 out of more than
+   16 million available colors.  The standard catalog has table numbers from 0 to 74, while
+   the CSV catalog has table numbers from 0 to 118.  These ranges overlap, so we need some
+   way to separate them.  I chose to add 1000 to the CSV table numbers, so CSV table 78
+   becomes 1078, etc.  There is also substantial overlap in the tables themselves:
 
         Standard Tables      CSV Tables       Note
       ----------------------------------------------------------------
@@ -111,11 +115,103 @@ OVERVIEW:
    and line color schemes for individual tplot variables using options.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-05 09:48:51 -0800 (Sun, 05 Mar 2023) $
- $LastChangedRevision: 31583 $
+ $LastChangedDate: 2023-03-24 07:36:37 -0700 (Fri, 24 Mar 2023) $
+ $LastChangedRevision: 31658 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 
  Created by David Mitchell;  February 2023
+
+ro color_table_crib
+
+ print, 'This routine is not intended to be a procedure.  Read the contents instead.'
+ return
+
+ Place the following lines in your idl_startup.pro to initialize your device and color
+ table.  Of course, you can choose any of &gt;100 color tables (reversed if desired), any of
+ the predefined line color schemes, or completely custom line colors.  This example sets a
+ dark background, but many people prefer a light background.
+
+evice,decompose=0,retain=2   ; specific to MacOS (settings for other OS's might be different)
+                             ;   decompose=0 --&gt; use color table with TrueColor display
+                             ;   retain=2 --&gt; IDL provides backing store (safest option)
+nitct,1074,line=5,/rev,/sup  ; define color table and fixed line colors (suppress error message)
+p.background = 0             ; use tplot fixed color for background (0 = black by default)
+p.color = 255                ; use tplot fixed color for foreground (255 = white by default)
+
+ Change the color table at the command line.  This does not alter the line color scheme, 
+ which is persistent until you explicitly change it.
+
+nict, 1091
+
+ Select a new color table and line color scheme at the command line.
+
+nitct, 43, line=2
+
+ Change line colors without otherwise modifying the color table.
+
+ine_colors, 6
+
+ Swap !p.background and !p.color
+
+evvid
+
+ Use gray instead of white for the background, which looks better in some situations.
+ The default gray level is [211,211,211].
+
+evvid, /white  ; if needed
+ine_colors, 5, /graybkg
+
+ Use a custom gray level for the background.
+
+evvid, /white  ; if needed
+ine_colors, 5, graybkg=[198,198,198]
+
+ Poke arbitrary RGB colors into indices 1 and 4 of the current line color scheme.
+
+ine_colors, mycolors={ind:[1,4], rgb:[[198,83,44],[18,211,61]]}
+
+ Use a fancy rainbow-like CSV color table with line colors suitable for color blind people.
+ CSV color tables encode intensity first and color second, which is closer to how humans
+ perceive colors.  Reverse the table, so that blue is low and red is high.
+
+nitct, 1074, /reverse, line=8
+
+ See a catalog of the many CSV color tables. (Note: loadcsv is not usually called directly.)
+ Remember that you have to add 1000 to CSV color table numbers.
+
+oadcsv, /catalog
+
+ Display the current color table with an intensity plot.
+
+howct, /i
+
+ Display any color table with any line color scheme -- DOES NOT modify the current color table.
+
+howct, 1078, line=8, /i
+howct, 1091, line=5, /reverse, /graybkg, /i
+
+ Set a custom color table and line color scheme for any tplot variable.  This allows you
+ to use multiple color tables and/or line color schemes within a single multi-panel plot.
+
+ptions, var1, 'color_table', 1074
+ptions, var1, 'reverse_color_table', 1
+ptions, var1, 'line_colors', 10
+
+ptions, var2, 'color_table', 1078
+ptions, var2, 'reverse_color_table', 0
+ptions, var2, 'line_colors', 5
+
+ Set a custom line color scheme for a tplot variable.
+
+ylines = get_line_colors(5, /graybkg, mycolors={ind:3, rgb:[211,0,211]})
+ptions, var1, 'line_colors', mylines
+
+ Disable custom color tables and line colors for a tplot variable.
+
+ptions, var1, 'color_table', -1
+ptions, var1, 'line_colors', -1
+
+nd ; of crib
 </PRE><P>
 <STRONG>(See <A href="system/color_table_crib.pro">general/misc/system/color_table_crib.pro</A>)</STRONG><P>
 <HR>
@@ -634,7 +730,8 @@ KEYWORDS:
 
    INTENSITY: Show intensity in a separate window.
 
-   KEY:       Structure of win options.
+   KEY:       Structure of win options.  Window dimensions of 600x600
+              cannot be overridden.
 
    CNUM:      Returns the window number chosen for the color table plot.
 
@@ -647,8 +744,8 @@ SEE ALSO:
               more functionality, but only for the current color table.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-13 13:23:02 -0700 (Mon, 13 Mar 2023) $
- $LastChangedRevision: 31624 $
+ $LastChangedDate: 2023-03-24 07:34:01 -0700 (Fri, 24 Mar 2023) $
+ $LastChangedRevision: 31657 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
 </PRE><P>
 <STRONG>(See <A href="system/showct.pro">general/misc/system/showct.pro</A>)</STRONG><P>
