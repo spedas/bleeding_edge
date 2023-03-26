@@ -2,8 +2,8 @@
 ;  swfo_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $
-; $LastChangedRevision: 31637 $
+; $LastChangedDate: 2023-03-25 13:53:18 -0700 (Sat, 25 Mar 2023) $
+; $LastChangedRevision: 31665 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -211,10 +211,11 @@ pro swfo_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=s
 
   self.drate = ccsds.pkt_size/ccsds.time_delta
   
+  ;  This is where a generic CCSDS packet is decommutated into an APID specific structure
   if ccsds.time ge time_double('2021-1-1') then begin
     if not self.ignore_flag then strct = self.decom(ccsds,source_dict=source_dict)    
   endif else begin
-    dprint, 'Invalid time.  CCSDS Packet ignored'
+    dprint,verbose=self.verbose,dlevel=1, 'Invalid time.  CCSDS Packet ignored'
     strct = !null
   endelse
 
@@ -240,8 +241,11 @@ pro swfo_gen_apdat::handler,ccsds,source_dict=source_dict ;,header,source_info=s
 end
 
 
+
+
+
 pro swfo_gen_apdat::handler2,strct,source_dict=source_dict
-  ;  This routine is a place holder for users. It should be overloaded
+  ;  This routine is a place holder for users. It should be overloaded and used to process higher level data.
 end
 
 
@@ -254,6 +258,7 @@ pro swfo_gen_apdat::sort
   endif
   self.process_time = systime(1)
 end
+
 
 pro swfo_gen_apdat::create_tplot_vars,ttags=ttags
   dprint,dlevel=2,verbose=self.verbose,'Creating tplot variables for: ',self.name
@@ -292,8 +297,8 @@ function swfo_gen_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 31637 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2023-03-25 13:53:18 -0700 (Sat, 25 Mar 2023) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 31665 $'
 
     return,sw_hash
 end
@@ -330,8 +335,8 @@ function swfo_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2023-03-16 01:51:24 -0700 (Thu, 16 Mar 2023) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 31637 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2023-03-25 13:53:18 -0700 (Sat, 25 Mar 2023) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 31665 $'
 
   return,global_att
 end

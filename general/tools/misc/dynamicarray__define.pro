@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-03-13 12:37:21 -0700 (Mon, 13 Mar 2023) $
-; $LastChangedRevision: 31623 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-03-25 07:53:03 -0700 (Sat, 25 Mar 2023) $
+; $LastChangedRevision: 31663 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -288,7 +288,7 @@ function DynamicArray::sample,nearest=nearest,range=range,tagname=tagname
 end
 
 
-PRO DynamicArray::GetProperty, array=array, size=size, ptr=ptr, name=name  ,  typestring=typestring
+PRO DynamicArray::GetProperty, array=array, size=size, ptr=ptr, name=name  ,  typestring=typestring, dictionary=dict
   ; This method can be called either as a static or instance.
   COMPILE_OPT IDL2
   IF (ARG_PRESENT(array)) THEN begin
