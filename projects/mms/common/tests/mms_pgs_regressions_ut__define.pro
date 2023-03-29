@@ -6,10 +6,32 @@
 ;     IDL> mgunit, 'mms_pgs_regressions_ut'
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-09-20 15:35:27 -0700 (Thu, 20 Sep 2018) $
-; $LastChangedRevision: 25842 $
+; $LastChangedDate: 2023-03-28 15:59:25 -0700 (Tue, 28 Mar 2023) $
+; $LastChangedRevision: 31683 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_pgs_regressions_ut__define.pro $
 ;-
+
+; regression test for /remove_fpi_sw functionality
+function mms_pgs_regressions_ut::test_sw_fpi_ions_pgs
+  timespan, ['2016-12-07/14:40', '2016-12-07/15:15']
+
+  mms_part_getspec, trange=['2016-12-07/14:40', '2016-12-07/15:15'], instrument='fpi', species='i', probe=1
+  tplot, 'mms1_dis_dist_fast_energy'
+  makepng, 'dis_sw'
+  
+  mms_part_getspec, trange=['2016-12-07/14:40', '2016-12-07/15:15'], instrument='fpi', species='i', probe=1, /remove_fpi_sw
+  tplot, 'mms1_dis_dist_fast_energy'
+  makepng, 'dis_sw_removed'
+  
+  return, 1
+end
+
+; regression test for /remove_fpi_sw functionality
+function mms_pgs_regressions_ut::test_sw_fpi_ions_slice2d
+  mms_part_slice2d, time='2016-12-07/14:55', species='i', instrument='fpi', data_rate='fast', samples=10, export='ions_sw'
+  mms_part_slice2d, time='2016-12-07/14:55', species='i', instrument='fpi', data_rate='fast', samples=10, /remove_fpi_sw, export='ions_sw_removed'
+  return, 1
+end
 
 ; the following calculates the energy spectra of ions in the solar wind
 ; with and without bulk velocity subtraction, and checks that the maximum

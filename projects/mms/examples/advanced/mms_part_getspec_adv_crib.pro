@@ -10,8 +10,8 @@
 ;  see also: mms_part_getspec_crib
 ;  
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-09-20 14:44:56 -0700 (Thu, 20 Sep 2018) $
-;$LastChangedRevision: 25834 $
+;$LastChangedDate: 2023-03-28 16:03:34 -0700 (Tue, 28 Mar 2023) $
+;$LastChangedRevision: 31684 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_getspec_adv_crib.pro $
 ;-
 
@@ -81,4 +81,9 @@ options, 'number_density', labflag=-1
 tplot, 'number_density'
 
 stop
+
+; remove the solar wind component from the DIS DF data prior to performing the calculations
+mms_part_getspec, trange=['2016-12-07/14:40', '2016-12-07/15:15'], instrument='fpi', species='i', probe=1, /remove_fpi_sw
+tplot, 'mms1_dis_dist_fast_energy'
+
 end

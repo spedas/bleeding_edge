@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Mar 27 18:16:34 2023.<P>
+<STRONG>Last modified: </STRONG>Tue Mar 28 18:16:46 2023.<P>
  
 <HR>
  
@@ -249,6 +249,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
          
          photoelectron_corrections: *experimental* photoelectron corrections for DES; enabled by default for DES moments; you can disable with photoelectron_corrections=0
+         remove_fpi_sw: Flag to remove the solar wind component from the FPI ion DFs prior to performing the calculations
          
      The following are found by default for the requested instrument/probe/data_rate; use these keywords 
      to override the defaults:
@@ -268,8 +269,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          Spacecraft photoelectrons are corrected in moments_3d
          
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-12-15 09:32:26 -0800 (Wed, 15 Dec 2021) $
-$LastChangedRevision: 30469 $
+$LastChangedDate: 2023-03-28 15:52:31 -0700 (Tue, 28 Mar 2023) $
+$LastChangedRevision: 31682 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_getspec.pro">projects/mms/particles/mms_part_getspec.pro</A>)</STRONG><P>
@@ -396,6 +397,7 @@ Input Keywords:
   datagap:  Setting for tplot variables, controls how long a gap must be before it is drawn. 
             (can also manually degap)
   subtract_bulk:  Flag to subtract bulk velocity (experimental)
+  remove_fpi_sw: Flag to remove the solar wind component from the FPI ion DFs prior to performing the calculations
 
   display_object:  Object allowing dprint to export output messages
 
@@ -424,8 +426,8 @@ Notes:
 
 
 $LastChangedBy: egrimes $
-$LastChangedDate: 2021-11-05 09:19:11 -0700 (Fri, 05 Nov 2021) $
-$LastChangedRevision: 30398 $
+$LastChangedDate: 2023-03-28 15:41:29 -0700 (Tue, 28 Mar 2023) $
+$LastChangedRevision: 31681 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_products.pro">projects/mms/particles/mms_part_products.pro</A>)</STRONG><P>
@@ -529,6 +531,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                  i.e., finds the perp velocity by rotating into the 'bv' system, then sets the X component 
                  of velocity to zero, and inverse, then subtracts this velocity instead of the full bulk
                  velocity
+         REMOVE_FPI_SW: remove the solar wind component from the FPI ion DF prior to calculating
 
 Orientation Keywords:
          ROTATION: Aligns the data relative to the magnetic field and/or bulk velocity.
@@ -666,8 +669,8 @@ Interpolation Methods:
            (requested by the FPI team at last year's GEM)
          
 $LastChangedBy: egrimes $
-$LastChangedDate: 2022-01-28 21:19:28 -0800 (Fri, 28 Jan 2022) $
-$LastChangedRevision: 30548 $
+$LastChangedDate: 2023-03-28 12:25:34 -0700 (Tue, 28 Mar 2023) $
+$LastChangedRevision: 31675 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_slice2d.pro $
 </PRE><P>
 <STRONG>(See <A href="particles/mms_part_slice2d.pro">projects/mms/particles/mms_part_slice2d.pro</A>)</STRONG><P>

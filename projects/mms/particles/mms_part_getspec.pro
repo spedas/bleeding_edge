@@ -33,6 +33,7 @@
 ;         subtract_spintone: subtract the spin-tone from the velocity vector prior to bulk velocity subtraction (FPI versions 3.2 and later only)
 ;         
 ;         photoelectron_corrections: *experimental* photoelectron corrections for DES; enabled by default for DES moments; you can disable with photoelectron_corrections=0
+;         remove_fpi_sw: Flag to remove the solar wind component from the FPI ion DFs prior to performing the calculations
 ;         
 ;     The following are found by default for the requested instrument/probe/data_rate; use these keywords 
 ;     to override the defaults:
@@ -52,8 +53,8 @@
 ;         Spacecraft photoelectrons are corrected in moments_3d
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-12-15 09:32:26 -0800 (Wed, 15 Dec 2021) $
-;$LastChangedRevision: 30469 $
+;$LastChangedDate: 2023-03-28 15:52:31 -0700 (Tue, 28 Mar 2023) $
+;$LastChangedRevision: 31682 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_getspec.pro $
 ;-
 
@@ -88,6 +89,7 @@ pro mms_part_getspec, probes=probes, $
                       subtract_bulk=subtract_bulk, $
                       subtract_error=subtract_error, $
                       subtract_spintone=subtract_spintone, $ ; FPI CDFs 3.2+ only
+                      remove_fpi_sw=remove_fpi_sw, $
                       
                       ; the following are for overriding the defaults
                       vel_name=vel_name_user, $  ; Tplot variable containing velocity data in km/s for use with /subtract_bulk
@@ -256,7 +258,8 @@ pro mms_part_getspec, probes=probes, $
             error_variable=error_variable, instrument=instrument, species=species, $
             sc_pot_name=scpot_variable, data_rate=data_rate, correct_photoelectrons=photoelectron_corrections, $
             internal_photoelectron_corrections=internal_photoelectron_corrections, $
-            correct_sc_potential=correct_sc_potential, zero_negative_values=zero_negative_values, _extra=ex
+            correct_sc_potential=correct_sc_potential, zero_negative_values=zero_negative_values, $
+            remove_fpi_sw=remove_fpi_sw, _extra=ex
 
         if undefined(tplotnames_thisprobe) then continue ; nothing created by mms_part_products
         append_array, tplotnames, tplotnames_thisprobe

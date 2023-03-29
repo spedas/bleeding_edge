@@ -79,6 +79,7 @@
 ;  datagap:  Setting for tplot variables, controls how long a gap must be before it is drawn. 
 ;            (can also manually degap)
 ;  subtract_bulk:  Flag to subtract bulk velocity (experimental)
+;  remove_fpi_sw: Flag to remove the solar wind component from the FPI ion DFs prior to performing the calculations
 ;
 ;  display_object:  Object allowing dprint to export output messages
 ;
@@ -107,8 +108,8 @@
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-11-05 09:19:11 -0700 (Fri, 05 Nov 2021) $
-;$LastChangedRevision: 30398 $
+;$LastChangedDate: 2023-03-28 15:41:29 -0700 (Tue, 28 Mar 2023) $
+;$LastChangedRevision: 31681 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_products.pro $
 ;-
 pro mms_part_products, $
@@ -170,6 +171,7 @@ pro mms_part_products, $
                      display_object=display_object, $ ;object allowing dprint to export output messages
 
                      silent=silent, $ ;suppress pop-up messages
+                     remove_fpi_sw=remove_fpi_sw, $ ; remove the solar wind component from the FPI distribution data prior to performing the calculations
                      _extra=ex ;TBD: consider implementing as _strict_extra 
 
 
@@ -404,6 +406,13 @@ pro mms_part_products, $
     get_data, 'mms'+probe+'_des_startdelphi_count_'+data_rate, data=startdelphi
   endif
   
+  if keyword_set(remove_fpi_sw) && instrument eq 'fpi' && species eq 'i' then begin
+    dprint, dlevel=2, 'Removing solar wind component from FPI ion data'
+  endif else if keyword_set(remove_fpi_sw) then begin
+    dprint, dlevel=0, 'Error, remove_fpi_sw keyword only valid for FPI ions. No solar wind removal applied.
+    remove_fpi_sw = 0b
+  endif
+  
   ;--------------------------------------------------------
   ;Loop over time to build the spectrograms/moments
   ;--------------------------------------------------------
@@ -417,6 +426,11 @@ pro mms_part_products, $
                         species=species, instrument=instrument, units=input_units, $
                         subtract_error=subtract_error, error=error_variable)
     
+    if keyword_set(remove_fpi_sw) && instrument eq 'fpi' && species eq 'i' then begin
+      mms_fpi_remove_sw, dist=dist, newdist=newdist, /quiet
+      dist = newdist
+    endif
+                      
     str_element, dist, 'orig_energy', dist.energy[*, 0, 0], /add
 
     if keyword_set(correct_photoelectrons) || keyword_set(internal_photoelectron_corrections) then begin

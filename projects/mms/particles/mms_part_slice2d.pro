@@ -91,6 +91,7 @@
 ;                 i.e., finds the perp velocity by rotating into the 'bv' system, then sets the X component 
 ;                 of velocity to zero, and inverse, then subtracts this velocity instead of the full bulk
 ;                 velocity
+;         REMOVE_FPI_SW: remove the solar wind component from the FPI ion DF prior to calculating
 ;
 ;Orientation Keywords:
 ;         ROTATION: Aligns the data relative to the magnetic field and/or bulk velocity.
@@ -228,8 +229,8 @@
 ;           (requested by the FPI team at last year's GEM)
 ;         
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2022-01-28 21:19:28 -0800 (Fri, 28 Jan 2022) $
-;$LastChangedRevision: 30548 $
+;$LastChangedDate: 2023-03-28 12:25:34 -0700 (Tue, 28 Mar 2023) $
+;$LastChangedRevision: 31675 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_part_slice2d.pro $
 ;-
 
@@ -237,7 +238,7 @@ pro mms_part_slice2d, time=time, probe=probe, level=level, data_rate=data_rate, 
                       trange=trange, subtract_bulk=subtract_bulk, spdf=spdf, rotation=rotation, output=output, $
                       units=units, subtract_error=subtract_error, plotbulk=plotbulk, plotsun=plotsun, fgm_data_rate=fgm_data_rate, $
                       correct_photoelectrons=correct_photoelectrons, geometric=geometric, two_d_interp=two_d_interp, $
-                      three_d_interp=three_d_interp, perp_subtract_bulk=perp_subtract_bulk, _extra=_extra
+                      three_d_interp=three_d_interp, perp_subtract_bulk=perp_subtract_bulk, remove_fpi_sw=remove_fpi_sw, _extra=_extra
 
     start_time = systime(/seconds)
   
@@ -256,6 +257,8 @@ pro mms_part_slice2d, time=time, probe=probe, level=level, data_rate=data_rate, 
       if instrument eq 'fpi' then data_rate = 'fast'
       if instrument eq 'hpca' then data_rate = 'srvy'
     endif
+    
+    species = strlowcase(species)
 
     if keyword_set(correct_photoelectrons) && (instrument ne 'fpi' or species ne 'e') then begin
       dprint, dlevel=0, 'Photoelectron corrections only valid for FPI electron data'
@@ -301,6 +304,15 @@ pro mms_part_slice2d, time=time, probe=probe, level=level, data_rate=data_rate, 
     if keyword_set(correct_photoelectrons) then begin
       dist = mms_fpi_correct_photoelectrons(name, probe=probe, subtract_error=subtract_error, error=error_variable, /structure)
     endif else dist = mms_get_dist(name, instrument=instrument, probe=probe, trange=trange, subtract_error=subtract_error, error=error_variable, /structure)
+    
+    if keyword_set(remove_fpi_sw) && instrument eq 'fpi' && species eq 'i' then begin
+      dprint, dlevel=2, 'Removing solar wind component from FPI ion data'
+      mms_fpi_remove_sw, dist=dist, newdist=newdist
+      dist = newdist
+    endif else if keyword_set(remove_fpi_sw) then begin
+      dprint, dlevel=0, 'Error, remove_fpi_sw keyword only valid for FPI ions. No solar wind removal applied.
+      remove_fpi_sw = 0b
+    endif
     
     if keyword_set(units) then begin
       for dist_idx=0, n_elements(dist)-1 do begin

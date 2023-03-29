@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Mar 27 18:16:34 2023.<P>
+<STRONG>Last modified: </STRONG>Tue Mar 28 18:16:46 2023.<P>
  
 <HR>
  
@@ -34,6 +34,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_FPI_MAKE_ERRORFLAGBARS">MMS_FPI_MAKE_ERRORFLAGBARS</A>
 <br>Make error flag bars
 <LI><A HREF="#MMS_FPI_QUALITY_BAR">MMS_FPI_QUALITY_BAR</A>
+<LI><A HREF="#MMS_FPI_REMOVE_SW">MMS_FPI_REMOVE_SW</A>
+<br>Removes the solar wind component from the FPI ion distribution data
 <LI><A HREF="#MMS_FPI_SPLIT_TENSOR">MMS_FPI_SPLIT_TENSOR</A>
 <br>Splits FPI tensor variables (pressure, temperature) into their components
 <LI><A HREF="#MMS_GET_FPI_DIST">MMS_GET_FPI_DIST</A>
@@ -336,7 +338,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_FPI_QUALITY_BAR">
 <H2>MMS_FPI_QUALITY_BAR</H2></A>
 <A HREF="#MMS_FPI_MAKE_ERRORFLAGBARS">[Previous Routine]</A>
-<A HREF="#MMS_FPI_SPLIT_TENSOR">[Next Routine]</A>
+<A HREF="#MMS_FPI_REMOVE_SW">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  FUNCTION:
@@ -359,9 +361,48 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="fpi/mms_fpi_quality_bar.pro">projects/mms/fpi/mms_fpi_quality_bar.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_FPI_REMOVE_SW">
+<H2>MMS_FPI_REMOVE_SW</H2></A>
+<A HREF="#MMS_FPI_QUALITY_BAR">[Previous Routine]</A>
+<A HREF="#MMS_FPI_SPLIT_TENSOR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         mms_fpi_remove_sw
+
+ PURPOSE:
+         Removes the solar wind component from the FPI ion distribution data     
+         
+ KEYWORDS:
+         probe: spacecraft probe # (default: 1)
+         trange: time range (if the dist keyword isn't specified)
+         dist: distribution structures (optional)
+         data_rate: data rate (fast by default)
+         cal_moment: calculate moments
+         interpolate: interpolate the sw hole
+         create_tplot: create tplot variables of moments and Vsw
+         dvr: ?
+         mag_name: 
+         sc_pot_name: name of tplot variable containing the spacecraft potential data
+         newdist: set to a named variable to output the new distribution structure
+         moment_output: output the moments
+         vsw_output: output the solar wind velocity
+         quiet: flag to disable printing out the processing status
+         
+ NOTES:
+       Originally by Terry Liu (UCLA); minor updates by Eric Grimes
+
+ $LastChangedBy:  $
+ $LastChangedDate:  $
+ $LastChangedRevision:  $
+ $URL:  $
+</PRE><P>
+<STRONG>(See <A href="fpi/mms_fpi_remove_sw.pro">projects/mms/fpi/mms_fpi_remove_sw.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_FPI_SPLIT_TENSOR">
 <H2>MMS_FPI_SPLIT_TENSOR</H2></A>
-<A HREF="#MMS_FPI_QUALITY_BAR">[Previous Routine]</A>
+<A HREF="#MMS_FPI_REMOVE_SW">[Previous Routine]</A>
 <A HREF="#MMS_GET_FPI_DIST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

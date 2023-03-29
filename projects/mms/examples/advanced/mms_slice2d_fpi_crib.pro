@@ -26,8 +26,8 @@
 ;   and less for electrons.
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-11-30 09:42:24 -0800 (Tue, 30 Nov 2021) $
-;$LastChangedRevision: 30441 $
+;$LastChangedDate: 2023-03-28 12:56:18 -0700 (Tue, 28 Mar 2023) $
+;$LastChangedRevision: 31678 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_fpi_crib.pro $
 ;-
 
@@ -91,6 +91,18 @@ stop
 ;======================================================================
 
 mms_part_slice2d, /subtract_bulk, /subtract_error, time='2015-10-16/13:06:00', probe=1, species='i', data_rate='brst'
+stop
+
+;======================================================================
+; Remove the solar wind component from the FPI ions prior to plotting
+;======================================================================
+
+; first, show the ion data in the solar wind without removing the SW
+mms_part_slice2d, time='2016-12-07/14:55', samples=10, species='i', instrument='fpi', data_rate='fast'
+stop
+
+; remove the solar wind component with /remove_fpi_sw
+mms_part_slice2d, /remove_fpi_sw, time='2016-12-07/14:55', samples=10, species='i', instrument='fpi', data_rate='fast'
 stop
 
 ;======================================================================
