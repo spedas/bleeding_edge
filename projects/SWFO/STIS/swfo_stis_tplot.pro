@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-14 18:31:00 -0700 (Tue, 14 Mar 2023) $
-; $LastChangedRevision: 31632 $
+; $LastChangedDate: 2023-04-02 11:49:22 -0700 (Sun, 02 Apr 2023) $
+; $LastChangedRevision: 31692 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -36,7 +36,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
     options,/def,'*sci_TOTAL14 *sci_RATE14',spec=1,zlog=1,no_interp=1
     options,/def,'*sci_SIGMA14',ylog=1
-    ;ylim,/def,'*_RATE6',.1,5e6,1
+    ylim,/def,'*_RATE6',.1,5e6,1
     options,/def,'*_RATE6',symsize=.2
     options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
