@@ -67,8 +67,8 @@
 ; corresponding changes to the c_names constant
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-12-09 14:42:37 -0800 (Thu, 09 Dec 2021) $
-; $LastChangedRevision: 30456 $
+; $LastChangedDate: 2023-04-03 12:28:04 -0700 (Mon, 03 Apr 2023) $
+; $LastChangedRevision: 31701 $
 ; $URL $
 ;-
 
@@ -430,6 +430,28 @@ pro thm_load_state,probe=probe, datatype=datatype, trange=trange, $
      endif
   endelse
 
+  ; If support data is requested, delete any previously loaded spin axis corrections in case they are not available for this time interval
+  
+  if keyword_set(get_support_data) then begin
+    for i=0, n_elements(probe)-1 do begin
+      spinras_corr_var='th'+probe[i]+'_state_spinras_correction'
+      spindec_corr_var='th'+probe[i]+'_state_spindec_correction'
+      if keyword_set(suffix) then begin
+        spinras_corr_var=spinras_corr_var+suffix
+        spindec_corr_var=spindec_corr_var+suffix
+      endif
+      get_data,spinras_corr_var,index=n
+      if n NE 0 then begin
+        del_data,spinras_corr_var
+      endif
+      get_data,spindec_corr_var,index=n
+      if n NE 0 then begin
+        del_data,spindec_corr_var
+      endif
+    endfor
+  endif
+  
+  
   thm_load_xxx,sname=probe, datatype=datatype, trange=trange, $
                level=level, verbose=verbose, downloadonly=downloadonly, $
                relpathnames_all=relpathnames_all, no_download=no_download, $

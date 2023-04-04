@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-04-02 11:49:22 -0700 (Sun, 02 Apr 2023) $
-; $LastChangedRevision: 31692 $
+; $LastChangedDate: 2023-04-02 21:08:28 -0700 (Sun, 02 Apr 2023) $
+; $LastChangedRevision: 31695 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -93,7 +93,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     'DL2':  tplot,add=add,'*sci_RATE6 *sci*COUNTS *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
     'DL3':  tplot,add=add,'*sci_RATE6 *sci_SCI_* stis_l1a_SPEC_?? *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
     'DL4':  tplot,add=add,'*sci_RATE6 *hkp2_*BIAS* stis_l1a_SPEC_?? *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
-    'LPT':  tplot,add=add,'*sci_RATE6 *sci_AVGBIN14 *hkp2_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
+    'LPT':  tplot,add=add,'*sci_RATE6 *hkp?_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
     'SCIHKP': tplot,add=add,'*hkp2*SCI_*'
     
     else: dprint,'Unknown code: '+strtrim(name,2)

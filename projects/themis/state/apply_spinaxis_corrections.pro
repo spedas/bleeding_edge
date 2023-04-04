@@ -60,7 +60,12 @@ pro apply_oneaxis_correction,rawvar=rawvar,deltavar=deltavar,corrvar=corrvar
 
    endif else begin
      ; If the corrections aren't present, just copy the original data
-     dprint,'Spin axis corrections variable '+deltavar+' not found, skipping '+corrvar
+     dprint,'Spin axis corrections variable '+deltavar+' not found, copying '+rawvar+' to '+corrvar
+     get_data,corrvar,ind=n
+     if n NE 0 then begin
+      del_data,corrvar
+     endif
+     store_data,rawvar,newname=corrvar
    endelse
 endif else begin
    ; Raw variable doesn't exist, nothing to do here.

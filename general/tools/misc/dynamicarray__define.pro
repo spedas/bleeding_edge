@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-25 07:53:03 -0700 (Sat, 25 Mar 2023) $
-; $LastChangedRevision: 31663 $
+; $LastChangedDate: 2023-04-02 22:08:32 -0700 (Sun, 02 Apr 2023) $
+; $LastChangedRevision: 31696 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -260,7 +260,8 @@ end
 function DynamicArray::slice,indices,last=last   ;,tagname=tagname
   compile_opt IDL2
   if keyword_set(last) then indices = self.size-1
-  return,(*self.ptr_array)[indices,*,*,*]
+  if ptr_valid(self.ptr_array) && isa(*self.ptr_array,/array) then return ,(*self.ptr_array)[indices,*,*,*]
+  return,!null
 end
 
 ; ::sample will extract a sample of data from a set of data based on a range of indices

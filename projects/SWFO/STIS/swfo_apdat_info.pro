@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-05 00:32:07 -0800 (Sun, 05 Feb 2023) $
-; $LastChangedRevision: 31471 $
+; $LastChangedDate: 2023-04-02 23:51:40 -0700 (Sun, 02 Apr 2023) $
+; $LastChangedRevision: 31699 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -117,7 +117,6 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
 
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
 
-  ;; What is this section supposed to be doing?? - PLW;;
   if isa(apid_description,/string) then begin
     if nvalid ne 0 then begin
       names = strarr(nvalid)
@@ -128,7 +127,7 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
       endfor
     endif
     ind = strfilter(names,apid_description,/index,/null)
-    apids = apids[ind]
+    if isa(apids) then  apids = apids[ind] else apids=!null
     ;    printdat,names[ind],apids
   endif else if isa(apid_description,/integer) then begin
     apids = apid_description

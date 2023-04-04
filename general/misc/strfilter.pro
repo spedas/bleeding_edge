@@ -1,7 +1,7 @@
 ;+
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:49 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30044 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-04-02 23:46:03 -0700 (Sun, 02 Apr 2023) $
+; $LastChangedRevision: 31697 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/strfilter.pro $
 ;-
 ;FUNCTION:
@@ -54,6 +54,7 @@ function strfilter,str,matchs,count=count,wildcard=wildcard,fold_case=fold_case,
   index=index,string=retstr,byte=bt,negate=negate
 
   if !version.release ge '5.3' then begin
+    if ~isa(str) then return,!null
     matcharray = keyword_set(matchs) ? matchs : ''
     if keyword_set(delimiter) and size(/dimen,matcharray) eq 0 then $
       matcharray = strsplit(matcharray,delimiter,/extract)
