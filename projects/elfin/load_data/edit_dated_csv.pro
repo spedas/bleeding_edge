@@ -1,4 +1,17 @@
-function edit_dated_csv, this_file, header, newdat, instrument
+; NAME: edit_dated_csv
+;
+; PURPOSE: Function to temporary read csv and remove duplicate times and then write 
+;
+; INPUT:
+;    this_file   name of the csv file to be edited
+;
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2017-11-28 10:09:38 -0800 (Tue, 28 Nov 2017) $
+; $LastChangedRevision: 24352 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elf/common/elf_config_write.pro $
+;
+
+function edit_dated_csv, this_file
   ;reading the data
   olddat = READ_CSV(this_file, RECORD_START = 1)
 

@@ -246,15 +246,26 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
                 if file_test(this_local_path,/dir) eq 0 then file_mkdir2, this_local_path
                 dprint, dlevel=1, 'Downloading ' + fnames[file_idx] + ' to ' + local_path                    
                 if ~undefined(spdf) && spdf EQ 1 then begin
-                  remote_path = 'https://spdf.gsfc.nasa.gov/pub/data/elfin/'
-                  if instrument EQ 'state' then begin
-                    if pred then subdir='pred/' else subdir='defn/'
-                  endif
-                  if instrument EQ 'epd' then subdir='epdef'
-                  relpath= 'elfin' + strcompress(string(probes[probe_idx]), /rem) +'/'+'ephemeris/'+subdir + '/' + yeardir
-                  relpathname=relpath + fnames[file_idx]
-                  paths = spd_download(remote_file=relpathname, remote_path=remote_path, $
-                    local_file=fnames[file_idx], local_path=this_local_path, ssl_verify_peer=0, ssl_verify_host=0)
+                  spdf_datatypes=['state', 'epd']
+                  if instrument EQ 'state' or instrument EQ 'epd' then begin
+                    remote_path = 'https://spdf.gsfc.nasa.gov/pub/data/elfin/elfin'+probes[probe_idx]+'/'
+                    if instrument eq 'state' then begin
+                      remote_path=remote_path+'ephemeris/'
+                      if pred then subdir='pred/'+strmid(daily_names, 0, 4)+'/' else subdir='defn/'+strmid(daily_names, 0, 4)+'/'
+                      subdir=''
+                    endif
+                    if instrument EQ 'epd' then begin
+                      if datatype eq 'pef' then subdir='ephemeris/epdef/'+strmid(daily_names, 0, 4)+'/'
+                      if datatype eq 'pif' then subdir='l1/fast/ion/'+strmid(daily_names, 0, 4)+'/'
+                    endif                 
+;                    relpath= 'elfin' + strcompress(string(probes[probe_idx]), /rem) +'/'+'ephemeris/'+subdir + '/' + yeardir
+                    remote_path=remote_path+subdir
+;                    relpathname=relpath + fnames[file_idx]
+                    paths = spd_download(remote_file=fnames[file_idx], remote_path=remote_path[0], $
+                      local_file=fnames[file_idx], local_path=this_local_path, ssl_verify_peer=0, ssl_verify_host=0)
+                  endif  else begin
+                      dprint, 'SPDF does not have data for instrument ' + instrument
+                  endelse
                 endif else begin
                   paths = spd_download(remote_file=fnames[file_idx], remote_path=this_remote_path, $
                                      local_file=fnames[file_idx], local_path=this_local_path, $
@@ -263,7 +274,7 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
                                      ;ssl_verify_host=1)    
                 endelse
                 if undefined(paths) or paths EQ '' then $
-                   dprint, devel=1, 'Unable to download ' + fnames[file_idx] else $
+                   dprint, 'Unable to download ' + fnames[file_idx] else $
                    append_array, files, this_local_path+fnames[file_idx]
               endif              
               
@@ -335,10 +346,8 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
   ntvars = n_elements(tplotnames)
   if ntvars eq 1 && tplotnames[0] eq '' then return ; no data loaded
   ; remove any blank strings
-  if ntvars GT 1 && tplotnames[0] eq '' then tplotnames=tplotnames[1:ntvars-1]
-   
+  if ntvars GT 1 && tplotnames[0] eq '' then tplotnames=tplotnames[1:ntvars-1]   
   if ~undefined(tr) && ~undefined(tplotnames) then begin
-
     ; time clip the data
     dt_timeclip = 0.0
     error = 0

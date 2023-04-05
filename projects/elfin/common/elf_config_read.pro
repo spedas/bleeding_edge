@@ -1,3 +1,15 @@
+; NAME: elf_config_read_template
+;
+; PURPOSE: Read template structure from configuration file.
+;
+; IDL> elf_config_write, pref
+;
+;
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2017-11-28 10:09:38 -0800 (Tue, 28 Nov 2017) $
+; $LastChangedRevision: 24352 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elf/common/elf_config_write.pro $
+;
 ; read_ascii template for elf_config_read
 FUNCTION elf_config_read_template
   anan = fltarr(1) & anan[0] = 'NaN'

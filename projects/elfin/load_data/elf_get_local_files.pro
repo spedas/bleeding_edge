@@ -158,7 +158,7 @@ function elf_get_local_files, probe = probe, instrument = instrument, data_rate 
   if n_times eq 0 then begin
     ; suppress redundant error message
     ;dprint, dlevel=2, 'No local files found between '+time_string(trange[0])+' and '+time_string(trange[1])
-    return, error
+    ;return, error
   endif
 
   ;restrict list of files to those in the time range
@@ -166,7 +166,7 @@ function elf_get_local_files, probe = probe, instrument = instrument, data_rate 
   file_strings = file_strings[*,time_idx]
   ;ensure files are in chronological order, just in case (see note in elf_load_data)
   files_out = files[bsort(files)]
-
+;stop
   return, files_out
 
 end
