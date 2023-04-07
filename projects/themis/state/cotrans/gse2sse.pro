@@ -67,9 +67,9 @@
 ;      
 ;Written by Jenni Kissinger and Patrick Cruce
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-07-23 12:44:44 -0700 (Tue, 23 Jul 2019) $
-; $LastChangedRevision: 27491 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2023-04-05 22:09:10 -0700 (Wed, 05 Apr 2023) $
+; $LastChangedRevision: 31709 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/cotrans/gse2sse.pro $
 ;-
 
@@ -197,15 +197,18 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
         if keyword_set(ignore_dlimits) then begin
           dprint,'WARNING: dlimits indicates data is a velocity.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS is set'
         endif else begin
+          ;deriv_data,lun_name,/replace
+          ;
+          ; The /replace option for deriv_data was broken.  It's fixed now, but it would be clearer to use a separate variable.  JWL 2023-04-05
+          lun_vel_name=lun_name+'_ddt'   ; Default suffix
+          deriv_data,lun_name,newname=lun_vel_name
           
-          deriv_data,lun_name,/replace
-          
-          tinterpol_mxn,lun_name,name_one,/overwrite,error=err
+          tinterpol_mxn,lun_vel_name,name_one,/overwrite,error=err
           if err eq 0 then begin
             message,'Error performing velocity offset during SSE transformation(interpolation operation)'
           endif
           
-          calc,'"'+name_two+'" = "' + name_one + '"-"' + lun_name + '"',error=err
+          calc,'"'+name_two+'" = "' + name_one + '"-"' + lun_vel_name + '"',error=err
           if keyword_set(err) then begin
             message,'Error performing velocity offset during SSE transformation(subtraction operation)'
           endif
@@ -290,15 +293,20 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
           dprint,'WARNING: dlimits indicates data is a velocity.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS is set'
         endif else begin
           
-          deriv_data,lun_name,/replace
+          ;deriv_data,lun_name,/replace
+          ;
+          ; The /replace option for deriv_data was broken.  It's fixed now, but it would be clearer to use a separate variable.  JWL 2023-04-05
+          lun_vel_name=lun_name+'_ddt'   ; Default suffix
+          deriv_data,lun_name,newname=lun_vel_name
+
                   
-          tinterpol_mxn,lun_name,name_two,/overwrite,error=err
+          tinterpol_mxn,lun_vel_name,name_two,/overwrite,error=err
           
           if err eq 0 then begin
             message,'Error performing velocity offset during SSE transformation(interpolation operation)'
           endif
           
-          calc,'"'+name_two+'" = "' + name_two + '"+"'+lun_name+'"',error=err
+          calc,'"'+name_two+'" = "' + name_two + '"+"'+lun_vel_name+'"',error=err
           if keyword_set(err) then begin
             message,'Error performing velocity offset during SSE transformation(subtraction operation)'
           endif

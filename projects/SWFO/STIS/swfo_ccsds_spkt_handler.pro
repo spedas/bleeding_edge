@@ -1,11 +1,14 @@
 ;+
-; Purpose: Handle buffer that should contain a single ccsds packet
+; Purpose: Decomutate a single CCSDS data packet and uses the apid to retrieve an object that can process the specific APID
+; Input:  byte array that containing a single CCSDS data packet
+; 
 ; Written by Davin Larson
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-12-17 09:47:01 -0800 (Fri, 17 Dec 2021) $
-; $LastChangedRevision: 30471 $
+; $LastChangedDate: 2023-04-06 17:33:45 -0700 (Thu, 06 Apr 2023) $
+; $LastChangedRevision: 31711 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_spkt_handler.pro $
+;
 ;-
 
 pro swfo_ccsds_spkt_handler,dbuffer, source_dict = source_dict , wrap_ccsds=wrap_ccsds

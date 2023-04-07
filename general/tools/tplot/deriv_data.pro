@@ -47,14 +47,14 @@ if keyword_set(replace) && keyword_set(suffix) then begin
   message,'Replace and suffix are mutually exclusive keywords'
 endif 
 
+if n_elements(suffix) EQ 0 then begin
+  suffix = '_ddt'
+endif
+
 if keyword_set(replace) then begin
    suffix = ''
 endif
  
-if ~keyword_set(suffix) then begin
-  suffix = '_ddt'
-endif
-
 for i=0,n-1 do begin
   n1 = ns[i]
   get_data,n1,data=d,dlimits=dl
