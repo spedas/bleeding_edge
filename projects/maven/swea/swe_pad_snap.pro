@@ -179,8 +179,8 @@
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-05 09:50:17 -0800 (Sun, 05 Mar 2023) $
-; $LastChangedRevision: 31586 $
+; $LastChangedDate: 2023-04-07 11:44:16 -0700 (Fri, 07 Apr 2023) $
+; $LastChangedRevision: 31714 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -207,6 +207,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
+
+  cols = get_colors()
+  cbot = cols.bottom_c
+  ctop = cols.top_c
 
   tiny = 1.e-31
 
