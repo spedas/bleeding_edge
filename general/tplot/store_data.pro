@@ -37,8 +37,8 @@
 ;
 ;CREATED BY:    Davin Larson
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-27 18:02:20 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31564 $
+; $LastChangedDate: 2023-04-10 00:21:25 -0700 (Mon, 10 Apr 2023) $
+; $LastChangedRevision: 31718 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -115,7 +115,7 @@ pro store_data,name, time,ydata,values, $
     tags = tag_names(data)
     str_element,data,time_tag,time    ;  time = data.time
     ok   = strfilter(tags,strupcase(tagnames),delimiter=' ',/byte)
-    if ~keyword_set(seperator) then seperator = ''
+    if ~keyword_set(seperator) then seperator = '_'
     nd = size(/n_elements,data)
     for i=0,n_elements(tags)-1 do begin
       if ok[i] eq 0 then continue
@@ -142,7 +142,7 @@ pro store_data,name, time,ydata,values, $
     return
   endif
 
-  dprint,dlevel=5,verbose,/phelp
+  ;dprint,dlevel=5,verbose,/phelp
 
   if keyword_set(clear) then begin
     names = tnames(name,n)

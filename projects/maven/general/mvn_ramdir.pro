@@ -56,11 +56,17 @@
 ;
 ;       PH_180:   If set, the range for Phi is -180 to +180 degrees.
 ;
+;       REVERSE:  Reverse the sense of RAM to be the velocity of the incoming
+;                 ions with respect to the spacecraft.  If you sit on the 
+;                 spacecraft and look in this direction the flow will be into
+;                 the back of your head.
+;
 ;       MSO:      Calculate ram vector in the MSO frame instead of the
 ;                 rotating IAU_MARS frame.  May be useful at high altitudes.
 ;
 ;       ERROR:    Calculate the magnitude of the RAM pointing error (deg)
-;                 and store as a separate tplot variable.
+;                 and store as a separate tplot variable.  This only works for
+;                 the APP and NGIMS frames.  The STATIC frame is reversed.
 ;
 ;                 Using ephemeris predicts refreshed on a regular basis, the
 ;                 spacecraft can usually point the APP into the RAM direction
@@ -78,14 +84,14 @@
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-02 09:48:50 -0800 (Thu, 02 Feb 2023) $
-; $LastChangedRevision: 31462 $
+; $LastChangedDate: 2023-04-09 19:18:49 -0700 (Sun, 09 Apr 2023) $
+; $LastChangedRevision: 31717 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
 pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, result=result, $
-                ph_180=ph_180, error=error, force=force, success=success
+                ph_180=ph_180, error=error, force=force, success=success, reverse=reverse
 
   success = 0
   result = 0
@@ -93,6 +99,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
   dopol = keyword_set(polar) or doerr
   noguff = keyword_set(force)
   ph_360 = ~keyword_set(ph_180)
+  sign = keyword_set(reverse) ? -1. : 1.
 
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
   frame = mvn_frame_name(frame, success=i)
@@ -169,7 +176,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
 
 ; Store the spacecraft velocity in the IAU_MARS (or MSO) frame
 
-  store_data,'V_sc',data={x:ut, y:transpose(svec[3:5,*]), v:[0,1,2], vframe:vframe}
+  store_data,'V_sc',data={x:ut, y:sign*transpose(svec[3:5,*]), v:[0,1,2], vframe:vframe}
   options,'V_sc',spice_frame=vframe,spice_master_frame='MAVEN_SPACECRAFT'
 
   result = {name : 'MAVEN RAM Velocity', vframe : vframe}

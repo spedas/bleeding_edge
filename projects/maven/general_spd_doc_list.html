@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Apr  9 18:16:37 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 10 18:16:37 2023.<P>
  
 <HR>
  
@@ -738,11 +738,17 @@ KEYWORDS:
 
        PH_180:   If set, the range for Phi is -180 to +180 degrees.
 
+       REVERSE:  Reverse the sense of RAM to be the velocity of the incoming
+                 ions with respect to the spacecraft.  If you sit on the 
+                 spacecraft and look in this direction the flow will be into
+                 the back of your head.
+
        MSO:      Calculate ram vector in the MSO frame instead of the
                  rotating IAU_MARS frame.  May be useful at high altitudes.
 
        ERROR:    Calculate the magnitude of the RAM pointing error (deg)
-                 and store as a separate tplot variable.
+                 and store as a separate tplot variable.  This only works for
+                 the APP and NGIMS frames.  The STATIC frame is reversed.
 
                  Using ephemeris predicts refreshed on a regular basis, the
                  spacecraft can usually point the APP into the RAM direction
@@ -760,8 +766,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-02 09:48:50 -0800 (Thu, 02 Feb 2023) $
- $LastChangedRevision: 31462 $
+ $LastChangedDate: 2023-04-09 19:18:49 -0700 (Sun, 09 Apr 2023) $
+ $LastChangedRevision: 31717 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 
 CREATED BY:    David L. Mitchell

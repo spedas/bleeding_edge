@@ -1,11 +1,23 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-04-09 17:38:07 -0700 (Sun, 09 Apr 2023) $
-; $LastChangedRevision: 31716 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-04-10 15:10:34 -0700 (Mon, 10 Apr 2023) $
+; $LastChangedRevision: 31720 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
 
-pro swfo_stis_tplot,name,add=add,setlim=setlim
+pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim
+
+
+  if keyword_set(ionlim) then begin
+    store_data,'IG_GUN_I',data='IonGun1_GUN_I*'
+    store_data,'IG_GUN_V',data='IonGun1_GUN_V*'
+    store_data,'IG_STEERER',data='IonGun1_STEERER*'
+    store_data,'IG_EXB',data='IonGun1_EXB*'
+    store_data,'IG_LENS',data='IonGun1_LENS*'
+    store_data,'IG_HDEF',data='IonGun1_HDEF*'
+    options,'IonGun1_*_CTL_V' , colors = 'r'
+    
+  endif
 
   if keyword_set(setlim) then begin
     if 0 then begin
@@ -95,6 +107,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim
     'DL4':  tplot,add=add,'*sci_RATE6 *hkp2_*BIAS* stis_l1a_SPEC_?? *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
     'LPT':  tplot,add=add,'*sci_RATE6 *hkp?_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
     'SCIHKP': tplot,add=add,'*hkp2*SCI_*'
+    'IONGUN': tplot,add=add,'pico_I IG_*'
     
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase

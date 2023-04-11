@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-04-02 22:08:32 -0700 (Sun, 02 Apr 2023) $
-; $LastChangedRevision: 31696 $
+; $LastChangedDate: 2023-04-10 00:22:25 -0700 (Mon, 10 Apr 2023) $
+; $LastChangedRevision: 31719 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -73,13 +73,14 @@ pro dynamicarray_example
 end
 
 
-FUNCTION DynamicArray::Init,array, _EXTRA=ex
+FUNCTION DynamicArray::Init,array, _EXTRA=ex,tplot_tagnames=tplot_tagnames
   COMPILE_OPT IDL2
   ; Call our superclass Initialization method.
   void = self->generic_object::Init(_extra=ex)
   self.xfactor = .5
   self.ptr_array = ptr_new(!null)
   self.dict = dictionary()
+  if isa(tplot_tagnames,'string') then  self.dict.tplot_tagnames = tplot_tagnames
   ;dim = size(/dimen,array)
   ;self.size = dim[0]
   ;self.dlevel = 4
@@ -146,10 +147,15 @@ pro DynamicArray::append, a1, error = error,replace=replace
     n1 = dim1[0] > 1
     a0 = self.ptr_array
 
-    if n_elements(*a0) eq 0   then begin   ; Initialize if  undefined.
+    if n_elements(*a0) eq 0 || self.size eq 0  then begin   ; Initialize if  undefined.
       *a0 = [a1]
       dim0 = size(/dimension,*a0)
       self.size = dim0[0]
+      if self.dict.haskey('tplot_tagnames') then begin   ; This feature may be disabled in the future  - DON"T use
+        tags = self.dict.tplot_tagnames
+        dprint,dlevel=2,verbose=self.verbose,'Creating TPLOT variables: '+self.name+'_['+strjoin(tags,',')+']'
+        store_data,verbose=0,self.name,data= self ,tagnames=tags,/silent  ;,separator = '_'
+      endif
       return
     endif
 
