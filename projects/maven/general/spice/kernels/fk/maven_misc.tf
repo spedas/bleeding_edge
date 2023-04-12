@@ -8,9 +8,19 @@ Mars Atmosphere and Volatile EvolutioN (MAVEN) Frames Kernel - Miscellaneous
    kernel also contains name - to - NAIF ID mappings for MAVEN science
    instruments and s/c structures (see the last section of the file.)
 
+   Important: This frame kernel is *not* included in the official NAIF kernel
+   distribution for MAVEN.  This kernel should be loaded after the official
+   MAVEN frames kernel (currently maven_v11.tf).  This happens automatically
+   if you use mvn_spice_kernels.pro, which is part of the SSL "Tplot" package.
+
 
 Version and Date
 -------------------------------------------------------------------------------
+
+   Version 0.2 -- April  7, 2023 --     David Mitchell, PFP Lead/SSL-UCB
+
+      Removed the STATIC frame definition.  It is now in the maven frames
+      kernel (starting with maven_v11.tf).
 
    Version 0.1 -- April 12, 2014 --     Davin Larson, SEP Team/SSL-UCB
 
@@ -293,69 +303,6 @@ This frame is co-aligned with the MAVEN_SSO frame during nominal sun pointing or
 
 
 
-
-
-STATIC Frames
-
-   The STATIC frame -- MAVEN_STATIC, ID -202520 -- is defined
-   as a fixed offset frame with respect to and is nominally co-aligned
-   with the APP frame (see [6]), as shown in this diagram:
-
-
-      +X APP side (0.0/-155.0 APP position):
-      --------------------------------------
-
-                                   Nadir FOV
-               +Ystatic                ._____.     .
-                        ^              \     /  .-' `.  Limb FOV
-                        |       .-------\   /.-'      `.
-                STATIC  |    .-'  .-----'               `_.
-                       -|-----.   |           IUVS      | |
-                <-------o |   |   |                     | |
-            +Zstatic   -------'   |                     | |
-                             `-.  `----  +Yapp   -------' |
-                                `---.-- ^ ---.------------
-                                    |   |    |   |       |--.
-                                    `-- | .  |   |       |  |
-                            +Zapp     _ | _| '   `_______.--'
-                                <-------o   /                 NGIMS
-                                     |_____|
-                                       | |
-                                       | |
-                                      ~ ~ ~ 
-
-                                        ^ +Xsc
-                                        |
-                                        |
-                            +Ysc        |
-                                <-------o
-                                               +Zsc, +Xapp, and +X static 
-                                                   are out of the page.
-
-   The keywords below define the STATIC frame.
-
-   \begindata
-
-      FRAME_MAVEN_STATIC              = -202520
-      FRAME_-202520_NAME              = 'MAVEN_STATIC'
-      FRAME_-202520_CLASS             = 4
-      FRAME_-202520_CLASS_ID          = -202520
-      FRAME_-202520_CENTER            = -202
-      TKFRAME_-202520_SPEC            = 'ANGLES'
-      TKFRAME_-202520_RELATIVE        = 'MAVEN_APP'
-      TKFRAME_-202520_ANGLES          = ( 180.0, 0.0, 180.0 )
-      TKFRAME_-202520_AXES            = ( 1,   2,   3   )
-      TKFRAME_-202520_UNITS           = 'DEGREES'
-
-   \begintext
-
-
-
-
-
-
-
-
 MAVEN NAIF ID Codes -- Definitions
 ========================================================================
 
@@ -379,36 +326,32 @@ MAVEN NAIF ID Codes -- Definitions
 
    \begindata
    
-      NAIF_BODY_NAME += ( 'MAVEN_SCALT'                  )
-      NAIF_BODY_CODE += ( -202050                        )
+      NAIF_BODY_NAME += ( 'MAVEN_SCALT' )
+      NAIF_BODY_CODE += ( -202050       )
 
-      NAIF_BODY_NAME += ( 'SUNZ'                  )
-      NAIF_BODY_CODE += ( -202913                        )
+      NAIF_BODY_NAME += ( 'SUNZ'        )
+      NAIF_BODY_CODE += ( -202913       )
 
-      NAIF_BODY_NAME += ( 'MSUNZ'                  )
-      NAIF_BODY_CODE += ( -202914                        )
+      NAIF_BODY_NAME += ( 'MSUNZ'       )
+      NAIF_BODY_CODE += ( -202914       )
 
-      NAIF_BODY_NAME += ( 'MAVEN_MMO'                  )
-      NAIF_BODY_CODE += ( -202915                        )
+      NAIF_BODY_NAME += ( 'MAVEN_MMO'   )
+      NAIF_BODY_CODE += ( -202915       )
 
-      NAIF_BODY_NAME += ( 'MAVEN_MAG1'                     )
-      NAIF_BODY_CODE += ( -202311                          )
-                                                            
+      NAIF_BODY_NAME += ( 'MAVEN_MAG1'  )
+      NAIF_BODY_CODE += ( -202311       )
 
-      NAIF_BODY_NAME += ( 'MAVEN_MAG2'                     )
-      NAIF_BODY_CODE += ( -202411                          )
-                                                            
-
-                                                            
-      NAIF_BODY_NAME   +=  ( 'SIDING_SPRING' )
-      NAIF_BODY_CODE   +=  ( 1003228 )
-
-      NAIF_BODY_NAME   +=  ( 'CSS' )
-      NAIF_BODY_CODE   +=  ( 1003228 )
+      NAIF_BODY_NAME += ( 'MAVEN_MAG2'  )
+      NAIF_BODY_CODE += ( -202411       )
 
 
+      NAIF_BODY_NAME += ( 'SIDING_SPRING' )
+      NAIF_BODY_CODE += ( 1003228 )
 
-                                                            
+      NAIF_BODY_NAME += ( 'CSS' )
+      NAIF_BODY_CODE += ( 1003228 )
+
+
    \begintext
 
 End of FK File.

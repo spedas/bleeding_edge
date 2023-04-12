@@ -20,9 +20,9 @@
 ;PLEASE DO NOT USE this routine within general "LOAD" routines using the LOAD keyword. "LOAD" routines should assume that SPICE kernels are already loaded.
 ; 
 ;Author: Davin Larson  - January 2014
-; $LastChangedBy: ali $
-; $LastChangedDate: 2017-02-14 18:29:05 -0800 (Tue, 14 Feb 2017) $
-; $LastChangedRevision: 22786 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-04-11 13:49:38 -0700 (Tue, 11 Apr 2023) $
+; $LastChangedRevision: 31726 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_kernels.pro $
 ;-
 function mvn_spice_kernels,names,trange=trange,all=all,load=load,reset=reset,verbose=verbose,source=source,valid_only=valid_only,sck=sck,clear=clear  $
@@ -71,7 +71,7 @@ function mvn_spice_kernels,names,trange=trange,all=all,load=load,reset=reset,ver
                                                   local_path = source.local_data_dir+'MAVEN/kernels/fk/', no_update = no_update, $
                                                   last_version = last_version, no_server = source.no_server, file_mode = '666'o, dir_mode = '777'o)
            endif else begin
-              append_array, kernels, this_dir+'kernels/fk/maven_v09.tf'
+              append_array, kernels, this_dir+'kernels/fk/maven_v11.tf'
            endelse
            append_array, kernels, this_dir+'kernels/fk/maven_misc.tf' ; Use this file to make temporary changes to the maven_v??.tf file
         end
@@ -108,16 +108,16 @@ function mvn_spice_kernels,names,trange=trange,all=all,load=load,reset=reset,ver
                                               local_path = source.local_data_dir+'MAVEN/kernels/ik/', no_update = no_update, $
                                               last_version = last_version, no_server = source.no_server, file_mode = '666'o, dir_mode = '777'o)
         endif else begin
-          append_array, kernels, this_dir+'kernels/ik/maven_ant.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_euv.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_iuvs.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_lpw.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_mag.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_ngims.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_ant_v10.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_euv_v10.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_iuvs_v10.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_lpw_v01.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_mag_v01.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_ngims_v10.ti'
           append_array, kernels, this_dir+'kernels/ik/maven_sep_v12.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_static.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_swea.ti'
-          append_array, kernels, this_dir+'kernels/ik/maven_swia.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_static_v11.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_swea_v11.ti'
+          append_array, kernels, this_dir+'kernels/ik/maven_swia_v10.ti'
         endelse
       end
       'SPK':  begin     ; Spacecraft position

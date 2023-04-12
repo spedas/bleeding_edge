@@ -167,9 +167,18 @@ Mounting Alignment
                                                   are out of the page.
 
 
-   This diagram shows the STATIC frame, MAVEN_STATIC. This frame is
-   defined as a fixed offset frame with respect to and is nominally
-   co-aligned with the APP frame:
+
+   The STATIC frame -- MAVEN_STATIC, ID -202520 -- is defined
+   as a fixed offset frame with respect to the APP frame. Per
+   [17], this frame is defined as:
+
+      -  MAVEN_STATIC +X along APP -X
+
+      -  MAVEN_STATIC +Y along APP +Y
+
+      -  MAVEN_STATIC +Z along APP -Z
+
+   This definition is illustrated in this diagram:
 
 
       +X APP side (0.0/-155.0 APP position):
@@ -179,10 +188,10 @@ Mounting Alignment
                +Ystatic                ._____.     .
                         ^              \     /  .-' `.  Limb FOV
                         |       .-------\   /.-'      `.
-                STATIC  |    .-'  .-----'               `_.
-                       -|-----.   |           IUVS      | |
-                <-------o |   |   |                     | |
-            +Zstatic   -------'   |                     | |
+                STATIC  |    .-'        '               `_.
+                       -|-----. +Zstatic      IUVS      | |
+                      | x------->                       | |
+                       -------'   |                     | |
                              `-.  `----  +Yapp   -------' |
                                 `---.-- ^ ---.------------
                                     |   |    |   |       |--.
@@ -199,8 +208,12 @@ Mounting Alignment
                                         |
                             +Ysc        |
                                 <-------o
-                                               +Zsc, +Xapp, and +X static
-                                                   are out of the page.
+                                               +Zsc, and +Xapp are out of
+                                               the page, and +X static is
+                                                      into the page.
+
+   The STATIC frame is transformed from the APP frame by a 180.0 degree
+   rotation about the +Y axis.
 
 
 Instrument Description and Data Products
