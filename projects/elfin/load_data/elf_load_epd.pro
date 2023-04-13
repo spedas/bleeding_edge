@@ -72,7 +72,7 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   cdf_version = cdf_version, cdf_records = cdf_records, $
   spdf = spdf, versions = versions, tt2000=tt2000, $
   nspinsinsum=my_nspinsinsum
-  
+;stop  
   if (~undefined(trange) && n_elements(trange) eq 2) && (time_double(trange[1]) lt time_double(trange[0])) then begin
     dprint, dlevel = 0, 'Error, endtime is before starttime; trange should be: [starttime, endtime]'
     return
@@ -105,6 +105,11 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   
   if undefined(level) then level = ['l1'] 
   if level EQ '*' then level = ['l1']  ; we don't have l2 data yet
+  if level EQ 'l2' then begin
+    get_support_data=1
+    no_download=1
+    no_time_clip=1
+  endif
 
   ; check for valid datatypes for level 1 NOTE: we only have l1 data so far
   ; NOTE: Might need to add pis, and pes
@@ -120,8 +125,6 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     return
   endif
   
-  ;if undefined(datatype) AND level eq 'l2' then datatype = ['pef_eflux'] $
-  ;  else datatype = strlowcase(datatype)
   if undefined(data_rate) then data_rate = ['fast'] else data_rate=strlowcase(data_rate)
   if data_rate EQ '*' then data_rate = ['fast']  ;, 'srvy'] NO SURVEY DATA YET
 
@@ -153,82 +156,14 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     dprint, dlevel = 1, 'No data was loaded for EPD for ' + time_string(tr[0]) + ' to ' + time_string(tr[1])
     return
   endif
- 
-  ; Post processing - calibration and fix meta data 
-  ; first calibrate spinper to turn it to seconds
-  fgmsamplespersec = 80.
-  for i=0,n_elements(tplotnames)-1 do begin
-    if strpos(tplotnames[i], 'spinper') NE -1 then begin
-      get_data, tplotnames[i], data=d, dlimits=dl, limits=l
-      if size(d, /type) EQ 8 then begin
-        d.y=d.y/fgmsamplespersec
-        store_data, tplotnames[i], data=d, dlimits=dl, limits=l
-      endif
-    endif
-  endfor
-  ;
-  
-  for i=0,n_elements(tplotnames)-1 do begin
-    
-    if strpos(tplotnames[i], 'energies') NE -1 then begin
-      del_data, tplotnames[i]
-      continue
-    endif
-    if strpos(tplotnames[i], 'sectnum') NE -1 then begin
-      tplotnames[i]=tplotnames[i]+suffix
-      continue
-    endif
-    if strpos(tplotnames[i], 'spinper') NE -1 then begin
-      tplotnames[i]=tplotnames[i]+suffix
-      continue
-    endif
-    if strpos(tplotnames[i], 'nspinsinsum') NE -1 then begin
-      tplotnames[i]=tplotnames[i]+suffix
-      continue
-    endif
-    if strpos(tplotnames[i], 'nsectors') NE -1 then begin
-      tplotnames[i]=tplotnames[i]+suffix
-      continue
-    endif
 
-    ; add type of end of tplotnames
-    if ~keyword_set(no_suffix) then begin
-      if suffix eq '' then begin
-      tplot_rename, tplotnames[i], tplotnames[i]+'_'+type
-      tplotnames[i]=tplotnames[i]+'_'+type
-      endif else begin
-        newname=strmid(tplotnames[i],0,7)+'_'+type+suffix
-        tplot_rename, tplotnames[i], newname 
-        tplotnames[i]=newname  
-      endelse
-    endif
-   
-    if ~keyword_set(my_nspinsinsum) then begin
-      tn=tnames('*nspinsinsum*')
-      get_data, tn[0], data=nspin
-      if is_struct(nspin) then my_nspinsinsum=nspin.y else my_nspinsinsum=1
-    endif 
+  ; Level 1 Post processing - calibration and fix meta data 
+  if level eq 'l1' then elf_epd_l1_postproc, tplotnames, trange=trange, type=type, suffix=suffix, $
+    my_nspinsinsum=my_nspinsinsum, unit=unit, no_spec=no_spec, no_download=no_download
 
-    if undefined(my_nspinsinsum) then my_nspinsinsum=1
-    ; calibrate data
-    elf_cal_epd, tplotname=tplotnames[i], trange=trange, type=type, no_download=no_download, $
-      nspinsinsum=my_nspinsinsum
-    get_data, tplotnames[i], data=d, dlimits=dl, limits=l
-    if size(d, /type) EQ 8 then begin
-      dl.ysubtitle=unit
-;      if undefined(d.v) then v=findgen(16)
-      if n_elements(tag_names(d)) EQ 2 then begin
-        v=findgen(16)
-        store_data, tplotnames[i], data={x:d.x, y:d.y, v:v}, dlimits=dl, limits=l
-      endif else begin
-        store_data, tplotnames[i], data={x:d.x, y:d.y, v:d.v}, dlimits=dl, limits=l
-      endelse
-      
-      options, tplotnames[i], ylog=1
-      if keyword_set(no_spec) then options, tplotnames[i], spec=0 else options, tplotnames[i], spec=1 
-      options, tplotnames[i], labflag=1
-    endif
-    
-  endfor
+  ; Level 2 Post processing - calibration and fix meta data
+  if level eq 'l2' then begin
+    elf_epd_l2_postproc, tplotnames, probe=probe, no_download=no_download
+  endif
       
 END

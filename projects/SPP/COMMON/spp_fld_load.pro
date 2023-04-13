@@ -91,9 +91,9 @@
 ; CREATED BY:       Davin Larson December 2018
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2023-01-13 23:29:50 -0800 (Fri, 13 Jan 2023) $
-; $LastChangedRevision: 31405 $
+; $LastChangedBy: pulupa $
+; $LastChangedDate: 2023-04-12 14:37:14 -0700 (Wed, 12 Apr 2023) $
+; $LastChangedRevision: 31742 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -323,7 +323,8 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
 
   if not keyword_set(pathformat) then begin
     if level EQ 3 then begin
-      if type EQ 'rfs_lfr' or type EQ 'rfs_hfr' then begin
+      if type EQ 'rfs_lfr' or type EQ 'rfs_hfr' or $
+        type EQ 'dust' then begin
         pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDD_v??.cdf'
         resolution = 3600l * 24l ; hours
         daily_names = 1

@@ -305,12 +305,21 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
 
           if ~undefined(files) then begin
             unique_files = files[uniq(files, sort(files))]
-            spd_cdf2tplot, unique_files, tplotnames = loaded_tnames, varformat=varformat, $
-              suffix = suffix, get_support_data = get_support_data, /load_labels, $
-              min_version=min_version,version=cdf_version,latest_version=latest_version, $
-              number_records=cdf_records, center_measurement=center_measurement, $
-              loaded_versions = the_loaded_versions, major_version=major_version, $
-              tt2000=tt2000
+            if instrument eq 'epd' and level eq 'l2' then begin
+              elf_cdf2tplot, unique_files, tplotnames = loaded_tnames, varformat=varformat, $
+                suffix = suffix, get_support_data = get_support_data, /load_labels, $
+                min_version=min_version,version=cdf_version,latest_version=latest_version, $
+                number_records=cdf_records, center_measurement=center_measurement, $
+                loaded_versions = the_loaded_versions, major_version=major_version, $
+                tt2000=tt2000, instrument=instrument, level=level
+            endif else begin
+              spd_cdf2tplot, unique_files, tplotnames = loaded_tnames, varformat=varformat, $
+                suffix = suffix, get_support_data = get_support_data, /load_labels, $
+                min_version=min_version,version=cdf_version,latest_version=latest_version, $
+                number_records=cdf_records, center_measurement=center_measurement, $
+                loaded_versions = the_loaded_versions, major_version=major_version, $
+                tt2000=tt2000
+            endelse            
           endif
                   
           append_array, cdf_filenames, files
@@ -328,12 +337,11 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
           if instrument EQ 'mrmi' then break
           if instrument EQ 'mrma' then break
           if instrument EQ 'eng' then break
-
         endfor
       endfor
     endfor
   endfor
-
+  
   ; print the total size of requested data if the user specified /available
   if keyword_set(available) then print, 'Total download size: ' + strcompress(string(total_size, format='(F0.1)'), /rem) + ' MB'
   if undefined(all_tnames) then return else tplotnames=all_tnames
@@ -352,14 +360,14 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
     dt_timeclip = 0.0
     error = 0
     if (n_elements(tr) eq 2) and (tplotnames[0] ne '') and ~keyword_set(no_time_clip) then begin
-      tc0 = systime(/sec)
-      ;if instrument EQ 'state' && pred then begin
-      ;  idx=where(strpos(tplotnames, 'att') GE 0 OR strpos(tplotnames, 'spin') GE 0, ncnt)
-      ;  if ncnt GT 0 then del_data, tplotnames[idx]
-      ;  idx=where(strpos(tplotnames, 'vel') GE 0 OR strpos(tplotnames, 'pos') GE 0, ncnt)
-      ;  if ncnt GT 0 then tplotnames=tplotnames[idx]
-      ;  dprint, dlevel=1,'Attitude or spin tplot variables are not valid for predicted state data.'
-      ;endif 
+     tc0 = systime(/sec)
+      ;;if instrument EQ 'state' && pred then begin
+      ;;  idx=where(strpos(tplotnames, 'att') GE 0 OR strpos(tplotnames, 'spin') GE 0, ncnt)
+      ;;  if ncnt GT 0 then del_data, tplotnames[idx]
+      ;;  idx=where(strpos(tplotnames, 'vel') GE 0 OR strpos(tplotnames, 'pos') GE 0, ncnt)
+      ;;  if ncnt GT 0 then tplotnames=tplotnames[idx]
+      ;;  dprint, dlevel=1,'Attitude or spin tplot variables are not valid for predicted state data.'
+      ;;endif 
       for tc=0,n_elements(tplotnames)-1 do begin
         time_clip, tplotnames[tc], tr[0], tr[1], replace=1, error=error
         if error EQ 1 then begin
@@ -383,7 +391,19 @@ PRO elf_load_data, trange = trange, probes = probes, datatypes_in = datatypes_in
         get_data, tplotnames[t], data=d, dlimits=dl, limits=l
         if size(d, /type) EQ 8 then begin
           idx=uniq(d.x,sort(d.x))
-          store_data, tplotnames[t], data={x:d.x[idx], y:d.y[idx,*]}, dlimits=dl, limits=l
+          ydim = n_elements(size(d.y, /dimensions))
+          if ydim LT 3 then store_data, tplotnames[t], data={x:d.x[idx], y:d.y[idx,*]}, dlimits=dl, limits=l
+          if ydim EQ 3 then begin
+            dpos=strpos(tplotnames[t], 'pef_hs_Epat')
+            if dpos GE 0 then begin
+              thistn=tnames('*pef_hs_epa_spec')
+              get_data, thistn[0], data=dv
+            endif else begin
+              thistn=tnames('*pef_fs_epa_spec')
+              get_data, thistn[0], data=dv              
+            endelse
+            store_data, tplotnames[t], data={x:d.x[idx], y:d.y[idx,*,*], v:dv.y[idx,*]}, dlimits=dl, limits=l
+          endif
         endif
       endfor
     endif

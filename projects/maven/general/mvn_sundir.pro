@@ -3,6 +3,8 @@
 ;PURPOSE:
 ;  Determines the direction of the Sun at the position of the spacecraft in
 ;  one or more coordinate frames.  The results are stored in TPLOT variables.
+;  If you sit on the spacecraft and look in this direction, you will see the
+;  Sun.  Be sure to use eye protection.
 ;
 ;  This vector can be rotated into any coordinate frame recognized by
 ;  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
@@ -40,6 +42,12 @@
 ;                    Phi = atan(y,x)*!radeg  ; [  0, 360]
 ;                    The = asin(z)*!radeg    ; [-90, +90]
 ;
+;       PH_180:   If set, the range for Phi is -180 to +180 degrees.
+;
+;       REVERSE:  Reverse the sense to be the anti-Sun direction.  If you sit
+;                 on the spacecraft and look in this direction, sunlight will
+;                 hit the back of your head.  Be sure to use skin protection.
+;
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'Sun_MAVEN_SPACECRAFT'.
 ;
@@ -48,18 +56,21 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-29 10:21:16 -0800 (Sun, 29 Jan 2023) $
-; $LastChangedRevision: 31435 $
+; $LastChangedDate: 2023-04-11 20:26:40 -0700 (Tue, 11 Apr 2023) $
+; $LastChangedRevision: 31731 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, success=success
+pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, ph_180=ph_180, $
+                reverse=reverse, force=force, success=success
 
   success = 0
   dopol = keyword_set(polar)
   noguff = keyword_set(force)
-  
+  ph_360 = ~keyword_set(ph_180)
+  sign = keyword_set(reverse) ? -1. : 1.
+
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
   frame = mvn_frame_name(frame, success=i)
   gndx = where(i, count)
@@ -117,7 +128,7 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
 ; First store the Sun direction in MAVEN_SSO coordinates
 
   x = ut
-  y = replicate(1.,n_elements(ut)) # [1.,0.,0.]
+  y = replicate(1.,n_elements(ut)) # [sign,0.,0.]
   store_data,'Sun',data={x:x, y:y, v:indgen(3)}
   options,'Sun','ytitle','Sun (MSO)'
   options,'Sun','labels',['X','Y','Z']
@@ -151,7 +162,7 @@ pro mvn_sundir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force,
 
     if (dopol) then begin
       get_data, pname, data=sun
-      xyz_to_polar, sun, theta=the, phi=phi, /ph_0_360
+      xyz_to_polar, sun, theta=the, phi=phi, ph_0_360=ph_360
 
       the_name = 'Sun_' + fname + '_The'
       store_data,the_name,data=the

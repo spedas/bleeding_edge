@@ -158,8 +158,8 @@
 ;                   for outputting a png plot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-07-14 11:40:29 -0700 (Thu, 14 Jul 2022) $
-; $LastChangedRevision: 30932 $
+; $LastChangedDate: 2023-04-11 19:19:05 -0700 (Tue, 11 Apr 2023) $
+; $LastChangedRevision: 31729 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_plot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -1708,7 +1708,8 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
   if (size(png,/type) eq 7) then begin
     device, get_decomposed=old_decomposed
     device, decomposed=0
-    loadct2,43
+    cols = get_colors()
+    initct, cols.color_table, reverse=cols.color_reverse
     write_png, png, tvrd(/true)
     print,'Plot written to: ',file_basename(png)
     print,''

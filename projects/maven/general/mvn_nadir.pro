@@ -3,6 +3,8 @@
 ;PURPOSE:
 ;  Determines the direction of nadir at the position of the spacecraft in
 ;  one or more coordinate frames.  The results are stored in TPLOT variables.
+;  If you sit on the spacecraft and look in this direction, you will see the
+;  ground.
 ;
 ;  This vector can be rotated into any coordinate frame recognized by
 ;  SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
@@ -40,6 +42,12 @@
 ;                    Phi = atan(y,x)*!radeg  ; units deg [  0, 360]
 ;                    The = asin(z)*!radeg    ; units deg [-90, +90]
 ;
+;       PH_180:   If set, the range for Phi is -180 to +180 degrees.
+;
+;       REVERSE:  Reverse the sense of nadir to be zenith.  If you sit on the 
+;                 spacecraft and look in this direction you will see the stars
+;                 above.
+;
 ;       PANS:     Named variable to hold the tplot variables created.  For the
 ;                 default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
 ;
@@ -48,17 +56,20 @@
 ;       SUCCESS:  Returns 1 on normal completion, 0 otherwise
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-01-29 10:20:40 -0800 (Sun, 29 Jan 2023) $
-; $LastChangedRevision: 31434 $
+; $LastChangedDate: 2023-04-11 20:26:40 -0700 (Tue, 11 Apr 2023) $
+; $LastChangedRevision: 31731 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, success=success
+pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, ph_180=ph_180, $
+               reverse=reverse, force=force, success=success
 
   success = 0
   dopol = keyword_set(polar)
   noguff = keyword_set(force)
+  ph_360 = ~keyword_set(ph_180)
+  sign = keyword_set(reverse) ? -1. : 1.
 
   if (size(frame,/type) ne 7) then frame = 'MAVEN_SPACECRAFT'
   frame = mvn_frame_name(frame, success=i)
@@ -129,7 +140,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
 
 ; Store the nadir direction in the IAU_MARS frame
 
-  y = -transpose(svec[0:2,*])
+  y = -sign*transpose(svec[0:2,*])
   ymag = sqrt(total(y*y,2)) # replicate(1.,3)
   store_data,'Nadir',data={x:ut, y:y/ymag, v:[0,1,2]}
   options,'Nadir','ytitle','Nadir (Mars)'
@@ -164,7 +175,7 @@ pro mvn_nadir, trange, dt=dt, pans=pans, frame=frame, polar=polar, force=force, 
 
     if (dopol) then begin
       get_data, pname, data=nadir
-      xyz_to_polar, nadir, theta=the, phi=phi, /ph_0_360
+      xyz_to_polar, nadir, theta=the, phi=phi, ph_0_360=ph_360
 
       the_name = 'Nadir_' + fname + '_The'
       store_data,the_name,data=the

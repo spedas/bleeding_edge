@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 08:16:50 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31548 $
+; $LastChangedDate: 2023-04-11 19:18:40 -0700 (Tue, 11 Apr 2023) $
+; $LastChangedRevision: 31728 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -1152,10 +1152,10 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     current_dev = !d.name
 
     set_plot,'z'
+      device, set_pixel_depth=24, decompose=0, set_resolution=[1200,800]
       print,"Writing png file: ",pngname," ... ",format='(3a,$)'
       cols = get_colors()
       initct, cols.color_table, reverse=cols.color_reverse
-      device,set_resolution=[1200,800]
       tplot,pans,trange=[tmin,tmax]
       timebar,t_cfg,/line
       img = tvrd()

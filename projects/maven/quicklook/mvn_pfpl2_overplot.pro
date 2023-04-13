@@ -29,8 +29,8 @@
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2021-01-14 10:35:48 -0800 (Thu, 14 Jan 2021) $
-; $LastChangedRevision: 29599 $
+; $LastChangedDate: 2023-04-12 11:14:58 -0700 (Wed, 12 Apr 2023) $
+; $LastChangedRevision: 31738 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -173,13 +173,31 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
   attitude_label = 'Attitude: orange = Sun point; blue = Earth point; green = Fly-Y; red = Fly-Z; purple = Fly+Z.'
   options, 'mvn_att_bar', 'title', attitude_label
   options, 'mvn_att_bar', 'charsize', 0.5
+;Add EMM aurora data, maybe only to the short term plots
+  emissions = ['O I 130.4 triplet', 'O I 135.6 doublet']
+;this routine grabs the files from the SSL network and loads the
+;relevant information into a structure called "disk"
+  emm_emus_examine_disk, tr0, emission = emissions, /l2b, disk = disk
+  If(is_Struct(disk)) Then Begin
+; this routine takes the "disk" structure as input and creates the tplot variables
+     emm_emus_image_bar, trange = tr0, disk = disk
+;Something bad happens to overall setup here,
+     If(keyword_set(device)) Then mvn_qlook_init, device = device
+;Tweak color table for the EMM variable
 ;Set up varlist
-  varlist = ['mvn_L2_sep_mean_ion_eflux', 'mvn_L2_sep_mean_electron_eflux', $
-             'SEP_V1', 'SEP_V2', $
-             'mvn_sta_c0_e', 'mvn_sta_c6_m_twt', 'mvn_swis_en_eflux', $
-             'mvn_swe_etspec', 'mvn_lpw_iv', 'mvn_mag_bamp', $ 
-             'mvn_mag_bang_1sec', 'alt2', 'mvn_att_bar', mvn_bb]
-
+     options, 'emus_O_1304', 'color_table', 1078
+     varlist = ['mvn_L2_sep_mean_ion_eflux', 'mvn_L2_sep_mean_electron_eflux', $
+                'SEP_V1', 'SEP_V2', $
+                'mvn_sta_c0_e', 'mvn_sta_c6_m_twt', 'mvn_swis_en_eflux', $
+                'mvn_swe_etspec', 'mvn_lpw_iv', 'mvn_mag_bamp', $ 
+                'mvn_mag_bang_1sec', 'emus_O_1304', 'alt2', 'mvn_att_bar', mvn_bb]
+  Endif Else Begin;no EMM panel
+     varlist = ['mvn_L2_sep_mean_ion_eflux', 'mvn_L2_sep_mean_electron_eflux', $
+                'SEP_V1', 'SEP_V2', $
+                'mvn_sta_c0_e', 'mvn_sta_c6_m_twt', 'mvn_swis_en_eflux', $
+                'mvn_swe_etspec', 'mvn_lpw_iv', 'mvn_mag_bamp', $ 
+                'mvn_mag_bang_1sec', 'alt2', 'mvn_att_bar', mvn_bb]
+  Endelse
   varlist = mvn_qlook_vcheck(varlist, tr = tr, /blankp)
   If(varlist[0] Eq '')  Then Begin
      dprint, 'No data, Returning'

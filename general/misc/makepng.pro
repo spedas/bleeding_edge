@@ -24,9 +24,9 @@
 ;  Current device should have readable pixels (ie. 'x' or 'z')
 ;
 ;Created by:  Davin Larson
-; $LastChangedBy: orlando $
-; $LastChangedDate: 2022-11-01 13:30:39 -0700 (Tue, 01 Nov 2022) $
-; $LastChangedRevision: 31207 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2023-04-12 11:07:59 -0700 (Wed, 12 Apr 2023) $
+; $LastChangedRevision: 31736 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/makepng.pro $
 ;-
 pro makepng,filename,multiple=multiple,close=close,ct=ct,no_expose=no_expose,  $
@@ -61,7 +61,13 @@ pro makepng,filename,multiple=multiple,close=close,ct=ct,no_expose=no_expose,  $
         file_mkdir,file_dirname(filename)
     endif
     tvlct,r,g,b,/get
-    if !d.name ne 'Z' then device,get_visual_name=vname else vname = ' '
+    if !d.name ne 'Z' then device,get_visual_name=vname else begin
+;allow TrueColor in Z buffer, jimm, 2023-04-12
+       device, get_pixel_depth = npix ;TrueColor wil have npix=24, dc = 0
+       device, get_decomposed = dc
+       if npix Eq 24 and dc Eq 0 then vname = 'TrueColor' $
+       else vname = ' '
+    endelse
     if vname eq 'TrueColor' then begin
         dim =1
         im1=tvrd(true=dim)

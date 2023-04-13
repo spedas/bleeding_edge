@@ -68,8 +68,8 @@
 ;Written by Jenni Kissinger and Patrick Cruce
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2023-04-05 22:09:10 -0700 (Wed, 05 Apr 2023) $
-; $LastChangedRevision: 31709 $
+; $LastChangedDate: 2023-04-12 11:20:40 -0700 (Wed, 12 Apr 2023) $
+; $LastChangedRevision: 31739 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/state/cotrans/gse2sse.pro $
 ;-
 
@@ -177,8 +177,8 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
     if tplotvar then begin  
  
       if st_type eq 'pos' then begin
-        if keyword_set(ignore_dlimits) then begin
-          dprint,'WARNING: dlimits indicates data is a position.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS is set'
+        if keyword_set(ignore_dlimits) or keyword_set(ROTATION_ONLY) then begin
+          dprint,'WARNING: dlimits indicates data is a position.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS or ROTATION_ONLY set'
         endif else begin
           dprint,'GSE2SSE: Performing position offset.'
           tinterpol_mxn,lun_name,name_one,error=err,/overwrite
@@ -194,8 +194,8 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
           name_one = name_two
         endelse
       endif else if st_type eq 'vel' then begin
-        if keyword_set(ignore_dlimits) then begin
-          dprint,'WARNING: dlimits indicates data is a velocity.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS is set'
+        if keyword_set(ignore_dlimits) or keyword_set(ROTATION_ONLY) then begin
+          dprint,'WARNING: dlimits indicates data is a velocity.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS or ROTATION_ONLY are set'
         endif else begin
           ;deriv_data,lun_name,/replace
           ;
@@ -271,8 +271,8 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
     if tplotvar then begin  
     
       if st_type eq 'pos' then begin
-        if keyword_set(ignore_dlimits) then begin
-          dprint,'WARNING: dlimits indicates data is a position.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS is set'
+        if keyword_set(ignore_dlimits) or keyword_set(ROTATION_ONLY) then begin
+          dprint,'WARNING: dlimits indicates data is a position.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS or ROTATION_ONLY are set'
         endif else begin
 
           tinterpol_mxn,lun_name,name_two,/overwrite,error=err
@@ -289,8 +289,8 @@ pro gse2sse,name_in,name_sun_pos,name_lun_pos,name_out,sse2gse=sse2gse,$
           
         endelse
       endif else if st_type eq 'vel' then begin
-        if keyword_set(ignore_dlimits) then begin
-          dprint,'WARNING: dlimits indicates data is a velocity.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS is set'
+        if keyword_set(ignore_dlimits) or keyword_set(ROTATION_ONLY) then begin
+          dprint,'WARNING: dlimits indicates data is a velocity.  Full transformation between SSE coords requires offset that will not be performed because IGNORE_DLIMITS or ROTATION_ONLY are set'
         endif else begin
           
           ;deriv_data,lun_name,/replace

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Apr 11 18:16:35 2023.<P>
+<STRONG>Last modified: </STRONG>Wed Apr 12 18:16:43 2023.<P>
  
 <HR>
  
@@ -177,7 +177,8 @@ PROCEDURE:   mvn_earthdir
 PURPOSE:
   Determines the direction of Earth as viewed from Mars in any coordinate
   frame recognized by SPICE.  See mvn_frame_name for a list.  The default
-  is MAVEN_SPACECRAFT.
+  is MAVEN_SPACECRAFT.  If you sit on the spacecraft and look in this
+  direction, you will see Earth.
 
   You must have SPICE installed for this routine to work.  This routine will
   check to make sure SPICE has been initialized and that the loaded kernels
@@ -235,6 +236,12 @@ KEYWORDS:
                     Phi = atan(y,x)*!radeg  ; [  0, 360]
                     The = asin(z)*!radeg    ; [-90, +90]
 
+       PH_180:   If set, the range for Phi is -180 to +180 degrees.
+
+       REVERSE:  Reverse the sense to be the anti-Earth direction.  If you sit on
+                 the spacecraft and look in this direction you will have turned 
+                 your back on Earth.  You're a Martian now.
+
        PANS:     Named variable to hold the tplot variables created.  For the
                  default frame, this would be 'Earth_MAVEN_SPACECRAFT'.
 
@@ -243,8 +250,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-02-22 10:27:48 -0800 (Tue, 22 Feb 2022) $
- $LastChangedRevision: 30601 $
+ $LastChangedDate: 2023-04-11 20:59:57 -0700 (Tue, 11 Apr 2023) $
+ $LastChangedRevision: 31732 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_earthdir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -480,6 +487,8 @@ PROCEDURE:   mvn_nadir
 PURPOSE:
   Determines the direction of nadir at the position of the spacecraft in
   one or more coordinate frames.  The results are stored in TPLOT variables.
+  If you sit on the spacecraft and look in this direction, you will see the
+  ground.
 
   This vector can be rotated into any coordinate frame recognized by
   SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
@@ -517,6 +526,12 @@ KEYWORDS:
                     Phi = atan(y,x)*!radeg  ; units deg [  0, 360]
                     The = asin(z)*!radeg    ; units deg [-90, +90]
 
+       PH_180:   If set, the range for Phi is -180 to +180 degrees.
+
+       REVERSE:  Reverse the sense of nadir to be zenith.  If you sit on the 
+                 spacecraft and look in this direction you will see the stars
+                 above.
+
        PANS:     Named variable to hold the tplot variables created.  For the
                  default frame, this would be 'Nadir_MAVEN_SPACECRAFT'.
 
@@ -525,8 +540,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal completion, 0 otherwise
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-01-29 10:20:40 -0800 (Sun, 29 Jan 2023) $
- $LastChangedRevision: 31434 $
+ $LastChangedDate: 2023-04-11 20:26:40 -0700 (Tue, 11 Apr 2023) $
+ $LastChangedRevision: 31731 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_nadir.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1205,6 +1220,8 @@ PROCEDURE:   mvn_sundir
 PURPOSE:
   Determines the direction of the Sun at the position of the spacecraft in
   one or more coordinate frames.  The results are stored in TPLOT variables.
+  If you sit on the spacecraft and look in this direction, you will see the
+  Sun.  Be sure to use eye protection.
 
   This vector can be rotated into any coordinate frame recognized by
   SPICE.  See mvn_frame_name for a list.  The default is MAVEN_SPACECRAFT.
@@ -1242,6 +1259,12 @@ KEYWORDS:
                     Phi = atan(y,x)*!radeg  ; [  0, 360]
                     The = asin(z)*!radeg    ; [-90, +90]
 
+       PH_180:   If set, the range for Phi is -180 to +180 degrees.
+
+       REVERSE:  Reverse the sense to be the anti-Sun direction.  If you sit
+                 on the spacecraft and look in this direction, sunlight will
+                 hit the back of your head.  Be sure to use skin protection.
+
        PANS:     Named variable to hold the tplot variables created.  For the
                  default frame, this would be 'Sun_MAVEN_SPACECRAFT'.
 
@@ -1250,8 +1273,8 @@ KEYWORDS:
        SUCCESS:  Returns 1 on normal completion, 0 otherwise.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-01-29 10:21:16 -0800 (Sun, 29 Jan 2023) $
- $LastChangedRevision: 31435 $
+ $LastChangedDate: 2023-04-11 20:26:40 -0700 (Tue, 11 Apr 2023) $
+ $LastChangedRevision: 31731 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_sundir.pro $
 
 CREATED BY:    David L. Mitchell
