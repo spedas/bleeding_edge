@@ -105,11 +105,10 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   
   if undefined(level) then level = ['l1'] 
   if level EQ '*' then level = ['l1']  ; we don't have l2 data yet
-  if level EQ 'l2' then begin
-    get_support_data=1
-    no_download=1
-    no_time_clip=1
-  endif
+  if level EQ 'l2' then get_support_data=1
+;    no_time_clip=1
+;    no_download=1
+;  endif
 
   ; check for valid datatypes for level 1 NOTE: we only have l1 data so far
   ; NOTE: Might need to add pis, and pes
@@ -163,7 +162,9 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
 
   ; Level 2 Post processing - calibration and fix meta data
   if level eq 'l2' then begin
-    elf_epd_l2_postproc, tplotnames, probe=probe, no_download=no_download
+    ;elf_epd_l2_postproc, tplotnames, probe=probe, no_download=no_download
+    tn=tnames('*_epa_spec')
+    del_data, tn
   endif
       
 END
