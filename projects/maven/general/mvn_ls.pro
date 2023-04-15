@@ -16,8 +16,8 @@
 ;       TPLOT: make a tplot variable of Ls
 ;
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2022-08-19 14:18:21 -0700 (Fri, 19 Aug 2022) $
-; $LastChangedRevision: 31028 $
+; $LastChangedDate: 2023-04-14 17:51:10 -0700 (Fri, 14 Apr 2023) $
+; $LastChangedRevision: 31751 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ls.pro $
 ;
 ;CREATED BY:	Robert J. Lillis 2017-10-09
@@ -51,18 +51,28 @@ function mvn_ls_calc, time
   ends = ends[2*indgen(23)]     ; because evey year boundary is two points
   nend = n_elements(ends)
 
-  year_boundary_times = times[ends]
-  year = times[ends[1:*]] - times[ends[0:nend-2]]
-  ave_year = mean(year)
+  year_boundary_times = times[ends+1]
+  index_MY34 = nn(year_boundary_times, start_MY_34)
+  MYs = 34 - index_MY34 + indgen(n_elements(year_boundary_times))
 
-  Mars_year_decimal = (time_double(times) - start_MY_34)/ave_year + 34.0
+  mars_years = dblarr(n_elements(et))
+  mars_years[*] = max(MYs)
+  for i=nend-1, 0, -1 do mars_years[0ll:ends[i]] = MYs[i] - 1
+
+  Mars_year_decimal = mars_years + reform(Ls)/360.d0
+  
+  ;year_boundary_times = times[ends]
+  ;year = times[ends[1:*]] - times[ends[0:nend-2]]
+  ;ave_year = mean(year)
+
+  ;Mars_year_decimal = (time_double(times) - start_MY_34)/ave_year + 34.0
   ;Mars_year_integer = floor(Mars_year_decimal)
   Mars_season = {time:times, Mars_year:Mars_year_decimal, Ls:reform(Ls)}
 
   return, Mars_season
 end 
 
-function mvn_ls, time, tplot = tplot, calc = calc, last = last;, no_load_kernels
+function mvn_ls, time, tplot = tplot, calc = calc, last = last, all = all;, no_load_kernels
   
   common ephemeris, mars_season
 
@@ -82,6 +92,8 @@ function mvn_ls, time, tplot = tplot, calc = calc, last = last;, no_load_kernels
   
   if keyword_set(tplot) then store_data, 'ls', data = {x:Mars_season.time, y:Mars_season.Ls}, $
                                          dlimits={yrange: [0., 360.], ystyle: 1, yticks: 4, yminor: 3}
+
+  if keyword_set(all) then return, Mars_season
   
   if undefined(time) then return, Mars_season.ls $
   else return, interpol(Mars_season.Ls, Mars_season.time, time_double(time))
