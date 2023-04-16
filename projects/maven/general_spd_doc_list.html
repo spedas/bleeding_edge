@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Apr 14 18:16:42 2023.<P>
+<STRONG>Last modified: </STRONG>Sat Apr 15 18:16:47 2023.<P>
  
 <HR>
  
@@ -35,6 +35,8 @@ MVN_FILE_SOURCE( [DEFAULT_SOURCE] )</A>
 <br>Given a time, returns the spacecraft potential.  Only works after
 <LI><A HREF="#MVN_LS">MVN_LS</A>
 <br>Calculates the Mars season (i.e. solar longitude)
+<LI><A HREF="#MVN_MARS_YEAR">MVN_MARS_YEAR</A>
+<br>Calculates the Mars year
 <LI><A HREF="#MVN_NADIR">MVN_NADIR</A>
 <br>Determines the direction of nadir at the position of the spacecraft in
 <LI><A HREF="#MVN_ORBIT_NUM">MVN_ORBIT_NUM</A>
@@ -446,7 +448,7 @@ OUTPUTS:
 <A NAME="MVN_LS">
 <H2>MVN_LS</H2></A>
 <A HREF="#MVN_GET_SCPOT">[Previous Routine]</A>
-<A HREF="#MVN_NADIR">[Next Routine]</A>
+<A HREF="#MVN_MARS_YEAR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION: mvn_ls
@@ -477,9 +479,45 @@ VERSION:  1.0
 <STRONG>(See <A href="general/mvn_ls.pro">projects/maven/general/mvn_ls.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_MARS_YEAR">
+<H2>MVN_MARS_YEAR</H2></A>
+<A HREF="#MVN_LS">[Previous Routine]</A>
+<A HREF="#MVN_NADIR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE: mvn_mars_year
+PURPOSE:
+  Calculates the Mars year
+
+USAGE:
+  mvn_year, time
+
+INPUTS:
+       time: time in string ('YYYY-MM-DD', 'YYYY-MM-DD/hh:mm:ss' etc) or double format.
+OUTPUT:                
+       Mars year (decimal)
+
+KEYWORDS:
+       TPLOT: makes a tplot variable of Ls
+
+CREATED BY:	Robert J. Lillis 2017-10-09
+FILE:  mvn_mars_year
+VERSION:  1.0
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2023-04-15 16:43:52 -0700 (Sat, 15 Apr 2023) $
+ $LastChangedRevision: 31753 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_mars_year.pro $
+
+</PRE><P>
+<STRONG>(See <A href="general/mvn_mars_year.pro">projects/maven/general/mvn_mars_year.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_NADIR">
 <H2>MVN_NADIR</H2></A>
-<A HREF="#MVN_LS">[Previous Routine]</A>
+<A HREF="#MVN_MARS_YEAR">[Previous Routine]</A>
 <A HREF="#MVN_ORBIT_NUM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
