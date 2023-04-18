@@ -2,8 +2,8 @@
 ; This crib demonstrates basic work with tplot2cdf
 ; 
 ; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-02-02 11:32:56 -0800 (Fri, 02 Feb 2018) $
-; $LastChangedRevision: 24631 $
+; $LastChangedDate: 2023-04-17 13:40:06 -0700 (Mon, 17 Apr 2023) $
+; $LastChangedRevision: 31759 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot2cdf_basic.pro $
 
 ; clear variables
@@ -50,7 +50,7 @@ help, cdf_x_attr_struct, /structure
 
 cdf_x_attr_struct.CATDESC = 'Time of the vector'
 cdf_x_attr_struct.LABLAXIS = 'Time'
-; Save the attributes in the CDF structure 
+; Save the attributes of variable `x` in the CDF structure 
 s.CDF.DEPEND_0.attrptr = ptr_new(cdf_x_attr_struct)
 
 ; VARS correspond to y
@@ -58,6 +58,12 @@ cdf_y_attr_struct = *s.CDF.VARS.attrptr
 cdf_y_attr_struct.CATDESC = 'Array'
 cdf_y_attr_struct.LABLAXIS = 'Array Value'
 cdf_y_attr_struct.UNITS = 'arb. unit.'
+
+; To add optional variable attribute, add new corresponding field to the structure using `str_element` procedure
+; For example, adding coordinate system
+str_element,cdf_y_attr_struct,'COORDINATE_SYSTEM','arb. coord. system.',/add
+
+; Save the attributes of variable `y` in the CDF structure (assign the pointer)
 s.CDF.VARS.attrptr = ptr_new(cdf_y_attr_struct)
 
 ; Save CDF structure into tplot variable

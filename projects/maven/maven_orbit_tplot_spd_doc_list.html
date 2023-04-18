@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Apr 16 18:16:47 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 17 18:16:37 2023.<P>
  
 <HR>
  
@@ -37,6 +37,8 @@ This page was created by the IDL library routine
 <br>3D visualization of MAVEN orbit using IDL 8 new graphics
 <LI><A HREF="#MAVEN_ORBIT_OPTIONS">MAVEN_ORBIT_OPTIONS</A>
 <br>Stores a structure of MAVEN_ORBIT keyword options and provides
+<LI><A HREF="#MAVEN_ORBIT_PREDICT">MAVEN_ORBIT_PREDICT</A>
+<br>Specialized version of maven_orbit_tplot that makes predict ephemeris
 <LI><A HREF="#MAVEN_ORBIT_SNAP">MAVEN_ORBIT_SNAP</A>
 <br>After running maven_orbit_tplot, this routine plots the orbit as viewed
 <LI><A HREF="#MAVEN_ORBIT_TPLOT">MAVEN_ORBIT_TPLOT</A>
@@ -45,6 +47,8 @@ This page was created by the IDL library routine
 <br>Updates the &quot;current&quot; spacecraft ephemeris using SPICE.
 <LI><A HREF="#MHD_ORBIT">MHD_ORBIT</A>
 <br>Plots
+<LI><A HREF="#MVN_FLYZ_BAR">MVN_FLYZ_BAR</A>
+<br>Creates a bar indicating planned times of fly-plus-Z.  Time ranges
 <LI><A HREF="#MVN_MARS_LOCALTIME">MVN_MARS_LOCALTIME</A>
 <br>Uses SPICE to determine the local solar time on Mars at a given longitude
 <LI><A HREF="#MVN_MARS_TERMINATOR">MVN_MARS_TERMINATOR</A>
@@ -449,7 +453,7 @@ CREATED BY:	David L. Mitchell  2014-10-13
 <A NAME="MAVEN_ORBIT_OPTIONS">
 <H2>MAVEN_ORBIT_OPTIONS</H2></A>
 <A HREF="#MAVEN_ORBIT_MOVIE">[Previous Routine]</A>
-<A HREF="#MAVEN_ORBIT_SNAP">[Next Routine]</A>
+<A HREF="#MAVEN_ORBIT_PREDICT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   maven_orbit_options
@@ -501,9 +505,58 @@ KEYWORDS:
 <STRONG>(See <A href="maven_orbit_tplot/maven_orbit_options.pro">projects/maven/maven_orbit_tplot/maven_orbit_options.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MAVEN_ORBIT_PREDICT">
+<H2>MAVEN_ORBIT_PREDICT</H2></A>
+<A HREF="#MAVEN_ORBIT_OPTIONS">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_SNAP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   maven_orbit_predict
+PURPOSE:
+  Specialized version of maven_orbit_tplot that makes predict ephemeris
+  plots suitable for long-range planning, including identification of Fly-Y/Z
+  calibration opportunities.  This routine can reset the SPICE loadlist, so
+  use with caution.
+
+USAGE:
+  maven_orbit_tplot, extended=1, eph=eph
+
+INPUTS:
+
+KEYWORDS:
+       EXTENDED: Load one of four long-term predict ephemerides.  All have a
+                 density scale factor (DSF) of 2.5, which is a weighted average
+                 over several Mars years.  They differ in the number and timing of
+                 apoapsis and periapsis raise maneuvers (arm, prm) and total fuel
+                 usage (meters per second, or ms).  The date when the ephemeris was
+                 generated is given at the end of the filename (YYMMDD).  More 
+                 recent dates better reflect current mission goals.  When in doubt,
+                 use the most recent.
+
+                   1 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp
+                   2 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp
+                   3 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
+                   4 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
+
+                 Default = 1 (most recently generated ephemeris).  Set this keyword
+                 to zero to load the ephemeris for a time range.
+
+       EPH:      Named variable to hold the MSO and GEO state vectors along with 
+                 some calculated values.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-04-17 12:37:10 -0700 (Mon, 17 Apr 2023) $
+ $LastChangedRevision: 31758 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_predict.pro $
+
+CREATED BY:	David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/maven_orbit_predict.pro">projects/maven/maven_orbit_tplot/maven_orbit_predict.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MAVEN_ORBIT_SNAP">
 <H2>MAVEN_ORBIT_SNAP</H2></A>
-<A HREF="#MAVEN_ORBIT_OPTIONS">[Previous Routine]</A>
+<A HREF="#MAVEN_ORBIT_PREDICT">[Previous Routine]</A>
 <A HREF="#MAVEN_ORBIT_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -860,7 +913,7 @@ CREATED BY:	David L. Mitchell  2014-10-13
 <A NAME="MHD_ORBIT">
 <H2>MHD_ORBIT</H2></A>
 <A HREF="#MAVEN_ORBIT_UPDATE">[Previous Routine]</A>
-<A HREF="#MVN_MARS_LOCALTIME">[Next Routine]</A>
+<A HREF="#MVN_FLYZ_BAR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mhd_orbit
@@ -901,9 +954,46 @@ CREATED BY:	David L. Mitchell  04-02-03
 <STRONG>(See <A href="maven_orbit_tplot/mhd_orbit.pro">projects/maven/maven_orbit_tplot/mhd_orbit.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_FLYZ_BAR">
+<H2>MVN_FLYZ_BAR</H2></A>
+<A HREF="#MHD_ORBIT">[Previous Routine]</A>
+<A HREF="#MVN_MARS_LOCALTIME">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_flyz_bar
+PURPOSE:
+  Creates a bar indicating planned times of fly-plus-Z.  Time ranges
+  are drawn from the Science Constraints spreadsheet, which is
+  produced by Lockheed Martin once a year in mid-summer.  You can
+  find the latest spreadsheet (sci_constraints_YYYY.xlsx) here:
+
+    https://lasp.colorado.edu/galaxy/display/MAVEN/Science+Operations+Spreadsheets
+
+  You need to have a MAVEN account on Galaxy to access this file.
+
+USAGE:
+  mvn_flyz_bar
+
+INPUTS:
+       none
+
+KEYWORDS:
+       COLOR:    Bar color index.  Default is the current foreground color.
+                 This can be changed later using options.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-04-17 12:35:14 -0700 (Mon, 17 Apr 2023) $
+ $LastChangedRevision: 31756 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_flyz_bar.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/mvn_flyz_bar.pro">projects/maven/maven_orbit_tplot/mvn_flyz_bar.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_MARS_LOCALTIME">
 <H2>MVN_MARS_LOCALTIME</H2></A>
-<A HREF="#MHD_ORBIT">[Previous Routine]</A>
+<A HREF="#MVN_FLYZ_BAR">[Previous Routine]</A>
 <A HREF="#MVN_MARS_TERMINATOR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
