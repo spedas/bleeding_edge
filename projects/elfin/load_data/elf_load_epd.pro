@@ -106,9 +106,6 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   if undefined(level) then level = ['l1'] 
   if level EQ '*' then level = ['l1']  ; we don't have l2 data yet
   if level EQ 'l2' then get_support_data=1
-;    no_time_clip=1
-;    no_download=1
-;  endif
 
   ; check for valid datatypes for level 1 NOTE: we only have l1 data so far
   ; NOTE: Might need to add pis, and pes

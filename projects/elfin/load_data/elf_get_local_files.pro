@@ -70,20 +70,6 @@ function elf_get_local_files, probe = probe, instrument = instrument, data_rate 
   ;inputs common to all file paths and folder names
   dir_inputs = [probe, level, instrument]   
 
-;  if undefined(datatype) || datatype eq '*' then begin
-;    dir_datatype = '[^'+s+']+'
-;    file_datatype = '[^'+f+']+'
-;  endif else begin
-;    dir_datatype = datatype
-;    file_datatype = datatype
-;  endelse
-;stop
-  ;directory and file name search patterns
-  ;  -assume directories are of the form:
-  ;     /spacecraft/level/instrument/
-  ;  -assume file names are of the form:
-  ;     spacecraft_level_instrument_YYYYMMDD_version.cdf
-
   dir_pattern = strjoin(dir_inputs, s) + s   ; + '('+s+dir_datatype+')?' +s+ '[0-9]{4}' +s+ '[0-9]{2}' + s
   if instrument eq 'state' then begin
      if keyword_set(pred) then dir_pattern = dir_pattern + 'pred/' + s $
@@ -97,8 +83,6 @@ function elf_get_local_files, probe = probe, instrument = instrument, data_rate 
       'pif': subdir='fast/ion/'
     Endcase
     dir_pattern = dir_pattern + subdir + s
-;    if datatype EQ 'pes' OR datatype EQ 'pis' then dir_pattern = dir_pattern + 'survey' + s $
-;       else dir_pattern = dir_pattern + 'fast' + s
   endif
   if instrument eq 'fgm' then begin
     if datatype EQ 'fgs' then dir_pattern = dir_pattern + 'survey' + s $
@@ -117,15 +101,7 @@ function elf_get_local_files, probe = probe, instrument = instrument, data_rate 
   endif else begin
      file_pattern = strjoin( file_inputs, f) + f + '([0-9]{8})'
   endelse
-;  if instrument eq 'epd' then begin
-;    if datatype EQ 'pes' OR datatype EQ 'pis' then epd_type = 'survey' else epd_type = 'fast'
-;    file_pattern = strjoin( file_inputs, f) + f + epd_type + f + '([0-9]{8})'
-;  endif
-;  if instrument eq 'fgm' then begin
-;    if datatype EQ 'fgs' then fgm_type = 'survey' else fgm_type = 'fast'
-;    file_pattern = strjoin( file_inputs, f) + f + fgm_type + f + '([0-9]{8})'
-;  endif
-  
+ 
   ;escape backslash in case of Windows
   search_pattern = escape_string(dir_pattern  + file_pattern, list='\')
   ;get list of all .cdf files in local directory
@@ -133,39 +109,36 @@ function elf_get_local_files, probe = probe, instrument = instrument, data_rate 
   instr_data_dir = filepath('', ROOT_DIR=!elf.local_data_dir + dir_pattern) 
   files = file_search(instr_data_dir, '*.cdf')
 
-  ;perform search
-;  filedate = !elf.local_data_dir + dir_pattern + strjoin( basic_inputs, f) + f + time_string(trange_in[0], format=6, precision=-3) + '_v01.cdf' 
-;  result=file_search(filedate)
-;  if result NE 1 then begin
-;     dprint, dlevel=2, 'No local files found for: '+strjoin(basic_inputs,' ') + ' ' +$
-;                       (undefined(datatype) ? '':datatype)
-;    return, error
-;  endif
-
   ;----------------------------------------------------------------
   ;Restrict list to files within the time range
   ;----------------------------------------------------------------
+  tstring=time_string(trange)
+  ns=strmid(tstring[0],0,4)+strmid(tstring[0],5,2)+strmid(tstring[0],8,2)
+  sp=strpos(files,ns)
+  idx=where(sp GE 0, ncnt)
+  if ncnt GT 0 then files_out=files[idx] else files_out = -1
+
 
   ;extract file info from file names
   ;  [file name sans version, data type, time]
-  file_strings = stregex( files, file_pattern, /subexpr, /extract, /fold_case)
+;  file_strings = stregex( files, file_pattern, /subexpr, /extract, /fold_case)
 
   ;get file start times
-  time_strings = file_strings[1,*]
-  times = time_double(time_strings, tformat=tformat)
-  time_idx = where( times ge trange[0] and times le trange[1], n_times)
+;  time_strings = file_strings[1,*]
+;  times = time_double(time_strings, tformat=tformat)
+;  time_idx = where( times ge trange[0] and times le trange[1], n_times)
 
-  if n_times eq 0 then begin
+;  if n_times eq 0 then begin
     ; suppress redundant error message
     ;dprint, dlevel=2, 'No local files found between '+time_string(trange[0])+' and '+time_string(trange[1])
     ;return, error
-  endif
+;  endif
 
   ;restrict list of files to those in the time range
-  files = files[time_idx]
-  file_strings = file_strings[*,time_idx]
+;  files = files[time_idx]
+;  file_strings = file_strings[*,time_idx]
   ;ensure files are in chronological order, just in case (see note in elf_load_data)
-  files_out = files[bsort(files)]
+;  files_out = files[bsort(files)]
 ;stop
   return, files_out
 
