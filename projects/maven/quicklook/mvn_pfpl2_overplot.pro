@@ -29,8 +29,8 @@
 ; Hacked from thm_over_shell, 2013-05-12, jmm, jimm@ssl.berkeley.edu
 ; CHanged to use thara's mvn_pl_pfp_tplot.pro, 2015-04-14, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-04-12 11:14:58 -0700 (Wed, 12 Apr 2023) $
-; $LastChangedRevision: 31738 $
+; $LastChangedDate: 2023-04-20 11:52:56 -0700 (Thu, 20 Apr 2023) $
+; $LastChangedRevision: 31767 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_pfpl2_overplot.pro $
 ;-
 Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
@@ -185,7 +185,8 @@ Pro mvn_pfpl2_overplot, orbit_number = orbit_number, $
      If(keyword_set(device)) Then mvn_qlook_init, device = device
 ;Tweak color table for the EMM variable
 ;Set up varlist
-     options, 'emus_O_1304', 'color_table', 1078
+     options, 'emus_O_1304', 'color_table', 8
+     options, 'emus_O_1304', 'zrange', [2.0, 30.0]
      varlist = ['mvn_L2_sep_mean_ion_eflux', 'mvn_L2_sep_mean_electron_eflux', $
                 'SEP_V1', 'SEP_V2', $
                 'mvn_sta_c0_e', 'mvn_sta_c6_m_twt', 'mvn_swis_en_eflux', $

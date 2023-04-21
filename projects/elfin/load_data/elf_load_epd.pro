@@ -159,9 +159,9 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
 
   ; Level 2 Post processing - calibration and fix meta data
   if level eq 'l2' then begin
-    ;elf_epd_l2_postproc, tplotnames, probe=probe, no_download=no_download
+    elf_epd_l2_postproc, tplotnames, probes=probes
     tn=tnames('*_epa_spec')
     del_data, tn
   endif
-      
+   
 END
