@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Apr 20 18:16:33 2023.<P>
+<STRONG>Last modified: </STRONG>Fri Apr 21 18:16:43 2023.<P>
  
 <HR>
  
@@ -20,6 +20,12 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/elfin/load_data</H1>
 <LI><A HREF="#ELF_CDF2TPLOT">ELF_CDF2TPLOT</A>
+<LI><A HREF="#ELF_CREATE_L2_EPD_CDF">ELF_CREATE_L2_EPD_CDF</A>
+<br>This routine creates level 2 epd data and writes the data to a CDF
+<LI><A HREF="#ELF_EPD_L1_POSTPROC">ELF_EPD_L1_POSTPROC</A>
+<br>Routine calibrates data and sets dlimits and limits
+<LI><A HREF="#ELF_EPD_L2_POSTPROC">ELF_EPD_L2_POSTPROC</A>
+<br>This routines sets the limits and data limits
 <LI><A HREF="#ELF_FGM_FSP_GEI2NDW">ELF_FGM_FSP_GEI2NDW</A>
 <br>This routine converts full spin resolved fgm data from GEI coordinates to NDW
 <LI><A HREF="#ELF_FGM_FSP_GEI2OBW">ELF_FGM_FSP_GEI2OBW</A>
@@ -82,7 +88,7 @@ ELF_WRITE_DATA_AVAILABILITY_TABLE</A>
 <H1>Routine Descriptions</H1>
 <A NAME="ELF_CDF2TPLOT">
 <H2>ELF_CDF2TPLOT</H2></A>
-<A HREF="#ELF_FGM_FSP_GEI2NDW">[Next Routine]</A>
+<A HREF="#ELF_CREATE_L2_EPD_CDF">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 elf_cdf2tplot ,files,varformat=varformat
@@ -119,9 +125,94 @@ load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
 <STRONG>(See <A href="load_data/elf_cdf2tplot.pro">projects/elfin/load_data/elf_cdf2tplot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_CREATE_L2_EPD_CDF">
+<H2>ELF_CREATE_L2_EPD_CDF</H2></A>
+<A HREF="#ELF_CDF2TPLOT">[Previous Routine]</A>
+<A HREF="#ELF_EPD_L1_POSTPROC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_create_l2_epd_cdf
+
+ PURPOSE:
+         This routine creates level 2 epd data and writes the data to a CDF
+
+ KEYWORDS:
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         probe:        letter of the elfin spacecraft - 'a' or 'b' 
+         species:      letter of the type of data - e: electron or i: ion 
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+</PRE><P>
+<STRONG>(See <A href="load_data/elf_create_l2_epd_cdf.pro">projects/elfin/load_data/elf_create_l2_epd_cdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_EPD_L1_POSTPROC">
+<H2>ELF_EPD_L1_POSTPROC</H2></A>
+<A HREF="#ELF_CREATE_L2_EPD_CDF">[Previous Routine]</A>
+<A HREF="#ELF_EPD_L2_POSTPROC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_epd_l1_postproc
+
+ PURPOSE:
+         Routine calibrates data and sets dlimits and limits
+
+ KEYWORDS:
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         tplotnames:   list of tplot names
+         unit:         units of the data
+         no_spec:      flag to set tplot options to linear rather than the default of spec
+         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
+                       preserving original tplot variable.
+         no_download:  specify this keyword to load only data available on the local disk
+         mynspinsinsum: number of spins in sum which is needed by the calibration routine 
+
+ NOTES:  This routine is called when loading epd level 1 data
+
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+</PRE><P>
+<STRONG>(See <A href="load_data/elf_epd_l1_postproc.pro">projects/elfin/load_data/elf_epd_l1_postproc.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_EPD_L2_POSTPROC">
+<H2>ELF_EPD_L2_POSTPROC</H2></A>
+<A HREF="#ELF_EPD_L1_POSTPROC">[Previous Routine]</A>
+<A HREF="#ELF_FGM_FSP_GEI2NDW">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_epd_l2_postproc
+
+ PURPOSE:
+         This routines sets the limits and data limits
+
+ KEYWORDS:
+         probes:       probe name 'a' or 'b', default is 'a'
+         tplotnames:   list of tplot names
+
+ NOTES:  This routine is called when loading epd level 2 data
+
+$LastChangedBy: clrussell $
+$LastChangedDate: 2018-12-06 11:58:25 -0700 (Mon, 06 Aug 2018) $
+$LastChangedRevision: 25588 $
+</PRE><P>
+<STRONG>(See <A href="load_data/elf_epd_l2_postproc.pro">projects/elfin/load_data/elf_epd_l2_postproc.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_FGM_FSP_GEI2NDW">
 <H2>ELF_FGM_FSP_GEI2NDW</H2></A>
-<A HREF="#ELF_CDF2TPLOT">[Previous Routine]</A>
+<A HREF="#ELF_EPD_L2_POSTPROC">[Previous Routine]</A>
 <A HREF="#ELF_FGM_FSP_GEI2OBW">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
