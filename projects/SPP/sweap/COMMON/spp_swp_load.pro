@@ -1,9 +1,9 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2021-08-26 10:05:54 -0700 (Thu, 26 Aug 2021) $
-; $LastChangedRevision: 30255 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2023-04-24 16:23:44 -0700 (Mon, 24 Apr 2023) $
+; $LastChangedRevision: 31788 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/COMMON/spp_swp_load.pro $
 ;
-pro spp_swp_load,ssr=ssr,all=all,spe=spe,spi=spi,spc=spc,spxs=spxs,mag=mag,fld=fld,trange=trange,types=types,level=level,varformat=varformat,save=save,fileprefix=fileprefix
+pro spp_swp_load,ssr=ssr,all=all,spe=spe,spi=spi,spc=spc,spxs=spxs,mag=mag,fld=fld,trange=trange,types=types,level=level,varformat=varformat,save=save,fileprefix=fileprefix,prefix=prefix2
 
   t0 = systime(1)
   if keyword_set(all) then begin
@@ -86,6 +86,7 @@ pro spp_swp_load,ssr=ssr,all=all,spe=spe,spi=spi,spc=spc,spxs=spxs,mag=mag,fld=f
 
       ;; Convert to TPLOT
       if spx eq 'sc_hkp' then prefix='psp_'+spx+'_'+type+'_' else prefix='psp_swp_'+spx+'_'+type+'_'+level+'_'
+      if n_elements(prefix2) ne 0 then prefix=prefix2
       cdf2tplot,files,prefix=prefix,varformat=varformat,verbose=verbose
       spp_swp_qf,prefix=prefix
       if spx eq 'swem' && type eq 'event_log' then spp_swp_swem_events_tplot,prefix=prefix

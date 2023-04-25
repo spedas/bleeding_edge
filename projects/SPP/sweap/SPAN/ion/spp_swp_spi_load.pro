@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-09-20 11:07:45 -0700 (Tue, 20 Sep 2022) $
-; $LastChangedRevision: 31106 $
+; $LastChangedDate: 2023-04-24 16:23:44 -0700 (Mon, 24 Apr 2023) $
+; $LastChangedRevision: 31788 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_load.pro $
 ; Created by Davin Larson 2018
 
@@ -218,6 +218,7 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
         xyz_to_polar,prefix+'VEL_SC2'
         xyz_to_polar,prefix+'VEL_RTN_SUN'
         xyz_to_polar,magname
+        store_data,magname+'_OVL',data=magname+['_mag','']
         get_data,magname+'_mag',dat=magf
         if ~keyword_set(dens_name) then dens_name = prefix+'DENS'
         get_data,dens_name,dat=dens

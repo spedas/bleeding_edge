@@ -1,3 +1,22 @@
+;+
+; PROCEDURE:
+;         elf_create_instrument_all
+;
+; PURPOSE:
+;         This procedure will download data availability files by auroral zone and instrument. All data availability
+;         from all zones is writen to a file for all 
+;
+; KEYWORDS:
+;         trange:       time range of interest [starttime, endtime] with the format
+;                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+;                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+;         probe:         spacecraft probe name 'a' or 'b'
+;         instrument:   name of instrument, 'epd', 'fgm', 'mrm'
+;         nodownload:   set this flag to read files from the local disk and not from the server
+;                       (this is used by cronjobs when automatically running procedures)
+;         update:       set this flag to force the update of the data availability flag
+;-
+
 pro elf_create_instrument_all, trange = trange, nodownload = nodownload, probe = probe, instrument = instrument, update = update
   ;if the badflag is activated, it will mark the fits with a bad flag as not fit.
   ;fits with a bad flag will then be included in the missing szs result.

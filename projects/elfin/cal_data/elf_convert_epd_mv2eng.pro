@@ -1,3 +1,22 @@
+;+
+;NAME:
+; elf_convert_epd_mV2eng
+;
+;PURPOSE:
+; This procedure converts epd engineering units to mV2end
+;
+;INPUTS:
+;  trange:   time range of epd engineering data to be converted
+;            Ex:  ['2022-04-15','2022-04-16']
+;
+;CALLING SEQUENCE:
+; elf_convert_epd_mV2eng, trange=trange
+;
+; $LastChangedBy: 
+; $LastChangedDate: 
+; $LastChangedRevision: 
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/common/elf_convert_epd_mV2eng.pro $
+;-
 function elf_convert_epd_mV2eng, trange=trange
   
   ; initial variables and constants

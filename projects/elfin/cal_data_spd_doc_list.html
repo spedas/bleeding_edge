@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Apr 21 18:16:43 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 24 18:16:38 2023.<P>
  
 <HR>
  
@@ -27,6 +27,8 @@ This page was created by the IDL library routine
 <br>Calibrate ELFIN MRM ACB data
 <LI><A HREF="#ELF_CAL_MRMI">ELF_CAL_MRMI</A>
 <br>Calibrate ELFIN MRM IDPU data
+<LI><A HREF="#ELF_CONVERT_EPD_MV2ENG">ELF_CONVERT_EPD_MV2ENG</A>
+<br>This procedure converts epd engineering units to mV2end
 <LI><A HREF="#ELF_GET_EPD_CALIBRATION">ELF_GET_EPD_CALIBRATION</A>
 <br>returns epd calibration parameters
 <LI><A HREF="#ELF_GET_EPD_CALIBRATION_LOG">ELF_GET_EPD_CALIBRATION_LOG</A>
@@ -154,7 +156,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <A NAME="ELF_CAL_MRMI">
 <H2>ELF_CAL_MRMI</H2></A>
 <A HREF="#ELF_CAL_MRMA">[Previous Routine]</A>
-<A HREF="#ELF_GET_EPD_CALIBRATION">[Next Routine]</A>
+<A HREF="#ELF_CONVERT_EPD_MV2ENG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -184,9 +186,36 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <STRONG>(See <A href="cal_data/elf_cal_mrmi.pro">projects/elfin/cal_data/elf_cal_mrmi.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_CONVERT_EPD_MV2ENG">
+<H2>ELF_CONVERT_EPD_MV2ENG</H2></A>
+<A HREF="#ELF_CAL_MRMI">[Previous Routine]</A>
+<A HREF="#ELF_GET_EPD_CALIBRATION">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ elf_convert_epd_mV2eng
+
+PURPOSE:
+ This procedure converts epd engineering units to mV2end
+
+INPUTS:
+  trange:   time range of epd engineering data to be converted
+            Ex:  ['2022-04-15','2022-04-16']
+
+CALLING SEQUENCE:
+ elf_convert_epd_mV2eng, trange=trange
+
+ $LastChangedBy: 
+ $LastChangedDate: 
+ $LastChangedRevision: 
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/elfin/common/elf_convert_epd_mV2eng.pro $
+</PRE><P>
+<STRONG>(See <A href="cal_data/elf_convert_epd_mv2eng.pro">projects/elfin/cal_data/elf_convert_epd_mv2eng.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_GET_EPD_CALIBRATION">
 <H2>ELF_GET_EPD_CALIBRATION</H2></A>
-<A HREF="#ELF_CAL_MRMI">[Previous Routine]</A>
+<A HREF="#ELF_CONVERT_EPD_MV2ENG">[Previous Routine]</A>
 <A HREF="#ELF_GET_EPD_CALIBRATION_LOG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

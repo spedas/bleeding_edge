@@ -1,3 +1,4 @@
+; obsolete routine
 pro elf_plot_attitude_deriv, tdate=tdate, dur=dur, probe=probe
 
   defsysv,'!elf',exists=exists

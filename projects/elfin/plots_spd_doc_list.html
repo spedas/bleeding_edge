@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Apr 21 18:16:43 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Apr 24 18:16:38 2023.<P>
  
 <HR>
  
@@ -26,6 +26,8 @@ This page was created by the IDL library routine
 <br>Calculates the science attitude vector and determines which auroral crossing
 <LI><A HREF="#ELF_CONVERT_STATE_GEI2SM">ELF_CONVERT_STATE_GEI2SM</A>
 <br>Convert previously loaded state data from gei coordinates to SM. This is a
+<LI><A HREF="#ELF_CREATE_INSTRUMENT_ALL">ELF_CREATE_INSTRUMENT_ALL</A>
+<br>This procedure will download data availability files by auroral zone and instrument. All data availability
 <LI><A HREF="#ELF_GET_EISCAT_POSITIONS">ELF_GET_EISCAT_POSITIONS</A>
 <br>This routine will return the position (latitude and longitude) of
 <LI><A HREF="#ELF_GET_VLF_POSITIONS">ELF_GET_VLF_POSITIONS</A>
@@ -50,7 +52,9 @@ This page was created by the IDL library routine
 <br>Create SM latitude rings and longitude spokes, expresented in GEO.
 <LI><A HREF="#ELF_MAKE_SPIN_ATT_STRING">ELF_MAKE_SPIN_ATT_STRING</A>
 <br>Utility routine to construct the attitude string displayed on
-<LI><A HREF="#ELF_MAP_STATE_T96_INTERVALS">ELF_MAP_STATE_T96_INTERVALS</A>
+<LI><A HREF="#ELF_MAP_STATE_T96_INTERVALS[2]">ELF_MAP_STATE_T96_INTERVALS[2]</A>
+<br>map ELFIN spacecraft to their magnetic footprints
+<LI><A HREF="#ELF_MAP_STATE_T96_INTERVALS[1]">ELF_MAP_STATE_T96_INTERVALS[1]</A>
 <br>map ELFIN spacecraft to their magnetic footprints
 <LI><A HREF="#ELF_MAP_STATE_T96_INTERVALS_WRAPPER">
 ELF_MAP_STATE_T96_INTERVALS_WRAPPER</A>
@@ -182,7 +186,7 @@ Example:
 <A NAME="ELF_CONVERT_STATE_GEI2SM">
 <H2>ELF_CONVERT_STATE_GEI2SM</H2></A>
 <A HREF="#ELF_CALC_SCI_ZONE_ATT">[Previous Routine]</A>
-<A HREF="#ELF_GET_EISCAT_POSITIONS">[Next Routine]</A>
+<A HREF="#ELF_CREATE_INSTRUMENT_ALL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -198,9 +202,35 @@ Example:
 <STRONG>(See <A href="plots/elf_convert_state_gei2sm.pro">projects/elfin/plots/elf_convert_state_gei2sm.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ELF_CREATE_INSTRUMENT_ALL">
+<H2>ELF_CREATE_INSTRUMENT_ALL</H2></A>
+<A HREF="#ELF_CONVERT_STATE_GEI2SM">[Previous Routine]</A>
+<A HREF="#ELF_GET_EISCAT_POSITIONS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         elf_create_instrument_all
+
+ PURPOSE:
+         This procedure will download data availability files by auroral zone and instrument. All data availability
+         from all zones is writen to a file for all 
+
+ KEYWORDS:
+         trange:       time range of interest [starttime, endtime] with the format
+                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
+                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
+         probe:         spacecraft probe name 'a' or 'b'
+         instrument:   name of instrument, 'epd', 'fgm', 'mrm'
+         nodownload:   set this flag to read files from the local disk and not from the server
+                       (this is used by cronjobs when automatically running procedures)
+         update:       set this flag to force the update of the data availability flag
+</PRE><P>
+<STRONG>(See <A href="plots/elf_create_instrument_all.pro">projects/elfin/plots/elf_create_instrument_all.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ELF_GET_EISCAT_POSITIONS">
 <H2>ELF_GET_EISCAT_POSITIONS</H2></A>
-<A HREF="#ELF_CONVERT_STATE_GEI2SM">[Previous Routine]</A>
+<A HREF="#ELF_CREATE_INSTRUMENT_ALL">[Previous Routine]</A>
 <A HREF="#ELF_GET_VLF_POSITIONS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -410,6 +440,16 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <PRE>
  PROCEDURE:
          elf_make_geo_grid
+         
+ INPUTS: 
+         mlat: magnetic latitude
+         mlon: magnetic longitude
+         height: elevation in km
+         glat: geographic latitude
+         glon: geographic longitude
+         
+ OUTPUTS:
+         geo_grid: returns a structure with geographic grid
 
  PURPOSE:
          Create a geographic grid for orbit plots
@@ -453,7 +493,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <A NAME="ELF_MAKE_SPIN_ATT_STRING">
 <H2>ELF_MAKE_SPIN_ATT_STRING</H2></A>
 <A HREF="#ELF_MAKE_SM_GRID">[Previous Routine]</A>
-<A HREF="#ELF_MAP_STATE_T96_INTERVALS">[Next Routine]</A>
+<A HREF="#ELF_MAP_STATE_T96_INTERVALS[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -477,9 +517,74 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/el
 <STRONG>(See <A href="plots/elf_make_spin_att_string.pro">projects/elfin/plots/elf_make_spin_att_string.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="ELF_MAP_STATE_T96_INTERVALS">
-<H2>ELF_MAP_STATE_T96_INTERVALS</H2></A>
+<A NAME="ELF_MAP_STATE_T96_INTERVALS[1]">
+<H2>ELF_MAP_STATE_T96_INTERVALS[1]</H2></A>
 <A HREF="#ELF_MAKE_SPIN_ATT_STRING">[Previous Routine]</A>
+<A HREF="#ELF_MAP_STATE_T96_INTERVALS[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+polar orbit
+JWu change south pole position in GEO plot
+
+
+ NAME:
+    ELF_MAP_STATE_T96_INTERVALS
+
+ PURPOSE:
+    map ELFIN spacecraft to their magnetic footprints
+
+ CATEGORY:
+    None
+
+ CALLING SEQUENCE:
+    elf_map_state_t96_intervals,'2018-11-10/00:00:00'
+
+ INPUTS:
+    tstart start time for the map
+
+ KEYWORD PARAMETERS:
+    gifout   generate a gif image at output
+    south    use southern hemisphere (otherwise, north)
+    noview   do not open window for display
+    model    specify Tsyganenko model like 't89' or 't01', default is 't96'
+    dir_move directory name to move plots to
+    quick_trace  run ttrace2iono on smaller set of points for speed
+    tstep    use this to turn on tick marks and set the frequency in seconds
+    clean    obsolete (parameter should be removed)
+    no_trace set this flag if you already have the data in hand and calculated in
+             a previous run
+    one_hour_only: set this flag to only plot the first orbit
+    hires    set this flag to create a higher resolution plot
+    sm       set this keyword for footprint in SM coordinates, default is GEO
+    bfirst   set this keyword for probe b footprint on top (default is for a on top)
+             note that this keyword is only used if the coordinates are in SM
+    pred     set this flag to use predicted state data
+    insert_stop set this flag to stop after the first plot (used for debugging)
+
+ OUTPUTS:
+    GIF images
+
+ EXAMPLE:
+    elf_map_state_t96_intervals,'2018-11-10/00:00:00'   ; this will defer to defaults and plot only
+                                                        ; northern hemisphere, geographic grids in
+                                                        ; normal resolution
+
+ MODIFICATION HISTORY:
+    Written by: C L Russell May 2020
+
+ VERSION:
+   $LastChangedBy:
+   $LastChangedDate:
+   $LastChangedRevision:
+   $URL:
+
+</PRE><P>
+<STRONG>(See <A href="plots/elf_map_state_t96_intervals_eom.pro">projects/elfin/plots/elf_map_state_t96_intervals_eom.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ELF_MAP_STATE_T96_INTERVALS[2]">
+<H2>ELF_MAP_STATE_T96_INTERVALS[2]</H2></A>
+<A HREF="#ELF_MAP_STATE_T96_INTERVALS[1]">[Previous Routine]</A>
 <A HREF="#ELF_MAP_STATE_T96_INTERVALS_WRAPPER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -544,7 +649,7 @@ JWu change south pole position in GEO plot
  
 <A NAME="ELF_MAP_STATE_T96_INTERVALS_WRAPPER">
 <H2>ELF_MAP_STATE_T96_INTERVALS_WRAPPER</H2></A>
-<A HREF="#ELF_MAP_STATE_T96_INTERVALS">[Previous Routine]</A>
+<A HREF="#ELF_MAP_STATE_T96_INTERVALS[2]">[Previous Routine]</A>
 <A HREF="#ELF_MLT_L_LAT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

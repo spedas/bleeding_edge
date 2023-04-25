@@ -33,8 +33,8 @@
 ;                 null string.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-04-14 11:56:39 -0700 (Thu, 14 Apr 2022) $
-; $LastChangedRevision: 30768 $
+; $LastChangedDate: 2023-04-24 13:29:18 -0700 (Mon, 24 Apr 2023) $
+; $LastChangedRevision: 31785 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -44,9 +44,9 @@ function mvn_frame_name, frame, success=success, reset=reset, list=list
   common mvn_frame_list, mvn_flist
 
   if (keyword_set(reset) or (size(mvn_flist,/type) ne 7)) then begin
-    mvn_flist = ['MARS','GEO','PHOBOS','DEIMOS','SPACECRAFT','APP','STATIC',$
-                 'SWIA','SWEA','MAG1','MAG2','EUV','SEP1','SEP2',$
-                 'IUVS_LIMB','IUVS_NADIR','NGIMS','MSO','SSO','MME_2000']
+    mvn_flist = ['MARS','GEO','PHOBOS','DEIMOS','SPACECRAFT','APP','SEP1','SEP2',$
+                 'STATIC','SWIA','SWEA','MAG1','MAG2','EUV','IUVS_LIMB','IUVS_NADIR',$
+                 'NGIMS','MSO','SSO','SUN_RTN','MME_2000']
   endif
   flist = mvn_flist
   ffull = ['IAU_'+flist[0:3], 'MAVEN_'+flist[4:*]]

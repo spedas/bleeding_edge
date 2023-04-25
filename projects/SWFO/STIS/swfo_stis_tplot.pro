@@ -1,13 +1,13 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-04-10 15:10:34 -0700 (Mon, 10 Apr 2023) $
-; $LastChangedRevision: 31720 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2023-04-24 16:21:20 -0700 (Mon, 24 Apr 2023) $
+; $LastChangedRevision: 31787 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
 
-pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim
+pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,powerlim=powerlim
 
-
+  
   if keyword_set(ionlim) then begin
     store_data,'IG_GUN_I',data='IonGun1_GUN_I*'
     store_data,'IG_GUN_V',data='IonGun1_GUN_V*'
@@ -16,8 +16,13 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim
     store_data,'IG_LENS',data='IonGun1_LENS*'
     store_data,'IG_HDEF',data='IonGun1_HDEF*'
     options,'IonGun1_*_CTL_V' , colors = 'r'
-    
   endif
+
+  if keyword_set(powerlim) then begin
+    store_data,'PS_Current',data= 'KEYSIGHT2__I[23]
+    store_data,'PS_Voltage',data= 'KEYSIGHT2__V[23]
+  endif
+
 
   if keyword_set(setlim) then begin
     if 0 then begin
@@ -68,14 +73,15 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim
     options,/def,'*PTCU_BITS',numbits=4,labels=reverse(['P=PPS Missing','T=TOD Missing','C=Compression','U=Use LUT']),psyms=1,colors=[0,1,2,6]
     options,/def,'*AAEE_BITS',numbits=4,labels=reverse(['Attenuator IN','Attenuator OUT','Checksum Error 1','Checksum Error 0']),psyms=1,colors=[0,1,2,6]
     options,/def,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),psyms=1,colors='bgrbgrkm'
-    options,/def,'*DETECTOR_BITS',labels=reverse(['BLR_MODE1','BLR_MODE0',reverse(channels)]),psyms=1,colors='bgrbgrcm'
+    options,/def,'*DETECTOR_BITS',labels=reverse(['DECIMATE_MODE','NONLUT_LINEAR',reverse(channels)]),psyms=1,colors='bgrbgrcm'
+    options,/def,'*DECIMATION_FACTOR_BITS',labels=['CH2','CH2','CH3','CH3','CH5','CH5','CH6','CH6'],psyms=1,colors='ggrrcckk'
     options,/def,'*hkp?_VALID_ENABLE_MASK_BITS',numbits=6,labels=channels,psyms=1,colors='bgrmcd'
     options,/def,'*hkp?_DIGI_FILTER_CLOCK_CYCLES',colors='br',labels=['Valid_Sig to Valid_En','Valid_En to Peak_En'],labflag=-1
     options,/def,'*hkp?_PULSER_DELAY_CLOCK_CYCLES',colors='bgr',labels=['0x17 Pulser1','0x18 Pulser2','0x19 Pulser3'],labflag=-1
     options,/def,'*hkp?_TIMEOUTS_*US',colors='bgr',labels=['0x1D Event','0x1E Valid','0x1F Nopeak'],labflag=-1
     options,/def,'*NOISE_BITS',numbits=12,labels=reverse(['ENABLE','RES2','RES1','RES0','PERIOD7','PERIOD6','PERIOD5','PERIOD4','PERIOD3','PERIOD2','PERIOD1','PERIOD0']),psyms=1,colors=[0,1,2,6]
     options,/def,'*USER_0A',labels=['BASELINE_OFFSET','NOISE_RES','NOISE_PERIOD','THRESHOLD','PULSER_HEIGHT','BIAS_PERIOD','BIAS_VOLTAGE','DIGITAL_FILTER']+'_SWEEP',psyms=1,colors=[0,1,2,6]
-    store_data,'swfo_stis_RATES_PULSFREQ',data='swfo_stis_'+['sci_RATE6','nse_RATE_DIV_THREE','hkp1_'+['VALID_RATES_PPS','PULSER_FREQUENCY']],dlim={panel_size:3,yrange:[.5,7e5],ylog:1,constant:2.^19}
+    store_data,'swfo_stis_RATES_PULSFREQ',data='swfo_stis_'+['sci_RATE6','nse_RATE_DIV_SIX','hkp1_'+['VALID_RATES_PPS','PULSER_FREQUENCY']],dlim={panel_size:3,yrange:[.5,7e5],ylog:1,constant:2.^19}
     store_data,'swfo_stis_RATES_TOTAL',data='swfo_stis_'+['hkp2_SCIENCE_EVENTS','hkp2_VALID_RATES_TOTAL','sci_TOTAL','sci_RATE2'],dlim={labflag:-1}
     store_data,'swfo_stis_hkp1_RATES_ALL',data=tnames('*hkp1*RATES'),dlim={yrange:[1,7e5],ylog:1,constant:5e5}
     store_data,'swfo_stis_hkp2_RATES_ALL',data=tnames('*hkp2*RATES'),dlim={yrange:[1,7e5],ylog:1,constant:5e5}
@@ -108,6 +114,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim
     'LPT':  tplot,add=add,'*sci_RATE6 *hkp?_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
     'SCIHKP': tplot,add=add,'*hkp2*SCI_*'
     'IONGUN': tplot,add=add,'pico_I IG_*'
+    'PS':tplot,add=add,'PS_*'
     
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase

@@ -1,6 +1,16 @@
 ;+
 ; PROCEDURE:
 ;         elf_make_geo_grid
+;         
+; INPUTS: 
+;         mlat: magnetic latitude
+;         mlon: magnetic longitude
+;         height: elevation in km
+;         glat: geographic latitude
+;         glon: geographic longitude
+;         
+; OUTPUTS:
+;         geo_grid: returns a structure with geographic grid
 ;
 ; PURPOSE:
 ;         Create a geographic grid for orbit plots
