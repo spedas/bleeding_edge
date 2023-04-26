@@ -31,9 +31,9 @@
 ; 27-mar-2007, jmm, jimm.ssl.berkeley.edu
 ; 10-apr-2007, jmm, fixed 2 bugs wrt structure definition
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-05-04 10:04:11 -0700 (Mon, 04 May 2020) $
-; $LastChangedRevision: 28662 $
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2023-04-25 12:00:09 -0700 (Tue, 25 Apr 2023) $
+; $LastChangedRevision: 31797 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tdpwrspc.pro $
 ;-
 Pro tdpwrspc, varname, newname = newname, $
@@ -94,11 +94,13 @@ Pro tdpwrspc, varname, newname = newname, $
 ;64 and nshiftpoints to 32, and use larger values when there are more
 ;points
           if ~keyword_set(nboxpoints) then begin
-              nbp = max([2L^(floor(alog(nok)/alog(2),/l64)-5),8])
+              ; nbp = max([2L^(floor(alog(nok)/alog(2),/l64)-5),8])
+              ; egrimes fix for precision bug, 25 April 2023
+              nbp = max([2L^(floor(alog(double(nok))/alog(2d),/l64)-5),8])
           endif else begin
               nbp = nboxpoints
           endelse
-    
+          
           if ~keyword_set(nshiftpoints) then begin
               nsp = nbp/2
           endif else begin
