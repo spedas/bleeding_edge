@@ -12,7 +12,7 @@
 ;
 ; KEYWORDS:        
 ;   
-;     PLOT_SC:     Plot all Parker Solar Probe vertices and SWEAP instrument locations.
+;     PLOT_SC1:     Plot all Parker Solar Probe vertices and SWEAP instrument locations.
 ;
 ; CREATED BY:      Roberto Livi on 2020-04-23
 ;
@@ -24,7 +24,32 @@
 ;-
 
 
-PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
+PRO spp_spacecraft_vertices_mollweide, x, y, lambda, phi, r, label
+
+   Lambda = LAMBDA * !pi / 180.
+   Phi    = PHI * !pi / 180.   
+   t = Phi
+   dif = 1                      
+   ;;WHILE dif GT 1e-5 DO BEGIN
+   ;;   t = t - (2 * t + sin(2 * t) - !pi * sin(Phi)) / (2 + 2 * cos(2 * t)) 
+   ;;   dif = max(abs(2 * t + sin(2 * t) - !pi * sin(Phi)))
+   ;;ENDWHILE
+
+   ;; Replace While loop with 5 iterations
+   t = t - (2 * t + sin(2 * t) - !pi * sin(Phi)) / (2 + 2 * cos(2 * t))
+   t = t - (2 * t + sin(2 * t) - !pi * sin(Phi)) / (2 + 2 * cos(2 * t))
+   t = t - (2 * t + sin(2 * t) - !pi * sin(Phi)) / (2 + 2 * cos(2 * t))
+   t = t - (2 * t + sin(2 * t) - !pi * sin(Phi)) / (2 + 2 * cos(2 * t))
+   t = t - (2 * t + sin(2 * t) - !pi * sin(Phi)) / (2 + 2 * cos(2 * t))
+   
+   x = sqrt(2) * R / !pi * 2 * Lambda * cos(t) 
+   y = sqrt(2) * R * sin(t)                    
+
+END
+
+
+PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2, plot_sc3=plot_sc3, $
+                             spi=spi, spa=spa, spb=spb, moll=moll, vertex=vertex
 
 
    ;; Initiate Common Block
@@ -39,6 +64,140 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
    ;; SPC
    spc_loc = [-1296.2722,   0.0000,2970.9419]
 
+   ;; SPAN-Ai Rotation Matrix
+
+   ;; Rotation angle
+   rot_th = 20.                 
+   rotr = [[1,            0,           0.],$
+           [0, cosd(rot_th), sind(rot_th)],$
+           [0,-sind(rot_th), cosd(rot_th)] ]
+
+   ;; Effective relabelling of axes   
+   rel = [[ 0,-1, 0],$
+          [ 0, 0,-1],$
+          [ 1, 0, 0]]                                        
+
+   ;; And a 180 degree around X
+   rel180 = [[1,0,0],$
+             [0,-1,0],$
+             [0,0,-1]]
+   
+   ;; Transformation matrix from ion instrument coordinates TO spacecraft   
+   rotmat_spi_sc = rel ## rotr
+
+   rotmat_spi_sc2 = rel ## rotr ## rel180
+
+   ;; Transformation matrix from SC to ion instrument coordinates
+   rotmat_sc_spi = transpose(rotmat_spi_sc)
+   rotmat_sc_spi2 = transpose(rotmat_spi_sc2)
+   
+   ;; Check This!!!
+   ;;spi_to_spi2 = [[-1d,0,0],[0,-1,0],[0,0,1]]              
+   ;;rotmat_sc_spi = spi_to_spi2 ## rotmat_sc_spi
+
+   ;;rotmat_inst2_sc = rotmat_sc_inst ## transpose(inst_to_inst2)
+   ;;rotmat_sc_sc2 = [[0,1.,0],[0,0,-1],[-1,0,0]]
+   ;;rotmat_inst_sc2= rotmat_sc_sc2 ## rotmat_inst_sc
+   
+
+
+   ;; SPAN-Ae Rotation Matrix
+   xasc = [0,0,1]
+   yasc = [1,-0.37,0]
+   yasc = yasc/norm(yasc)
+   zasc = crossp(xasc,yasc)
+   rotmat_sc_spa = [[xasc],[yasc],[zasc]]
+   ;;quaternion = [0.40403933, 0.58030356, 0.40403933, 0.58030356d]
+
+   ;; SPAN-B Rotation Matrix
+   xbsc = [-0.866,0,0.5]
+   xbsc = xbsc/norm(xbsc)
+   ybsc = [0,1,0]
+   zbsc = crossp(xbsc,ybsc)
+   rotmat_sc_spb = [[xbsc],[ybsc],[zbsc]]
+   ;;quaternion = [0.25882519, 0, 0.96592418, 0d]
+
+   nan = !VALUES.F_NAN
+
+   ;; FIELDS Whips
+
+   ;; FIELD Vertex Index
+   fld_ind = [$
+             0,4,5,1,0,$ ;; Side 1
+             0,2,3,1,0,$ ;; TOP
+             2,6,7,3,2,$ ;; Side 3
+             4,6,7,5,4,$ ;; BOTTOM
+             3,6,7,4,3,$ ;; Side 5
+             4,7,6,3,4]      ;; Side 6
+             
+              
+   ;; V1
+   fld_v1 = [$
+
+            [2009.28, 2870.67, 2821.54],$
+            [2011.86, 2868.86, 2821.54],$
+            [ 724.07, 1041.85, 2821.54],$
+            [ 726.07, 1039.85, 2821.54],$            
+
+            [2009.28, 2870.67, 2819.54],$
+            [2011.86, 2868.86, 2819.54],$
+            [ 724.07, 1041.85, 2819.54],$
+            [ 726.07, 1039.85, 2819.54]]            
+
+   fld_v1 = transpose(fld_v1)
+   
+   ;; V2
+   fld_v2 = [$
+
+            [-1994.48, -2844.60, 2825.24],$
+            [-1992.08, -2846.78, 2825.24],$
+            [ -706.90, -1013.65, 2825.25],$
+            [ -704.90, -1015.65, 2825.25],$
+
+            [-1994.48, -2844.60, 2825.24],$
+            [-1992.08, -2846.78, 2825.24],$
+            [ -706.90, -1013.65, 2825.25],$
+            [ -704.90, -1015.65, 2825.25]]
+
+
+   fld_v2 = transpose(fld_v2)
+   
+   ;; V3
+   fld_v3 = [$
+            [-2625.42, 2204.98, 2821.17],$
+            [-2627.46, 2202.55, 2821.17],$
+            [ -910.00,  770.97, 2821.12],$
+            [ -908.00,  768.97, 2821.12],$
+
+            [-2625.42, 2204.98, 2819.17],$
+            [-2627.46, 2202.55, 2819.17],$
+            [ -910.00,  770.97, 2819.12],$
+            [ -908.00,  768.97, 2819.12]]
+            
+   
+   fld_v3 = transpose(fld_v3)
+            
+   ;; V4
+   ;; Three main points
+   ;; [1121.83, -939.258, 2825.40]
+   ;; [2653.95, -2224.81, 2825.40],$
+   ;; [2651.90, -2227.24, 2825.39]$
+
+   fld_v4 = [$
+
+            [ 942.00,  -785.02, 2826.40],$
+            [ 944.00,  -787.02, 2826.40],$
+            [2653.95, -2224.81, 2826.40],$
+            [2651.90, -2227.24, 2826.40],$
+            [ 942.00,  -785.02, 2824.40],$
+            [ 944.00,  -787.02, 2824.40],$
+            [2653.95, -2224.81, 2824.40],$
+            [2651.90, -2227.24, 2824.40]$
+            
+            ]
+   
+   fld_v4 = transpose(fld_v4)
+   
    ;; Spacecraft Bus [mm]
    spp_bus = [$
              ;; Bottom 
@@ -66,6 +225,72 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
                   3,10,11,4,3, $  ;; Side 4
                   4,11,12,5,4, $  ;; Side 5
                   5,12,13,6,5]    ;; Side 6                  
+   
+   ;; Solar Panel 1
+   spp_solar_panel1 = [[-345.00, 2374.03, 1562.10],$
+                       [ 345.00, 2374.03, 1562.10],$
+                       [ 345.00, 1250.80, 1562.10],$
+                       [-345.00, 1250.80, 1562.10],$
+
+                       [-345.00, 2374.03, 1543.10],$
+                       [ 345.00, 2374.03, 1543.10],$
+                       [ 345.00, 1250.80, 1543.10],$
+                       [-345.00, 1250.80, 1543.10]]
+
+   ;; Solar Panel 1 Structure
+   spp_solar_panel1_str = [[-31.00, 1264.60, 1543.10],$
+                           [ 31.00, 1264.60, 1543.10],$
+                           [ 31.00,  495.30, 1543.10],$
+                           [-31.00,  495.30, 1543.10],$
+                           
+                           [-31.00, 1264.60, 1524.10],$
+                           [ 31.00, 1264.60, 1524.10],$
+                           [ 31.00,  495.30, 1524.10],$
+                           [-31.00,  495.30, 1524.10]]                                                      
+
+   ;; Solar Panel 2
+   spp_solar_panel2 = [[ -345.00, -1250.80, 1562.10],$
+                       [  345.00, -1250.80, 1562.10],$
+                       [  345.00, -2374.03, 1562.10],$
+                       [ -345.00, -2374.03, 1562.10],$
+
+                       [ -345.00, -1250.80, 1543.10],$
+                       [  345.00, -1250.80, 1543.10],$
+                       [  345.00, -2374.03, 1543.10],$
+                       [ -345.00, -2374.03, 1543.10]]
+
+   ;; Solar Panel 2 Structure
+   spp_solar_panel2_str = [[-31.00,-1264.60, 1543.10],$
+                           [ 31.00,-1264.60, 1543.10],$
+                           [ 31.00, -495.30, 1543.10],$
+                           [-31.00, -495.30, 1543.10],$
+                           
+                           [-31.00,-1264.60, 1524.10],$
+                           [ 31.00,-1264.60, 1524.10],$
+                           [ 31.00, -495.30, 1524.10],$
+                           [-31.00, -495.30, 1524.10]]
+   
+   sol_ind = [$
+             0,1,2,3,0,$  ;; TOP
+             4,5,6,7,4,$  ;; BOTTOM
+             0,4,5,1,0,$  ;; SIDE1
+             3,2,6,7,3,2]     ;; SIDE2
+
+   nan = reform(replicate(!VALUES.F_NAN,3),3,1)
+   spp_solar = [[spp_solar_panel1[*,sol_ind]],[nan],$
+                [spp_solar_panel1_str[*,sol_ind]],[nan],$
+                [spp_solar_panel2[*,sol_ind]],[nan],$
+                [spp_solar_panel2_str[*,sol_ind]],[nan]]
+
+   spp_solar = transpose(spp_solar)
+
+   
+   ;; SPAN-A
+   spana = [[533.00,-265.50, 146.75],$
+            [478.42,-415.91, 146.75],$
+            [533.00,-265.50,   7.06],$
+            [478.42,-415.91,   7.06]]
+   
    
    ;; Radiators
    
@@ -144,8 +369,51 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
    arr1 = tps[tps_ind,*]
    arr2 = rda[rda_ind,*]
    arr3 = spp_bus[spp_bus_ind,*]
-   vertex = [arr1,nn,arr2,nn,arr3]
+   ;;arr4 = spp_flg[flg_ind,*]
+   arr5 = fld_v1[fld_ind,*]
+   arr6 = fld_v2[fld_ind,*]
+   arr7 = fld_v3[fld_ind,*]
+   arr8 = fld_v4[fld_ind,*]
+   arr9 = spp_solar
+   vertex = [nn,arr1,nn,arr2,nn,arr3,nn,arr5,nn,arr6,nn,arr7,nn,arr8,nn,arr9,nn]
 
+   ;; Higher Res
+   res = 40.
+   nnn = n_elements(vertex[*,0]);;-1
+   vertex_xx = interpol(vertex[0:nnn-1,0],indgen(nnn),indgen(nnn*res)/res)
+   vertex_yy = interpol(vertex[0:nnn-1,1],indgen(nnn),indgen(nnn*res)/res)
+   vertex_zz = interpol(vertex[0:nnn-1,2],indgen(nnn),indgen(nnn*res)/res)
+   
+   vertex = [[vertex_xx],[vertex_yy],[vertex_zz]]
+
+   IF keyword_set(moll) THEN BEGIN
+
+      plot, [0,0],[0,0], /nodata, xrange=[-180,180], yrange=[-90,90],xstyle=5,ystyle=5,$
+            xtitle='Phi', ytitle='Theta', xtickn=['100','0','-100']
+
+      FOR i=0., 361., 45. DO BEGIN
+         lambda = replicate(i,360)-180.
+         phi = findgen(360)/2.-90.
+         r = 1
+         spp_spacecraft_vertices_mollweide, x, y, lambda, phi, r
+         oplot, x*!RADEG, y*!RADEG,linestyle=1;;, psym=1, 
+      ENDFOR
+
+      FOR i=0., 361., 45. DO BEGIN
+         phi = replicate(i,360)/2.-90.
+         lambda = findgen(360)-180.      
+         r = 1
+         ;;plot, [0,0],[0,0], /nodata, xrange=[-180,180], yrange=[-90,90],xstyle=3,ystyle=3         
+         spp_spacecraft_vertices_mollweide, x, y, lambda, phi, r
+         oplot, x*!RADEG, y*!RADEG,linestyle=1;;, psym=1, 
+      ENDFOR      
+
+      ;; Add labels
+      xyouts,   -175,    0, 'Theta - Delfectors',orientation=90, size=2,charthick=2,align=0.5
+      xyouts,      0,  -93, 'Phi - Anodes', size=2,charthick=2,align=0.5
+      
+   ENDIF
+   
    IF keyword_set(plot_sc1) THEN BEGIN
       
       ;;window, 0, xsize=900,ysize=900
@@ -154,21 +422,21 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
       ;; X - Y - Z
       
       ;; XX - YY
-      plot, vertex[*,0], vertex[*,1],/iso,chars=2,chart=2
+      plot, vertex[*,0], vertex[*,1],/iso,chars=2,chart=2, xtitle='SC-X', ytitle='SC-Y'
       oplot, replicate(spa_loc[0],2),replicate(spa_loc[1],2), psym=2,color=250
       oplot, replicate(spb_loc[0],2),replicate(spb_loc[1],2), psym=2,color=250
       oplot, replicate(spc_loc[0],2),replicate(spc_loc[1],2), psym=4,color=50
       oplot, replicate(spi_loc[0],2),replicate(spi_loc[1],2), psym=5,color=80
 
       ;; XX - ZZ
-      plot, vertex[*,0], vertex[*,2],/iso,chars=2,chart=2
+      plot, vertex[*,0], vertex[*,2],/iso,chars=2,chart=2, xtitle='SC-X', ytitle='SC-Z'
       oplot, replicate(spa_loc[0],2),replicate(spa_loc[2],2), psym=2,color=250
       oplot, replicate(spb_loc[0],2),replicate(spb_loc[2],2), psym=2,color=250
       oplot, replicate(spc_loc[0],2),replicate(spc_loc[2],2), psym=4,color=50
       oplot, replicate(spi_loc[0],2),replicate(spi_loc[2],2), psym=5,color=80
 
       ;; YY - ZZ
-      plot, vertex[*,1], vertex[*,2],/iso,chars=2,chart=2
+      plot, vertex[*,1], vertex[*,2],/iso,chars=2,chart=2, xtitle='SC-Y', ytitle='SC-Z'
       oplot, replicate(spa_loc[1],2),replicate(spa_loc[2],2), psym=2,color=250
       oplot, replicate(spb_loc[1],2),replicate(spb_loc[2],2), psym=2,color=250
       oplot, replicate(spc_loc[1],2),replicate(spc_loc[2],2), psym=4,color=50
@@ -195,7 +463,7 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
       y1   = [-800,800]
 
       FOR jj=3500, 3800, 50 DO BEGIN 
-         FOR ith=0., 2.*!PI, 0.025 DO BEGIN
+         FOR ith=0., 2.*!PI, 0.05 DO BEGIN
 
             plot, [0,1],[0,1],/nodata, /iso,xrange = x1,$
                   yrange = y1,xstyle = 3,ystyle = 3
@@ -217,7 +485,7 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
             rr = sqrt(reform(xx^2+yy^2+zz^2))
             theta = acos(reform(zz)/rr)
             phi   = atan(yy,xx)
-            new_r = zz/cos(theta) / 4
+            new_r = zz/cos(theta) / 5
             new_xx = new_r * sin(theta) * cos(phi)
             new_yy = new_r * sin(theta) * sin(phi)
 
@@ -244,11 +512,265 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
             spc_yy = replicate(new_yy[nn_vert+2],2)
             oplot, spc_xx, spc_yy, color=40, psym=5
             
-            wait, 0.01
+            wait, 0.05
 
          ENDFOR
       ENDFOR
    ENDIF
+
+
+   IF keyword_set(plot_sc3) THEN BEGIN
+
+      ;;!P.MULTI = [0,0,3]
+
+      ;; Temp
+      vtmp = vertex
+      vtmpi = vertex
+      vtmpa = vertex
+      vtmpb = vertex
+      
+
+      ;; SPAN-Ai
+      IF keyword_set(spi) THEN BEGIN 
+         
+         ;; Shift center to SPAN-Ai
+         vtmpi[*,0] = vtmp[*,0] - spi_loc[0]
+         vtmpi[*,1] = vtmp[*,1] - spi_loc[1]
+         vtmpi[*,2] = vtmp[*,2] - spi_loc[2]
+
+         ;;SPAN-I rotation
+         nvtmp = vtmpi # rotmat_sc_spi2
+         ;;nvtmp = vtmpi # rotmat_sc_spi
+
+         ;; Decompose
+         xx = nvtmp[*,0]
+         yy = nvtmp[*,1]
+         zz = nvtmp[*,2]
+         
+         po = xx*xx + yy*yy
+         rr = sqrt(reform(po+zz*zz))
+         phi   = atan(yy,xx)        * !RADEG      
+         theta = atan(zz/sqrt(po))  * !RADEG
+
+         IF keyword_set(moll) THEN BEGIN
+
+            ;; Spacecraft
+            rr = 1
+            phi = -1.*phi
+            spp_spacecraft_vertices_mollweide, x, y, phi, theta, rr
+            ;;polyfill, x*!RADEG, y*!RADEG, color=250
+            oplot, x*!RADEG, y*!RADEG, thick=5, color=250
+
+            ;; SPI FOV Small Anodes Thetas
+            FOR i=0, 10 DO BEGIN
+               phi = replicate(i*11.25,10)
+               theta = indgen(9)*15-60.
+               phi = -1.*phi
+               spp_spacecraft_vertices_mollweide, x, y, phi, theta, rr            
+               oplot, x*!RADEG, y*!RADEG,thick=3;;, linestyle=1, thick=1, color=250
+            ENDFOR
+
+            ;; SPI FOV Small Anodes Phis
+            FOR i=0, 8 DO BEGIN
+               phi = indgen(11)*11.25
+               theta = replicate(i*15.,11)-60.
+               phi = -1.*phi
+               spp_spacecraft_vertices_mollweide, x, y, phi, theta, rr            
+               oplot, x*!RADEG, y*!RADEG,thick=3;;, linestyle=1, thick=1, color=250
+            ENDFOR
+
+            ;; SPI FOV Large Anodes Thetas
+            FOR i=0, 6 DO BEGIN
+               phi = replicate(i*22.5,9)+10.*11.25
+               theta = indgen(9)*15-60.
+               IF max(phi) GT 180 THEN phi = (phi MOD 180) -180.
+               phi = -1.*phi               
+               spp_spacecraft_vertices_mollweide, x, y, phi, theta, rr            
+               oplot, x*!RADEG, y*!RADEG,thick=3;;, linestyle=1, thick=1, color=250
+            ENDFOR
+
+            ;; SPI FOV Large Anodes Phis
+            FOR i=0, 8 DO BEGIN
+               phi = indgen(7)*22.5+10.*11.25
+               theta = replicate(i*15.,7)-60.
+               tmp1 = where(phi GT 180.,cc)
+               IF cc THEN phi[tmp1] = (phi[tmp1] MOD 180) -180.
+               tmp2 = max(phi[0:5]-phi[1:6],loc)
+               phi = [phi[0:loc],180,!VALUES.F_NAN,-180,phi[loc+1:6]]
+               theta = [theta[0:loc],theta[0],!VALUES.F_NAN,theta[0],theta[loc+1:6]]
+               phi = -1.*phi
+               spp_spacecraft_vertices_mollweide, x, y, phi, theta, rr
+               oplot, x*!RADEG, y*!RADEG,thick=3;;, linestyle=1, thick=1, color=250
+            ENDFOR
+            
+            
+         ENDIF ELSE $
+          plot, phi, theta,/iso, xr=[-180,180], yr=[-90,90], xst=1,yst=1
+         
+      ENDIF
+
+      ;; SPAN-Ae
+      IF keyword_set(spa) THEN BEGIN 
+         
+         ;; Shift center to SPAN-Ae
+         vtmpa[*,0] = vtmp[*,0] - spa_loc[0]
+         vtmpa[*,1] = vtmp[*,1] - spa_loc[1]
+         vtmpa[*,2] = vtmp[*,2] - spa_loc[2]
+
+         ;; Apply SPAN-Ae rotation
+         nvtmp = vtmpa # rotmat_sc_spa      
+
+         ;; Decompose
+         xx = nvtmp[*,0]
+         yy = nvtmp[*,1]
+         zz = nvtmp[*,2]
+         
+         po = xx*xx + yy*yy
+         rr = sqrt(reform(po+zz*zz))
+         phi   = atan(yy,xx)        * !RADEG      
+         theta = atan(zz/sqrt(po))  * !RADEG
+
+         IF keyword_set(moll) THEN BEGIN
+            r = 1.         
+            spp_spacecraft_vertices_mollweide, x, y, phi, theta, r
+            oplot, x*!RADEG, y*!RADEG
+         ENDIF ELSE $
+          plot, phi, theta,/iso, xr=[-180,180], yr=[-90,90], xst=1,yst=1
+         
+      ENDIF
+
+      ;; SPAN-B
+      IF keyword_set(spb) THEN BEGIN 
+         
+         ;; Shift center to SPAN-B
+         vtmpb[*,0] = vtmp[*,0] - spb_loc[0]
+         vtmpb[*,1] = vtmp[*,1] - spb_loc[1]
+         vtmpb[*,2] = vtmp[*,2] - spb_loc[2]
+
+         ;; Apply SPAN-B rotation
+         nvtmp = vtmpb # rotmat_sc_spb      
+
+         ;; Decompose
+         xx = nvtmp[*,0]
+         yy = nvtmp[*,1]
+         zz = nvtmp[*,2]
+         
+         po = xx*xx + yy*yy
+         rr = sqrt(reform(po+zz*zz))
+         phi   = atan(yy,xx)        * !RADEG      
+         theta = atan(zz/sqrt(po))  * !RADEG
+
+         nn = n_elements(phi)
+         tmp2 = ABS(phi[0:nn-2]-phi[1:nn-1])
+         tmp3 = where(tmp2 GT 300,cc)
+
+         IF cc GT 0 THEN BEGIN
+            WHILE cc GT 0 DO BEGIN
+               nn = n_elements(phi)
+               tmp2 = ABS(phi[0:nn-2]-phi[1:nn-1])
+               tmp3 = where(tmp2 GT 350,cc)
+               loc = tmp3[0]
+               ;;print, theta[loc-2], theta[loc-1], theta[loc], theta[loc+1], theta[loc+2]
+               IF phi[tmp3[0]] LT -170 THEN phi = [phi[0:loc],-180,!VALUES.F_NAN,180,phi[loc+1:nn-1]] $
+               ELSE phi = [phi[0:loc],180,!VALUES.F_NAN,-180,phi[loc+1:nn-1]]
+               theta = [theta[0:loc],theta[loc],!VALUES.F_NAN,theta[loc+1],theta[loc+1:nn-1]]
+            ENDWHILE
+         ENDIF
+         
+            
+         IF keyword_set(moll) THEN BEGIN
+            r = 1.         
+            spp_spacecraft_vertices_mollweide, x, y, phi, theta, r
+            oplot, x*!RADEG, y*!RADEG
+         ENDIF ELSE $
+          plot, phi, theta,/iso, xr=[-180,180], yr=[-90,90], xst=1,yst=1,psym=1
+
+         
+      ENDIF
+
+      !P.MULTI = 0      
+      
+   ENDIF
+   
+   IF keyword_set(plot_spi) THEN BEGIN   
+
+      ;; Setup plotting environment
+      window, 2, xsize=600, ysize=900
+
+      ;; X-Y-Z Coordinates
+      xcor = [[0,0,0],[1,0,0]]
+      ycor = [[0,0,0],[0,1,0]]
+      zcor = [[0,0,0],[0,0,1]]
+      
+      ;; Temporary Variables
+      vtmp = vertex
+      vtmp1 = vertex*0
+      vtmp2 = vertex*0
+      vtmp3 = vertex*0
+      vtmp4 = vertex*0
+
+      ;; Shift center to SPAN-Ai
+      vtmp1[*,0] = vtmp[*,0] - spi_loc[0]
+      vtmp1[*,1] = vtmp[*,1] - spi_loc[1]
+      vtmp1[*,2] = vtmp[*,2] - spi_loc[2]
+
+      ;; 1. Apply -20 degree rotation about spacecraft z
+      rot_th = -20.                 
+      rotr = [[cosd(rot_th), -sind(rot_th),            0],$
+              [           0,  cosd(rot_th), sind(rot_th)],$
+              [           0,             0,            1]]
+      vtmp2 = vtmp1 # rotr
+
+      ;; 2. 
+      
+      ;; Decompose and transform to spherical
+      xx = nvtmp[*,0]
+      yy = nvtmp[*,1]
+      zz = nvtmp[*,2]
+      po = xx*xx + yy*yy
+      rr = sqrt(reform(po+zz*zz))
+      phi   = atan(yy,xx)        * !RADEG      
+      theta = atan(zz/sqrt(po))  * !RADEG
+
+      
+      nn = n_elements(phi)
+      tmp2 = ABS(phi[0:nn-2]-phi[1:nn-1])
+      tmp3 = where(tmp2 GT 300,cc)
+
+         IF cc GT 0 THEN BEGIN
+            WHILE cc GT 0 DO BEGIN
+               nn = n_elements(phi)
+               tmp2 = ABS(phi[0:nn-2]-phi[1:nn-1])
+               tmp3 = where(tmp2 GT 350,cc)
+               loc = tmp3[0]
+               ;;print, theta[loc-2], theta[loc-1], theta[loc], theta[loc+1], theta[loc+2]
+               IF phi[tmp3[0]] LT -170 THEN phi = [phi[0:loc],-180,!VALUES.F_NAN,180,phi[loc+1:nn-1]] $
+               ELSE phi = [phi[0:loc],180,!VALUES.F_NAN,-180,phi[loc+1:nn-1]]
+               theta = [theta[0:loc],theta[loc],!VALUES.F_NAN,theta[loc+1],theta[loc+1:nn-1]]
+            ENDWHILE
+         ENDIF
+      
+      ;; Left: PSP/coordinates
+      
+      
+      ;; Right: Mollweide rojection
+      
+      
+      ;; Apply SPAN-I rotation
+      nvtmp = vtmpi # rotmat_sc_spi2      
+
+      
+      
+      
+   ENDIF
+   
+   ;; Assemble Rotation Matrix
+   id = identity(3)
+   rot_matrix = [[[id]],$
+                 [[id]],$
+                 [[id]],$
+                 [[rotmat_sc_spi]],$
+                 [[rotmat_sc_spi2]]]
 
    ;; Final Structure
    inst = {tps:tps, tps_ind:tps_ind,$
@@ -259,6 +781,12 @@ PRO spp_spacecraft_vertices, plot_sc1=plot_sc1, plot_sc2=plot_sc2
            spb_loc:spb_loc,$
            spc_loc:spc_loc,$
            spi_loc:spi_loc,$
+           rotmat_spi_sc:rotmat_spi_sc,$
+           rotmat_sc_spa:rotmat_sc_spa,$
+           rotmat_sc_spb:rotmat_sc_spb,$
+           rotmat_sc_spi:rotmat_sc_spi,$           
+           rotmat_sc_spi2:rotmat_sc_spi2,$
+           rot_matrix:rot_matrix,$
            inst_loc:reform(fltarr(3),1,3)}
 
 END
