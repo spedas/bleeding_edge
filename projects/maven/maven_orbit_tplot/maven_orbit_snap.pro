@@ -144,8 +144,8 @@
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 08:09:44 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31541 $
+; $LastChangedDate: 2023-04-27 16:29:28 -0700 (Thu, 27 Apr 2023) $
+; $LastChangedRevision: 31806 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -537,7 +537,14 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     endif
     
     if (dob) then begin
-        get_data,'mvn_B_1sec_MAVEN_MSO',data=bmso
+        get_data,'mvn_B_1sec_MAVEN_MSO',data=bmso,index=kk
+        if (kk eq 0) then begin
+          get_data,'mvn_B_1sec_maven_mso',data=bmso,index=kk
+          if (kk eq 0) then begin
+            print,"No magnetic field data?"
+            return
+          endif
+        endif
         bb0=bmso.y
         bt=bmso.x
         bdt=60 ;smooth over seconds

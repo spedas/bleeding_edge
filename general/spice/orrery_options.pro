@@ -39,14 +39,14 @@
 ;       SILENT:        Suppresses output.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-05 16:23:40 -0700 (Mon, 05 Apr 2021) $
-; $LastChangedRevision: 29853 $
+; $LastChangedDate: 2023-04-27 16:33:09 -0700 (Thu, 27 Apr 2023) $
+; $LastChangedRevision: 31808 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery_options.pro $
 ;-
 pro orrery_options, key, get=get, replace=replace, delete=del, reset=reset, $
                          list=flist, silent=silent
 
-  common planetorb, planet, sta, stb, sorb, psp, orrkey
+  common planetorb, planet, css, sta, stb, sorb, psp, orrkey
 
   list = size(key,/type) eq 0
   merge = ~keyword_set(replace)

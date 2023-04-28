@@ -89,6 +89,9 @@
 ;                  satellite ephemeris data (1900-2100, or as 
 ;                  available).
 ;
+;       CSS:       Plot the location of Comet Siding Spring.
+;                    Coverage: 2000-01-01 to 2016-01-01
+;
 ;       STEREO:    Plot the locations of the STEREO spacecraft,
 ;                  when available.  (The Stereo-B ephemeris has
 ;                  an error near the beginning of the mission,
@@ -172,8 +175,8 @@
 ;       BLACK:     Use a black background for the orbit snapshot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-04-17 08:45:11 -0700 (Mon, 17 Apr 2023) $
-; $LastChangedRevision: 31755 $
+; $LastChangedDate: 2023-04-27 16:33:09 -0700 (Thu, 27 Apr 2023) $
+; $LastChangedRevision: 31808 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -184,12 +187,13 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
                   xyrange=range, planet=planet2, sorb=sorb2, psp=psp2, sall=sall, $
                   verbose=verbose, full=full, fixplanet=fixplanet, monitor=monitor, $
                   window=window, png=png, varnames=varnames, plabel=plabel, slabel=slabel, $
-                  black=black, key=key
+                  css=css2, black=black, key=key
 
-  common planetorb, planet, sta, stb, sorb, psp, orrkey
+  common planetorb, planet, css, sta, stb, sorb, psp, orrkey
   @putwin_common
 
   if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
+  colstr = get_colors()
 
 ; Load any keyword defaults
 
@@ -198,7 +202,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
   tlist = ['NOPLOT','NOBOX','LABEL','SCALE','EPH','SPIRAL','VSW','SROT','MOVIE', $
            'STEREO','KEEPWIN','TPLOT','RELOAD','OUTER','XYRANGE','PLANET2','SORB2', $
            'PSP2','SALL','VERBOSE','FULL','FIXPLANET','MONITOR','WINDOW','PNG', $
-           'VARNAMES','PLABEL','SLABEL','BLACK']
+           'VARNAMES','PLABEL','SLABEL','CSS2','BLACK']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -216,7 +220,8 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 
   oneday = 86400D
   au = 1.495978707d13  ; Astronomical Unit (cm)
-  Rs = 6.957d10        ; Radius of Sun (cm)
+  Rs = 6.957d10        ; Radius of Sun (cm), photosphere
+  Rmars = 3.3895D8     ; Radius of Mars (cm), volumetric
   c = 2.99792458d10    ; Speed of light (cm/s)
   suncol = 5           ; Sun color
   sunsze = 5           ; Sun symbol size
@@ -229,6 +234,13 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
   pday = [89, 226, 367, 688, 4334, 10757, 30689, 60192, 90562]  ; days per orbit
   tspan = time_double(['1900-01-05','2100-01-01'])  ; range covered by mar097.bsp
   nplan = n_elements(pname)
+
+  cname = 'SIDING SPRING'
+  clab = 'CSS'
+  csym = 8
+  ccol = 5
+  csze = 3
+  cday = 5845  ; 2000-01-01 to 2016-01-01 (siding_spring_s46.bsp)
 
   sname = ['STEREO AHEAD','STEREO BEHIND','SOLAR ORBITER','SOLAR PROBE PLUS']
   slab = ['STA','STB','SO','PSP']
@@ -296,6 +308,8 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
   sflg = keyword_set(stereo)
   oflg = keyword_set(sorb2)
   pflg = keyword_set(psp2)
+  cflg = keyword_set(css2)
+
   if keyword_set(full) then begin
     sall = 1
     label = 2
@@ -334,6 +348,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     else : for i=0,(nlab-1) do plab[i] = plabel[i]
   endcase
 
+  clabel = max(plab)
   slabel = keyword_set(slabel)
 
   kflg = keyword_set(keepwin)
@@ -419,6 +434,13 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 
     ssrc = mvn_file_source(archive_ext='')  ; don't archive old files
 
+; Locate the Siding Spring ephemeris, but do not load it yet
+;   The position of this kernel in the loadlist matters!
+
+    path = 'misc/spice/naif/generic_kernels/spk/comets/'
+    pathname = path + 'siding_spring_s46.bsp'
+    css_ker = (mvn_pfp_file_retrieve(pathname,source=ssrc,verbose=verbose))[0]
+
 ; Check for standard SPICE kernels; load them if necessary
 
     mk = spice_test('*', verbose=-1)
@@ -428,6 +450,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       dprint,' ', getdebug=bug, dlevel=4
       dprint,' ', setdebug=0, dlevel=4
       std_kernels = spice_standard_kernels(/mars,verbose=-1)
+      std_kernels = [std_kernels[0:1], css_ker, std_kernels[2:*]]
       spice_kernel_load, std_kernels
       dprint,' ', setdebug=bug, dlevel=4
       mk = spice_test('*', verbose=-1)
@@ -563,6 +586,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
               owlt  : replicate(0D,ndays) , $
               latss : replicate(0D,ndays) , $
               d2l   : replicate(0D,ndays) , $
+              units : ['AU','SEC','DEG']  , $
               frame : 'ECLIPJ2000'           }
 
     planet = replicate(planet,nplan)
@@ -607,7 +631,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     planet[3].d2l = spl_init(planet[3].time, planet[3].latss, /double)
     print,".",format='(a1,$)'
 
-; Calculate ephemeris for each spacecraft
+; Place holder for missing ephemeris data
 
     missing = { name  : ''                        , $
                 time  : time_double('1800-01-01') , $
@@ -615,7 +639,57 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
                 y     : 0D                        , $
                 z     : 0D                        , $
                 owlt  : 0D                        , $
+                units : ['','','']                , $
                 frame : 'INVALID'                    }
+
+; --------- COMET SIDING SPRING ---------
+
+    i = where(sinfo.obj_name eq cname, count)
+    if (count gt 0L) then begin
+      tsp = time_double(sinfo[i].trange)
+      tsp = minmax(tsp)
+      ndays = floor(2D*(tsp[1] - tsp[0])/oneday)
+      dt = (tsp[1] - tsp[0])/double(ndays)
+      tt = tsp[0] + dt*dindgen(ndays)
+      et = time_ephemeris(tt)
+
+      cspice_spkpos, cname[0], et, 'ECLIPJ2000', 'NONE', 'Sun', css, ltime
+      css = transpose(css)/(au/1.d5)
+      css = { name  : cname[0]     , $
+              time  : tt           , $
+              x     : css[*,0]     , $
+              y     : css[*,1]     , $
+              z     : css[*,2]     , $
+              owlt  : ltime        , $
+              units : ['AU','SEC'] , $
+              frame : 'ECLIPJ2000'    }
+
+      d2x = spl_init(css.time, css.x, /double)
+      d2y = spl_init(css.time, css.y, /double)
+      d2z = spl_init(css.time, css.z, /double)
+      str_element, css, 'd2x', d2x, /add
+      str_element, css, 'd2y', d2y, /add
+      str_element, css, 'd2z', d2z, /add
+
+      r = sqrt(css.x^2. + css.y^2. + css.z^2.)
+      lat = asin(css.z/r)*!radeg
+      str_element, css, 'lat', lat, /add
+
+;     OWLT with respect to Mars, not Earth
+
+      xe = spl_interp(planet[3].time, planet[3].x, planet[3].d2x, css.time)
+      ye = spl_interp(planet[3].time, planet[3].y, planet[3].d2y, css.time)
+      ze = spl_interp(planet[3].time, planet[3].z, planet[3].d2z, css.time)
+      dx = css.x - xe
+      dy = css.y - ye
+      dz = css.z - ze
+      ds = sqrt(dx*dx + dy*dy + dz*dz)
+      css.owlt = ds*(au/c)
+
+    endif else css = missing
+    print,".",format='(a1,$)'
+
+; Calculate ephemeris for each spacecraft
 
 ; --------- STEREO AHEAD ---------
 
@@ -636,6 +710,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
               y     : sta[*,1]     , $
               z     : sta[*,2]     , $
               owlt  : ltime        , $
+              units : ['AU','SEC'] , $
               frame : 'ECLIPJ2000'    }
 
       d2x = spl_init(sta.time, sta.x, /double)
@@ -655,7 +730,6 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       sta.owlt = ds*(au/c)
 
     endif else sta = missing
-    print,".",format='(a1,$)'
 
 ; --------- STEREO BEHIND ---------
 
@@ -681,6 +755,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
                 y     : stb[*,1]     , $
                 z     : stb[*,2]     , $
                 owlt  : ltime        , $
+                units : ['AU','SEC'] , $
                 frame : 'ECLIPJ2000'    }
 
         d2x = spl_init(stb.time, stb.x, /double)
@@ -701,6 +776,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       endif else stb = missing
 
     endif else stb = missing
+    print,".",format='(a1,$)'
 
 ; --------- Solar Orbiter ---------
 
@@ -715,13 +791,14 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 
       cspice_spkpos, sname[2], et, 'ECLIPJ2000', 'NONE', 'Sun', sorb, ltime
       sorb = transpose(sorb)/(au/1.d5)
-      sorb = { name  : sname[2]     , $
-               time  : tt           , $
-               x     : sorb[*,0]    , $
-               y     : sorb[*,1]    , $
-               z     : sorb[*,2]    , $
-               owlt  : ltime        , $
-               frame : 'ECLIPJ2000'    }
+      sorb = { name  : sname[2]           , $
+               time  : tt                 , $
+               x     : sorb[*,0]          , $
+               y     : sorb[*,1]          , $
+               z     : sorb[*,2]          , $
+               owlt  : ltime              , $
+               units : ['AU','SEC','DEG'] , $
+               frame : 'ECLIPJ2000'          }
 
       d2x = spl_init(sorb.time, sorb.x, /double)
       d2y = spl_init(sorb.time, sorb.y, /double)
@@ -729,6 +806,10 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       str_element, sorb, 'd2x', d2x, /add
       str_element, sorb, 'd2y', d2y, /add
       str_element, sorb, 'd2z', d2z, /add
+
+      r = sqrt(sorb.x^2. + sorb.y^2. + sorb.z^2.)
+      lat = asin(sorb.z/r)*!radeg
+      str_element, sorb, 'lat', lat, /add
 
       xe = spl_interp(planet[2].time, planet[2].x, planet[2].d2x, sorb.time)
       ye = spl_interp(planet[2].time, planet[2].y, planet[2].d2y, sorb.time)
@@ -740,6 +821,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       sorb.owlt = ds*(au/c)
 
     endif else sorb = missing
+    print,".",format='(a1,$)'
 
 ; --------- Parker Solar Probe ---------
 
@@ -754,13 +836,14 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 
       cspice_spkpos, sname[3], et, 'ECLIPJ2000', 'NONE', 'Sun', psp, ltime
       psp = transpose(psp)/(au/1.d5)
-      psp = { name  : sname[3]    , $
-              time  : tt          , $
-              x     : psp[*,0]    , $
-              y     : psp[*,1]    , $
-              z     : psp[*,2]    , $
-              owlt  : ltime       , $
-              frame : 'ECLIPJ2000'   }
+      psp = { name  : sname[3]     , $
+              time  : tt           , $
+              x     : psp[*,0]     , $
+              y     : psp[*,1]     , $
+              z     : psp[*,2]     , $
+              owlt  : ltime        , $
+              units : ['AU','SEC'] , $
+              frame : 'ECLIPJ2000'    }
 
       d2x = spl_init(psp.time, psp.x, /double)
       d2y = spl_init(psp.time, psp.y, /double)
@@ -785,6 +868,10 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     print,' done'
   endif
 
+  if (css.frame eq 'INVALID') then begin
+    print, 'Warning: Siding Spring ephemeris not loaded.'
+    cflg = 0
+  endif
   if (sta.frame eq 'INVALID') then begin
     print, 'Warning: Stereo-A ephemeris not loaded.'
     sflg = 0
@@ -801,10 +888,11 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     pflg = 0
   endif
 
-  eph = {planet:planet, stereo_A:sta, stereo_B:stb, solar_orb:sorb, psp:psp}
+  eph = {planet:planet, css:css, stereo_A:sta, stereo_B:stb, solar_orb:sorb, psp:psp}
 
   if ((tmin lt min(planet[2].time)) or (tmax gt max(planet[2].time))) then begin
-    print, "Time is out of ephemeris range."
+    tsp = time_string(minmax(planet[2].time),prec=-3)
+    print, "Time is out of ephemeris range (", tsp[0], " to ", tsp[1], ")"
     return
   endif
 
@@ -874,6 +962,26 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       options,'latss','ytitle','Mars!cLss (deg)'
     endif
 
+    if (css.frame ne 'INVALID') then begin
+      tname = 'OWLT-CSS'
+      store_data,tname,data={x:css.time, y:css.owlt/60D}
+      options,tname,'ytitle','SIDING SPRING!cOWLT (min)'
+      options,tname,'colors',ccol
+      options,tname,'ynozero',1
+
+      tname = 'R-CSS'
+      store_data,tname,data={x:css.time, y:css.owlt*(c/Rmars)}
+      ylim,tname,0,0,1
+      options,tname,'ytitle','Siding Spring!cDistance (R!dM!n)'
+      options,tname,'colors',ccol
+
+      tname = 'Lat-CSS'
+      store_data,tname,data={x:css.time, y:css.lat}
+      options,tname,'ytitle','Siding Spring!cLatitude (deg)'
+      options,tname,'constant',0
+      options,tname,'colors',ccol
+    endif
+
     if (sta.frame ne 'INVALID') then begin
       tname = 'OWLT-STA'
       store_data,tname,data={x:sta.time, y:sta.owlt/60D}
@@ -907,8 +1015,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       options,tname,'colors',scol[2]
 
       tname = 'Lat-SORB'
-      lat = asin(sorb.z/r)*!radeg
-      store_data,tname,data={x:sorb.time, y:lat}
+      store_data,tname,data={x:sorb.time, y:sorb.lat}
       options,tname,'ytitle','Solar Orbiter!cLatitude (deg)'
       options,tname,'constant',0
       options,tname,'colors',scol[2]
@@ -1013,6 +1120,22 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
           y = -xp*sinp + yp*cosp
           xp = x
           yp = y
+        endif
+      endif
+
+      if (cflg) then begin
+        xcss = !values.f_nan
+        ycss = xcss
+        icss = nn2(css.time, t, maxdt=oneday)
+        if (icss ge 0L) then begin
+          xcss = spl_interp(css.time, css.x, css.d2x, t)
+          ycss = spl_interp(css.time, css.y, css.d2y, t)
+          if (fflg) then begin
+            x =  xcss*cosp + ycss*sinp
+            y = -xcss*sinp + ycss*cosp
+            xcss = x
+            ycss = y
+          endif
         endif
       endif
 
@@ -1124,6 +1247,31 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
       endfor
       oplot, [0.], [0.], psym=8, symsize=sunsze*zscl, color=suncol
 
+      if (cflg) then if (finite(xcss)) then begin
+        imin = (icss - cday) > 0L
+        imax = (icss + cday) < (n_elements(css.time) - 1L)
+        xx = css.x[imin:imax]
+        yy = css.y[imin:imax]
+        if (fflg) then begin
+          x =  xx*cosp + yy*sinp
+          y = -xx*sinp + yy*cosp
+          xx = x
+          yy = y
+        endif
+
+        initct, 1072, /rev, previous_ct=pct, previous_rev=prev
+          ll = css.lat[imin:imax] + 60.
+          lscale = float(colstr.top_c - colstr.bottom_c)/120.
+          lcol = (round(ll*lscale) + colstr.bottom_c) > colstr.bottom_c < colstr.top_c
+          for k=0L,(n_elements(yy)-2L) do oplot, xx[k:k+1L], yy[k:k+1L], color=lcol[k], thick=2
+          oplot, [xcss], [ycss], psym=csym, symsize=csze*zscl, color=ccol
+          visible = (xcss ge xyrange[0]) and (xcss le xyrange[1]) and (ycss ge xyrange[0]) and (ycss le xyrange[1])
+          if (clabel and visible) then xyouts, [xcss+loff[3]], [ycss+loff[3]], clab, color=ccol, charsize=scale
+          draw_color_scale, range=[-60,60], brange=[colstr.bottom_c, colstr.top_c], charsize=scale, $
+                            position=[0.88,0.1,0.9,0.2], title='Lat (deg)', yticks=2, ytickval=[-60,0,60]
+        initct, pct, rev=prev
+      endif
+
       if (sflg) then begin
         oplot, [xsta], [ysta], psym=ssym[0], symsize=ssze[0]*zscl, color=scol[0]
         if (slabel) then xyouts, [xsta+loff[3]], [ysta+loff[3]], slab[0], color=scol[0], charsize=scale
@@ -1142,9 +1290,11 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
           xx = x
           yy = y
         endif
-        oplot, xx, yy, color=scol[2]  
+
+        oplot, xx, yy, color=scol[2]
         oplot, [xsorb], [ysorb], psym=ssym[2], symsize=ssze[2]*zscl, color=scol[2]
         if (slabel) then xyouts, [xsorb+loff[3]], [ysorb+loff[3]], slab[2], color=scol[2], charsize=scale
+
       endif
 
       if (pflg) then if (finite(xpsp)) then begin
@@ -1311,6 +1461,24 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     endif
   endif
 
+  if (cflg) then begin
+    xcss = replicate(!values.f_nan, n_elements(t))
+    ycss = xcss
+    i = nn2(css.time, t, maxdt=oneday)
+    j = where(i ge 0L, count)
+    if (count gt 0L) then begin
+      icss = round(mean(i[j]))
+      xcss[j] = spl_interp(css.time, css.x, css.d2x, t[j])
+      ycss[j] = spl_interp(css.time, css.y, css.d2y, t[j])
+      if (fflg) then begin
+        x =  xcss*cosp + ycss*sinp
+        y = -xcss*sinp + ycss*cosp
+        xcss = x
+        ycss = y
+      endif
+    endif
+  endif
+
   if (sflg) then begin
     xsta = replicate(!values.f_nan, n_elements(t))
     ysta = xsta
@@ -1443,6 +1611,22 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     oplot, [xp[i,j]], [yp[i,j]], psym=8, symsize=psze[i]*zscl, color=pcol[i]
     if (plab[i]) then xyouts, [xp[i,j[1]]+loff[i]], [yp[i,j[1]]+loff[i]], pname[i], color=pcol[i], chars=scale
   endfor
+
+  if (cflg) then if (max(finite(xcss))) then begin
+    imin = (icss - cday) > 0L
+    imax = (icss + cday) < (n_elements(css.time) - 1L)
+    xx = css.x[imin:imax]
+    yy = css.y[imin:imax]
+    if (fflg) then begin
+      x =  xx*cosp + yy*sinp
+      y = -xx*sinp + yy*cosp
+      xx = x
+      yy = y
+    endif
+    oplot, xx, yy, color=ccol
+    oplot, [xcss], [ycss], psym=csym, symsize=csze*zscl, color=ccol
+    if (slabel) then xyouts, [xcss+loff[3]], [ycss+loff[3]], clab, color=ccol, charsize=scale
+  endif
 
   if (sflg) then begin
     oplot, [xsta], [ysta], psym=ssym[0], symsize=ssze[0]*zscl, color=scol[0]

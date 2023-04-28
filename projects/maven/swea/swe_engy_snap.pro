@@ -115,8 +115,12 @@ end
 ;       SCP:           Temporarily override any other estimates of the spacecraft 
 ;                      potential and force it to be this value.
 ;
-;       SHIFTPOT:      Correct for the spacecraft potential.  Spectra are shifted from
-;                      the spacecraft frame to the plasma frame.
+;       SHIFTPOT:      Correct for the spacecraft potential.  If the data are in
+;                      instrument units (COUNTS, RATE, CRATE), then the energy
+;                      scale is shifted by the amount of the potential, but the 
+;                      signal level remains unchanged.  If the data are in physical
+;                      units (FLUX, EFLUX, DF), then the signal level is also
+;                      adjusted to ensure conservation of phase space density.
 ;
 ;       DEMAX:         Maximum width of spacecraft potential signature.
 ;
@@ -230,8 +234,8 @@ end
 ;       LINE_COLORS:   Use this for the line colors.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 08:15:57 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31546 $
+; $LastChangedDate: 2023-04-27 16:30:02 -0700 (Thu, 27 Apr 2023) $
+; $LastChangedRevision: 31807 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
