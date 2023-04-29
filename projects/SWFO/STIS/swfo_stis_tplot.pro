@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-04-24 16:21:20 -0700 (Mon, 24 Apr 2023) $
-; $LastChangedRevision: 31787 $
+; $LastChangedDate: 2023-04-28 12:24:11 -0700 (Fri, 28 Apr 2023) $
+; $LastChangedRevision: 31812 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -73,7 +73,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,powerlim=powerlim
     options,/def,'*PTCU_BITS',numbits=4,labels=reverse(['P=PPS Missing','T=TOD Missing','C=Compression','U=Use LUT']),psyms=1,colors=[0,1,2,6]
     options,/def,'*AAEE_BITS',numbits=4,labels=reverse(['Attenuator IN','Attenuator OUT','Checksum Error 1','Checksum Error 0']),psyms=1,colors=[0,1,2,6]
     options,/def,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),psyms=1,colors='bgrbgrkm'
-    options,/def,'*DETECTOR_BITS',labels=reverse(['DECIMATE_MODE','NONLUT_LINEAR',reverse(channels)]),psyms=1,colors='bgrbgrcm'
+    options,/def,'*DETECTOR_BITS',labels=reverse(['Decimate','NONLUT 0:Log 1:Linear',reverse(channels)]),psyms=1,colors='bgrbgrcm'
     options,/def,'*DECIMATION_FACTOR_BITS',labels=['CH2','CH2','CH3','CH3','CH5','CH5','CH6','CH6'],psyms=1,colors='ggrrcckk'
     options,/def,'*hkp?_VALID_ENABLE_MASK_BITS',numbits=6,labels=channels,psyms=1,colors='bgrmcd'
     options,/def,'*hkp?_DIGI_FILTER_CLOCK_CYCLES',colors='br',labels=['Valid_Sig to Valid_En','Valid_En to Peak_En'],labflag=-1

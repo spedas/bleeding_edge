@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-03-20 01:52:33 -0700 (Mon, 20 Mar 2023) $
-; $LastChangedRevision: 31640 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2023-04-28 12:24:11 -0700 (Fri, 28 Apr 2023) $
+; $LastChangedRevision: 31812 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -93,7 +93,7 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   str2.rate=str2.total/str1.duration
   str2.rate2=str2.total2/str1.duration
   str2.rate6=total6/str1.duration
-  str2.scaled_rate6=str2.rate6/str1.pulser_frequency
+  str2.scaled_rate6=str2.rate6/str1.pulser_frequency[0]
   str2.rate14=total14/str1.duration
   str2.sigma14=p.s
   str2.avgbin14=p.x0

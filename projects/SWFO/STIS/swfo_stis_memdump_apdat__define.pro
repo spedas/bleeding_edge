@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-05-01 12:57:34 -0700 (Sun, 01 May 2022) $
-; $LastChangedRevision: 30793 $
+; $LastChangedDate: 2023-04-28 12:24:11 -0700 (Fri, 28 Apr 2023) $
+; $LastChangedRevision: 31812 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_memdump_apdat__define.pro $
 
 
@@ -49,7 +49,12 @@ function swfo_stis_memdump_apdat::decom,ccsds,source_dict=source_dict
   d.last_data = datastr
   ud.last_mapid = mapn
 
-  (*d.image_ptr)[datastr.addr:datastr.addr+datastr.datalen-1] = datastr.data
+  if addr gt '20000'x-datalen then begin
+    dprint,'Memory Dump address caused crossing memory boundaries...',dlevel=2
+    hexprint,addr
+    return,datastr
+  endif
+  (*d.image_ptr)[addr:addr+datalen-1] = memdat
 
   if debug(2) then begin
     byteimage = *d.image_ptr
