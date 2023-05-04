@@ -5,6 +5,11 @@
 ;  orbits, days, hours, minutes, seconds, or "pages".  A page is 
 ;  defined as the currently displayed time range.
 ;
+;  For maximum convenience, map this procedure to function keys:
+;
+;    define_key,'F7','skip,-1',/terminate
+;    define_key,'F9','skip,1',/terminate
+;
 ;USAGE:
 ;  skip, n
 ;
@@ -45,8 +50,8 @@
 ;                 Shift units are assumed to be orbits.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-03-21 14:50:22 -0700 (Sat, 21 Mar 2020) $
-; $LastChangedRevision: 28449 $
+; $LastChangedDate: 2023-05-03 14:44:26 -0700 (Wed, 03 May 2023) $
+; $LastChangedRevision: 31825 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/skip.pro $
 ;
 ;CREATED BY:    David L. Mitchell
