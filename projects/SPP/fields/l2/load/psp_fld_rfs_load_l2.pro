@@ -1,3 +1,12 @@
+;+
+;
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2023-05-04 13:23:20 -0700 (Thu, 04 May 2023) $
+; $LastChangedRevision: 31830 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l2/load/psp_fld_rfs_load_l2.pro $
+;
+;-
+
 pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
   varformat=vars_fmt, level = level
 
@@ -70,233 +79,302 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
 
     var = varnames[i]
 
-    if tnames(var) EQ var and var NE 'psp_fld_l2_quality_flags' then begin
+    if (strpos(var, 'position') EQ -1) and $
+      (strpos(var, 'temperature') EQ -1) then begin
 
-      split = strsplit(var,'_',/extract)
+      if tnames(var) EQ var and var NE 'psp_fld_l2_quality_flags' then begin
 
-      rec = ''
-      type = ''
+        split = strsplit(var,'_',/extract)
 
-      if strpos(var, '_hfr_') GT 0 then rec = 'HFR'
-      if strpos(var, '_lfr_') GT 0 then rec = 'LFR'
+        rec = ''
+        type = ''
 
-      if rec EQ 'HFR' then colors = [2] else colors = [6]
+        if strpos(var, '_hfr_') GT 0 then rec = 'HFR'
+        if strpos(var, '_lfr_') GT 0 then rec = 'LFR'
 
-      is_meta = (where(meta_end EQ split[-1]) GT -1)
+        if rec EQ 'HFR' then colors = [2] else colors = [6]
 
-      if is_meta then begin
+        is_meta = (where(meta_end EQ split[-1]) GT -1)
 
-        options, var, 'colors', colors
-        options, var, 'ysubtitle', ''
-        options, var, 'psym_lim', 100
+        if is_meta then begin
 
-        if strpos(var, '_string') GT 0 then begin
+          options, var, 'colors', colors
+          options, var, 'ysubtitle', ''
+          options, var, 'psym_lim', 100
 
-          options, var, 'tplot_routine', 'strplot'
-          options, var, 'noclip', 0
-          options, var, 'ytickformat', 'spp_fld_ticks_blank'
-          type = split[-2]
+          if strpos(var, '_string') GT 0 then begin
 
-        endif else begin
-
-          type = split[-1]
-
-          get_data, var, dat = d
-
-          if type EQ 'ch0' or type EQ 'ch1' then begin
-
-            options, var, 'yrange', [-1,8]
-            options, var, 'yticks', 7
-            options, var, 'yminor', 0
-            options, var, 'ytickv', [0,1,2,3,4,5,6,7]
-            options, var, 'panel_size', 1.0
-
-          endif else if type EQ 'nsum' then begin
-
-            options, var, 'yrange', [0,100]
-
-          endif else if type EQ 'hl' then begin
-
-            options, var, 'yrange', [-0.5,3.5]
-            options, var, 'yticks', 3
-            options, var, 'yminor', 0
-            options, var, 'ytickv', [0,1,2,3]
-            options, var, 'panel_size', 0.5
+            options, var, 'tplot_routine', 'strplot'
+            options, var, 'noclip', 0
+            options, var, 'ytickformat', 'spp_fld_ticks_blank'
+            type = split[-2]
 
           endif else begin
 
-            if min(d.y) GE 0 and max(d.y) LE 1 then begin
+            type = split[-1]
 
-              options, var, 'yticks', 1
+            get_data, var, dat = d
+
+            if type EQ 'ch0' or type EQ 'ch1' then begin
+
+              options, var, 'yrange', [-1,8]
+              options, var, 'yticks', 7
               options, var, 'yminor', 0
-              options, var, 'yrange', [-0.25,1.25]
-              options, var, 'ystyle', 1
-              options, var, 'ytickv', [0,1]
-              options, var, 'psym_lim', 100
+              options, var, 'ytickv', [0,1,2,3,4,5,6,7]
+              options, var, 'panel_size', 1.0
+
+            endif else if type EQ 'nsum' then begin
+
+              options, var, 'yrange', [0,100]
+
+            endif else if type EQ 'hl' then begin
+
+              options, var, 'yrange', [-0.5,3.5]
+              options, var, 'yticks', 3
+              options, var, 'yminor', 0
+              options, var, 'ytickv', [0,1,2,3]
               options, var, 'panel_size', 0.5
+
+            endif else begin
+
+              if min(d.y) GE 0 and max(d.y) LE 1 then begin
+
+                options, var, 'yticks', 1
+                options, var, 'yminor', 0
+                options, var, 'yrange', [-0.25,1.25]
+                options, var, 'ystyle', 1
+                options, var, 'ytickv', [0,1]
+                options, var, 'psym_lim', 100
+                options, var, 'panel_size', 0.5
+
+              endif
+
+            endelse
+
+          endelse
+
+          ytitle = rec + '!C' + strupcase(type)
+
+          ytitle = str_sub(ytitle, 'AVERAGES', 'AV')
+          ytitle = str_sub(ytitle, 'PEAKS', 'PK')
+
+          ; don't reset the title if it's already set with a source appended
+
+          get_data, var, lim = l
+
+          str_element, l, 'ytitle', ytitle0, success = ytitle_found
+
+          if ytitle_found NE 0 then begin
+
+            if ytitle0.StartsWith(ytitle) then begin
+              ytitle = ytitle0
+            endif else begin
+              ytitle = ytitle + ytitle0
+            endelse
+
+          end
+
+          options, var, 'ytitle', ytitle
+
+          ; Special options for Level 3 metadata
+
+          if level EQ 3 and type EQ 'RTN' or type EQ 'J2000' or type EQ 'bias' then begin
+
+            type = split[-1]
+
+            src = split[6]
+
+            if type EQ 'RTN' or type EQ 'J2000' then begin
+
+              if type EQ 'RTN' then $
+                labels = ['R','T','N'] else $
+                labels = ['X','Y','Z']
+
+              options, var, 'ytitle', $
+                strupcase(rec) + '!C' + src + '!C' + type
+              options, var, 'labels', labels
+              ;options, var, 'colors', 'bgr'
+              options, var, 'colors', [2,3,6] ;'bgr'
+              options, var, 'line_colors', 10
+              options, var, 'yrange', [-1.0,1.0]
+              options, var, 'ystyle', 1
+              options, var, 'yticklen', 1
+              options, var, 'ygridstyle', 1
+              options, var, 'psym_lim', 100
+
+            endif else if type EQ 'bias' then begin
+
+              options, var, 'ytitle', $
+                strupcase(rec) + '!C' + src + '!C' + 'BIAS'
+              options, var, 'ysubtitle', $
+                '[uA]'
 
             endif
 
-          endelse
+          endif
+
+        endif else begin
+
+          print, var
+
+          src = ''
+
+          if strpos(var, '_auto_') GT 0 then begin
+            if strpos(var, '_auto_averages_') GT 0 then type = 'AV'
+            if strpos(var, '_auto_peaks_') GT 0 then type = 'PK'
+            src = split[-1]
+            if set_colors then options, var, 'color_table', 129
+            options, var, 'zlog', 1
+            options, var, 'auto_downsample', 1
+            options, var, 'ztitle', '[V2/Hz]'
+          endif
+
+          if strpos(var, '_hires_') GT 0 then begin
+            if strpos(var, '_hires_averages_') GT 0 then type = 'HR AV'
+            if strpos(var, '_hires_peaks_') GT 0 then type = 'HR PK'
+            src = split[-1]
+            if set_colors then options, var, 'color_table', 129
+            options, var, 'zlog', 1
+            options, var, 'ylog', 0
+            options, var, 'auto_downsample', 1
+            options, var, 'ztitle', '[V2/Hz]'
+          endif
+
+          if strpos(var, '_coher_') GT 0 then begin
+            type = 'COH'
+            src = split[-2] + '-'  + split[-1]
+            if set_colors then options, var, 'color_table', 117
+            options, var, 'zlog', 1
+            options, var, 'zrange', [0.001,1]
+            options, var, 'ztitle', ''
+          endif
+
+          if strpos(var, '_phase_') GT 0 then begin
+            type = 'PHA'
+            src = split[-2] + '-'  + split[-1]
+            if set_colors then options, var, 'color_table', 75
+            options, var, 'zlog', 0
+            options, var, 'zrange', [-180,180]
+            options, var, 'ztickv', [-180,-90,0,90,180]
+            options, var, 'zticks', 4
+            options, var, 'ztitle', '[Deg]'
+          endif
+
+          if strpos(var, '_cross_') GT 0 then begin
+            if strpos(var, '_cross_im_') GT 0 then type = 'X IM'
+            if strpos(var, '_cross_re_') GT 0 then type = 'X RE'
+            src = split[-2] + '-'  + split[-1]
+            if set_colors then options, var, 'color_table', 129
+            options, var, 'zlog', 0
+            options, var, 'ztitle', '[V2/Hz]'
+          endif
+
+          get_data, var, data = d
+
+          if keyword_set(d) then begin
+            options, var, 'yrange', minmax(d.v)
+            options, var, 'datagap', 180d
+            options, var, 'ystyle', 1
+            if strpos(var, '_hires_') EQ 0 then options, var, 'ylog', 1
+            options, var, 'no_interp', 1
+            options, var, 'panel_size', 2
+
+            options, var, 'ysubtitle', '[Hz]'
+
+            ytitle = rec + '!C' + strupcase(type) + '!C' + src
+
+            options, var, 'ytitle', ytitle
+          endif
+
+          ; add source information to metavariables
+
+          related_meta_vars = tnames(var + '_*')
+
+          foreach rm_var, related_meta_vars do begin
+
+            get_data, rm_var, lim = lim
+
+            str_element, lim, 'ytitle', ytitle0, success = ytitle_found
+
+            if ytitle_found NE 0 then begin
+              options, rm_var, 'ytitle', ytitle0 + '!C' + src
+            endif else begin
+              options, rm_var, 'ytitle', '!C' + src
+            endelse
+
+          endforeach
+
+          ;      stop
 
         endelse
 
-        ytitle = rec + '!C' + strupcase(type)
+      endif
+    endif
+  endfor
 
-        ytitle = str_sub(ytitle, 'AVERAGES', 'AV')
-        ytitle = str_sub(ytitle, 'PEAKS', 'PK')
+  if level EQ 3 then begin
 
-        ; don't reset the title if it's already set with a source appended
+    l3_pos_tnames = tnames('psp_fld_l3_rfs_?fr_position*')
 
-        get_data, var, lim = l
+    foreach name, l3_pos_tnames do begin
 
-        str_element, l, 'ytitle', ytitle0, success = ytitle_found
+      frame = name.Remove(0,27)
 
-        if ytitle_found NE 0 then begin
+      options, name, 'ytitle', 'PSP!Cpos' + '!C' + frame
+      options, name, 'ysubtitle', '[km]'
 
-          if ytitle0.StartsWith(ytitle) then begin
-            ytitle = ytitle0
-          endif else begin
-            ytitle = ytitle + ytitle0
-          endelse
+      options, name, 'yrange'
 
-        end
+      options, name, 'colors', [2,3,6] ;'bgr'
+      options, name, 'line_colors', 10
 
-        options, var, 'ytitle', ytitle
-
-        ; Special options for Level 3 metadata
-
-        if level EQ 3 and type EQ 'RTN' or type EQ 'J2000' or type EQ 'bias' then begin
-
-          type = split[-1]
-
-          src = split[6]
-
-          if type EQ 'RTN' or type EQ 'J2000' then begin
-
-            if type EQ 'RTN' then $
-              labels = ['R','T','N'] else $
-              labels = ['X','Y','Z']
-
-            options, var, 'ytitle', $
-              strupcase(rec) + '!C' + src + '!C' + type
-            options, var, 'labels', labels
-            options, var, 'colors', 'bgr'
-            options, var, 'yrange', [-1.0,1.0]
-            options, var, 'ystyle', 1
-            options, var, 'yticklen', 1
-            options, var, 'ygridstyle', 1
-            options, var, 'psym_lim', 100
-
-          endif else if type EQ 'bias' then begin
-
-            options, var, 'ytitle', $
-              strupcase(rec) + '!C' + src + '!C' + 'BIAS'
-            options, var, 'ysubtitle', $
-              '[uA]'
-
-          endif
-
-        endif
-
+      if name.Contains('RTN') then begin
+        options, name, 'labels', ['R', 'T', 'N']
+        options, name, 'bins', [1, 0, 0]
       endif else begin
-
-        print, var
-
-        src = ''
-
-        if strpos(var, '_auto_') GT 0 then begin
-          if strpos(var, '_auto_averages_') GT 0 then type = 'AV'
-          if strpos(var, '_auto_peaks_') GT 0 then type = 'PK'
-          src = split[-1]
-          if set_colors then options, var, 'color_table', 129
-          options, var, 'zlog', 1
-          options, var, 'auto_downsample', 1
-          options, var, 'ztitle', '[V2/Hz]'
-        endif
-
-        if strpos(var, '_hires_') GT 0 then begin
-          if strpos(var, '_hires_averages_') GT 0 then type = 'HR AV'
-          if strpos(var, '_hires_peaks_') GT 0 then type = 'HR PK'
-          src = split[-1]
-          if set_colors then options, var, 'color_table', 129
-          options, var, 'zlog', 1
-          options, var, 'ylog', 0
-          options, var, 'auto_downsample', 1
-          options, var, 'ztitle', '[V2/Hz]'
-        endif
-
-        if strpos(var, '_coher_') GT 0 then begin
-          type = 'COH'
-          src = split[-2] + '-'  + split[-1]
-          if set_colors then options, var, 'color_table', 117
-          options, var, 'zlog', 1
-          options, var, 'zrange', [0.001,1]
-          options, var, 'ztitle', ''
-        endif
-
-        if strpos(var, '_phase_') GT 0 then begin
-          type = 'PHA'
-          src = split[-2] + '-'  + split[-1]
-          if set_colors then options, var, 'color_table', 75
-          options, var, 'zlog', 0
-          options, var, 'zrange', [-180,180]
-          options, var, 'ztickv', [-180,-90,0,90,180]
-          options, var, 'zticks', 4
-          options, var, 'ztitle', '[Deg]'
-        endif
-
-        if strpos(var, '_cross_') GT 0 then begin
-          if strpos(var, '_cross_im_') GT 0 then type = 'X IM'
-          if strpos(var, '_cross_re_') GT 0 then type = 'X RE'
-          src = split[-2] + '-'  + split[-1]
-          if set_colors then options, var, 'color_table', 129
-          options, var, 'zlog', 0
-          options, var, 'ztitle', '[V2/Hz]'
-        endif
-
-        get_data, var, data = d
-
-        if keyword_set(d) then begin
-          options, var, 'yrange', minmax(d.v)
-          options, var, 'datagap', 180d
-          options, var, 'ystyle', 1
-          if strpos(var, '_hires_') EQ 0 then options, var, 'ylog', 1
-          options, var, 'no_interp', 1
-          options, var, 'panel_size', 2
-
-          options, var, 'ysubtitle', '[Hz]'
-
-          ytitle = rec + '!C' + strupcase(type) + '!C' + src
-
-          options, var, 'ytitle', ytitle
-        endif
-
-        ; add source information to metavariables
-
-        related_meta_vars = tnames(var + '_*')
-
-        foreach rm_var, related_meta_vars do begin
-
-          get_data, rm_var, lim = lim
-
-          str_element, lim, 'ytitle', ytitle0, success = ytitle_found
-
-          if ytitle_found NE 0 then begin
-            options, rm_var, 'ytitle', ytitle0 + '!C' + src
-          endif else begin
-            options, rm_var, 'ytitle', '!C' + src
-          endelse
-
-        endforeach
-
-        ;      stop
-
+        options, name, 'labels', ['X', 'Y', 'Z']
       endelse
 
-    endif
+      options, name, 'yticklen', 1
+      options, name, 'ygridstyle', 1
+      options, name, 'psym_lim', 100
+      options, name, 'panel_size'
 
-  endfor
+    endforeach
+
+    l3_temp_tnames = tnames('psp_fld_l3_rfs_' + strlowcase(rec) + '_temperature*')
+
+    foreach name, l3_temp_tnames, l3_temp_tnames_i do begin
+
+      sensor = name.Remove(0,30)
+
+      options, name, 'ytitle', sensor + ' Temp'
+      options, name, 'ysubtitle', '[C]'
+
+      options, name, 'yrange'
+      options, name, 'line_colors', 8
+
+      if name.EndsWith('DCB') then color = 0 else $
+        color = fix(name.SubString(-1))
+
+      if color GE 4 then color += 1
+
+      options, name, 'colors', [color]
+      options, name, 'labels', [sensor]
+
+      options, name, 'ynozero', 1
+      options, name, 'yticklen', 1
+      options, name, 'ygridstyle', 1
+      options, name, 'psym_lim', 100
+      options, name, 'panel_size'
+
+    endforeach
+
+    store_data, l3_temp_tnames[0].SubString(0,29), data = l3_temp_tnames
+
+    options, l3_temp_tnames[0].SubString(0,29), 'ytitle', 'Temp'
+
+  endif
 
   ; For quality flag filtering support
   r = where(tn.Matches('quality_flag'))

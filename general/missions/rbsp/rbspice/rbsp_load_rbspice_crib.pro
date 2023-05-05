@@ -10,8 +10,8 @@
 ;  
 ;  
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-03-03 08:08:58 -0800 (Fri, 03 Mar 2017) $
-;$LastChangedRevision: 22902 $
+;$LastChangedDate: 2023-05-04 12:46:31 -0700 (Thu, 04 May 2023) $
+;$LastChangedRevision: 31828 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/rbspice/rbsp_load_rbspice_crib.pro $
 ;-
 
@@ -51,18 +51,18 @@ tplot, '*TOFxEnonH_oxygen_omni_spin'
 
 stop
 
-; load PHxTOF (proton and oxygen) data:
+; load TOFxPHHHELT (proton and oxygen) data:
 rbsp_load_rbspice, probe=probe, trange=trange, datatype='TOFxPHHHELT', level = level 
 
-; plot the PHxTOF proton spectra
+; plot the TOFxPHHHELT proton spectra
 tplot, '*_TOFxPHHHELT_proton_omni_spin'
 stop
 
-; plot the PHxTOF proton spectra
+; plot the TOFxPHHHELT oxygen spectra
 tplot, '*_TOFxPHHHELT_oxygen_omni_spin'
 stop
 
-; calculate the PHxTOF PAD for protons
+; calculate the TOFxPHHHELT PAD for protons
 rbsp_rbspice_pad, probe=probe, trange=trange, datatype='TOFxPHHHELT', energy=[0, 30], bin_size = 15, level = level
 
 tplot, ['*TOFxPHHHELT_proton_omni_spin', $
