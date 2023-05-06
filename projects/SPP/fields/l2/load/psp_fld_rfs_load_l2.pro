@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2023-05-04 13:23:20 -0700 (Thu, 04 May 2023) $
-; $LastChangedRevision: 31830 $
+; $LastChangedDate: 2023-05-05 16:56:56 -0700 (Fri, 05 May 2023) $
+; $LastChangedRevision: 31835 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l2/load/psp_fld_rfs_load_l2.pro $
 ;
 ;-
@@ -268,6 +268,8 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
             options, var, 'zlog', 0
             options, var, 'ztitle', '[V2/Hz]'
           endif
+
+          if var.EndsWith('sfu') then options, var, 'ztitle', '[sfu]'
 
           get_data, var, data = d
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu May  4 18:16:46 2023.<P>
+<STRONG>Last modified: </STRONG>Fri May  5 18:16:47 2023.<P>
  
 <HR>
  
@@ -286,6 +286,8 @@ This page was created by the IDL library routine
 <br>Puts snapshot windows in convenient, non-overlapping locations,
 <LI><A HREF="#SWE_SNAP_OPTIONS">SWE_SNAP_OPTIONS</A>
 <br>Stores a structure of SWEA snapshot keyword options and provides
+<LI><A HREF="#SWE_SWI_CC_SNAP">SWE_SWI_CC_SNAP</A>
+<br>Gets cross calibration factor from SWE-SWI density ratio.
 <LI><A HREF="#SWE_TESTPULSER_MODEL">SWE_TESTPULSER_MODEL</A>
 <br>Creates SWEA Test Pulser Model and generates test pulser signatures
 <LI><A HREF="#TIMEFIT">TIMEFIT</A>
@@ -7615,7 +7617,7 @@ CREATED BY:    David L. Mitchell  07-24-12
 <A NAME="SWE_SNAP_OPTIONS">
 <H2>SWE_SNAP_OPTIONS</H2></A>
 <A HREF="#SWE_SNAP_LAYOUT">[Previous Routine]</A>
-<A HREF="#SWE_TESTPULSER_MODEL">[Next Routine]</A>
+<A HREF="#SWE_SWI_CC_SNAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   swe_snap_options
@@ -7668,9 +7670,32 @@ KEYWORDS:
 <STRONG>(See <A href="swea/swe_snap_options.pro">projects/maven/swea/swe_snap_options.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_SWI_CC_SNAP">
+<H2>SWE_SWI_CC_SNAP</H2></A>
+<A HREF="#SWE_SNAP_OPTIONS">[Previous Routine]</A>
+<A HREF="#SWE_TESTPULSER_MODEL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   swe_swi_cc_snap
+PURPOSE:
+  Gets cross calibration factor from SWE-SWI density ratio.
+
+USAGE:
+  swe_swi_cc_snap
+INPUTS:
+
+KEYWORDS:
+CREATED BY:	David L. Mitchell  01-15-98
+FILE:  nibble.pro
+VERSION:  1.2
+LAST MODIFICATION:  01-31-98
+</PRE><P>
+<STRONG>(See <A href="swea/swe_swi_cc_snap.pro">projects/maven/swea/swe_swi_cc_snap.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_TESTPULSER_MODEL">
 <H2>SWE_TESTPULSER_MODEL</H2></A>
-<A HREF="#SWE_SNAP_OPTIONS">[Previous Routine]</A>
+<A HREF="#SWE_SWI_CC_SNAP">[Previous Routine]</A>
 <A HREF="#TIMEFIT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
