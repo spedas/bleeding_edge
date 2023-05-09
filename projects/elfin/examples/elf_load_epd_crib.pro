@@ -119,6 +119,18 @@ print, 'local disk and not from the remote server'
 print, '-----------------------------------------------------------------'
 stop
 
+;;    ===================================
+;; 10) Request Level 2 data
+;;    ===================================
+timespan, '2022-08-03'
+tr = timerange()
+elf_load_epd, probes='a', datatype='pef', trange=tr, level='l2'
+print, '-----------------------------------------------------------------'
+print, 'Note the messages in the console window show the data was loaded from the'
+print, 'local disk and not from the remote server'
+print, '-----------------------------------------------------------------'
+stop
+
 ; remove tplot variables created so far
 del_data, 'ela_p*f'
 

@@ -30,16 +30,34 @@
 ;       none
 ;
 ;KEYWORDS:
-;       none
+;
+;       MISSION:  Restore an ephemeris for the entire mission.  Currently, the
+;                 ephemeris spans 2014-09-21 (orbit insertion) to 2023-07-01.
+;                 The file is 3.4 GB in size, so it could take a while to 
+;                 download it, and that is how much RAM it will consume.  The
+;                 time resolution is 10 seconds, and there are >27 million points.
+;
+;                 You can use the WHERE command to identify geometric situations
+;                 of interest.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:33:21 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26801 $
+; $LastChangedDate: 2023-05-08 13:53:09 -0700 (Mon, 08 May 2023) $
+; $LastChangedRevision: 31839 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_eph.pro $
 ;-
-function maven_orbit_eph
+function maven_orbit_eph, mission=mission
 
   @maven_orbit_common
+
+  if keyword_set(mission) then begin
+    rootdir = 'maven/anc/spice/sav/'
+    ssrc = mvn_file_source(archive_ext='')  ; don't archive old files
+    fname = 'maven_eph_20140921_*.sav'
+    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=2)
+    nfiles = n_elements(file)
+    if (nfiles eq 1) then restore, file
+    return, eph
+  endif
 
   if (size(state,/type) eq 0) then begin
     print,"Ephemeris not defined.  Use maven_orbit_tplot first."

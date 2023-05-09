@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun May  7 18:16:40 2023.<P>
+<STRONG>Last modified: </STRONG>Mon May  8 18:16:34 2023.<P>
  
 <HR>
  
@@ -336,11 +336,19 @@ INPUTS:
        none
 
 KEYWORDS:
-       none
+
+       MISSION:  Restore an ephemeris for the entire mission.  Currently, the
+                 ephemeris spans 2014-09-21 (orbit insertion) to 2023-07-01.
+                 The file is 3.4 GB in size, so it could take a while to 
+                 download it, and that is how much RAM it will consume.  The
+                 time resolution is 10 seconds, and there are &gt;27 million points.
+
+                 You can use the WHERE command to identify geometric situations
+                 of interest.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-03-15 12:33:21 -0700 (Fri, 15 Mar 2019) $
- $LastChangedRevision: 26801 $
+ $LastChangedDate: 2023-05-08 13:53:09 -0700 (Mon, 08 May 2023) $
+ $LastChangedRevision: 31839 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_eph.pro $
 </PRE><P>
 <STRONG>(See <A href="maven_orbit_tplot/maven_orbit_eph.pro">projects/maven/maven_orbit_tplot/maven_orbit_eph.pro</A>)</STRONG><P>

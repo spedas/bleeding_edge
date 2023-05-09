@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2023-05-05 16:56:56 -0700 (Fri, 05 May 2023) $
-; $LastChangedRevision: 31835 $
+; $LastChangedDate: 2023-05-08 15:49:33 -0700 (Mon, 08 May 2023) $
+; $LastChangedRevision: 31840 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l2/load/psp_fld_rfs_load_l2.pro $
 ;
 ;-
@@ -66,10 +66,10 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
   cdf2tplot, files, varformat = vars_fmt, varnames = varnames, tplotnames=tn
 
   meta_end = ['averages', 'peaks', 'ch0', 'ch1', 'string', $
-    'nsum', 'gain', 'hl', 'J2000', 'RTN', 'bias']
+    'nsum', 'gain', 'hl', 'J2000', 'RTN', 'JUPITER', 'bias']
 
   meta = ['averages', 'peaks', 'ch0', 'ch0_string', 'ch1', 'ch1_string', $
-    'nsum', 'gain', 'hl', 'J2000', 'SPP_RTN', 'bias']
+    'nsum', 'gain', 'hl', 'J2000', 'SPP_RTN', 'IAU_JUPITER', 'bias']
 
   types = ['auto_averages', 'auto_peaks', 'cross_im', 'cross_re', 'coher', 'phase']
 
@@ -178,13 +178,14 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
 
           ; Special options for Level 3 metadata
 
-          if level EQ 3 and type EQ 'RTN' or type EQ 'J2000' or type EQ 'bias' then begin
+          if level EQ 3 and type EQ 'RTN' or type EQ 'J2000' or $
+            type EQ 'JUPITER' or type EQ 'bias' then begin
 
             type = split[-1]
 
             src = split[6]
 
-            if type EQ 'RTN' or type EQ 'J2000' then begin
+            if type EQ 'RTN' or type EQ 'J2000' or type EQ 'JUPITER' then begin
 
               if type EQ 'RTN' then $
                 labels = ['R','T','N'] else $
@@ -201,6 +202,7 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
               options, var, 'yticklen', 1
               options, var, 'ygridstyle', 1
               options, var, 'psym_lim', 100
+              options, var, 'datagap', 180d
 
             endif else if type EQ 'bias' then begin
 
@@ -208,6 +210,8 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
                 strupcase(rec) + '!C' + src + '!C' + 'BIAS'
               options, var, 'ysubtitle', $
                 '[uA]'
+              options, var, 'tplot_routine', 'psp_fld_aeb_mplot'
+              options, var, 'datagap', 180d
 
             endif
 
