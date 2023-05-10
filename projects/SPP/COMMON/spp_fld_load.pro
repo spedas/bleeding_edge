@@ -91,9 +91,9 @@
 ; CREATED BY:       Davin Larson December 2018
 ;                   maintained by Marc Pulupa, 2019-2022
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2023-04-12 14:37:14 -0700 (Wed, 12 Apr 2023) $
-; $LastChangedRevision: 31742 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2023-05-09 15:02:33 -0700 (Tue, 09 May 2023) $
+; $LastChangedRevision: 31846 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -336,7 +336,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
       endif else if type EQ 'rfs_lfr_qtn' then begin
         pathformat = 'TYPE/psp_fld_l3_TYPE_YYYY*_*_v??.cdf'
         if n_elements(tname_prefix) EQ 0 then $
-          tname_prefix = 'psp_fld_l3_rfs_lfr_qtn_' 
+          tname_prefix = 'psp_fld_l3_rfs_lfr_qtn_'
       endif else begin
         pathformat =  'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDDhh_v??.cdf'
         resolution = 3600l * 6l ; hours
@@ -410,7 +410,7 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
         pathformat = 'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDDhh_v??.cdf'
         resolution = 3600l * 6l ; hours
         daily_names = 0
-      endif 
+      endif
     endif else begin
       pathformat = 'TYPE/YYYY/MM/spp_fld_l1_TYPE_YYYYMMDD_v??.cdf'
     endelse
@@ -762,31 +762,33 @@ pro spp_fld_load, trange=trange, type=type, files=files, $
       if n_elements(tname_prefix) EQ 1 then qf_name = tname_prefix + qf_name
       if n_elements(tname_suffix) EQ 1 then qf_name = qf_name + tname_suffix
 
-      if (tnames(qf_name))[0] NE '' then begin
+      foreach qf_tname, tnames(qf_name) do begin
+        if qf_tname NE '' then begin
 
-        options, qf_name, 'tplot_routine', 'bitplot'
-        options, qf_name, 'psyms', [2]
+          options, qf_name, 'tplot_routine', 'bitplot'
+          options, qf_name, 'psyms', [2]
 
-        qf_labels = $
-          ['BIAS_SWP','THRUSTER','SCM_CAL',$
-          'MAG_ROLL','MAG_CAL','SPC_EMODE','SLS_CAL','OFF_UMBRA', $
-          'HF_NOISE','ANT_RAILS','ANOM_BIAS']
-          
-        nbits = n_elements(qf_labels)
+          qf_labels = $
+            ['BIAS_SWP','THRUSTER','SCM_CAL',$
+            'MAG_ROLL','MAG_CAL','SPC_EMODE','SLS_CAL','OFF_UMBRA', $
+            'HF_NOISE','ANT_RAILS','ANOM_BIAS']
 
-        options, qf_name, 'numbits', nbits
-        options, qf_name, 'yticks', nbits + 1
-        options, qf_name, 'ytickname', $
-          [' ', string(indgen(nbits), format = '(I2)'), ' ']
-        options, qf_name, 'labels', qf_labels
-        options, qf_name, 'ytitle', 'Quality Flags'
-        options, qf_name, 'ysubtitle', ' '
-        options, qf_name, 'colors', [0,1,2,6]
-        options, qf_name, 'yticklen', 1
-        options, qf_name, 'ygridstyle', 1
-        options, qf_name, 'yminor', 1
+          nbits = n_elements(qf_labels)
 
-      endif
+          options, qf_name, 'numbits', nbits
+          options, qf_name, 'yticks', nbits + 1
+          options, qf_name, 'ytickname', $
+            [' ', string(indgen(nbits), format = '(I2)'), ' ']
+          options, qf_name, 'labels', qf_labels
+          options, qf_name, 'ytitle', 'Quality Flags'
+          options, qf_name, 'ysubtitle', ' '
+          options, qf_name, 'colors', [0,1,2,6]
+          options, qf_name, 'yticklen', 1
+          options, qf_name, 'ygridstyle', 1
+          options, qf_name, 'yminor', 1
+
+        endif
+      endforeach
 
     endelse
 

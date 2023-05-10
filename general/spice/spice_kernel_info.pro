@@ -37,9 +37,9 @@ end
 ;
 ;
 ; Author: Davin Larson
-; $LastChangedBy: hara $
-; $LastChangedDate: 2022-06-24 14:32:11 -0700 (Fri, 24 Jun 2022) $
-; $LastChangedRevision: 30881 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2023-05-08 19:44:08 -0700 (Mon, 08 May 2023) $
+; $LastChangedRevision: 31843 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/spice_kernel_info.pro $
 ;-
 
@@ -99,7 +99,7 @@ for i2 = 0,n_elements(kernels)-1 do begin
          catch,error_status
          if error_status ne 0 then begin
             printdat,!error_state
-            dprint,dlevel=1,verbose=verbose,'Something is wrong with file: '+kernel+' Skipping Object:'+string(obj)
+            dprint,dlevel=1,verbose=verbose,'Something is wrong with file: '+file_info_string(kernel)+' Skipping Object:'+string(obj)
             error_status = 0
             continue
          endif

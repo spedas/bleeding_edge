@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-04-28 12:24:11 -0700 (Fri, 28 Apr 2023) $
-; $LastChangedRevision: 31812 $
+; $LastChangedDate: 2023-05-08 19:36:16 -0700 (Mon, 08 May 2023) $
+; $LastChangedRevision: 31842 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_hkp_apdat__define.pro $
 
 
@@ -114,11 +114,11 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
-        coincidence_window:       swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
+        coincidence_window_clkcyc:swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
         noise_delay_1us:          swfo_data_select(ccsds_data,(d+51*2+1)*8, 4),$
         state_machine_errors:     swfo_data_select(ccsds_data,(d+51*2+1)*8+[1:13]*4,4),$
         first_cmd_id:             swfo_data_select(ccsds_data,(d+55*2  )*8, 8),$
@@ -183,11 +183,11 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
-        coincidence_window:       swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
+        coincidence_window_clkcyc:swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
         noise_delay_1us:          swfo_data_select(ccsds_data,(d+51*2+1)*8, 4),$
         state_machine_errors:     swfo_data_select(ccsds_data,(d+51*2+1)*8+[1:13]*4,4),$
         first_cmd_id:             swfo_data_select(ccsds_data,(d+55*2  )*8, 8),$
@@ -252,11 +252,11 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
-        coincidence_window:       swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
+        coincidence_window_clkcyc:swfo_data_select(ccsds_data,(d+51*2  )*8, 8),$
         noise_delay_1us:          swfo_data_select(ccsds_data,(d+51*2+1)*8, 4),$
         state_machine_errors:     swfo_data_select(ccsds_data,(d+51*2+1)*8+[1:13]*4,4),$
         first_cmd_id:             swfo_data_select(ccsds_data,(d+55*2  )*8, 8),$
@@ -321,7 +321,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
@@ -389,7 +389,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
@@ -457,7 +457,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+43*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+44*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+45*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+46*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+46*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+49*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+50*2  )*8,16),$
@@ -526,7 +526,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+40*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+41*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+42*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+43*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+43*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+43*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+46*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+47*2  )*8,16),$
@@ -594,7 +594,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         expected_checksum0:       swfo_data_select(ccsds_data,(d+40*2  )*8,16),$
         checksum1:                swfo_data_select(ccsds_data,(d+41*2  )*8,16),$
         checksum0:                swfo_data_select(ccsds_data,(d+42*2  )*8,16),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+43*2  )*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+43*2  )*8, 8),$
         edac_errors:              swfo_data_select(ccsds_data,(d+43*2+1)*8+[0:9]*4,4),$
         bus_timeout_counters:     swfo_data_select(ccsds_data,(d+46*2  )*8+[0:3]*4,4),$
         user_0e:                  swfo_data_select(ccsds_data,(d+47*2  )*8,16),$
@@ -636,7 +636,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+ 0*2  )*8, 6),$
         user_0e:                  swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:             swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:           swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:              swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         edac_nse_errors:          swfo_data_select(ccsds_data,(d+ 6*2  )*8+[0:1]*4,4),$
@@ -701,7 +701,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+ 0*2  )*8, 6),$
         user_0e:                  swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:             swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:           swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:              swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         edac_nse_errors:          swfo_data_select(ccsds_data,(d+ 6*2  )*8+[0:1]*4,4),$
@@ -766,7 +766,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+ 0*2  )*8, 6),$
         user_0e:                  swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:             swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:           swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:              swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         edac_nse_errors:          swfo_data_select(ccsds_data,(d+ 6*2  )*8+[0:1]*4,4),$
@@ -829,7 +829,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+ 0*2  )*8, 6),$
         user_0e:                  swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:             swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:           swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:              swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         edac_nse_errors:          swfo_data_select(ccsds_data,(d+ 6*2  )*8+[0:1]*4,4),$
@@ -883,7 +883,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+ 0*2  )*8, 6),$
         user_0e:                  swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:             swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:           swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:              swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         edac_nse_errors:          swfo_data_select(ccsds_data,(d+ 6*2  )*8+[0:1]*4,4),$
@@ -936,7 +936,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+ 0*2  )*8, 6),$
         user_0e:                  swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:             swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:           swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:              swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         science_events:           float(swfo_stis_log_decomp(swfo_data_select(ccsds_data,(d+ 6*2  )*8,16))),$
@@ -984,7 +984,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         pps_timeout_100ms:        swfo_data_select(ccsds_data,(d+ 0*2  )*8, 6),$
         user_0e:                  swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:             swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:        swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:    swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:           swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:              swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         event_counter:            swfo_data_select(ccsds_data,(d+ 6*2  )*8,16),$
@@ -1029,7 +1029,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         cmds_remaining:         cmds_remaining , $
         user_0e:                swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:           swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:      swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:  swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:         swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:            swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         event_counter:          swfo_data_select(ccsds_data,(d+ 6*2  )*8,16),$
@@ -1076,7 +1076,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
         cmds_remaining:         cmds_remaining , $
         user_0e:                swfo_data_select(ccsds_data,(d+ 2*2  )*8,16),$
         cmds_invalid:           swfo_data_select(ccsds_data,(d+ 3*2  )*8, 8),$
-        bias_clock_period:      swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
+        bias_clock_period_2us:  swfo_data_select(ccsds_data,(d+ 3*2+1)*8, 8),$
         memory_address:         swfo_data_select(ccsds_data,(d+ 4*2  )*8,16),$
         pps_counter:            swfo_data_select(ccsds_data,(d+ 5*2  )*8,16),$
         event_counter:          swfo_data_select(ccsds_data,(d+ 6*2  )*8,16),$
@@ -1122,7 +1122,7 @@ function swfo_stis_hkp_apdat::decom,ccsds,source_dict=source_dict      ;,header,
       cmds_remaining=(fix(cmd_fifo_write_ptr)-fix(cmd_fifo_read_ptr))/3.
       if cmds_remaining lt 0 then cmds_remaining+=8190/3.
       str2={$
-        bias_clock_period:      biasclk_period10+ishft(biasclk_period432,2)+ishft(biasclk_period765,5) , $
+        bias_clock_period_2us:  biasclk_period10+ishft(biasclk_period432,2)+ishft(biasclk_period765,5) , $
         cmd_fifo_write_ptr:     cmd_fifo_write_ptr , $
         cmd_fifo_read_ptr:      cmd_fifo_read_ptr , $
         cmds_received:          cmd_fifo_write_ptr/3. , $

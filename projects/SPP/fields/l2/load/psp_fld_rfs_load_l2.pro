@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2023-05-08 15:49:33 -0700 (Mon, 08 May 2023) $
-; $LastChangedRevision: 31840 $
+; $LastChangedDate: 2023-05-09 16:27:38 -0700 (Tue, 09 May 2023) $
+; $LastChangedRevision: 31847 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l2/load/psp_fld_rfs_load_l2.pro $
 ;
 ;-
@@ -80,9 +80,11 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
     var = varnames[i]
 
     if (strpos(var, 'position') EQ -1) and $
-      (strpos(var, 'temperature') EQ -1) then begin
+      (strpos(var, 'temperature') EQ -1) and $
+      (strpos(var, 'distance') EQ -1) then begin
 
-      if tnames(var) EQ var and var NE 'psp_fld_l2_quality_flags' then begin
+      if tnames(var) EQ var and var NE 'psp_fld_l2_quality_flags' $
+        and var NE 'psp_fld_l3_quality_flags' then begin
 
         split = strsplit(var,'_',/extract)
 
