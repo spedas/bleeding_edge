@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-04-28 12:24:11 -0700 (Fri, 28 Apr 2023) $
-; $LastChangedRevision: 31812 $
+; $LastChangedDate: 2023-05-09 19:58:43 -0700 (Tue, 09 May 2023) $
+; $LastChangedRevision: 31848 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -101,7 +101,9 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   lut_map        = struct_value(hkp_sample,'USER_09',default=6b)
   ;use_lut        = struct_value(hkp_sample,'xxxx',default=0b)   ; needs fixing
-  sci_nonlut_mode   = struct_value(hkp_sample,'SCI_NONLUT_MODE',default=0b)
+  ;sci_nonlut_mode   = 1b and struct_value(hkp_sample,'SCI_MODE_BITS',default=0b)
+  sci_nonlut_mode   = (str1.detector_bits and 64) ne 0
+  sci_decimate = (str1.detector_bits and 128) ne 0
   sci_resolution     = struct_value(hkp_sample,'SCI_RESOLUTION',default=3b)
   sci_translate      = struct_value(hkp_sample,'SCI_TRANSLATE',default=0u)
 
@@ -110,6 +112,7 @@ function swfo_stis_sci_apdat::decom,ccsds,source_dict=source_dict      ;,header,
     ;use_lut: use_lut, $
     lut_map: lut_map, $
     sci_nonlut_mode: sci_nonlut_mode, $
+    sci_decimate: sci_decimate, $
     sci_translate: sci_translate, $
     sci_resolution: sci_resolution $
   }
