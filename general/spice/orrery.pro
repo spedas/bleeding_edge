@@ -175,8 +175,8 @@
 ;       BLACK:     Use a black background for the orbit snapshot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-04-27 16:33:09 -0700 (Thu, 27 Apr 2023) $
-; $LastChangedRevision: 31808 $
+; $LastChangedDate: 2023-05-11 10:09:40 -0700 (Thu, 11 May 2023) $
+; $LastChangedRevision: 31854 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -1550,7 +1550,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
   if (dopng) then begin
     current_dev = !d.name
     set_plot, 'z'
-    device, set_resolution=[xsize*1.010, ysize]*scale
+    device, set_resolution=[xsize*1.010, ysize]*scale, set_pixel_depth=24, decompose=0
     zscl = 0.8
   endif else begin
     if (Owin eq -1) then begin

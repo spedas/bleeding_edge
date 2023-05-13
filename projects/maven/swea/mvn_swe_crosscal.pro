@@ -48,9 +48,9 @@
 ;
 ;       SILENT:       Don't print any warnings or messages.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-07 11:41:34 -0800 (Tue, 07 Mar 2023) $
-; $LastChangedRevision: 31596 $
+; $LastChangedBy: xussui_lap $
+; $LastChangedDate: 2023-05-12 11:24:31 -0700 (Fri, 12 May 2023) $
+; $LastChangedRevision: 31857 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_crosscal.pro $
 ;
 ;CREATED BY:    David L. Mitchell  05-04-16
@@ -69,7 +69,7 @@ function mvn_swe_crosscal, time, on=on, off=off, refresh=refresh, extrap=extrap,
     ac[*,2] = [2.2143D,  7.9280d-4,  1.4300d-5,  0.0D     ]  ; MCPHV = 2700 V
     ac[*,3] = [2.0027D,  7.2892d-3, -1.1918d-5,  0.0D     ]  ; MCPHV = 2750 V
     ac[*,4] = [2.2929D,  6.0841d-3, -2.0345d-5,  3.0202d-8]  ; MCPHV = 2800 V
-    ac[*,5] = [2.1963D,  9.9250d-4, -2.9699d-7,  0.0D     ]  ; MCPHV = 2875 V
+    ac[*,5] = [2.1723D,  1.0986d-3, -3.8089d-7,  0.0D     ]  ; MCPHV = 2875 V
     eflg = 0                                                 ; extrapolate using last known value
   endif
 

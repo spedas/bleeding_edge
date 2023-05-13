@@ -54,9 +54,9 @@
 ;                     text : brief descriptions of configuration changes
 ;                     type : types of configuration changes (see above)
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-07 11:41:53 -0800 (Tue, 07 Mar 2023) $
-; $LastChangedRevision: 31597 $
+; $LastChangedBy: xussui_lap $
+; $LastChangedDate: 2023-05-12 11:26:22 -0700 (Fri, 12 May 2023) $
+; $LastChangedRevision: 31858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -191,7 +191,7 @@ pro mvn_swe_config, list=list, timebar=tbar
   t_swp = [t_swp, time_double('2022-04-22/00:00:00')]
   m_swp = [m_swp, 'sweep table 9 upload (32-Hz, 125 eV)']
 
-  t_mcp = [t_mcp, time_double('2022-12-19/00:00:00')]
+  t_mcp = [t_mcp, time_double('2023-02-10/00:00:00')]
   m_mcp = [m_mcp, 'last SWE-SWI cross calibration']
 
 ; 2022-10-01/00:00                                     ; beginning of EM-5

@@ -50,9 +50,9 @@
 ;
 ;See Also:  "XLIM", "YLIM", "ZLIM",  "OPTIONS",  "TPLOT", "DRAW_COLOR_SCALE"
 ;Author:  Davin Larson,  Space Sciences Lab
-; $LastChangedBy: jimmpc1 $
-; $LastChangedDate: 2023-01-24 12:52:50 -0800 (Tue, 24 Jan 2023) $
-; $LastChangedRevision: 31422 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-05-11 10:07:52 -0700 (Thu, 11 May 2023) $
+; $LastChangedRevision: 31852 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/specplot.pro $
 ;-
 pro specplot,x,y,z,limits=lim,data=data,overplot=overplot,overlay=overlay,$
@@ -593,9 +593,11 @@ str_element,opt,'constant',constant
 if n_elements(constant) ne 0 then begin
   str_element,opt,'const_color',const_color
   if n_elements(const_color) ne 0 then ccols = get_colors(const_color) else ccols=!p.color
+  str_element,opt,'const_line',const_line
+  if n_elements(const_line) ne 0 then cline = const_line[0] else cline = 3
   ncc = n_elements(constant)
   for i=0,ncc-1 do $
-    oplot,opt.xrange,constant[i]*[1,1],color=ccols[i mod n_elements(ccols)],linestyle=3
+    oplot,opt.xrange,constant[i]*[1,1],color=ccols[i mod n_elements(ccols)],linestyle=cline
 endif
 
 zcharsize=!p.charsize

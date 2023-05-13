@@ -37,9 +37,9 @@
 ;
 ;CREATED BY:	Davin Larson
 ;FILE:  mplot.pro
-; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2021-07-06 16:49:05 -0700 (Tue, 06 Jul 2021) $
-; $LastChangedRevision: 30102 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-05-11 10:08:30 -0700 (Thu, 11 May 2023) $
+; $LastChangedRevision: 31853 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 ;
 ;-
@@ -238,9 +238,11 @@ str_element,stuff,'nsmooth',nsmooth
 if n_elements(constant) ne 0 then begin
   str_element,stuff,'const_color',const_color
   if n_elements(const_color) ne 0 then ccols = get_colors(const_color) else ccols=!p.color
+  str_element,stuff,'const_line',const_line
+  if n_elements(const_line) ne 0 then cline = const_line[0] else cline = 1
   ncc = n_elements(constant)
   for i=0,ncc-1 do $
-    oplot,xrange,constant[i]*[1,1],color=ccols[i mod n_elements(ccols)],/linestyle
+    oplot,xrange,constant[i]*[1,1],color=ccols[i mod n_elements(ccols)],linestyle=cline
 endif
 
 labbins = replicate(1,d2)

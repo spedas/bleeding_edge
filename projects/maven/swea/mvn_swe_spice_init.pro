@@ -31,6 +31,8 @@
 ;                   kernels are loaded to allow geometry calculations spanning long
 ;                   time intervals.
 ;
+;    CSS:           Include the Comet Siding Spring SPK in the loadlist.
+;
 ;    STATUS:        Don't load anything; just give status.
 ;
 ;    INFO:          Returns an array of structures providing detailed information
@@ -40,14 +42,14 @@
 ;                   Default is current value of swe_verbose.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-07 13:16:51 -0700 (Sat, 07 May 2022) $
-; $LastChangedRevision: 30811 $
+; $LastChangedDate: 2023-05-11 10:05:18 -0700 (Thu, 11 May 2023) $
+; $LastChangedRevision: 31851 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/18/13
 ;-
 pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver, $
-                        nock=nock, baseonly=baseonly, status=status, info=info, $
+                        nock=nock, baseonly=baseonly, css=css, status=status, info=info, $
                         verbose=verbose
 
   @mvn_swe_com
@@ -57,8 +59,13 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
 
   noguff = keyword_set(force)
   list = keyword_set(list)
-  nock = keyword_set(nock)
+  ck = ~keyword_set(nock)
   baseonly = keyword_set(baseonly)
+  if (baseonly) then begin
+    spk = 0B
+    ck = 0B
+  endif else spk = 1B
+  css = keyword_set(css)
   if (size(verbose,/type) eq 0) then mvn_swe_verbose, get=verbose
 
   swap_sclk = 0
@@ -116,15 +123,12 @@ pro mvn_swe_spice_init, trange=trange, list=list, force=force, sclk_ver=sclk_ver
   if (verbose gt 0) then print,' '
 
   cspice_kclear ; remove any previously loaded kernels
-  if (baseonly) then begin
-    names = ['STD','SCK','FRM','IK']
-    swe_kernels = mvn_spice_kernels(names,verbose=(verbose-1))
-  endif else begin
-    if (nock) then begin
-      names = ['STD','SCK','FRM','IK','SPK']
-      swe_kernels = mvn_spice_kernels(names,trange=srange,verbose=(verbose-1))
-    endif else swe_kernels = mvn_spice_kernels(/all,trange=srange,verbose=(verbose-1))
-  endelse
+
+  if (css) then names = ['STD','CSS','SCK','FRM','IK'] else names = ['STD','SCK','FRM','IK']
+  if (spk) then names = [names,'SPK']
+  if (ck)  then names = [names,'CK','CK_APP','CK_SWE']
+  swe_kernels = mvn_spice_kernels(names,verbose=(verbose-1))
+
   if (swap_sclk) then begin
     i = where(strmatch(swe_kernels,'*SCLK*',/fold_case) eq 1)
     if (i ge 0) then swe_kernels[i] = fname else swap_sclk = 0

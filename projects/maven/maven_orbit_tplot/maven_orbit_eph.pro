@@ -24,8 +24,50 @@
 ;              origin = center of Mars
 ;              units = kilometers
 ;
+;  The returned structure contains the following tags:
+;
+;       TIME            DOUBLE    unix time (essentially the same as UTC)
+;       MSO_X           FLOAT     position in the MSO frame (km)
+;       MSO_V           FLOAT     velocity in the MSO frame (km/s)
+;       GEO_X           FLOAT     position in the IAU_MARS frame (km)
+;       GEO_V           FLOAT     velocity in the IAU_MARS frame (km/s)
+;       R               FLOAT     radial distance from Mars' center (km)
+;       R_M             FLOAT     Mars volumetric mean radius (3389.50 km)
+;       VMAG_MSO        FLOAT     magnitude of MSO_V (km/s)
+;       VMAG_GEO        FLOAT     magnitude of GEO_V (km/s)
+;       ALT             DOUBLE    altitude relative to the DATUM (km)
+;       LON             DOUBLE    IAU_MARS longitude of spacecraft (deg)
+;       LAT             DOUBLE    IAU_MARS latitude of spacecraft (deg)
+;       DATUM           STRING    reference surface* for calculating altitude
+;       SZA             DOUBLE    solar zenith angle (deg)
+;       LST             DOUBLE    local solar time (0-24 Mars hours)
+;       SLON            DOUBLE    IAU_MARS longitude of sub-solar point (deg)
+;       SLAT            DOUBLE    IAU_MARS latitude of sub-solar point (deg)
+;
+;    * The datum can be one of: 'sphere', 'ellipsoid', 'areoid', or 'surface'.
+;      See mvn_altitude.pro for details.  This function uses the 'ellipsoid'.
+;
+;  The last three parameters are only calculated if the frames and planet kernels
+;  are loaded, or if you use the MISSION keyword.  Any of the following will work:
+;
+;    Option 1: Initialize SPICE first
+;
+;      kernels = mvn_spice_kernels(/load)
+;      eph = maven_orbit_eph()
+;
+;    Option 2: For long time spans, for which loading all the kernels would be
+;              cumbersome:
+;
+;      mvn_swe_spice_init, /baseonly
+;      eph = maven_orbit_eph()
+;
+;    Option 3: For the entire mission to date:
+;
+;      eph = maven_orbit_eph(/mission)
+;
 ;USAGE:
 ;  eph = maven_orbit_eph()
+;
 ;INPUTS:
 ;       none
 ;
@@ -41,8 +83,8 @@
 ;                 of interest.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-05-08 13:53:09 -0700 (Mon, 08 May 2023) $
-; $LastChangedRevision: 31839 $
+; $LastChangedDate: 2023-05-11 10:04:19 -0700 (Thu, 11 May 2023) $
+; $LastChangedRevision: 31850 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_eph.pro $
 ;-
 function maven_orbit_eph, mission=mission
