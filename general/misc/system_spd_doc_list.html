@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun May 14 03:16:57 2023.<P>
+<STRONG>Last modified: </STRONG>Tue May 16 18:17:51 2023.<P>
  
 <HR>
  
@@ -19,6 +19,8 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>general/misc/system</H1>
+<LI><A HREF="#COLOR_TABLE">COLOR_TABLE</A>
+<br>Returns the current color table as a 256x3 array.
 <LI><A HREF="#COLOR_TABLE_CRIB">COLOR_TABLE_CRIB</A>
 <LI><A HREF="#CWD">CWD</A>
 <LI><A HREF="#GET_LINE_COLORS">GET_LINE_COLORS</A>
@@ -36,8 +38,37 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="COLOR_TABLE">
+<H2>COLOR_TABLE</H2></A>
+<A HREF="#COLOR_TABLE_CRIB">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   color_table
+PURPOSE:
+  Returns the current color table as a 256x3 array.
+
+USAGE:
+  ctab = color_table()
+
+INPUTS:
+       None.
+
+KEYWORDS:
+       None.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-05-16 16:31:53 -0700 (Tue, 16 May 2023) $
+ $LastChangedRevision: 31865 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table.pro $
+
+Created by David L. Mitchell (May 2023)
+</PRE><P>
+<STRONG>(See <A href="system/color_table.pro">general/misc/system/color_table.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="COLOR_TABLE_CRIB">
 <H2>COLOR_TABLE_CRIB</H2></A>
+<A HREF="#COLOR_TABLE">[Previous Routine]</A>
 <A HREF="#CWD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -686,7 +717,7 @@ KEYWORDS:
           For example, GRAYBKG=1 is equivalent to MYCOLORS={ind:255, rgb:[211,211,211]}.
           To actually use this color for the background, you must set !p.background=255
           (normally combined with !p.color=0).
-   RGB_TABLE: Named variable that returns the current 3x8 line color table.
+   RGB_TABLE: Named variable that returns the color table as a 256x3 array of RGB values
 
 common blocks:
    colors:      IDL color common block.  Many IDL routines rely on this.
@@ -695,8 +726,8 @@ See also:
    &quot;get_colors&quot;,&quot;colors_com&quot;,&quot;bytescale&quot;,&quot;get_line_colors&quot;,&quot;line_colors&quot;,&quot;showct&quot;,&quot;initct&quot;
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-05 09:48:33 -0800 (Sun, 05 Mar 2023) $
- $LastChangedRevision: 31582 $
+ $LastChangedDate: 2023-05-16 16:13:31 -0700 (Tue, 16 May 2023) $
+ $LastChangedRevision: 31864 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 
 Created by Davin Larson;  August 1996

@@ -65,7 +65,7 @@
 ;          For example, GRAYBKG=1 is equivalent to MYCOLORS={ind:255, rgb:[211,211,211]}.
 ;          To actually use this color for the background, you must set !p.background=255
 ;          (normally combined with !p.color=0).
-;   RGB_TABLE: Named variable that returns the current 3x8 line color table.
+;   RGB_TABLE: Named variable that returns the color table as a 256x3 array of RGB values
 ;
 ;common blocks:
 ;   colors:      IDL color common block.  Many IDL routines rely on this.
@@ -74,8 +74,8 @@
 ;   "get_colors","colors_com","bytescale","get_line_colors","line_colors","showct","initct"
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-05 09:48:33 -0800 (Sun, 05 Mar 2023) $
-; $LastChangedRevision: 31582 $
+; $LastChangedDate: 2023-05-16 16:13:31 -0700 (Tue, 16 May 2023) $
+; $LastChangedRevision: 31864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996
@@ -158,11 +158,11 @@ pro loadct2,ct,invert=invert,reverse=revrse,file=file,previous_ct=previous_ct,pr
   if keyword_set(color_names) then line_color_names = color_names  ; equivalent keywords
   lines = get_line_colors(line_clrs, color_names=line_color_names, mycolors=mycolors, graybkg=graybkg)
   line_colors_common = lines
-  rgb_table = lines
 
   r[cols] = lines[0,*]
   g[cols] = lines[1,*]
   b[cols] = lines[2,*]
+  rgb_table = [[r],[g],[b]]
 
   tvlct,r,g,b
 
