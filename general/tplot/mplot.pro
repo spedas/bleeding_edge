@@ -37,9 +37,9 @@
 ;
 ;CREATED BY:	Davin Larson
 ;FILE:  mplot.pro
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-05-11 10:08:30 -0700 (Thu, 11 May 2023) $
-; $LastChangedRevision: 31853 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2023-05-17 16:09:59 -0700 (Wed, 17 May 2023) $
+; $LastChangedRevision: 31866 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 ;
 ;-
@@ -229,7 +229,7 @@ if keyword_set(notes) then begin
   dprint,dlevel=3,notes
   xpos = !x.window[0] + .03*(!x.window[1]-!x.window[0])
   ypos = !y.window[1] - .03*(!y.window[1]-!y.window[0]) 
-  xyouts,xpos,ypos,'!c'+notes,/normal
+  xyouts,xpos,ypos,'!c'+notes,/normal, charsize=charsize
 
 endif
 
