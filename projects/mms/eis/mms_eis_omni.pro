@@ -37,8 +37,8 @@
 ;       + 2021-04-08, I. Cohen      : added level keyword; updated prefix definition to handle new L2 variable names
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-08-03 09:08:16 -0700 (Tue, 03 Aug 2021) $
-;$LastChangedRevision: 30167 $
+;$LastChangedDate: 2023-05-19 13:57:02 -0700 (Fri, 19 May 2023) $
+;$LastChangedRevision: 31867 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/eis/mms_eis_omni.pro $
 ;-
 
@@ -46,7 +46,7 @@ pro mms_eis_omni, probe, species = species, datatype = datatype, tplotnames = tp
   ; default to electrons
   if undefined(species) then species = 'electron'
   if undefined(datatype) then datatype = 'electronenergy'
-  if undefined(level) then level = 'l2'
+  if undefined(level) then level = 'l2' else level = strlowcase(level)
   if undefined(suffix) then suffix = ''
   if undefined(data_units) then data_units = 'flux'
   if undefined(data_rate) then data_rate = 'srvy'

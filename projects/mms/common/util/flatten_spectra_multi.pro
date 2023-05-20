@@ -21,7 +21,7 @@
 ;       FILENAME:    custorm filename, including folder. 
 ;                    By default the folder is your IDL working directory and the filename includes tplot names and selected time (or center time)      
 ;       
-;       TIME_IN:     if the keyword is specified the time is determined from the variable, not from the cursor pick.
+;       TIME:        if the keyword is specified the time is determined from the variable, not from the cursor pick.
 ;       TRANGE:      Two-element time range over which data will be averaged. 
 ;       SAMPLES:     Number of nearest samples to time to average. Override trange.      
 ;       WINDOW:      Length in seconds over which data will be averaged. Override trange.
@@ -50,8 +50,8 @@
 ;     work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
 ;     
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-09-13 17:00:06 -0700 (Fri, 13 Sep 2019) $
-;$LastChangedRevision: 27758 $
+;$LastChangedDate: 2023-05-19 14:15:46 -0700 (Fri, 19 May 2023) $
+;$LastChangedRevision: 31868 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra_multi.pro $
 ;-
 
