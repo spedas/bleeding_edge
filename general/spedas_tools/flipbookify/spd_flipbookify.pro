@@ -87,8 +87,8 @@
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-11-24 13:54:39 -0800 (Tue, 24 Nov 2020) $
-; $LastChangedRevision: 29389 $
+; $LastChangedDate: 2023-05-25 11:45:55 -0700 (Thu, 25 May 2023) $
+; $LastChangedRevision: 31869 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/flipbookify/spd_flipbookify.pro $
 ;-
 
@@ -104,7 +104,7 @@ pro spd_flipbookify, dists, trange=trange, mag_data=mag_data, vel_data=vel_data,
   all_colorbars=all_colorbars, include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, $
   lineplot_yrange=lineplot_yrange, lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
   ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, custom_rotation=custom_rotation, erange=erange, $
-  gif=gif, jpg=jpg
+  gif=gif, jpg=jpg, levels=levels, olines=olines
   @tplot_com.pro
   
   if undefined(filename_prefix) then filename_prefix = 'spd'
@@ -193,9 +193,9 @@ pro spd_flipbookify, dists, trange=trange, mag_data=mag_data, vel_data=vel_data,
       slice3_pos = [top_plot_pos[2]+padding/2., 0.7, top_plot_pos[2]+padding/2.+available_width/2., 0.94]
     endelse
 
-    spd_slice2d_plot, slice, window=window_num, /custom, /noerase, position=slice_pos, title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
-    spd_slice2d_plot, slice2, window=window_num, /custom, /noerase, position=slice2_pos, title='', xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
-    spd_slice2d_plot, slice3, window=window_num, /custom, /noerase, position=slice3_pos, title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb
+    spd_slice2d_plot, slice, window=window_num, /custom, /noerase, position=slice_pos, title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb, levels=levels, olines=olines
+    spd_slice2d_plot, slice2, window=window_num, /custom, /noerase, position=slice2_pos, title='', xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb, levels=levels, olines=olines
+    spd_slice2d_plot, slice3, window=window_num, /custom, /noerase, position=slice3_pos, title='', nocolorbar=undefined(all_colorbars), xrange=xrange, yrange=yrange, zrange=zrange, plotbfield=plotbfield, plotbulk=plotbulk, background_color_index=background_color_index, background_color_rgb=background_color_rgb, levels=levels, olines=olines
 
 
     if ~undefined(lineplot) then begin

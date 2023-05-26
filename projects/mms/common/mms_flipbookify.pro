@@ -102,8 +102,8 @@
 ;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2021-03-10 13:31:28 -0800 (Wed, 10 Mar 2021) $
-; $LastChangedRevision: 29754 $
+; $LastChangedDate: 2023-05-25 11:46:39 -0700 (Thu, 25 May 2023) $
+; $LastChangedRevision: 31870 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/mms_flipbookify.pro $
 ;-
 
@@ -122,7 +122,7 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
   subtract_error = subtract_error, include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, $
   lineplot_yrange=lineplot_yrange, lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
   ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, subtract_spintone=subtract_spintone, $
-  fgm_data_rate=fgm_data_rate, seconds=seconds, erange=erange, gif=gif, jpg=jpg
+  fgm_data_rate=fgm_data_rate, seconds=seconds, erange=erange, gif=gif, jpg=jpg, levels=levels, olines=olines
   
   mms_init
   
@@ -171,8 +171,8 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     name =  'mms'+probe+'_d'+species+'s_dist_'+data_rate
     bfield = 'mms'+probe+'_fgm_b_gse_'+fgm_data_rate+'_l2_bvec'
     vel_data = 'mms'+probe+'_d'+species+'s_bulkv_gse_'+data_rate
-    if ~spd_data_exists(vel_data, trange[0], trange[1]) then append_array, datatypes, ['d'+species+'s-dist', 'd'+species+'s-moms'] else append_array, datatypes, 'd'+species+'s-dist'
-    if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype=datatypes, probe=probe, trange=trange, /time_clip, /center
+    if ~spd_data_exists(vel_data, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype='d'+species+'s-moms', probe=probe, trange=trange, /time_clip, /center
+    if ~spd_data_exists(name, trange[0], trange[1]) then mms_load_fpi, data_rate=data_rate, level=level, datatype='d'+species+'s-dist', probe=probe, trange=trange, /time_clip
     if ~spd_data_exists(bfield, trange[0], trange[1]) then mms_load_fgm, level=level, probe=probe, trange=trange, data_rate=fgm_data_rate, /time_clip
     dist = mms_get_fpi_dist(name, trange=trange, subtract_error=subtract_error, error='mms'+probe+'_d'+species+'s_disterr_'+data_rate)
     if keyword_set(subtract_spintone) && tnames(vel_data) ne '' && tnames('mms'+probe+'_d'+species+'s_bulkv_spintone_gse_'+data_rate) ne '' then begin
@@ -207,6 +207,6 @@ pro mms_flipbookify, trange=trange, probe=probe, level=level, data_rate=data_rat
     include_1d_vx=include_1d_vx, include_1d_vy=include_1d_vy, lineplot_yrange=lineplot_yrange, $
     lineplot_xrange=lineplot_xrange, lineplot_thickness=lineplot_thickness, $
     ps_xsize=ps_xsize, ps_ysize=ps_ysize, ps_aspect=ps_aspect, nopng=nopng, filename_prefix=filename_prefix, $
-    seconds=seconds, erange=erange, gif=gif, jpg=jpg
+    seconds=seconds, erange=erange, gif=gif, jpg=jpg, levels=levels, olines=olines
 
 end
