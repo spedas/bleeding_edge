@@ -95,8 +95,8 @@
 ;     Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27435 $
+;$LastChangedDate: 2023-05-26 11:37:51 -0700 (Fri, 26 May 2023) $
+;$LastChangedRevision: 31871 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_load_feeps.pro $
 ;-
 pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
@@ -117,6 +117,11 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
     if undefined(datatype) then datatype_in = 'electron' else datatype_in = datatype
     if undefined(data_units) then data_units = ['count_rate', 'intensity']
     if undefined(data_rate) then data_rate_in = 'srvy' else data_rate_in = data_rate
+    
+    ; the following was added 26 May 2023 to fix issue with mixture of v6 and v7 files at the SDC
+    ; these files are not compatible, so there are crashes when trying to load both at the same time
+    if undefined(min_version) && undefined(latest_version) && undefined(cdf_version) && undefined(major_version) then major_version = 1b
+    
     if undefined(min_version) && undefined(latest_version) && undefined(cdf_version) && undefined(major_version) then min_version = '5.5.0'
     if undefined(get_support_data) then get_support_data = 1 ; support data needed for sun removal and spin averaging
     l1a_datatypes = ['electron-bottom', 'electron-top', 'ion-top', 'ion-bottom']
