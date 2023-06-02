@@ -14,9 +14,9 @@
 ;  2012-05-23, jmm, changed input to have user prompted for test case.
 ;  2015-05-14,  af, integrating thm_validate_high_freq_using_phase into this crib 
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-05-14 17:01:41 -0700 (Thu, 14 May 2015) $
-;$LastChangedRevision: 17619 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2023-06-01 18:09:03 -0700 (Thu, 01 Jun 2023) $
+;$LastChangedRevision: 31874 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_poynting_flux.pro $
 ;-
 
@@ -189,19 +189,25 @@ store_data,'S_tot1',    data={x:efw.x,y:sqrt(total(S*S,2))}
 nfft=128
 stride=32
 ndata=n_elements(efw.x)
-efw_fft=dcomplexarr(long(ndata-nfft)/stride+1,nfft,3)
-scw_fft=dcomplexarr(long(ndata-nfft)/stride+1,nfft,3)
+nstrides=(ndata-nfft)/stride + 1L
+efw_fft=dcomplexarr(nstrides,nfft,3)
+scw_fft=dcomplexarr(nstrides,nfft,3)
 win=hanning(nfft,/double)
 win/=mean(win^2)  ; preserve energy
-i=0L
-for j=0L,ndata-nfft-1,stride do begin
+i=0L      ; which stride is being computed
+for j=0L,ndata-nfft,stride do begin
   for k=0,2 do efw_fft[i,*,k]=fft(efw.y[j:j+nfft-1,k]*win)
   for k=0,2 do scw_fft[i,*,k]=fft(scw.y[j:j+nfft-1,k]*win)
   i++
 endfor
-t=scw.x[0]+(dindgen(i-1)*stride+nfft/2)/8192.
+t=scw.x[0]+(dindgen(nstrides)*stride+nfft/2)/8192.
 freq=(findgen(nfft/2)+0.5)*8192/nfft
 bw=8192/nfft
+
+; Freq calculation from IDL docs, even number of points
+fx=findgen((nfft-1)/2)+1
+freq_all = [0.0, fx, nfft/2, -nfft/2 + fx]*8192.0/nfft
+freq_nonneg = freq_all[0:nfft/2-1]
 efwlim={spec:1,zlog:1,ylog:0,yrange:[100,4096],ystyle:1,zrange:[1e-8,1e-4]}
 scwlim={spec:1,zlog:1,ylog:0,yrange:[100,4096],ystyle:1,zrange:[1e-10,1e-6]}
 store_data,'efw_fft_x',data={x:t,y:abs(efw_fft[*,0:nfft/2,0])^2/bw,v:freq},lim=efwlim
