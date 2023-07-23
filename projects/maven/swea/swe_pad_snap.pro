@@ -178,9 +178,14 @@
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
+;        QLEVEL:       Minimum quality level to plot (0-2, default=0):
+;                         2B = good
+;                         1B = uncertain
+;                         0B = affected by low-energy anomaly
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-04-07 11:44:16 -0700 (Fri, 07 Apr 2023) $
-; $LastChangedRevision: 31714 $
+; $LastChangedDate: 2023-06-23 12:34:13 -0700 (Fri, 23 Jun 2023) $
+; $LastChangedRevision: 31909 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -199,7 +204,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
                   sundir=sundir, wscale=wscale, cscale=cscale, fscale=fscale, $
                   result=result, vdis=vdis, padmap=padmap, sec=sec, color_table=color_table, $
                   reverse_color_table=reverse_color_table, line_colors=line_colors, $
-                  pyrange=pyrange
+                  pyrange=pyrange, qlevel=qlevel
 
   @mvn_swe_com
   @putwin_common
@@ -213,6 +218,8 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   ctop = cols.top_c
 
   tiny = 1.e-31
+  badpad = swe_pad_struct
+  badpad.quality = 255B
 
   if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
@@ -228,7 +235,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
            'ERROR_BARS','YRANGE','TRANGE2','NOTE','MINCOUNTS','MAXRERR', $
            'TSMO','SUNDIR','WSCALE','CSCALE','FSCALE','RESULT','VDIS', $
            'PADMAP','COLOR_TABLE','REVERSE_COLOR_TABLE','LINE_COLORS', $
-           'PYRANGE']
+           'PYRANGE','QLEVEL']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -262,6 +269,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
   endif else xflg = 0
   pyrange = keyword_set(pyrange) ? minmax(pyrange) : [0.1, 10.]
   padmap = keyword_set(padmap)
+  qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
 
   case n_elements(trange2) of
        0 : tflg = 0
@@ -518,7 +526,10 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
             yrange:[0,180], ystyle:1, yticks:6, yminor:3, ytitle:'Pitch Angle (deg)', $
             zlog:1, ztitle:strupcase(units), xmargin:[15,15], charsize:1.4*cscale}
 
-  if keyword_set(zrange) then str_element, limits, 'zrange', zrange, /add
+  if keyword_set(zrange) then begin
+    str_element, limits, 'zrange', zrange, /add
+    fixz = 1
+  endif else fixz = 0
 
 ; Calculate PAD timing
 
@@ -672,7 +683,13 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
        endif else begin
          dt = max(trange) - min(trange)
          if (dt lt 4D) then trange = mean(trange)
-         pad = mvn_swe_getpad(trange,archive=aflg,all=doall,/sum,units=units)
+         pad = mvn_swe_getpad(trange,archive=aflg,all=doall,/sum,units=units,qlevel=qlevel)
+         if (size(pad,/type) ne 8) then begin
+           pad = badpad
+           pad.time = mean(trange)
+           pad.end_time = max(trange)
+           hflg = 0
+         endif
          if (hflg) then pad = mvn_swe_padmap_32hz(pad, fbdata=fbdata, /verbose, maglev=maglev)
          n_e = 64
          tprec = 0
@@ -812,11 +829,12 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
       z2[*,0] = z2[*,1]
       z2[*,9] = z2[*,8]
 
-      str_element,limits,'zrange',success=ok
-;     ok = 0
-      if (not ok) then begin
-        zmin = min(z, /nan) > zlo
-        zmax = max(z, /nan) > (10.*zmin)
+      str_element,limits,'zrange',success=gotz
+      if (not gotz) then begin
+;        zmin = min(z, /nan) > zlo
+;        zmax = max(z, /nan) > (10.*zmin)
+        zmin = drange[0]
+        zmax = drange[1]
         if (nflg) then begin
           zmin = 0.3
           zmax = 3.0
@@ -842,6 +860,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
           oplot,[3,5000],[yhi1[(n_e-1),8],yhi1[(n_e-1),8]],line=2
         endif
         if (sflg) then for k=0,(n_elements(penergy)-1) do oplot,[penergy[k],penergy[k]],[0,180],line=2
+        if (pad.quality eq 255B) then xyouts,0.5,0.5,"NO VALID DATA",/norm,align=0.5,charsize=csize2*1.5
 
         limits.title = ''
         specplot,x,y2,z2,limits=limits
@@ -919,6 +938,7 @@ pro swe_pad_snap, keepwins=keepwins, archive=archive, energy=energy, $
               oplot,[3,5000],[yhi2[63,8],yhi2[63,8]],line=2
             endif
             if (sflg) then for k=0,(n_elements(penergy)-1) do oplot,[penergy[k],penergy[k]],[0,180],line=2
+            if (pad.quality eq 255B) then xyouts,0.5,0.5,"NO VALID DATA",/norm,align=0.5,charsize=csize2*1.5
 
             if (uflg) then begin
                str_element, rlim, 'ztitle', 'Relative Uncertainty', /add_replace

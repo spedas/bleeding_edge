@@ -7,8 +7,8 @@
 ;  All times are for the center of the sample.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-05 12:59:06 -0700 (Thu, 05 May 2022) $
-; $LastChangedRevision: 30801 $
+; $LastChangedDate: 2023-06-23 12:34:13 -0700 (Fri, 23 Jun 2023) $
+; $LastChangedRevision: 31909 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_struct.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2013-07-26
@@ -216,7 +216,8 @@ pro mvn_swe_struct
                    v_flow          : fltarr(3)               , $  ; bulk flow velocity
                    bkg             : fltarr(n_e,n_a)         , $  ; background/contamination
                    data            : fltarr(n_e,n_a)         , $  ; data
-                   valid           : replicate(1B,n_e,n_a)   , $  ; valid data
+                   valid           : replicate(1B,n_e,n_a)   , $  ; used for masking
+                   quality         : 1B                      , $  ; quality (2B = good, 1B = ?, 0B = bad)
                    var             : fltarr(n_e,n_a)            } ; variance
 
 ; Stripped down 3D structure for common block storage
@@ -273,7 +274,8 @@ pro mvn_swe_struct
                     v_flow          : fltarr(3)               , $  ; bulk flow velocity
                     bkg             : fltarr(n_e,n_az)        , $  ; background/contamination
                     data            : fltarr(n_e,n_az)        , $  ; data
-                    valid           : replicate(1B,n_e,n_az)  , $  ; valid data
+                    valid           : replicate(1B,n_e,n_az)  , $  ; used for masking
+                    quality         : 1B                      , $  ; quality (2B = good, 1B = ?, 0B = bad)
                     var             : fltarr(n_e,n_az)           } ; variance
 
 ; Stripped down PAD structure for common block storage
@@ -312,7 +314,8 @@ pro mvn_swe_struct
                      maglev          : 0B                      , $  ; MAG data level (0-2)
                      bkg             : fltarr(n_e)             , $  ; background/contamination
                      data            : fltarr(n_e)             , $  ; data
-                     valid           : replicate(1B,n_e)       , $  ; valid data
+                     valid           : replicate(1B,n_e)       , $  ; used for masking
+                     quality         : 1B                      , $  ; quality (2B = good, 1B = ?, 0B = bad)
                      var             : fltarr(n_e)                } ; variance
 
 ; Stripped down SPEC structure for common block storage

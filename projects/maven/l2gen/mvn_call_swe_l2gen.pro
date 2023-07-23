@@ -44,8 +44,8 @@
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 17-Apr-2014, jmm
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-19 11:18:37 -0700 (Fri, 19 Mar 2021) $
-; $LastChangedRevision: 29778 $
+; $LastChangedDate: 2023-07-11 15:53:37 -0700 (Tue, 11 Jul 2023) $
+; $LastChangedRevision: 31949 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_call_swe_l2gen.pro $
 ;-
 Pro mvn_call_swe_l2gen, time_in = time_in, $
@@ -66,8 +66,9 @@ Pro mvn_call_swe_l2gen, time_in = time_in, $
 
   uinfo = get_login_info()
   case uinfo.user_name of
-    'mitchell' : mailto = 'mitchell@ssl.berkeley.edu'
-    else       : mailto = 'jimm@ssl.berkeley.edu'
+    'mitchell'   : mailto = 'mitchell@ssl.berkeley.edu'
+    'shaosui.xu' : mailto = 'shaosui.xu@berkeley.edu'
+    else         : mailto = 'jimm@ssl.berkeley.edu'
   endcase
 
   allbad = keyword_set(allbad)

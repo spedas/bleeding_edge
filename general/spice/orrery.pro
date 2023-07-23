@@ -175,8 +175,8 @@
 ;       BLACK:     Use a black background for the orbit snapshot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-05-11 10:09:40 -0700 (Thu, 11 May 2023) $
-; $LastChangedRevision: 31854 $
+; $LastChangedDate: 2023-06-06 08:02:24 -0700 (Tue, 06 Jun 2023) $
+; $LastChangedRevision: 31886 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -868,22 +868,22 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
     print,' done'
   endif
 
-  if (css.frame eq 'INVALID') then begin
+  if (cflg and (css.frame eq 'INVALID')) then begin
     print, 'Warning: Siding Spring ephemeris not loaded.'
     cflg = 0
   endif
-  if (sta.frame eq 'INVALID') then begin
+  if (sflg and (sta.frame eq 'INVALID')) then begin
     print, 'Warning: Stereo-A ephemeris not loaded.'
     sflg = 0
   endif
-  if (stb.frame eq 'INVALID') then begin
+  if (sflg and (stb.frame eq 'INVALID')) then begin
     print, 'Warning: Stereo-B ephemeris not loaded.'
   endif
-  if (sorb.frame eq 'INVALID') then begin
+  if (oflg and (sorb.frame eq 'INVALID')) then begin
     print, 'Warning: Solar Orbiter ephemeris not loaded.'
     oflg = 0
   endif
-  if (psp.frame eq 'INVALID') then begin
+  if (pflg and (psp.frame eq 'INVALID')) then begin
     print, 'Warning: Solar Probe ephemeris not loaded.'
     pflg = 0
   endif

@@ -13,12 +13,16 @@
 ;
 ; NO_SERVER:      If set, prevents any contact with the remote server.
 ;
+;     UNITS:      Specifies the units to convert the data structure.
+;
+;       PDS:      If set, downloading data alternatively from NASA/PDS.  
+;
 ;CREATED BY:      Takuya Hara on 2017-04-15 -> 2018-04-16.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-10-15 14:28:20 -0700 (Thu, 15 Oct 2020) $
-; $LastChangedRevision: 29257 $
+; $LastChangedDate: 2023-07-03 20:30:35 -0700 (Mon, 03 Jul 2023) $
+; $LastChangedRevision: 31931 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/vex/aspera/vex_asp_els_load.pro $
 ;
 ;-
@@ -121,16 +125,17 @@ PRO vex_asp_els_save, time, counts, file=file, mode=mode, verbose=verbose
 END
 
 PRO vex_asp_els_com, time, counts, energy, mode=mode, verbose=verbose, $
-                     data=asp_els_dat, trange=trange, nenergy=nenergy, nsweep=nsweep
+                     data=asp_els_dat, trange=trange, nenergy=nenergy, nsweep=nsweep, gfactor=gfactor, bkg=bkg
 
   COMMON vex_asp_dat, vex_asp_ima, vex_asp_els
   units = 'counts'
 
   stime = REFORM(time[*, 0])
   etime = REFORM(time[*, 1])
-  
-  dformat = {units_name: units, time: 0.d0, end_time: 0.d0, energy: DBLARR(128, 16), $
-             nenergy: 0, data: FLTARR(128, 16), mode: 0, nsweep: 0} ;, gf: DBLARR(128, 16)}
+
+  nengy = MAX(nenergy)
+  dformat = {units_name: units, time: 0.d0, end_time: 0.d0, energy: DBLARR(nengy, 16), $
+             nenergy: 0, data: FLTARR(nengy, 16), cnts: FLTARR(nengy, 16), mode: 0, nsweep: 0, gf: DBLARR(nengy, 16), bkg: DBLARR(nengy, 16)}
 
   ndat = N_ELEMENTS(stime)
   asp_els_dat = REPLICATE(dformat, ndat)
@@ -139,19 +144,30 @@ PRO vex_asp_els_com, time, counts, energy, mode=mode, verbose=verbose, $
   asp_els_dat.end_time = etime
   asp_els_dat.energy = TRANSPOSE(energy, [2, 1, 0])
   asp_els_dat.data   = TRANSPOSE(counts, [2, 1, 0])
-
+  asp_els_dat.cnts   = asp_els_dat.data
+  
   asp_els_dat.nenergy = nenergy
-  asp_els_dat.mode = mode
-  asp_els_dat.nsweep = nsweep
+  IF ~undefined(mode)   THEN asp_els_dat.mode = mode
+  IF ~undefined(nsweep) THEN asp_els_dat.nsweep = nsweep
+
   IF SIZE(trange, /type) NE 0 THEN BEGIN
      mtime = MEAN(time, dim=2)
      w = WHERE(mtime GE trange[0] AND mtime LE trange[1], nw)
      asp_els_dat = asp_els_dat[w]
   ENDIF 
 
-  vex_asp_els = asp_els_dat
-  ;vex_asp_els_gf, gf, verbose=verbose
-  ;asp_els_dat.gf = gf
+  IF undefined(gfactor) THEN BEGIN
+     vex_asp_els_gf, gf
+     
+     tmp = FLTARR(16, nengy)
+     tmp[*] = !values.f_nan
+     tmp[*, 0:31] = gf[1]
+     gf[1] = TEMPORARY(tmp)
+     
+     asp_els_dat.gf = TRANSPOSE(gf[asp_els_dat.mode].toarray(), [2, 1, 0])
+  ENDIF ELSE asp_els_dat.gf = TRANSPOSE(gfactor[w, *, *], [2, 1, 0])
+  IF ~undefined(bkg) THEN asp_els_dat.bkg = TRANSPOSE(bkg[w, *, *], [2, 1, 0])
+  
   vex_asp_els = asp_els_dat
   RETURN
 END
@@ -178,8 +194,10 @@ PRO vex_asp_els_read, trange, verbose=verbose, time=stime, counts=counts, mode=m
   ELSE BEGIN
      IF (nflg) THEN $
         IF (N_ELEMENTS(file) EQ N_ELEMENTS(remote_file)) AND $
-        (compare_struct(FILE_BASENAME(file[SORT(file)]), FILE_BASENAME(remote_file[SORT(remote_file)])) EQ 1) THEN $
+        (((FILE_BASENAME(file)).sort()).equals( (FILE_BASENAME(remote_file)).sort() )) THEN $
            rflg = 0 ELSE rflg = 1 ELSE rflg = 0
+;        (compare_struct(FILE_BASENAME(file[SORT(file)]), FILE_BASENAME(remote_file[SORT(remote_file)])) EQ 1) THEN $
+;           rflg = 0 ELSE rflg = 1 ELSE rflg = 0
   ENDELSE 
   
   IF (rflg) THEN BEGIN
@@ -338,7 +356,7 @@ PRO vex_asp_els_fill_nan, stime, counts, energy, mode=mode, nenergy=nenergy
   RETURN
 END
 
-PRO vex_asp_els_load, itime, verbose=verbose, save=save, no_server=no_server, nsweep=isweep
+PRO vex_asp_els_load, itime, verbose=verbose, save=save, no_server=no_server, nsweep=isweep, units=units, pds=pds
   COMMON vex_asp_dat, vex_asp_ima, vex_asp_els
   undefine, vex_asp_els
   t0 = SYSTIME(/sec)
@@ -349,6 +367,12 @@ PRO vex_asp_els_load, itime, verbose=verbose, save=save, no_server=no_server, ns
   ENDELSE 
   IF KEYWORD_SET(no_server) THEN nflg = 0 ELSE nflg = 1
 
+  IF KEYWORD_SET(pds) THEN BEGIN
+     vex_asp_els_bkg, trange, verbose=verbose, stime=stime, etime=etime, counts=counts, energy=energy, $
+                      nenergy=nenergy, mode=mode, gfactor=gfactor, bkg=bkg, /fill_nan, status=success
+     IF (success) THEN GOTO, toarray ELSE RETURN
+  ENDIF 
+  
   IF (nflg) THEN BEGIN
      vex_asp_els_list, trange, verbose=verbose, file=remote_file, time=mtime
      IF N_ELEMENTS(remote_file) EQ 0 THEN BEGIN
@@ -378,7 +402,8 @@ PRO vex_asp_els_load, itime, verbose=verbose, save=save, no_server=no_server, ns
         lfile = lfile[SORT(lfile)]
         rfile = FILE_BASENAME(remote_file)
         rfile = rfile[SORT(rfile)]
-        IF (compare_struct(rfile, lfile) EQ 1) THEN sflg = 0 ELSE sflg = 1
+        IF lfile.equals(rfile) THEN sflg = 0 ELSE sflg = 1
+        ;IF (compare_struct(rfile, lfile) EQ 1) THEN sflg = 0 ELSE sflg = 1
      ENDIF ELSE sflg = 0
   ENDIF ELSE sflg = 1
 
@@ -404,16 +429,18 @@ PRO vex_asp_els_load, itime, verbose=verbose, save=save, no_server=no_server, ns
   ENDELSE 
 
   vex_asp_els_fill_nan, stime, counts, energy, mode=mode, nenergy=nenergy
-
+  toarray:
   counts = counts.toarray(dim=1)
   stime = stime.toarray(dim=1)
-  mode = mode.toarray(dim=1)
-  nsweep = nsweep.toarray(dim=1)
   energy = energy.toarray(dim=1)
-  nenergy = nenergy.toarray(dim=1)
 
-  etime = nsweep * 4.d0^(1 - mode) + stime
-
+  IF ~undefined(mode)    THEN mode = mode.toarray(dim=1)
+  IF ~undefined(nsweep)  THEN nsweep = nsweep.toarray(dim=1)
+  IF ~undefined(nenergy) THEN nenergy = nenergy.toarray(dim=1)
+  IF ~undefined(gfactor) THEN gfactor = gfactor.toarray(dim=1)
+  IF ~undefined(bkg)     THEN bkg = bkg.toarray(dim=1)
+  IF  undefined(etime)   THEN etime = nsweep * 4.d0^(1 - mode) + stime ELSE etime = etime.toarray(dim=1)
+  
   time = [ [stime], [etime] ]
   time = MEAN(time, dim=2)
   w = WHERE(time GE trange[0] AND time LE trange[1], nw)
@@ -421,11 +448,13 @@ PRO vex_asp_els_load, itime, verbose=verbose, save=save, no_server=no_server, ns
      dprint, dlevel=2, verbose=verbose, 'No data found.'
      RETURN
   ENDIF ELSE BEGIN
-     vex_asp_els_com, [ [stime], [etime] ], counts, energy, mode=mode, nenergy=nenergy, data=els, trange=trange, nsweep=nsweep
+     vex_asp_els_com, [ [stime], [etime] ], counts, energy, mode=mode, nenergy=nenergy, data=els, trange=trange, nsweep=nsweep, gfactor=gfactor, bkg=bkg
+
+     IF ~undefined(units) THEN vex_asp_els_convert_units, els, units, verbose=verbose
      time = time[w]
      cnt = els.data
      ene = els.energy
-     nsw = els.nsweep
+     IF tag_exist(els, 'nsweep', /quiet) THEN nsw = els.nsweep
   ENDELSE 
   
   store_data, 'vex_asp_els_espec', data={x: time, y: TRANSPOSE(TOTAL(cnt, 2)), v: TRANSPOSE(MEAN(ene, dim=2))}, $
@@ -433,8 +462,20 @@ PRO vex_asp_els_load, itime, verbose=verbose, save=save, no_server=no_server, ns
                     ytickunits: 'scientific', ztickunits: 'scientific'}
 
   ylim, 'vex_asp_els_espec', 1., 20.e3, 1, /def
-  zlim, 'vex_asp_els_espec', 1., 1.e3, 1, /def
-  options, 'vex_asp_els_espec', ztitle='Counts [#]', /def
+  options, 'vex_asp_els_espec', ztitle=(els[0].units_name).toupper(), /def
+
+  CASE (els[0].units_name).toupper() OF
+     'COUNTS' : zr = [1., 1.e3]
+     'RATE'   : zr = [1.e1, 1.e4]
+     'FLUX'   : zr = [1.e3, 1.e8]
+     'EFLUX'  : zr = [1.e6, 1.e9]
+     'DF'     : zr = [1.e-18, 1.e-8]
+     ELSE     : zr = [0., 0.]
+  ENDCASE 
+  zlim, 'vex_asp_els_espec', zr[0], zr[1], 1, /def
+  
+  ;zlim, 'vex_asp_els_espec', 1., 1.e3, 1, /def
+  ;options, 'vex_asp_els_espec', ztitle='Counts [#]', /def
 
   IF KEYWORD_SET(isweep) THEN $
      store_data, 'vex_asp_els_nsweep', data={x: time, y: ALOG2(nsw)}, $

@@ -143,9 +143,12 @@
 ;
 ;       IONO:     Plot a dashed circle at this altitude.
 ;
+;       ARANGE:   Altitude range (km) for plotting orbit segments.  Both inbound 
+;                 and outbound segments are plotted.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-04-27 16:29:28 -0700 (Thu, 27 Apr 2023) $
-; $LastChangedRevision: 31806 $
+; $LastChangedDate: 2023-07-16 13:22:52 -0700 (Sun, 16 Jul 2023) $
+; $LastChangedRevision: 31955 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -156,7 +159,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
     magnify=magnify, Bclip=Bclip, Vdir=Vdir, Vclip=Vclip, Vscale=Vscale, Vrange=Vrange, $
     alt=alt2, psname=psname, nolabel=nolabel, xy=xy, yz=yz, landers=landers, slab=slab, $
     scol=scol, tcolors=tcolors, noorb=noorb, monitor=monitor, wscale=wscale, ssize=ssize, $
-    black=black, iono=iono
+    black=black, iono=iono, arange=arange
 
   @maven_orbit_common
   @putwin_common
@@ -167,6 +170,8 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   endif
 
   if (size(windex,/type) eq 0) then win, config=0, /silent  ; win acts like window
+
+  R_m = 3389.9D  ; volumetric mean radius of Mars (km)
 
   a = 1.0
   phi = findgen(49)*(2.*!pi/49)
@@ -186,7 +191,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
            'COLOR','RESET','CYL','TIMES','NODOT','TERMINATOR','THICK','BDIR', $
            'MSCALE','SCSYM','MAGNIFY','BCLIP','VDIR','VCLIP','VSCALE','VRANGE', $
            'ALT2','PSNAME','NOLABEL','XY','YZ','LANDERS','SLAB','SCOL','TCOLORS', $
-           'NOORB','MONITOR','WSCALE','BLACK']
+           'NOORB','MONITOR','WSCALE','BLACK','ARANGE']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -231,6 +236,10 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   doalt = keyword_set(alt2)
   dolab = ~keyword_set(nolabel)
+  if (n_elements(arange) ge 2) then begin
+    amin = min((arange + R_m)/R_m, max=amax)
+    arflg = 1
+  endif else arflg = 0
 
   ok = 0
   sites = 0
@@ -336,7 +345,6 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
 ; Mars shock parameters
 
-  R_m = 3389.9D
   x0  = 0.600
   psi = 1.026
   L   = 2.081
@@ -611,11 +619,19 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       y = yo
       z = zo
       s = sqrt(x*x + y*y)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((z lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (pflg) then i = imid else i = imin
       xsc = x[i]
@@ -657,33 +673,60 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       x = xs
       y = ys
       z = zs
+      s = sqrt(x*x + y*y)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((z lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (doorb) then oplot,x,y,color=rcols[0],thick=thick
 
       x = xp
       y = yp
       z = zp
+      s = sqrt(x*x + y*y)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((z lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
+      endif
       if (doorb) then oplot,x,y,color=rcols[1],thick=thick
 
       x = xw
       y = yw
       z = zw
+      s = sqrt(x*x + y*y)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((z lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (doorb) then oplot,x,y,color=rcols[2],thick=thick
 
@@ -757,11 +800,19 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       y = yo
       z = zo
       s = sqrt(x*x + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((y gt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         z[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (pflg) then i = imid else i = imin
       xsc = x[i]
@@ -802,33 +853,60 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       x = xs
       y = ys
       z = zs
+      s = sqrt(x*x + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((y gt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         z[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (doorb) then oplot,x,z,color=rcols[0],thick=thick
 
       x = xp
       y = yp
       z = zp
+      s = sqrt(x*x + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((y gt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
+      endif
       if (doorb) then oplot,x,z,color=rcols[1],thick=thick
 
       x = xw
       y = yw
       z = zw
+      s = sqrt(x*x + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((y gt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         z[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (doorb) then oplot,x,z,color=rcols[2],thick=thick
 
@@ -895,11 +973,19 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       y = yo
       z = zo
       s = sqrt(y*y + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((x lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         y[indx] = !values.f_nan
         z[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (pflg) then i = imid else i = imin
       ysc = y[i]
@@ -941,33 +1027,60 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       x = xs
       y = ys
       z = zs
+      s = sqrt(y*y + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((x lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         y[indx] = !values.f_nan
         z[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (doorb) then oplot,y,z,color=rcols[0],thick=thick
 
       x = xp
       y = yp
       z = zp
+      s = sqrt(y*y + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((x lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         x[indx] = !values.f_nan
         y[indx] = !values.f_nan
       endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
+      endif
       if (doorb) then oplot,y,z,color=rcols[1],thick=thick
 
       x = xw
       y = yw
       z = zw
+      s = sqrt(y*y + z*z)
+      r = sqrt(x*x + y*y + z*z)
 
       indx = where((x lt 0.) and (s lt 1.), count)
       if (count gt 0L) then begin
         y[indx] = !values.f_nan
         z[indx] = !values.f_nan
+      endif
+      if (arflg) then begin
+        indx = where((r lt amin) or (r gt amax), count)
+        if (count gt 0L) then begin
+          x[indx] = !values.f_nan
+          y[indx] = !values.f_nan
+        endif
       endif
       if (doorb) then oplot,y,z,color=rcols[2],thick=thick
 

@@ -233,9 +233,23 @@ end
 ;
 ;       LINE_COLORS:   Use this for the line colors.
 ;
+;       QLEVEL:        Minimum quality level for summing and plotting.  Filters out
+;                      the vast majority of spectra affected by the sporadic low energy
+;                      anomaly below 28 eV.  The validity levels are:
+;
+;                        0B = Data are affected by the low-energy anomaly.  There
+;                             are significant systematic errors below 28 eV.
+;                        1B = Unknown because: (1) the variability is too large to 
+;                             confidently identify anomalous spectra, as in the 
+;                             sheath, or (2) secondary electrons mask the anomaly,
+;                             as in the sheath just downstream of the bow shock.
+;                        2B = Data are not affected by the low-energy anomaly.
+;                             Caveat: There is increased noise around 23 eV, even 
+;                             for "good" spectra.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-04-27 16:30:02 -0700 (Thu, 27 Apr 2023) $
-; $LastChangedRevision: 31807 $
+; $LastChangedDate: 2023-06-23 12:34:13 -0700 (Fri, 23 Jun 2023) $
+; $LastChangedRevision: 31909 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -251,7 +265,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    trange=tspan, tsmo=tsmo, wscale=wscale, cscale=cscale, voffset=voffset, $
                    endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit, nolab=nolab, $
                    showdead=showdead, monitor=monitor, der=der, color_table=color_table, $
-                   reverse_color_table=reverse_color_table, line_colors=line_colors, noraw=noraw
+                   reverse_color_table=reverse_color_table, line_colors=line_colors, noraw=noraw, $
+                   qlevel=qlevel
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -263,6 +278,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
   tiny = 1.e-31
   maxarg = 80.
+
+  badspec = swe_engy_struct
 
   if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
@@ -277,7 +294,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            'POPEN','TIMES','FLEV','PYLIM','K_E','PEREF','ERROR_BARS','TRANGE', $
            'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
            'FMFIT','NOLAB','SHOWDEAD','MONITOR','COLOR_TABLE','REVERSE_COLOR_TABLE', $
-           'LINE_COLORS']
+           'LINE_COLORS','NORAW','QLEVEL']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -317,6 +334,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   dosec = keyword_set(sec)
   dobkg = keyword_set(bkg)
   doraw = ~keyword_set(noraw) or ~dosec
+  qlevel = (n_elements(qlevel) gt 0) ? byte(qlevel[0]) < 2B : 0B
 
   str_element, sconfig, 'scl', value, success=ok
   if (ok) then sscale = double(value) else sscale = 5D
@@ -572,7 +590,13 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       endif
     endelse
   endif else begin
-    spec = mvn_swe_getspec(trange, /sum, archive=aflg, units=units, yrange=yrange)
+    spec = mvn_swe_getspec(trange, /sum, archive=aflg, units=units, yrange=yrange, qlevel=qlevel)
+    if (size(spec,/type) ne 8) then begin
+      spec = badspec
+      spec.time = mean(trange)
+      spec.end_time = max(trange)
+      spec.quality = 255B
+    endif
     if (finite(scp)) then pot = scp $
                      else if (finite(spec.sc_pot)) then pot = spec.sc_pot else pot = 0.
     spec.sc_pot = pot
@@ -849,6 +873,11 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
     if (doper) then begin
       oplot, peref.x, peref.y
       oplot, peref.x, peref.y2
+    endif
+
+    if (spec.quality eq 255B) then begin
+      xyouts,xs,ys,"NO VALID DATA",charsize=csize1,/norm
+      ys -= dys
     endif
     
     if (doalt) then begin
@@ -1294,7 +1323,13 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
             endif
           endelse
         endif else begin
-          spec = mvn_swe_getspec(trange, /sum, archive=aflg, units=units, yrange=yrange)
+          spec = mvn_swe_getspec(trange, /sum, archive=aflg, units=units, yrange=yrange, qlevel=qlevel)
+          if (size(spec,/type) ne 8) then begin
+            spec = badspec
+            spec.time = mean(trange)
+            spec.end_time = max(trange)
+            spec.quality = 255B
+          endif
           if (finite(scp)) then pot = scp $
                            else if (finite(spec.sc_pot)) then pot = spec.sc_pot else pot = 0.
           spec.sc_pot = pot

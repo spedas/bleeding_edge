@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun  1 18:16:40 2023.<P>
+<STRONG>Last modified: </STRONG>Sun Jul 23 03:17:11 2023.<P>
  
 <HR>
  
@@ -2050,7 +2050,8 @@ KEYWORDS:
        PAGE:     (Default) Shift in units of the time range currently displayed.
                  This keyword and the next 5 define the shift units.  Once you 
                  set the units, it remains in effect until you explicitly select 
-                 different units.
+                 different units.  The units are all minimum matching, so you only
+                 need to specify the first 1 or 2 letters.
 
        DAY:      Shift in days.
 
@@ -2077,9 +2078,14 @@ KEYWORDS:
                  apoapsis and plot the requested interval from there.
                  Shift units are assumed to be orbits.
 
+       TREF:     Reference time to start (instead of the beginning of the
+                 loaded time range).
+
+       UNITS:    Skip units to use after the first call.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-05-03 14:44:26 -0700 (Wed, 03 May 2023) $
- $LastChangedRevision: 31825 $
+ $LastChangedDate: 2023-06-26 16:22:09 -0700 (Mon, 26 Jun 2023) $
+ $LastChangedRevision: 31912 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/skip.pro $
 
 CREATED BY:    David L. Mitchell

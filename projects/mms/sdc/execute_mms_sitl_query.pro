@@ -15,8 +15,20 @@ function execute_mms_sitl_query, netURL, url_path, query, filename=filename
   if (error_status ne 0) then begin
     catch, /cancel ; Cancel catch so other errors don't get caught here.
     netURL->GetProperty, RESPONSE_CODE=code
+
     ;TODO: let callers print messages?
     case code of
+      0: begin
+        printf, -2, "ERROR connecting to the LASP SDC."
+        printf, -2, "This ERROR is likely due to an issue with the LASP load balancer."
+        printf, -2, "The full URL throwing this error is:"
+        netURL->GetProperty, url_host=error_host
+        netURL->GetProperty, url_path=error_path
+        netURL->GetProperty, url_query=error_query
+        netURL->GetProperty, url_scheme=error_scheme
+        printf, -2, error_scheme + "://" + error_host + "/" + error_path + "?" + error_query
+        stop
+      end
       200: begin
         ; false error, one known case is an empty file
         catch, /cancel
@@ -24,7 +36,10 @@ function execute_mms_sitl_query, netURL, url_path, query, filename=filename
       end
       204: printf, -2, "WARNING in execute_mms_sitl_query: No results found."
       206: printf, -2, "WARNING in execute_mms_sitl_query: Only partial results were returned."
-      404: printf, -2, "ERROR in execute_mms_sitl_query: Service not found."
+      404: begin
+        printf, -2, "ERROR in execute_mms_sitl_query: Service not found."
+        stop
+      end
       401: begin
         mms_sitl_logout
         printf, -2, "ERROR in execute_mms_sitl_query: Login failed. Try again."
@@ -32,8 +47,8 @@ function execute_mms_sitl_query, netURL, url_path, query, filename=filename
       500: printf, -2, "ERROR in execute_mms_sitl_query: Service failed to handle the query: " + url_path + '?' + query
       23: printf, -2, "ERROR in execute_mms_sitl_query: Not able to save result to: " + filename
       else: begin
-        ; printf, -2, "ERROR in execute_mms_sitl_query: Service request failed with IDL error code: " + strtrim(error_status,2) + $
-        ;   " and http response: " + strtrim(code, 2)   
+         printf, -2, "ERROR in execute_mms_sitl_query: Service request failed with IDL error code: " + strtrim(error_status,2) + $
+           " and http response: " + strtrim(code, 2)   
         ; help, !error_state
         error_map = spd_neturl_error2msg()
         if code lt n_elements(error_map) then dprint, dlevel = 0, 'HTTPS Error: ' + error_map[code] else help, !error_state

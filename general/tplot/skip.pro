@@ -22,7 +22,8 @@
 ;       PAGE:     (Default) Shift in units of the time range currently displayed.
 ;                 This keyword and the next 5 define the shift units.  Once you 
 ;                 set the units, it remains in effect until you explicitly select 
-;                 different units.
+;                 different units.  The units are all minimum matching, so you only
+;                 need to specify the first 1 or 2 letters.
 ;
 ;       DAY:      Shift in days.
 ;
@@ -49,15 +50,20 @@
 ;                 apoapsis and plot the requested interval from there.
 ;                 Shift units are assumed to be orbits.
 ;
+;       TREF:     Reference time to start (instead of the beginning of the
+;                 loaded time range).
+;
+;       UNITS:    Skip units to use after the first call.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-05-03 14:44:26 -0700 (Wed, 03 May 2023) $
-; $LastChangedRevision: 31825 $
+; $LastChangedDate: 2023-06-26 16:22:09 -0700 (Mon, 26 Jun 2023) $
+; $LastChangedRevision: 31912 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/skip.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
 pro skip, n, orb=orb, day=day, sec=sec, minute=minute, hour=hour, page=page, $
-             first=first, last=last, peri=peri, apo=apo
+             first=first, last=last, peri=peri, apo=apo, tref=tref, units=units
 
   common skip_com, ptime, atime, period, mode
 
@@ -134,7 +140,25 @@ pro skip, n, orb=orb, day=day, sec=sec, minute=minute, hour=hour, page=page, $
   if (size(n,/type) eq 0) then n = 1D else n = double(n[0])
   delta_t *= n
 
+; Set the units for the next time window (optional)
+
+  if (size(units,/type) eq 7) then begin
+    unames = ['SEC','MINUTE','HOUR','DAY','PAGE','ORB']
+    i = strmatch(unames, '*'+units[0]+'*', /fold)
+    case (total(i)) of
+       0   : print, "New units '",units[0],"' not recognized"
+       1   : mode = (where(i eq 1))[0] + 1
+      else : print, "New units '",units[0],"' ambiguous: ", unames[where(i eq 1)]
+    endcase
+  endif
+
 ; Shift the time window
+
+  if (n_elements(tref) gt 0L) then begin
+    t0 = time_double(tref[0])      
+    tlimit, [t0, t0+abs(delta_t)]
+    return
+  endif
 
   if keyword_set(first) then begin
     t0 = t[0]
@@ -167,6 +191,7 @@ pro skip, n, orb=orb, day=day, sec=sec, minute=minute, hour=hour, page=page, $
   endif
 
   tlimit, topt.trange + delta_t
+
   return
 
 end

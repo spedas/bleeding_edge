@@ -15,23 +15,43 @@
 ;
 ;KEYWORDS:
 ;
+;       QLEVEL:        Minimum quality level to sum (0-2, default=0):
+;                        2B = good
+;                        1B = uncertain
+;                        0B = affected by low-energy anomaly
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27682 $
+; $LastChangedDate: 2023-07-06 13:42:55 -0700 (Thu, 06 Jul 2023) $
+; $LastChangedRevision: 31939 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_padsum.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_padsum.pro
 ;-
-function mvn_swe_padsum, pad
+function mvn_swe_padsum, pad, qlevel=qlevel
 
   if (size(pad,/type) ne 8) then return, 0
-  if (n_elements(pad) eq 1) then return, pad
+  npts = n_elements(pad)
+  if (npts eq 1) then return, pad
+  qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
+
+; Quality filter
+
+  str_element, pad, 'quality', success=ok
+  if (ok) then begin
+    indx = where(pad.quality ge qlevel, npts)
+    if (npts eq 0L) then begin
+      print, "No PAD data to sum with quality >= ", qlevel, format='(a,i1)'
+      return, 0
+    endif
+    pad = pad[indx]
+  endif else print, "Quality level not yet defined for L2 data."
 
   old_units = pad[0].units_name  
   mvn_swe_convert_units, pad, 'counts'            ; convert to raw counts
   padsum = pad[0]
-  npts = n_elements(pad)
+
+; Sum the data
 
   padsum.met = mean(pad.met)
   padsum.time = mean(pad.time)
@@ -70,6 +90,8 @@ function mvn_swe_padsum, pad
   padsum.var = total(var/pad.dtc,3,/nan)/nrm        ; variance of sum
   padsum.dtc = 1.         ; summing corrected counts is not reversible
   padsum.bkg = total(pad.bkg,3)/float(npts)
+
+  padsum.quality = min(pad.quality)
 
   mvn_swe_convert_units, pad, old_units
   mvn_swe_convert_units, padsum, old_units

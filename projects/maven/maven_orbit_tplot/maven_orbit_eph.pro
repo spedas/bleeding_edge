@@ -45,25 +45,7 @@
 ;       SLAT            DOUBLE    IAU_MARS latitude of sub-solar point (deg)
 ;
 ;    * The datum can be one of: 'sphere', 'ellipsoid', 'areoid', or 'surface'.
-;      See mvn_altitude.pro for details.  This function uses the 'ellipsoid'.
-;
-;  The last three parameters are only calculated if the frames and planet kernels
-;  are loaded, or if you use the MISSION keyword.  Any of the following will work:
-;
-;    Option 1: Initialize SPICE first
-;
-;      kernels = mvn_spice_kernels(/load)
-;      eph = maven_orbit_eph()
-;
-;    Option 2: For long time spans, for which loading all the kernels would be
-;              cumbersome:
-;
-;      mvn_swe_spice_init, /baseonly
-;      eph = maven_orbit_eph()
-;
-;    Option 3: For the entire mission to date:
-;
-;      eph = maven_orbit_eph(/mission)
+;      See mvn_altitude.pro for details.  The default is 'ellipsoid'.
 ;
 ;USAGE:
 ;  eph = maven_orbit_eph()
@@ -72,43 +54,30 @@
 ;       none
 ;
 ;KEYWORDS:
-;
-;       MISSION:  Restore an ephemeris for the entire mission.  Currently, the
-;                 ephemeris spans 2014-09-21 (orbit insertion) to 2023-07-01.
-;                 The file is 3.4 GB in size, so it could take a while to 
-;                 download it, and that is how much RAM it will consume.  The
-;                 time resolution is 10 seconds, and there are >27 million points.
-;
-;                 You can use the WHERE command to identify geometric situations
-;                 of interest.
+;       none
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-05-11 10:04:19 -0700 (Thu, 11 May 2023) $
-; $LastChangedRevision: 31850 $
+; $LastChangedDate: 2023-07-07 10:48:05 -0700 (Fri, 07 Jul 2023) $
+; $LastChangedRevision: 31942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_eph.pro $
 ;-
-function maven_orbit_eph, mission=mission
+function maven_orbit_eph
 
   @maven_orbit_common
 
-  if keyword_set(mission) then begin
-    rootdir = 'maven/anc/spice/sav/'
-    ssrc = mvn_file_source(archive_ext='')  ; don't archive old files
-    fname = 'maven_eph_20140921_*.sav'
-    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=2)
-    nfiles = n_elements(file)
-    if (nfiles eq 1) then restore, file
-    return, eph
-  endif
+  eph = 0
 
   if (size(state,/type) eq 0) then begin
     print,"Ephemeris not defined.  Use maven_orbit_tplot first."
-    return, 0
+    return, eph
   endif
-  
+
+; Calculate additional parameters derived from state vectors
+
   eph = state
   str_element, eph, 'r', sqrt(total(state.mso_x^2.,2)), /add
   str_element, eph, 'r_m', 3389.5, /add
+  str_element, eph, 's', sqrt(total((state.mso_x[*,[1,2]])^2.,2))
   str_element, eph, 'vmag_mso', sqrt(total(state.mso_v^2.,2)), /add
   str_element, eph, 'vmag_geo', sqrt(total(state.geo_v^2.,2)), /add
   str_element, eph, 'alt', hgt, /add
@@ -116,13 +85,9 @@ function maven_orbit_eph, mission=mission
   str_element, eph, 'lat', lat, /add
   str_element, eph, 'datum', datum, /add
   str_element, eph, 'sza', sza*!radeg, /add
-
-  mvn_mars_localtime, result=lst
-  if (size(lst,/type) eq 8) then begin
-    str_element, eph, 'lst', lst.lst, /add
-    str_element, eph, 'slon', lst.slon, /add
-    str_element, eph, 'slat', lst.slat, /add
-  endif
+  str_element, eph, 'lst', lst, /add
+  str_element, eph, 'slon', slon, /add
+  str_element, eph, 'slat', slat, /add
 
   return, eph
 

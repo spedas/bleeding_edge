@@ -11,12 +11,12 @@
 ;       Yuki Harada on 2018-07-12
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2023-01-24 23:09:14 -0800 (Tue, 24 Jan 2023) $
-; $LastChangedRevision: 31424 $
+; $LastChangedDate: 2023-06-30 01:34:53 -0700 (Fri, 30 Jun 2023) $
+; $LastChangedRevision: 31915 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_ima_emspec.pro $
 ;-
 
-pro kgy_ima_emspec,trange=trange,window=window,erange=erange,tofrange=tofrange,speclimits=slim,sum=sum,linelimits=llim,Kloss=Kloss,nosplabel=nosplabel,polrange=polrange,emdata=emdata,splines=splines
+pro kgy_ima_emspec,trange=trange,window=window,erange=erange,tofrange=tofrange,speclimits=slim,sum=sum,linelimits=llim,Kloss=Kloss,nosplabel=nosplabel,polrange=polrange,emdata=emdata,splines=splines,Vlef=Vlef
 
 tr = timerange(trange)
 if size(sum,/type) eq 0 then sum = 4
@@ -100,13 +100,14 @@ yp = enesort[wene]
 zp = transpose(cntsort[wene,*])
 zp = zp[wtof,*]
 
-;;; set IMA LEF voltage (Saito et al., 2010)
-Vlef = 15
-if mean(tr) lt time_double('2009-06-03') then Vlef = 12
-if mean(tr) lt time_double('2008-05-24') then Vlef = 10
-if mean(tr) lt time_double('2008-03-24') then Vlef = 8
-
-if ~keyword_set(Kloss) then Kloss = 2 ;- 0, 1, 2, 3, 4, 5
+;;; set IMA LEF voltage (Table 8 of Saito et al., 2010)
+if ~keyword_set(Vlef) then begin
+   Vlef = 15
+   if mean(tr) lt time_double('2009-06-03') then Vlef = 12
+   if mean(tr) lt time_double('2008-05-24') then Vlef = 10
+   if mean(tr) lt time_double('2008-03-24') then Vlef = 8
+endif
+if size(Kloss,/type) eq 0 then Kloss = 2 ;- 0, 1, 2, 3, 4, 5
 
 
 

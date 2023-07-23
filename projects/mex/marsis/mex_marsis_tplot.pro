@@ -11,8 +11,8 @@
 ;       Yuki Harada on 2017-05-11
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2018-04-06 01:38:33 -0700 (Fri, 06 Apr 2018) $
-; $LastChangedRevision: 25009 $
+; $LastChangedDate: 2023-06-20 01:30:32 -0700 (Tue, 20 Jun 2023) $
+; $LastChangedRevision: 31900 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_tplot.pro $
 ;-
 
@@ -96,6 +96,151 @@ if total(strmatch(types,'ionogram')) gt 0 then begin
 endif
 ;;; ionogram
 
+
+;;; ss
+if total(strmatch(types,'ss')) gt 0 then begin
+   if size(marsis_ss,/type) eq 0 then $
+      dprint,'No SS data stored' $
+   else begin
+      if total(finite(marsis_ss.alt)) gt 0 then $
+         store_data,'mex_marsis_ss_alt', $
+                    data={x:marsis_ss.time,y:marsis_ss.alt}, $
+                    dlim={ytitle:'Alt.!c[km]',datagap:60}
+         store_data,'mex_marsis_ss_lon', $
+                    data={x:marsis_ss.time,y:marsis_ss.lon}, $
+                    dlim={ytitle:'Lon.!c[deg.]',datagap:60}
+         store_data,'mex_marsis_ss_lat', $
+                    data={x:marsis_ss.time,y:marsis_ss.lat}, $
+                    dlim={ytitle:'Lat.!c[deg.]',datagap:60}
+         store_data,'mex_marsis_ss_loct', $
+                    data={x:marsis_ss.time,y:marsis_ss.loct}, $
+                    dlim={ytitle:'Local True!cSolar Time!c[h]',datagap:60}
+         store_data,'mex_marsis_ss_sza', $
+                    data={x:marsis_ss.time,y:marsis_ss.sza}, $
+                    dlim={ytitle:'SZA!c[deg.]',datagap:60}
+         ;;; https://pds-geosciences.wustl.edu/mex/mex-m-marsis-3-rdr-ss-v2/mexmrs_1001/document/marsis_eaicd.pdf
+         ;;; The first sample of a processed frame is positioned at an altitude of 25 km above the Martian ellipsoid, while each subsequent sample is 1/1.4 MHz, or 0.7143 μs from the previous one.
+         td = 0.7143 * indgen(512) ;- micro sec
+         freqs = [1.8,3,4,5]
+         for ifreq=0,n_elements(freqs)-1 do begin
+            w = where( round(marsis_ss.freq1/1e5) eq round(freqs[ifreq]*10) , nw )
+            if nw gt 0 then begin
+               store_data,'mex_marsis_ss_radargram_1z_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data1_z),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+            endif
+            w = where( round(marsis_ss.freq2/1e5) eq round(freqs[ifreq]*10) , nw )
+            if nw gt 0 then begin
+               store_data,'mex_marsis_ss_radargram_2z_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data2_z),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+            endif
+         endfor
+   endelse
+endif
+;;; ss
+
+
+;;; ssall
+if total(strmatch(types,'ssall')) gt 0 then begin
+   if size(marsis_ss,/type) eq 0 then $
+      dprint,'No SS data stored' $
+   else begin
+      if total(finite(marsis_ss.alt)) gt 0 then $
+         store_data,'mex_marsis_ss_alt', $
+                    data={x:marsis_ss.time,y:marsis_ss.alt}, $
+                    dlim={ytitle:'Alt.!c[km]',datagap:60}
+         store_data,'mex_marsis_ss_lon', $
+                    data={x:marsis_ss.time,y:marsis_ss.lon}, $
+                    dlim={ytitle:'Lon.!c[deg.]',datagap:60}
+         store_data,'mex_marsis_ss_lat', $
+                    data={x:marsis_ss.time,y:marsis_ss.lat}, $
+                    dlim={ytitle:'Lat.!c[deg.]',datagap:60}
+         store_data,'mex_marsis_ss_loct', $
+                    data={x:marsis_ss.time,y:marsis_ss.loct}, $
+                    dlim={ytitle:'Local True!cSolar Time!c[h]',datagap:60}
+         store_data,'mex_marsis_ss_sza', $
+                    data={x:marsis_ss.time,y:marsis_ss.sza}, $
+                    dlim={ytitle:'SZA!c[deg.]',datagap:60}
+         ;;; https://pds-geosciences.wustl.edu/mex/mex-m-marsis-3-rdr-ss-v2/mexmrs_1001/document/marsis_eaicd.pdf
+         ;;; The first sample of a processed frame is positioned at an altitude of 25 km above the Martian ellipsoid, while each subsequent sample is 1/1.4 MHz, or 0.7143 μs from the previous one.
+         td = 0.7143 * indgen(512) ;- micro sec
+         freqs = [1.8,3,4,5]
+         for ifreq=0,n_elements(freqs)-1 do begin
+            w = where( round(marsis_ss.freq1/1e5) eq round(freqs[ifreq]*10) , nw )
+            if nw gt 0 then begin
+               store_data,'mex_marsis_ss_radargram_1m_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data1_m),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz -1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+               store_data,'mex_marsis_ss_radargram_1z_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data1_z),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+               store_data,'mex_marsis_ss_radargram_1p_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data1_p),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz +1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+               store_data,'mex_marsis_ss_radargram_phase_1m_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].phase1_m),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz -1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:0,zrange:[-!pi,!pi],ztitle:'phase'}
+               store_data,'mex_marsis_ss_radargram_phase_1z_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].phase1_z),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:0,zrange:[-!pi,!pi],ztitle:'phase'}
+               store_data,'mex_marsis_ss_radargram_phase_1p_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].phase1_p),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz +1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:0,zrange:[-!pi,!pi],ztitle:'phase'}
+            endif
+            w = where( round(marsis_ss.freq2/1e5) eq round(freqs[ifreq]*10) , nw )
+            if nw gt 0 then begin
+               store_data,'mex_marsis_ss_radargram_2m_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data2_m),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz -1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+               store_data,'mex_marsis_ss_radargram_2z_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data2_z),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+               store_data,'mex_marsis_ss_radargram_2p_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].data2_p),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz +1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:1,zrange:[1,1e4],ztitle:'modulus'}
+               store_data,'mex_marsis_ss_radargram_phase_2m_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].phase2_m),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz -1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:0,zrange:[-!pi,!pi],ztitle:'phase'}
+               store_data,'mex_marsis_ss_radargram_phase_2z_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].phase2_z),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:0,zrange:[-!pi,!pi],ztitle:'phase'}
+               store_data,'mex_marsis_ss_radargram_phase_2p_'+string(freqs[ifreq]*10,f='(i0)'), $
+                          data={x:marsis_ss[w].time,y:transpose(marsis_ss[w].phase2_p),v:td/100}, $
+                          dlim={ytitle:string(freqs[ifreq],f='(f3.1)')+' MHz +1 Filter!cTime Delay!c[10!u-4!n s]', $
+                                datagap:60,yrange:[max(td/100),0],ystyle:1,spec:1, $
+                                zlog:0,zrange:[-!pi,!pi],ztitle:'phase'}
+            endif
+         endfor
+   endelse
+endif
+;;; ssall
 
 
 ;;; xml

@@ -15,19 +15,37 @@
 ;
 ;KEYWORDS:
 ;
+;       QLEVEL:        Minimum quality level to sum (0-2, default=0):
+;                        2B = good
+;                        1B = uncertain
+;                        0B = affected by low-energy anomaly
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-28 12:41:25 -0800 (Sun, 28 Feb 2021) $
-; $LastChangedRevision: 29708 $
+; $LastChangedDate: 2023-07-06 13:42:55 -0700 (Thu, 06 Jul 2023) $
+; $LastChangedRevision: 31939 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_3dsum.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_3dsum.pro
 ;-
-function mvn_swe_3dsum, ddd
+function mvn_swe_3dsum, ddd, qlevel=qlevel
 
   if (size(ddd,/type) ne 8) then return, 0
   npts = n_elements(ddd)
   if (npts eq 1) then return, ddd
+  qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
+
+; Quality filter
+
+  str_element, ddd, 'quality', success=ok
+  if (ok) then begin
+    indx = where(ddd.quality ge qlevel, npts)
+    if (npts eq 0L) then begin
+      print, "No 3D data to sum with quality >= ", qlevel, format='(a,i1)'
+      return, 0
+    endif
+    ddd = ddd[indx]
+  endif else print, "Quality level not yet defined for L2 data."
 
   old_units = ddd[0].units_name  
   mvn_swe_convert_units, ddd, 'counts'     ; convert to raw counts

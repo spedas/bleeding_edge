@@ -73,30 +73,36 @@
 ;                  containing the relative geometric factors for the 3D
 ;                  bins.
 ;
+;       KILLWINS:  Delete the windows upon completion.  Default is to keep
+;                  and reuse them for subsequent plots.
+;
 ;CREATED BY:	David L. Mitchell  2016-08-03
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 08:18:59 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31551 $
+; $LastChangedDate: 2023-06-05 12:17:33 -0700 (Mon, 05 Jun 2023) $
+; $LastChangedRevision: 31883 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 ;-
 pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
                     midpa=midpa, olap=olap, symdir=symdir, result=result, $
-                    lon=lon, lat=lat, calnum=calnum, scp=scp
+                    lon=lon, lat=lat, calnum=calnum, scp=scp, killwins=killwins
 
   @mvn_swe_com
   common colors_com
+  common fovcal_windows, Pwin, Gwin, Fwin
 
   ctab = color_table
   crev = color_reverse
-  initct, 34
+  initct, 34  ; shows low values better in specplot
 
   a = 0.8
   phi = findgen(49)*(2.*!pi/49)
   usersym,a*cos(phi),a*sin(phi),/fill
+  csz = 1.5
+  device, window_state=ws
 
   dat = 0
-  twin = !d.window
+  Twin = !d.window
   if (size(units,/type) ne 7) then units = 'eflux'
   if not keyword_set(mincnts) then mincnts = 30.
   if not keyword_set(energy) then eref = 125. else eref = float(energy)
@@ -135,7 +141,7 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
   
   trange = [dat.time - dat.delta_t/2D, dat.time + dat.delta_t/2D]
 
-; Replace the magnetic field vector with the symmetry direction
+; Optionally replace the magnetic field vector with the symmetry direction
 
   if (dosym) then begin
     Bt = Saz.x
@@ -166,7 +172,10 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
   vphi = atan(vel[1],vel[0])*!radeg
   vthe = asin(vel[2]/vmag)*!radeg
 
+  valid = edat.valid
+  str_element, edat, 'valid', 1B, /add_replace     ; kluge for convert_vframe
   data = convert_vframe(edat, vel, sc_pot=edat.sc_pot, /interpolate)
+  str_element, data, 'valid', valid, /add_replace  ; replace valid array
   mvn_swe_convert_units, data, units
   dat = data
 
@@ -204,50 +213,70 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
 ; "true" pitch angle distribution.  Assumes that the pitch angle mapping
 ; over the field of view is accurate.)
 
-  window,1,xsize=780,ysize=710
+  ok = 0
+  if (size(Pwin,/type) gt 0) then begin
+    if (ws[Pwin]) then begin
+      wset, Pwin
+      if ((!d.x_size eq 780) and (!d.y_size eq 710)) then ok = 1
+    endif
+  endif
+  if (~ok) then begin
+    win, /free, xsize=780, ysize=710, /secondary, dx=10, dy=10
+    Pwin = !d.window
+  endif
 
-  csz = 1.5
   !p.multi = [2,1,2,0,0]
-  plot_io,pa[gud],f[gud],psym=3,xrange=[0,180],/xsty,xticks=6,xminor=3,charsize=csz,$
-               ytitle='Eflux',xmargin=[12,10]
-  oploterr,pa[gud],f[gud],df[gud],3
+    erase
+    plot_io,pa[gud],f[gud],psym=3,xrange=[0,180],/xsty,xticks=6,xminor=3,charsize=csz,$
+                 ytitle='Eflux',xmargin=[12,10]
+    oploterr,pa[gud],f[gud],df[gud],3
 
-  indx = where(pa[gud] le (midpa + olap))
-  x1 = pa[gud[indx]]
-  y1 = f[gud[indx]]
-  dy1 = df[gud[indx]]
-  p1 = {a0:double(min(y1)), a1:0d, a2:0d, a3:0d, a4:0d, a5:0d}
-  fit,x1,y1,dy=dy1,func='polycurve',par=p1,names=name1
-  npa = round(midpa)
-  oplot,findgen(npa+1),polycurve(findgen(npa+1),par=p1),color=4,thick=2
+    indx = where(pa[gud] le (midpa + olap))
+    x1 = pa[gud[indx]]
+    y1 = f[gud[indx]]
+    dy1 = df[gud[indx]]
+    p1 = {a0:double(min(y1)), a1:0d, a2:0d, a3:0d, a4:0d, a5:0d}
+    fit,x1,y1,dy=dy1,func='polycurve',par=p1,names=name1
+    npa = round(midpa)
+    oplot,findgen(npa+1),polycurve(findgen(npa+1),par=p1),color=4,thick=2
 
-  jndx = where(pa[gud] gt (midpa - olap))
-  x2 = 180. - pa[gud[jndx]]
-  y2 = f[gud[jndx]]
-  dy2 = df[gud[jndx]]
-  p2 = {a0:double(min(y2)), a1:0d, a2:0d, a3:0d, a4:0d, a5:0d}
-  fit,x2,y2,dy=dy2,func='polycurve',par=p2,names=name2
-  npa = round(180. - midpa)
-  oplot,180.-findgen(npa+1),polycurve(findgen(npa+1),par=p2),color=6,thick=2
+    jndx = where(pa[gud] gt (midpa - olap))
+    x2 = 180. - pa[gud[jndx]]
+    y2 = f[gud[jndx]]
+    dy2 = df[gud[jndx]]
+    p2 = {a0:double(min(y2)), a1:0d, a2:0d, a3:0d, a4:0d, a5:0d}
+    fit,x2,y2,dy=dy2,func='polycurve',par=p2,names=name2
+    npa = round(180. - midpa)
+    oplot,180.-findgen(npa+1),polycurve(findgen(npa+1),par=p2),color=6,thick=2
 
-  indx = where(pa[gud] le midpa)  ; use midpa boundary for calculating RGF
-  jndx = where(pa[gud] gt midpa)
-  rgf = replicate(!values.f_nan, n_elements(f))
-  rgf[gud[indx]] = f[gud[indx]]/polycurve(pa[gud[indx]],par=p1)
-  rgf[gud[jndx]] = f[gud[jndx]]/polycurve(180. - pa[gud[jndx]],par=p2)
-  plot,pa[gud],rgf[gud],psym=1,xrange=[0,180],/xsty,xticks=6,xminor=3,charsize=csz,$
-       ytitle='Residual',xmargin=[12,10],xtitle='Pitch Angle (deg)'
-  oplot,[0.,180.],[1.,1.],line=2,color=4,thick=2
-
+    indx = where(pa[gud] le midpa)  ; use midpa boundary for calculating RGF
+    jndx = where(pa[gud] gt midpa)
+    rgf = replicate(!values.f_nan, n_elements(f))
+    rgf[gud[indx]] = f[gud[indx]]/polycurve(pa[gud[indx]],par=p1)
+    rgf[gud[jndx]] = f[gud[jndx]]/polycurve(180. - pa[gud[jndx]],par=p2)
+    plot,pa[gud],rgf[gud],psym=1,xrange=[0,180],/xsty,xticks=6,xminor=3,charsize=csz,$
+         ytitle='Residual',xmargin=[12,10],xtitle='Pitch Angle (deg)'
+    oplot,[0.,180.],[1.,1.],line=2,color=4,thick=2
   !p.multi = 0
 
 ; Relative geometric factor as a function of k3d
 
-  window,2,xsize=600,ysize=600
+  ok = 0
+  if (size(Gwin,/type) gt 0) then begin
+    if (ws[Gwin]) then begin
+      wset, Gwin
+      if ((!d.x_size eq 600) and (!d.y_size eq 600)) then ok = 1
+    endif
+  endif
+  if (~ok) then begin
+    win, /free, xsize=600, ysize=600, relative=Pwin, dy=-10, /left
+    Gwin = !d.window
+  endif
 
   !p.multi = [2,1,2,0,0]
+    erase
     k3d = findgen(96)
-    plot,k3d,rgf,xrange=[0,96],/xsty,xticks=6,xminor=4,charsize=1.4, $
+    plot,k3d,rgf,xrange=[0,96],/xsty,xticks=6,xminor=4,charsize=csz, $
          ytitle='Relative Geometric Factor',xtitle='Solid Angle Bin',psym=10
     for i=1,14 do oplot,[i*16,i*16],[0,100],line=1
     for i=0,5 do begin
@@ -255,15 +284,27 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
       oplot,[i*16,(i+1)*16],replicate(rgf_el,2),color=4,thick=3
     endfor
 
-    plot_io,k3d,c,xrange=[0,96],/xsty,xticks=6,xminor=4,charsize=1.4, $
+    plot_io,k3d,c,xrange=[0,96],/xsty,xticks=6,xminor=4,charsize=csz, $
             ytitle='Raw Counts',xtitle='Solid Angle Bin',psym=10
     for i=1,14 do oplot,[i*16,i*16],[1,1e5],line=1
     oplot,minmax(k3d),[mincnts,mincnts],line=2,color=6
   !p.multi = 0
-  
+
 ; Relative geometric factor map along with measured distribution
 
-  window,3,xsize=1200,ysize=600
+  ok = 0
+  if (size(Fwin,/type) gt 0) then begin
+    if (ws[Fwin]) then begin
+      wset, Fwin
+      if ((!d.x_size eq 1200) and (!d.y_size eq 600)) then ok = 1
+    endif
+  endif
+  if (~ok) then begin
+    win, /free, xsize=1200, ysize=600, relative=Pwin, dx=10, /top
+    Fwin = !d.window
+  endif
+
+    erase
     fovcal = dat
     indx = where(swe_sc_mask[*,1] eq 0B, count)
     mask = replicate(1.,96)
@@ -286,6 +327,13 @@ pro mvn_swe_fovcal, units=units, mincnts=mincnts, order=order, energy=energy, $
 
   result = {time:time, rgf:rgf, trange:trange}
   initct, ctab, reverse=crev
+
+  if keyword_set(killwins) then begin
+    device, window_state=ws
+    if (ws[Fwin]) then wdelete, Fwin
+    if (ws[Gwin]) then wdelete, Gwin
+    if (ws[Pwin]) then wdelete, Pwin
+  endif
 
   return
 

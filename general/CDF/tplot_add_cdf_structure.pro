@@ -55,9 +55,9 @@
 ;CREATED BY:
 ;  Alexander Drozdov
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-13 08:16:04 -0800 (Thu, 13 Dec 2018) $
-; $LastChangedRevision: 26321 $
+; $LastChangedBy: adrozdov $
+; $LastChangedDate: 2023-06-05 13:04:09 -0700 (Mon, 05 Jun 2023) $
+; $LastChangedRevision: 31884 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot_add_cdf_structure.pro $
 ;-
 
@@ -91,6 +91,14 @@ pro tplot_add_cdf_structure, tplot_vars, tt2000=tt2000, new=new
      metadata = spd_extract_tvar_metadata(tplot_vars[i])
      
      if ~is_struct(metadata) then continue
+    
+    ; Getting additional metadata
+    if array_contains(t, 'DATA_ATT') then data_att_t = STRUPCASE(TAG_NAMES(s.DATA_ATT)) else data_att_t = ''
+    
+    ; determine if coordinate system is defined
+    str_element,metadata,'COORDINATE_SYSTEM','' ,/add
+    if array_contains(data_att_t, 'COORD_SYS') then str_element,metadata,'COORDINATE_SYSTEM',s.DATA_ATT.COORD_SYS ,/add
+    if array_contains(data_att_t, 'COORDINATE_SYSTEM') then str_element,metadata,'COORDINATE_SYSTEM',s.DATA_ATT.COORDINATE_SYSTEM ,/add        
     
     ; cases:
     ; d is an array
@@ -167,6 +175,8 @@ pro tplot_add_cdf_structure, tplot_vars, tt2000=tt2000, new=new
       if ((metadata.catdesc ne '') and (attr.CATDESC eq 'none')) then attr.CATDESC = metadata.catdesc
       if ((metadata.units ne '') and (attr.UNITS eq 'undefined')) then attr.UNITS = metadata.UNITS
       if ((metadata.ytitle ne '') and (attr.LABLAXIS eq 'undefined')) then attr.LABLAXIS = metadata.ytitle
+      if (metadata.COORDINATE_SYSTEM ne '') then str_element, attr,'COORDINATE_SYSTEM',metadata.COORDINATE_SYSTEM ,/add      
+      
       
       vars.attrptr = ptr_new(attr)       
       

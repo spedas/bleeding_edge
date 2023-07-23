@@ -53,6 +53,23 @@
 ;   BADVAL:    If the algorithm cannot estimate the potential, then set it
 ;              to this value.  Units = volts.  Default = NaN.
 ;
+;   QLEVEL:    Minimum quality level for processing SWEA data.  Filters out
+;              the vast majority of spectra affected by the sporadic low 
+;              energy anomaly below 28 eV.  The validity levels are:
+;
+;                0B = Data are affected by the low-energy anomaly.  There
+;                     are significant systematic errors below 28 eV.
+;                1B = Unknown because: (1) the variability is too large to 
+;                     confidently identify anomalous spectra, as in the 
+;                     sheath, or (2) secondary electrons mask the anomaly,
+;                     as in the sheath just downstream of the bow shock.
+;                2B = Data are not affected by the low-energy anomaly.
+;                     Caveat: There is increased noise around 23 eV, even 
+;                     for "good" spectra.
+;
+;              Filtering (QLEVEL > 0) is essential for removing bad s/c
+;              potential estimates.
+;
 ;   MIN_LPW_POT : Minumum valid LPW potential.
 ;
 ;   MIN_STA_POT : Minumum valid STA potential.
@@ -66,8 +83,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-11-30 21:10:28 -0800 (Thu, 30 Nov 2017) $
-; $LastChangedRevision: 24364 $
+; $LastChangedDate: 2023-07-07 10:52:39 -0700 (Fri, 07 Jul 2023) $
+; $LastChangedRevision: 31946 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_defaults.pro $
 ;
 ;-
@@ -76,7 +93,8 @@ pro mvn_scpot_defaults, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
                abins=abins, dbins=dbins, obins=obins2, mask_sc=mask_sc, $
                badval=badval2, minflux=minflux2, maxdt=maxdt2, $
                min_lpw_pot=min_lpw_pot2, list=list, $
-               min_sta_pot=min_sta_pot2, max_sta_alt=max_sta_alt2
+               min_sta_pot=min_sta_pot2, max_sta_alt=max_sta_alt2, $
+               qlevel=qlevel2
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -92,6 +110,7 @@ pro mvn_scpot_defaults, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
       print, "  dEmax:        ", dEmax
       print, "  minflux:      ", minflux
       print, "  badval:       ", badval
+      print, "  qlevel:       ", qlevel
       print, "  min_lpw_pot:  ", min_lpw_pot
       print, "  min_sta_pot:  ", min_sta_pot
       print, "  max_sta_alt:  ", max_sta_alt
@@ -130,6 +149,7 @@ pro mvn_scpot_defaults, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
 ; Other defaults
 
   badval = !values.f_nan  ; fill value for potential when no method works
+  qlevel = 1B             ; minumum quality level for processing SWEA data
   min_lpw_pot = -14.      ; minimum valid LPW potential
   min_sta_pot = -20.      ; minimum valid STA potential near periapsis
   max_sta_alt = 200.      ; maximum altitude for limiting STA potential range
@@ -142,6 +162,7 @@ pro mvn_scpot_defaults, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
   if (size(dEmax2,/type)   gt 0) then dEmax = float(dEmax2)
   if (size(minflux2,/type) gt 0) then minflux = float(minflux2)
   if (size(badval2,/type)  gt 0) then badval = float(badval2)
+  if (size(qlevel2,/type)  gt 0) then qlevel = byte(qlevel2)
   if (size(maxdt2,/type)   gt 0) then maxdt = float(maxdt2)
   if (size(min_lpw_pot2,/type) gt 0) then min_lpw_pot = float(min_lpw_pot2)
   if (size(min_sta_pot2,/type) gt 0) then min_sta_pot = float(min_sta_pot2)

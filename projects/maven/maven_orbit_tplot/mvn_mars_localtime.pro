@@ -43,8 +43,8 @@
 ;       PANS:      Returns the names of any tplot variables created.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-04-09 11:30:39 -0700 (Fri, 09 Apr 2021) $
-; $LastChangedRevision: 29860 $
+; $LastChangedDate: 2023-07-07 10:50:18 -0700 (Fri, 07 Jul 2023) $
+; $LastChangedRevision: 31944 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_localtime.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -92,18 +92,18 @@ pro mvn_mars_localtime, t, l, result=result, pans=pans
 
 ; Sun is at MSO coordinates of [X, Y, Z] = [1, 0, 0]
 
-  s_mso = [1D, 0D, 0D] # replicate(1D, nt)
-  s_geo = spice_vector_rotate(s_mso, tt, from_frame, to_frame, check=chk_frame)
-  s_lon = reform(atan(s_geo[1,*], s_geo[0,*])*!radeg)
-  s_lat = reform(asin(s_geo[2,*])*!radeg)
-  
-  jndx = where(s_lon lt 0., count)
-  if (count gt 0L) then s_lon[jndx] = s_lon[jndx] + 360.
+  smso = [1D, 0D, 0D] # replicate(1D, nt)
+  sgeo = spice_vector_rotate(smso, tt, from_frame, to_frame, check=chk_frame)
+  slon = reform(atan(sgeo[1,*], sgeo[0,*])*!radeg)
+  slat = reform(asin(sgeo[2,*])*!radeg)
+
+  jndx = where(slon lt 0., count)
+  if (count gt 0L) then slon[jndx] = slon[jndx] + 360.
 
 ; Local time is IAU_MARS longitude relative to sub-solar longitude
 
-  lst = (l - s_lon)*(12D/180D) - 12D  ; 0 = midnight, 12 = noon
-  lst -= 24D*double(floor(lst/24D))   ; wrap to 0-24 range
+  lst = (l - slon)*(12D/180D) - 12D  ; 0 = midnight, 12 = noon
+  lst -= 24D*double(floor(lst/24D))  ; wrap to 0-24 range
 
   store_data,'lst',data={x:time, y:lst}
   ylim,'lst',0,24,0
@@ -112,12 +112,12 @@ pro mvn_mars_localtime, t, l, result=result, pans=pans
   options,'lst','psym',3
   options,'lst','ytitle','LST (hrs)'
   
-  store_data,'Lss',data={x:time, y:s_lat}
+  store_data,'Lss',data={x:time, y:slat}
   options,'Lss','ytitle','Sub-solar!CLat (deg)'
 
   pans = ['lst', 'Lss']
 
-  result = {time:tt, lon:l, lst:lst, slon:s_lon, slat:s_lat, frame:'IAU_MARS'}
+  result = {time:tt, lon:l, lst:lst, slon:slon, slat:slat, frame:'IAU_MARS'}
 
   return
 

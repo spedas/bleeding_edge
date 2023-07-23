@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun  1 18:16:40 2023.<P>
+<STRONG>Last modified: </STRONG>Sun Jul 23 03:17:11 2023.<P>
  
 <HR>
  
@@ -265,6 +265,8 @@ This page was created by the IDL library routine
 <br>Loads MAG data from one of two sources:
 <LI><A HREF="#SWE_HSK_SNAP">SWE_HSK_SNAP</A>
 <br>Plots housekeeping snapshots for times selected with the cursor in a tplot
+<LI><A HREF="#SWE_LOWE_CLUSTER">SWE_LOWE_CLUSTER</A>
+<br>Sporadic low-energy anomaly cluster analysis.
 <LI><A HREF="#SWE_MAXBOL">SWE_MAXBOL</A>
 <br>Maxwell-Boltzmann distribution for fitting SWEA electron energy spectra.
 <LI><A HREF="#SWE_N_3D">SWE_N_3D</A>
@@ -1384,9 +1386,14 @@ INPUTS:
 
 KEYWORDS:
 
+       QLEVEL:        Minimum quality level to sum (0-2, default=0):
+                        2B = good
+                        1B = uncertain
+                        0B = affected by low-energy anomaly
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-02-28 12:41:25 -0800 (Sun, 28 Feb 2021) $
- $LastChangedRevision: 29708 $
+ $LastChangedDate: 2023-07-06 13:42:55 -0700 (Thu, 06 Jul 2023) $
+ $LastChangedRevision: 31939 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_3dsum.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2468,8 +2475,8 @@ KEYWORDS:
        TEST:         Returns calibration used.  For testing.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-03-18 15:25:44 -0700 (Thu, 18 Mar 2021) $
- $LastChangedRevision: 29774 $
+ $LastChangedDate: 2023-06-30 14:37:17 -0700 (Fri, 30 Jun 2023) $
+ $LastChangedRevision: 31920 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_flatfield.pro $
 
 CREATED BY:    David L. Mitchell  2016-09-28
@@ -2558,11 +2565,14 @@ KEYWORDS:
                   containing the relative geometric factors for the 3D
                   bins.
 
+       KILLWINS:  Delete the windows upon completion.  Default is to keep
+                  and reuse them for subsequent plots.
+
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-27 08:18:59 -0800 (Mon, 27 Feb 2023) $
- $LastChangedRevision: 31551 $
+ $LastChangedDate: 2023-06-05 12:17:33 -0700 (Mon, 05 Jun 2023) $
+ $LastChangedRevision: 31883 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovcal.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovcal.pro">projects/maven/swea/mvn_swe_fovcal.pro</A>)</STRONG><P>
@@ -2621,8 +2631,8 @@ KEYWORDS:
 CREATED BY:	David L. Mitchell  2016-08-03
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-27 08:18:46 -0800 (Mon, 27 Feb 2023) $
- $LastChangedRevision: 31550 $
+ $LastChangedDate: 2023-06-05 12:17:33 -0700 (Mon, 05 Jun 2023) $
+ $LastChangedRevision: 31883 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovplot.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_fovplot.pro">projects/maven/swea/mvn_swe_fovplot.pro</A>)</STRONG><P>
@@ -2663,9 +2673,14 @@ KEYWORDS:
 
        SHIFTPOT:      Correct for spacecraft potential.
 
+       QLEVEL:        Minimum quality level to load (0-2, default=0):
+                        2B = good
+                        1B = uncertain
+                        0B = affected by low-energy anomaly
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
- $LastChangedRevision: 29495 $
+ $LastChangedDate: 2023-07-04 13:40:14 -0700 (Tue, 04 Jul 2023) $
+ $LastChangedRevision: 31934 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2827,9 +2842,14 @@ KEYWORDS:
        HIRES:         Returns 0 for normal resolution (2-sec) data; returns 1 for
                       high resolution (0.03-sec) data.
 
- $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
- $LastChangedRevision: 29495 $
+       QLEVEL:        Minimum quality level to load (0-2, default=0):
+                        2B = good
+                        1B = uncertain
+                        0B = affected by low-energy anomaly
+
+ $LastChangedBy: muser $
+ $LastChangedDate: 2023-07-03 10:38:02 -0700 (Mon, 03 Jul 2023) $
+ $LastChangedRevision: 31926 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2872,9 +2892,14 @@ KEYWORDS:
 
        YRANGE:        Returns the data range, excluding zero counts.
 
+       QLEVEL:        Minimum quality level to load (0-2, default=0):
+                        2B = good
+                        1B = uncertain
+                        0B = affected by low-energy anomaly
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-08-31 11:31:33 -0700 (Thu, 31 Aug 2017) $
- $LastChangedRevision: 23867 $
+ $LastChangedDate: 2023-07-03 10:47:05 -0700 (Mon, 03 Jul 2023) $
+ $LastChangedRevision: 31927 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getspec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -3842,8 +3867,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-08-04 12:16:07 -0700 (Fri, 04 Aug 2017) $
- $LastChangedRevision: 23758 $
+ $LastChangedDate: 2023-06-23 12:34:13 -0700 (Fri, 23 Jun 2023) $
+ $LastChangedRevision: 31909 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n3d.pro $
 
 </PRE><P>
@@ -4038,9 +4063,14 @@ INPUTS:
 
 KEYWORDS:
 
+       QLEVEL:        Minimum quality level to sum (0-2, default=0):
+                        2B = good
+                        1B = uncertain
+                        0B = affected by low-energy anomaly
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
- $LastChangedRevision: 27682 $
+ $LastChangedDate: 2023-07-06 13:42:55 -0700 (Thu, 06 Jul 2023) $
+ $LastChangedRevision: 31939 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_padsum.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -5517,9 +5547,14 @@ INPUTS:
 
 KEYWORDS:
 
+       QLEVEL:        Minimum quality level to sum (0-2, default=0):
+                        2B = good
+                        1B = uncertain
+                        0B = affected by low-energy anomaly
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
- $LastChangedRevision: 27682 $
+ $LastChangedDate: 2023-07-06 13:42:55 -0700 (Thu, 06 Jul 2023) $
+ $LastChangedRevision: 31939 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_specsum.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -5634,8 +5669,8 @@ PURPOSE:
   All times are for the center of the sample.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-05-05 12:59:06 -0700 (Thu, 05 May 2022) $
- $LastChangedRevision: 30801 $
+ $LastChangedDate: 2023-06-23 12:34:13 -0700 (Fri, 23 Jun 2023) $
+ $LastChangedRevision: 31909 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_struct.pro $
 
 CREATED BY:	David L. Mitchell  2013-07-26
@@ -6406,13 +6441,18 @@ KEYWORDS:
                       format accepted by time_double.  (This disables the
                       interactive time range selection.)
 
-        COLOR_TABLE:  Use this color table for all plots.
+       COLOR_TABLE:  Use this color table for all plots.
 
-        REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+       REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+
+       QLEVEL:       Minimum quality level to plot (0-2, default=0):
+                        2B = good
+                        1B = uncertain
+                        0B = affected by low-energy anomaly
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-02-27 08:16:18 -0800 (Mon, 27 Feb 2023) $
- $LastChangedRevision: 31547 $
+ $LastChangedDate: 2023-07-04 13:40:37 -0700 (Tue, 04 Jul 2023) $
+ $LastChangedRevision: 31935 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -6915,9 +6955,23 @@ KEYWORDS:
 
        LINE_COLORS:   Use this for the line colors.
 
+       QLEVEL:        Minimum quality level for summing and plotting.  Filters out
+                      the vast majority of spectra affected by the sporadic low energy
+                      anomaly below 28 eV.  The validity levels are:
+
+                        0B = Data are affected by the low-energy anomaly.  There
+                             are significant systematic errors below 28 eV.
+                        1B = Unknown because: (1) the variability is too large to 
+                             confidently identify anomalous spectra, as in the 
+                             sheath, or (2) secondary electrons mask the anomaly,
+                             as in the sheath just downstream of the bow shock.
+                        2B = Data are not affected by the low-energy anomaly.
+                             Caveat: There is increased noise around 23 eV, even 
+                             for &quot;good&quot; spectra.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-04-27 16:30:02 -0700 (Thu, 27 Apr 2023) $
- $LastChangedRevision: 31807 $
+ $LastChangedDate: 2023-06-23 12:34:13 -0700 (Fri, 23 Jun 2023) $
+ $LastChangedRevision: 31909 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -7009,7 +7063,7 @@ CREATED BY:    David L. Mitchell  03/18/14
 <A NAME="SWE_HSK_SNAP">
 <H2>SWE_HSK_SNAP</H2></A>
 <A HREF="#SWE_GETMAG_QL">[Previous Routine]</A>
-<A HREF="#SWE_MAXBOL">[Next Routine]</A>
+<A HREF="#SWE_LOWE_CLUSTER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   swe_hsk_snap
@@ -7034,9 +7088,95 @@ CREATED BY:    David L. Mitchell  07-25-12
 <STRONG>(See <A href="swea/swe_hsk_snap.pro">projects/maven/swea/swe_hsk_snap.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_LOWE_CLUSTER">
+<H2>SWE_LOWE_CLUSTER</H2></A>
+<A HREF="#SWE_HSK_SNAP">[Previous Routine]</A>
+<A HREF="#SWE_MAXBOL">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   swe_lowe_cluster
+PURPOSE:
+  Sporadic low-energy anomaly cluster analysis.
+
+USAGE:
+  swe_lowe_cluster [, KEYWORD=value, ...]
+
+INPUTS:
+
+KEYWORDS:
+       TRANGE:   Process data over this time range.
+
+       WIDTH:    Boxcar width in points for performing cluster analysis.
+                 Odd number.  Default = 75.
+
+       NPTS:     Half-width of boxcar for calculating upper envelope.
+                 Default = 16.
+
+       LAMBDA:   Smoothing parameter for spline_smooth.  Default = 1.
+
+       FRAC:     Fraction of lowest points to ignore in calculating smooth
+                 curve through upper envelope of data.  Default = 0 (use
+                 all points).
+
+       OUTLIER:  With one-cluster analysis, this discard outliers more than
+                 this many standard deviations from the mean.
+
+       MINPTS:   If OUTLIER is set, this specifies the minimum number of 
+                 points remaining after discarding outliers.  If too many
+                 points are flagged as outliers, then cluster analysis is
+                 preferred.  Default = WIDTH - 5.
+
+       TSTOP:    Times of shadow boundaries.
+
+       BUFFER:   Buffer zone at shadow boundaries.  All quality flags within
+                 BUFFER seconds of the boundary are set to unity.  The buffer
+                 zone is asymmetric about the shadow boundary because the flux
+                 changes more gradually on the dark side of the boundary.
+                 Default [sun,dark] = [8,16] seconds.
+
+       MINDELTA: Minimum cluster separation for identifying anomalous spectra.
+                 Default = 1 (sigma).
+
+       MAXRATIO: Maximum variance ratio for identifying anomalous spectra.
+                 Default = 0.4 (minvar/maxvar).
+
+       MAXBAD:   The maximum fraction of points within a boxcar to flag as bad.
+                 Default = 0.7.
+
+       MOBETAH:  For the low energy band, the cluster with more points is taken
+                 to be &quot;good&quot;.  Not recommended.
+
+       MINSUP:   Minimum density suppression. The low-energy anomaly usually
+                 results in a suppression of 0.4-0.8 for both the low and high
+                 energy bands.  Larger apparent suppression factors can be caused
+                 by attempting to use cluster analysis on large real density 
+                 changes, such as during discrete precipitation events in shadow.
+                 This keyword sets the quality flag to 1 (unknown) whenever the
+                 suppression falls below MINSUP.  Default = 0.3
+
+       FLAG:     Quality flag: (2 = good, 1 = unknown, 0 = bad).
+
+       QUALITY:  Structure containing the time and flag.
+
+       DIAG:     Returns structure of diagnostic information.
+
+       SETFLAG:  Set the quality flag in the SPEC, PAD, and 3D data structures.
+
+       QUIET:    Shhh.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-07-04 13:39:04 -0700 (Tue, 04 Jul 2023) $
+ $LastChangedRevision: 31933 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_lowe_cluster.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="swea/swe_lowe_cluster.pro">projects/maven/swea/swe_lowe_cluster.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_MAXBOL">
 <H2>SWE_MAXBOL</H2></A>
-<A HREF="#SWE_HSK_SNAP">[Previous Routine]</A>
+<A HREF="#SWE_LOWE_CLUSTER">[Previous Routine]</A>
 <A HREF="#SWE_N_3D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -7332,9 +7472,14 @@ KEYWORDS:
 
         NOTE:         Insert a text label.  Keep it short.
 
+        QLEVEL:       Minimum quality level to plot (0-2, default=0):
+                         2B = good
+                         1B = uncertain
+                         0B = affected by low-energy anomaly
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-04-07 11:44:16 -0700 (Fri, 07 Apr 2023) $
- $LastChangedRevision: 31714 $
+ $LastChangedDate: 2023-06-23 12:34:13 -0700 (Fri, 23 Jun 2023) $
+ $LastChangedRevision: 31909 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12

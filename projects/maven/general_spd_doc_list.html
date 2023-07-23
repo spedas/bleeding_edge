@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Jun  1 18:16:40 2023.<P>
+<STRONG>Last modified: </STRONG>Sun Jul 23 03:17:11 2023.<P>
  
 <HR>
  
@@ -1092,6 +1092,23 @@ KEYWORDS:
    BADVAL:    If the algorithm cannot estimate the potential, then set it
               to this value.  Units = volts.  Default = NaN.
 
+   QLEVEL:    Minimum quality level for processing SWEA data.  Filters out
+              the vast majority of spectra affected by the sporadic low 
+              energy anomaly below 28 eV.  The validity levels are:
+
+                0B = Data are affected by the low-energy anomaly.  There
+                     are significant systematic errors below 28 eV.
+                1B = Unknown because: (1) the variability is too large to 
+                     confidently identify anomalous spectra, as in the 
+                     sheath, or (2) secondary electrons mask the anomaly,
+                     as in the sheath just downstream of the bow shock.
+                2B = Data are not affected by the low-energy anomaly.
+                     Caveat: There is increased noise around 23 eV, even 
+                     for &quot;good&quot; spectra.
+
+              Filtering (QLEVEL &gt; 0) is essential for removing bad s/c
+              potential estimates.
+
    MIN_LPW_POT : Minumum valid LPW potential.
 
    MIN_STA_POT : Minumum valid STA potential.
@@ -1105,8 +1122,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-11-30 21:10:28 -0800 (Thu, 30 Nov 2017) $
- $LastChangedRevision: 24364 $
+ $LastChangedDate: 2023-07-07 10:52:39 -0700 (Fri, 07 Jul 2023) $
+ $LastChangedRevision: 31946 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_defaults.pro $
 
 </PRE><P>

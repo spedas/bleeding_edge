@@ -73,8 +73,8 @@
 ;   - Minor updates to defaults by egrimes@igpp
 ;    
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2020-06-09 14:30:21 -0700 (Tue, 09 Jun 2020) $
-;$LastChangedRevision: 28770 $
+;$LastChangedDate: 2023-06-20 16:16:37 -0700 (Tue, 20 Jun 2023) $
+;$LastChangedRevision: 31902 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/edp/mms_load_edp.pro $
 ;-
 pro mms_load_edp, trange = trange, probes = probes, datatype = datatype, $
@@ -95,6 +95,10 @@ pro mms_load_edp, trange = trange, probes = probes, datatype = datatype, $
     if undefined(data_rate) then data_rate = 'fast'
     if undefined(varformat) && undefined(get_support_data) then get_support_data = 1
     if undefined(time_clip) then time_clip = 1
+
+    ; the following was added 20 June 2023 to fix issue with mixture of v2 and v3 files at the SDC (and SPDF)
+    ; these files are not compatible, so there are crashes when trying to load both at the same time
+    if undefined(min_version) && undefined(latest_version) && undefined(cdf_version) && undefined(major_version) then major_version = 1b
 
     mms_load_data, trange = trange, probes = probes, level = level, instrument = 'edp', $
         data_rate = data_rate, local_data_dir = local_data_dir, source = source, $

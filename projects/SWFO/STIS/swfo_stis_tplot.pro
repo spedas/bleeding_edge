@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2023-05-08 19:36:16 -0700 (Mon, 08 May 2023) $
-; $LastChangedRevision: 31842 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2023-07-13 10:47:29 -0700 (Thu, 13 Jul 2023) $
+; $LastChangedRevision: 31952 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -9,13 +9,20 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,powerlim=powerlim
 
   
   if keyword_set(ionlim) then begin
-    store_data,'IG_GUN_I',data='IonGun1_GUN_I*'
-    store_data,'IG_GUN_V',data='IonGun1_GUN_V*'
-    store_data,'IG_STEERER',data='IonGun1_STEERER*'
-    store_data,'IG_EXB',data='IonGun1_EXB*'
-    store_data,'IG_LENS',data='IonGun1_LENS*'
-    store_data,'IG_HDEF',data='IonGun1_HDEF*'
-    options,'IonGun1_*_CTL_V' , colors = 'r'
+    store_data,'IG_GUN_I',data='iongun_GUN_I*'
+    store_data,'IG_GUN_V',data='iongun_GUN_V*'
+    store_data,'IG_STEERER',data='iongun_STEERER*'
+    store_data,'IG_EXB',data='iongun_EXB*'
+    store_data,'IG_LENS',data='iongun_LENS*'
+    store_data,'IG_HDEF',data='iongun_HDEF*'
+    store_data,'Vac_Pressure',data='gp37_vg_???',dlim={yrange:[1e-7,1e-3],ylog:1}
+    store_data,'Beam_Current',data='gse_kpa-?_F1',dlimit={yrange:[1e-13,1e-7],ylog:1,ystyle:3,neg_colors:'r'}
+    options,'gp37_vg_??1',colors='b'
+    options,'gp37_vg_??2',colors='r'
+    options,'iongun_*_CTL_V' , colors = 'r'
+    options,'gse_kpa-?_F1',/default,neg_colors='r',/ylog,yrange=[1e-13,1e-6],ystyle=3
+    options,'gse_kpa-1_F1',/default,colors='b'
+    options,'gp37_vg_IG?',max_value=1000.,/ylog
   endif
 
   if keyword_set(powerlim) then begin
@@ -67,7 +74,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,powerlim=powerlim
     options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
     options,/def,'*TOTAL6* *RATE6*',colors='bgrmcd',psym=-6,symsize=.5,labels=channels,labflag=-1
-    options,/def,'*_SCALED_RATE6*',constant=1
+    options,/def,'*_SCALED_RATE6*',constant=[.5,1]
     options,/def,'*hkp?_VALID_RATES_TOTAL',colors='b',psym=-1,symsize=.1,labels='HKP'
     options,/def,'*hkp?_SCIENCE_EVENTS',labels='EVENTS'
     options,/def,'*hkp?_EDAC_ERRORS',colors='bcrmgk',labels=['nse2','nse1','cmd_rec2','cmd_rec1','cmd_fifo2','cmd_fifo1','sci_B2','sci_B1','sci_A2','sci_A1'],labflag=-1
@@ -100,7 +107,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,powerlim=powerlim
   case plot_name of
     'SUM1': tplot,add=add,'*hkp1_USER_0A *hkp1_STATE_MACHINE_ERRORS swfo_stis_DURATION *hkp1_PPS_* *hkp?_DAC_* *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp1_CMDS_RECEIVED *hkp1_CMDS_BAD *hkp1_*REMAIN* *hkp1_*BITS *hkp1_*CYCLES *hkp1_TEST_PULSE_WIDTH_1US *hkp1_COINCIDENCE_WINDOW* *hkp1_BIAS_CLOCK_PERIOD_2US *hkp1_ADC_*'
     'SUM2': tplot,add=add,'*hkp2_STATE_MACHINE_ERRORS *hkp?_DAC_* swfo_stis_RATES_TOTAL *hkp2_*RATES *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp2_CMDS_RECEIVED *hkp2_*BITS *hkp2_*CYCLES *hkp2_TEST_PULSE_WIDTH_1US *hkp2_COINCIDENCE_WINDOW* *hkp2_BIAS_CLOCK_PERIOD_2US *hkp2_ADC_*'
-    'SUM3': tplot,add=add,'*hkp2_*CYCLES *hkp2_BIAS_CLOCK_PERIOD_2US *hkp1_TEST_PULSE_WIDTH_1US *hkp2_COINCIDENCE_WINDOW* *hkp2_TIMEOUTS_2US *hkp?_DAC_* swfo_stis_RATES_TOTAL *hkp2*RATES *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp2_CMDS_EXECUTED2 *hkp2_CMD_PACKETS_RECEIVED
+    'SUM3': tplot,add=add,'*hkp2_*CYCLES *hkp2_BIAS_CLOCK_PERIOD_2US *sci_DECI* *sci_USER_09 *hkp2_COINCIDENCE_WINDOW* *hkp2_TIMEOUTS_2US *hkp?_DAC_* swfo_stis_RATES_TOTAL *hkp2*RATES *_RATES_PULSFREQ *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14 *nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6 *hkp2_CMDS_EXECUTED2 *hkp2_CMD_PACKETS_RECEIVED
     'NOISE': tplot,add=add,'*nse_HISTOGRAM *nse_BASELINE *nse_SIGMA *nse_*RATE6'
     'SCI': tplot,add=add,'*sci_COUNTS *sci_RATE14 *sci_SIGMA14 *sci_AVGBIN14'
     'ADC': tplot,add=add,'*hkp1_ADC*
@@ -114,7 +121,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,powerlim=powerlim
     'DL4':  tplot,add=add,'*sci_RATE6 *hkp2_*BIAS* stis_l1a_SPEC_?? *nse_SIGMA *nse_BASELINE swfo_stis_hkp1_CMDS_EXECUTED'
     'LPT':  tplot,add=add,'*sci_RATE6 *hkp?_DAC_VALUES *sci*COUNTS *hkp3*REMAIN* *hkp1*REMAIN*'
     'SCIHKP': tplot,add=add,'*hkp2*SCI_*'
-    'IONGUN': tplot,add=add,'pico_I IG_*'
+    'IONGUN': tplot,add=add,'Vac_Pressure gse_kpa-?_F1 IG_*'
     'PS':tplot,add=add,'PS_*'
     
     else: dprint,'Unknown code: '+strtrim(name,2)

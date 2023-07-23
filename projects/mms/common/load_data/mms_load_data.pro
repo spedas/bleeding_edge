@@ -95,8 +95,8 @@
 ;      
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2022-01-28 12:22:17 -0800 (Fri, 28 Jan 2022) $
-;$LastChangedRevision: 30544 $
+;$LastChangedDate: 2023-06-20 16:15:40 -0700 (Tue, 20 Jun 2023) $
+;$LastChangedRevision: 31901 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_load_data.pro $
 ;-
 
@@ -176,7 +176,6 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
     ; only prompt the user if they're going to download data
     if no_download eq 0 then begin
         status = mms_login_lasp(login_info = login_info, username=username, always_prompt=always_prompt)
-        
         if status ne 1 then no_download = 1
         if username eq '' || username eq 'public' then public=1
     endif
@@ -198,7 +197,7 @@ pro mms_load_data, trange = trange, probes = probes, datatypes = datatypes_in, $
           varformat = varformat, center_measurement=center_measurement, cdf_filenames = cdf_filenames, $
           cdf_records = cdf_records, min_version = min_version, cdf_version = cdf_version, $
           latest_version = latest_version, time_clip = time_clip, suffix = suffix, versions = versions, $
-          download_only=download_only
+          download_only=download_only, major_version=major_version
         return
     endif
 

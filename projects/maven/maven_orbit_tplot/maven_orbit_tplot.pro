@@ -36,8 +36,6 @@
 ;KEYWORDS:
 ;       STAT:     Named variable to hold the plasma regime statistics.
 ;
-;       DOMEX:    Use a MEX ephemeris, instead of one for MAVEN.
-;
 ;       SWIA:     Calculate viewing geometry for SWIA, based on nominal s/c
 ;                 pointing.
 ;
@@ -78,19 +76,21 @@
 ;                 Used for long range predict and special events kernels.  Replaces
 ;                 keywords EXTENDED and HIRES.
 ;
-;       EXTENDED: If set, load one of four long-term predict ephemerides.  All have
-;                 a density scale factor (DSF) of 2.5, which is a weighted average
+;       EXTENDED: If set, load one of six long-term predict ephemerides.  All but one
+;                 have a density scale factor (DSF) of 2.5, which is a weighted average
 ;                 over several Mars years.  They differ in the number and timing of
-;                 apoapsis and periapsis raise maneuvers (arm, prm) and total fuel
-;                 usage (meters per second, or ms).  The date when the ephemeris was
-;                 generated is given at the end of the filename (YYMMDD).  More 
-;                 recent dates better reflect current mission goals.  When in doubt,
-;                 use the most recent.
+;                 apoapsis, periapsis, and inclination maneuvers (arm, prm, inc) and total
+;                 fuel usage (meters per second, or ms).  The date when the ephemeris was
+;                 generated is given at the end of the filename (YYMMDD).  More recent
+;                 dates better reflect current mission goals.  When in doubt, use the
+;                 most recent.
 ;
-;                   1 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp
-;                   2 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp
-;                   3 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
-;                   4 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
+;                   1 : trj_orb_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.bsp
+;                   2 : trj_orb_230322-320101_dsf1.5-prm-3.5ms_230320.bsp
+;                   3 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp
+;                   4 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp
+;                   5 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
+;                   6 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
 ;
 ;       HIRES:    OBSOLETE - this keyword has no effect at all.
 ;
@@ -142,23 +142,29 @@
 ;       RESTORE:  Restore tplot variables and the common block from a save file.
 ;
 ;       MISSION:  Restore save files that span from Mars orbit insertion to the 
-;                 present.  These files are updated periodically.  Together, the
-;                 save files are 13.7 GB in size (as of March 2023), so this 
+;                 present.  These files are refreshed periodically.  Together, 
+;                 the save files are 15 GB in size (as of July 2023), so this 
 ;                 keyword is only useful for computers with sufficient memory.
 ;
+;                   Latest refresh: 2023-07-15
+;                   Ephemeris start date: 2014-09-21
+;                   Ephemeris end date: 2023-11-17
+;
+;                 Using the where command, you can identify times that meet an
+;                 arbitrary set of ephemeris conditions.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-24 07:39:20 -0700 (Fri, 24 Mar 2023) $
-; $LastChangedRevision: 31660 $
+; $LastChangedDate: 2023-07-15 18:17:50 -0700 (Sat, 15 Jul 2023) $
+; $LastChangedRevision: 31954 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
 ;-
-pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=result, $
-                       extended=extended, eph=eph, current=current, loadonly=loadonly, $
-                       vars=vars, ellip=ellip, hires=hires, timecrop=timecrop, now=now, $
-                       colors=colors, reset_trange=reset_trange, nocrop=nocrop, spk=spk, $
-                       segments=segments, shadow=shadow, datum=datum2, noload=noload, $
-                       pds=pds, verbose=verbose, clear=clear, success=success, $
+pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=extended, $
+                       eph=eph, current=current, loadonly=loadonly, vars=vars, hires=hires, $
+                       timecrop=timecrop, now=now, colors=colors, reset_trange=reset_trange, $
+                       nocrop=nocrop, spk=spk, segments=segments, shadow=shadow, datum=datum2, $
+                       noload=noload, pds=pds, verbose=verbose, clear=clear, success=success, $
                        save=save, restore=restore, mission=mission
 
   @maven_orbit_common
@@ -183,6 +189,9 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     lat = 0
     hgt = 0
     datum = 0
+    lst = 0
+    slon = 0
+    slat = 0
     mex = 0
     rcols = 0
     orbnum = 0
@@ -190,11 +199,11 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     return
   endif
 
-; Quick access to the state vector
+; Quick access to the state vector (obsolete: use maven_orbit_eph instead)
 
   if keyword_set(noload) then begin
     if (size(orbstat,/type) gt 0) then stat = orbstat
-    if (size(state,/type) gt 0) then eph = maven_orbit_eph()
+    if (size(state,/type) gt 0) then eph = state
     success = 1
     return
   endif
@@ -206,33 +215,36 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 ; Create a save file
 
   if (size(save,/type) eq 7) then begin
+    if (n_elements(time) lt 2) then begin
+      print, "No ephemeris to save."
+      return
+    endif
+
     path = root_data_dir() + rootdir
     fname = path + save + '.sav'
     save, time, state, ss, wind, sheath, pileup, wake, sza, torb, period, $
-          lon, lat, hgt, datum, mex, rcols, orbnum, orbstat, file=fname
+          lon, lat, hgt, datum, lst, slon, slat, mex, rcols, orbnum, orbstat, file=fname
 
     fname = path + save
     tplot_save, file=fname
     return
   endif
 
-; Restore from a save file
+; Restore mission-to-date from save files
 
   if keyword_set(mission) then begin
-    fname = 'maven_moi_present.*'
+    fname = 'maven_moi_present.sav'
     file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=2)
     nfiles = n_elements(file)
-    restore = 'maven_moi_present'
-  endif
+    if (nfiles eq 1) then restore, file else print,"File not found: " + fname
 
-  if (size(restore,/type) eq 7) then begin
-    path = root_data_dir() + rootdir
-    fname = path + restore + '.sav'
-    restore, file=fname
+    fname = 'maven_moi_present.tplot'
+    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=2)
+    nfiles = n_elements(file)
+    if (nfiles eq 1) then tplot_restore, file=file else print,"File not found: " + fname
 
-    fname = path + restore + '.tplot'
-    tplot_restore, file=fname
     timefit, var='alt'
+    options, 'alt2', 'datagap', 2D*86400D
     return
   endif
 
@@ -252,10 +264,10 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
 
   maven_orbit_options, get=key, /silent
   ktag = tag_names(key)
-  tlist = ['STAT','DOMEX','SWIA','IALT','RESULT','EXTENDED','EPH','CURRENT', $
-           'LOADONLY','VARS','ELLIP','HIRES','TIMECROP','NOW','COLORS', $
-           'RESET_TRANGE','NOCROP','SPK','SEGMENTS','SHADOW','DATUM2','NOLOAD', $
-           'PDS','VERBOSE','CLEAR','SUCCESS','SAVE','RESTORE','MISSION']
+  tlist = ['STAT','SWIA','IALT','RESULT','EXTENDED','EPH','CURRENT','LOADONLY', $
+           'VARS','HIRES','TIMECROP','NOW','COLORS','RESET_TRANGE','NOCROP', $
+           'SPK','SEGMENTS','SHADOW','DATUM2','NOLOAD','PDS','VERBOSE','CLEAR', $
+           'SUCCESS','SAVE','RESTORE','MISSION']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -292,8 +304,6 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   if keyword_set(reset_trange) then treset = 1
   if (treset) then nocrop = 1
 
-  domex = keyword_set(domex)
-  eflg = keyword_set(ellip)  ; doesn't seem to do anything
   if (size(shadow,/type) eq 0) then shadow = 1
   sflg = keyword_set(shadow)
   if not keyword_set(ialt) then ialt = !values.f_nan
@@ -332,8 +342,33 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
     case extended of
        0   : ; do nothing (don't use extended predict ephemeris)
        1   : begin
+               mname = 'maven_spacecraft_mso_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.sav'
+               gname = 'maven_spacecraft_geo_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.sav'
+               ename = 'maven_spacecraft_eph_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.sav'
+               timespan, ['2023-03-22','2032-01-01']
+               treset = 1
+               nocrop = 1
+               timecrop = 0
+               print,"Using extended predict ephemeris."
+               print,"  SPK = trj_orb_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.bsp"
+               ttitle = "trj_orb_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.bsp"
+             end
+       2   : begin
+               mname = 'maven_spacecraft_mso_230322-320101_dsf1.5-prm-3.5ms_230320.sav'
+               gname = 'maven_spacecraft_geo_230322-320101_dsf1.5-prm-3.5ms_230320.sav'
+               ename = 'maven_spacecraft_eph_230322-320101_dsf1.5-prm-3.5ms_230320.sav'
+               timespan, ['2023-03-22','2032-01-01']
+               treset = 1
+               nocrop = 1
+               timecrop = 0
+               print,"Using extended predict ephemeris."
+               print,"  SPK = trj_orb_230322-320101_dsf1.5-prm-3.5ms_230320.bsp"
+               ttitle = "trj_orb_230322-320101_dsf1.5-prm-3.5ms_230320.bsp"
+             end
+       3   : begin
                mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arm_prm_19.2ms_220802.sav'
                gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arm_prm_19.2ms_220802.sav'
+               ename = 'maven_spacecraft_eph_2022-2032_dsf2.5_arm_prm_19.2ms_220802.sav'
                timespan, ['2022-08-10','2032-01-01']
                treset = 1
                nocrop = 1
@@ -342,49 +377,51 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
                print,"  SPK = trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
                ttitle = "trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
              end
-       2   : begin
+       4   : begin
                mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arms_18ms_210930.sav'
                gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arms_18ms_210930.sav'
+               ename = 'maven_spacecraft_eph_2022-2032_dsf2.5_arms_18ms_210930.sav'
                timespan, ['2022-01-01','2032-01-01']
                treset = 1
                nocrop = 1
                timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_220101-270101_dsf2.5_arms_18ms_210930.bsp"
-               print,"  SPK = trj_orb_270101-320101_dsf2.5_arms_18ms_210930.bsp"
                ttitle = "trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
              end
-        3  : begin
+        5  : begin
                mname = 'maven_spacecraft_mso_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
                gname = 'maven_spacecraft_geo_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
+               ename = 'maven_spacecraft_eph_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
                timespan, ['2022-01-01','2032-01-01']
                treset = 1
                nocrop = 1
                timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_220101-270101_dsf2.5_arm_prm_13.5ms_210908.bsp"
-               print,"  SPK = trj_orb_270101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
                ttitle = "trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
              end
-        4  : begin
+        6  : begin
                mname = 'maven_spacecraft_mso_2021-2030_dsf2.5_210330.sav'
                gname = 'maven_spacecraft_geo_2021-2030_dsf2.5_210330.sav'
+               ename = 'maven_spacecraft_eph_2021-2030_dsf2.5_210330.sav'
                timespan, ['2021-03-26','2030-12-30']
                treset = 1
                nocrop = 1
                timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_210326-260101_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
-               print,"  SPK = trj_orb_260101-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
                ttitle = "trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
              end
       else : begin
                print,"Extended predict ephemeris options are: "
                print,"  0 : Do not use an extended predict ephemeris (default)."
-               print,"  1 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
-               print,"  2 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
-               print,"  3 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
-               print,"  4 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
+               print,"  1 : trj_orb_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.bsp"
+               print,"  2 : trj_orb_230322-320101_dsf1.5-prm-3.5ms_230320.bsp"
+               print,"  3 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
+               print,"  4 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
+               print,"  5 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
+               print,"  6 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
                print,""
                return
              end
@@ -423,247 +460,265 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   endcase
   if keyword_set(now) then donow = 1 else donow = 0
   
-; Restore the orbit ephemeris
+; Restore the MSO state vectors
 
-  if (domex) then begin
-    pathname = rootdir + 'mex_traj_mso_june2010.sav'
-    file = mvn_pfp_file_retrieve(pathname,source=ssrc)
-    finfo = file_info(file)
-    if (~finfo.exists) then begin
-      print,"File not found: ",pathname
+  file = mvn_pfp_file_retrieve(rootdir+mname,last_version=0,source=ssrc,verbose=verbose)
+  nfiles = n_elements(file)
+
+  if (extended eq 0) then begin
+    year = strmid(file,9,4,/rev)
+    month = strmid(file,5,2,/rev)
+
+    date = replicate(time_struct(0D), nfiles)
+    date.year = year
+    date.month = month
+    date.date = 1
+    maxdate = date[n_elements(date)-1]
+    maxdate.month += 1
+    maxdate = time_double(maxdate)
+    date = time_double(date)
+
+    if (tspan[0] gt maxdate) then begin
+      print,"No ephemeris coverage past ",time_string(maxdate)
       return
-    endif else print, "Using ephemeris: ", file_basename(file[0])
-
-    restore, file[0]
-    
-    time = mex.t
-    dt = median(time - shift(time,1))
-
-    x = mex.x/R_m
-    y = mex.y/R_m
-    z = mex.z/R_m
-    vx = 0.  ; no velocities for MEX
-    vy = 0.
-    vz = 0.
-
-    r = sqrt(x*x + y*y + z*z)
-    s = sqrt(y*y + z*z)
-    sza = atan(s,x)
-    
-    mso_x = fltarr(n_elements(mex.x),3)
-    mso_x[*,0] = mex.x
-    mso_x[*,1] = mex.y
-    mso_x[*,2] = mex.z
-    
-    mso_v = mso_x
-    mso_v[*,0] = mex.vx
-    mso_v[*,1] = mex.vy
-    mso_v[*,2] = mex.vz
-
-; No GEO coordinates for MEX, so use aerocentric altitude and
-; set lon and lat to zero.
-    
-    geo_x = 0.
-    geo_v = 0.
-
-    hgt = (r - 1.)*R_m 
-    lon = 0.
-    lat = 0.
-
-    eph = {time:time, mso_x:mso_x, mso_v:mso_v, geo_x:geo_x, geo_v:geo_v}
-
-  endif else begin
-    file = mvn_pfp_file_retrieve(rootdir+mname,last_version=0,source=ssrc,verbose=verbose)
-    nfiles = n_elements(file)
-
-    if (extended eq 0) then begin
-      year = strmid(file,9,4,/rev)
-      month = strmid(file,5,2,/rev)
-
-      date = replicate(time_struct(0D), nfiles)
-      date.year = year
-      date.month = month
-      date.date = 1
-      maxdate = date[n_elements(date)-1]
-      maxdate.month += 1
-      maxdate = time_double(maxdate)
-      date = time_double(date)
-
-      if (tspan[0] gt maxdate) then begin
-        print,"No ephemeris coverage past ",time_string(maxdate)
-        return
-      endif
-      if (tspan[1] lt date[0]) then begin
-        print,"No ephemeris coverage before ",time_string(date[0])
-        return
-      endif
     endif
-    
-    if (docrop) then begin
-      i = max(where(date lt tspan[0], icnt))
-      if (icnt eq 0) then i = 0
-      j = min(where(date gt tspan[1], jcnt))
-      if (jcnt eq 0) then j = nfiles - 1
-      file = file[i:j]
-      nfiles = n_elements(file)
+    if (tspan[1] lt date[0]) then begin
+      print,"No ephemeris coverage before ",time_string(date[0])
+      return
     endif
+  endif
 
-	eph = [{t:0D, x:0D, y:0D, z:0D, vx:0D, vy:0D, vz:0D}]
-    for i=0,(nfiles-1) do begin
-      finfo = file_info(file[i])
-      if (finfo.exists) then begin
-        print, "Loading: ", file_basename(file[i])
-        restore, file[i]
-        eph = [temporary(eph), maven_mso]
-      endif else print, "File not found: ", file[i]
-    endfor
-    maven = temporary(eph[1:*])
-
-    time = maven.t
-    dt = median(time - shift(time,1))
-
-    x = maven.x/R_m
-    y = maven.y/R_m
-    z = maven.z/R_m
-    vx = maven.vx
-    vy = maven.vy
-    vz = maven.vz
-
-    r = sqrt(x*x + y*y + z*z)
-    s = sqrt(y*y + z*z)
-    if (sflg) then shadow = 1D + (150D/R_m) else shadow = 1D
-    sza = atan(s,x)
-
-    mso_x = fltarr(n_elements(maven.x),3)
-    mso_x[*,0] = maven.x
-    mso_x[*,1] = maven.y
-    mso_x[*,2] = maven.z
-    
-    mso_v = mso_x
-    mso_v[*,0] = maven.vx
-    mso_v[*,1] = maven.vy
-    mso_v[*,2] = maven.vz
-    
-    maven = 0
-
-    file = mvn_pfp_file_retrieve(rootdir+gname,last_version=0,source=ssrc,verbose=verbose)
-    nfiles = n_elements(file)
-
-    if (extended eq 0) then begin
-      year = strmid(file,9,4,/rev)
-      month = strmid(file,5,2,/rev)
-
-      date = replicate(time_struct(0D), nfiles)
-      date.year = year
-      date.month = month
-      date.date = 1
-      maxdate = date[n_elements(date)-1]
-      maxdate.month += 1
-      maxdate = time_double(maxdate)
-      date = time_double(date)
-
-      if (tspan[0] gt maxdate) then begin
-        print,"No ephemeris coverage past ",time_string(maxdate)
-        return
-      endif
-      if (tspan[1] lt date[0]) then begin
-        print,"No ephemeris coverage before ",time_string(date[0])
-        return
-      endif
-    endif
-    
-    if (docrop) then begin
-      i = max(where(date lt tspan[0], icnt))
-      if (icnt eq 0) then i = 0
-      j = min(where(date gt tspan[1], jcnt))
-      if (jcnt eq 0) then j = nfiles - 1
-      file = file[i:j]
-      nfiles = n_elements(file)
-    endif
-
-	eph = [{t:0D, x:0D, y:0D, z:0D, vx:0D, vy:0D, vz:0D}]
-    for i=0,(nfiles-1) do begin
-      finfo = file_info(file[i])
-      if (finfo.exists) then begin
-        print, "Loading: ", file_basename(file[i])
-        restore, file[i]
-        eph = [temporary(eph), maven_geo]
-      endif else print, "File not found: ", file[i]
-    endfor
-    maven_g = temporary(eph[1:*])
-    
-    geo_x = fltarr(n_elements(maven_g.x),3)
-    geo_x[*,0] = maven_g.x
-    geo_x[*,1] = maven_g.y
-    geo_x[*,2] = maven_g.z
-    
-    geo_v = mso_x
-    geo_v[*,0] = maven_g.vx
-    geo_v[*,1] = maven_g.vy
-    geo_v[*,2] = maven_g.vz
-
-    if (sflg) then print,"Using EUV shadow" else print,"Using optical shadow"
-    print,"Reference surface for calculating altitude: ",strlowcase(datum)
-    mvn_altitude, cart=transpose(geo_x), datum=datum, result=adat
-    hgt = adat.alt
-    lon = adat.lon
-    lat = adat.lat
-
-    maven_g = 0
-
-    eph = {time:time, mso_x:mso_x, mso_v:mso_v, geo_x:geo_x, geo_v:geo_v}
-
-  endelse
-  
   if (docrop) then begin
-    indx = where((time ge tspan[0]) and (time le tspan[1]), count)
-    if (count gt 0L) then begin
-      eph = {time:time[indx], mso_x:mso_x[indx,*], mso_v:mso_v[indx,*]}
-      if (n_elements(geo_x[*,0]) eq n_elements(time)) then begin
-        str_element, eph, 'geo_x', geo_x[indx,*], /add
-        str_element, eph, 'geo_v', geo_v[indx,*], /add
-      endif
+    i = max(where(date lt tspan[0], icnt))
+    if (icnt eq 0) then i = 0
+    j = min(where(date gt tspan[1], jcnt))
+    if (jcnt eq 0) then j = nfiles - 1
+    file = file[i:j]
+    nfiles = n_elements(file)
+  endif
+
+  state = [{t:0D, x:0D, y:0D, z:0D, vx:0D, vy:0D, vz:0D}]
+  for i=0,(nfiles-1) do begin
+    finfo = file_info(file[i])
+    if (finfo.exists) then begin
+      print, "Loading: ", file_basename(file[i])
+      restore, file[i]
+      state = [temporary(state), maven_mso]
+    endif else print, "File not found: ", file[i]
+  endfor
+  maven = temporary(state[1:*])
+
+  time = maven.t
+  dt = median(time - shift(time,1))
+
+  mso_x = fltarr(n_elements(maven.x),3)
+  mso_x[*,0] = maven.x
+  mso_x[*,1] = maven.y
+  mso_x[*,2] = maven.z
+
+  mso_v = mso_x
+  mso_v[*,0] = maven.vx
+  mso_v[*,1] = maven.vy
+  mso_v[*,2] = maven.vz
+
+  maven = 0
+  
+; Restore the GEO state vectors
+
+  file = mvn_pfp_file_retrieve(rootdir+gname,last_version=0,source=ssrc,verbose=verbose)
+  nfiles = n_elements(file)
+
+  if (extended eq 0) then begin
+    year = strmid(file,9,4,/rev)
+    month = strmid(file,5,2,/rev)
+
+    date = replicate(time_struct(0D), nfiles)
+    date.year = year
+    date.month = month
+    date.date = 1
+    maxdate = date[n_elements(date)-1]
+    maxdate.month += 1
+    maxdate = time_double(maxdate)
+    date = time_double(date)
+
+    if (tspan[0] gt maxdate) then begin
+      print,"No ephemeris coverage past ",time_string(maxdate)
+      return
+    endif
+    if (tspan[1] lt date[0]) then begin
+      print,"No ephemeris coverage before ",time_string(date[0])
+      return
+    endif
+  endif
+    
+  if (docrop) then begin
+    i = max(where(date lt tspan[0], icnt))
+    if (icnt eq 0) then i = 0
+    j = min(where(date gt tspan[1], jcnt))
+    if (jcnt eq 0) then j = nfiles - 1
+    file = file[i:j]
+    nfiles = n_elements(file)
+  endif
+
+  state = [{t:0D, x:0D, y:0D, z:0D, vx:0D, vy:0D, vz:0D}]
+  for i=0,(nfiles-1) do begin
+    finfo = file_info(file[i])
+    if (finfo.exists) then begin
+      print, "Loading: ", file_basename(file[i])
+      restore, file[i]
+      state = [temporary(state), maven_geo]
+    endif else print, "File not found: ", file[i]
+  endfor
+  maven_g = temporary(state[1:*])
+
+  geo_x = fltarr(n_elements(maven_g.x),3)
+  geo_x[*,0] = maven_g.x
+  geo_x[*,1] = maven_g.y
+  geo_x[*,2] = maven_g.z
+
+  geo_v = geo_x
+  geo_v[*,0] = maven_g.vx
+  geo_v[*,1] = maven_g.vy
+  geo_v[*,2] = maven_g.vz
+
+  maven_g = 0
+
+; Trim the data to requested time range
+
+  if (docrop) then begin
+    indx = where((time ge tspan[0]) and (time le tspan[1]), npts)
+
+    if (npts gt 0L) then begin
       time = temporary(time[indx])
-      x = temporary(x[indx])
-      y = temporary(y[indx])
-      z = temporary(z[indx])
-      vx = temporary(vx[indx])
-      vy = temporary(vy[indx])
-      vz = temporary(vz[indx])
-      r = temporary(r[indx])
-      s = temporary(s[indx])
-      sza = temporary(sza[indx])
-      hgt = temporary(hgt[indx])
-      if (n_elements(lon) ge count) then begin
-        lon = temporary(lon[indx])
-        lat = temporary(lat[indx])
-      endif
+      mso_x = temporary(mso_x[indx,*])
+      mso_v = temporary(mso_v[indx,*])
+      geo_x = temporary(geo_x[indx,*])
+      geo_v = temporary(geo_v[indx,*])
     endif else begin
       print,"No ephemeris data within requested range: ",time_string(tspan)
       print,"Retaining all ephemeris data."
     endelse
   endif
-  
+
+; Combined state vector for MSO and GEO frames --> common block
+
   npts = n_elements(time)
-  state = eph
+  state = {time:time, mso_x:mso_x, mso_v:mso_v, geo_x:geo_x, geo_v:geo_v}
+
+; Calculate additional parameters derived from state vectors
+
+  x = state.mso_x[*,0]/R_m
+  y = state.mso_x[*,1]/R_m
+  z = state.mso_x[*,2]/R_m
+  vx = state.mso_x[*,0]
+  vy = state.mso_x[*,1]
+  vz = state.mso_x[*,2]
+
+  r = sqrt(x*x + y*y + z*z)
+  s = sqrt(y*y + z*z)
+  if (sflg) then begin
+    print,"Using EUV shadow"
+    shadow = 1D + (150D/R_m)
+  endif else begin
+    print,"Using optical shadow"
+    shadow = 1D
+  endelse
+  sza = atan(s,x)
+
+; Calculate altitude, longitude, latitude, local time, and sub-solar point
+; (or restore pre-calculated values for MISSION or EXTENDED).  All of these
+; parameters are stored in the common block.
+
+  if (~keyword_set(mission) and ~keyword_set(extended)) then begin
+    print,"Reference surface for calculating altitude: ",strlowcase(datum)
+    mvn_altitude, cart=transpose(state.geo_x), datum=datum, result=dat
+    hgt = dat.alt
+    lon = dat.lon
+    lat = dat.lat
+
+    mvn_spice_stat, summary=sinfo, /silent
+    if (sinfo.planets_exist and sinfo.frames_exist) then begin
+      print,"Calculating local time and sub-solar point."
+      mvn_mars_localtime, time, lon, result=dat
+      lst = dat.lst
+      slon = dat.slon
+      slat = dat.slat
+    endif else begin
+      print,"WARNING: Spice not initialized - can't determine local time and sub-solar point."
+      lst = dblarr(n_elements(time))
+      slon = lst
+      slat = lst
+    endelse
+
+    eph = maven_orbit_eph()
+    undefine, dat
+  endif else begin
+    hgt = dblarr(n_elements(time))
+    lon = hgt
+    lat = hgt
+    lst = hgt
+    slon = hgt
+    slat = hgt
+
+    file = mvn_pfp_file_retrieve(rootdir+ename,last_version=0,source=ssrc,verbose=verbose,/valid)
+    i = where(file ne '', nfiles)
+    if (nfiles eq 1) then begin
+      file = file[0]
+      print, "Loading: ", file_basename(file)
+      restore, file
+
+      i = nn2(eph.time, time, maxdt=10D, /valid, vindex=j)
+      if (n_elements(j) gt 0L) then begin
+        hgt[j] = eph.alt[i]
+        lon[j] = eph.lon[i]
+        lat[j] = eph.lat[i]
+        lst[j] = eph.lst[i]
+        slon[j] = eph.slon[i]
+        slat[j] = eph.slat[i]
+      endif else print, "Ephemeris does not match state vector."
+      undefine, eph
+    endif else begin
+      print,"Reference surface for calculating altitude: ",strlowcase(datum)
+      mvn_altitude, cart=transpose(state.geo_x), datum=datum, result=dat
+      hgt = dat.alt
+      lon = dat.lon
+      lat = dat.lat
+
+      print,"Calculating local time and sub-solar point."
+      mvn_mars_localtime, time, lon, result=dat
+      lst = dat.lst
+      slon = dat.slon
+      slat = dat.slat
+
+      undefine, dat
+    endelse
+  endelse
+
+; Package the ephemeris (MSO state vector + calculated values)
+
   eph = maven_orbit_eph()
 
-  result = {t     : time     , $   ; time (UTC)
-            x     : x        , $   ; MSO X (R_m)
-            y     : y        , $   ; MSO Y (R_m)
-            z     : z        , $   ; MSO Z (R_m)
-            vx    : vx       , $   ; MSO Vx (km/s)
-            vy    : vy       , $   ; MSO Vy (km/s)
-            vz    : vz       , $   ; MSO Vz (km/s)
-            r     : r        , $   ; sqrt(x*x + y*y + z*z)
-            s     : s        , $   ; sqrt(y*y + z*z)
-            sza   : sza      , $   ; atan(s,x)
-            hgt   : hgt      , $   ; altitude (km)
-            lon   : lon      , $   ; GEO longitude (deg)
-            lat   : lat      , $   ; GEO latitude  (deg)
-            R_m   : R_m      , $   ; Mean radius of Mars (km)
-            datum : datum       }  ; reference surface
-  
+  result = {t     : time  , $   ; time (UTC)
+            x     : x     , $   ; MSO X (R_m)
+            y     : y     , $   ; MSO Y (R_m)
+            z     : z     , $   ; MSO Z (R_m)
+            vx    : vx    , $   ; MSO Vx (km/s)
+            vy    : vy    , $   ; MSO Vy (km/s)
+            vz    : vz    , $   ; MSO Vz (km/s)
+            r     : r     , $   ; sqrt(x*x + y*y + z*z)
+            s     : s     , $   ; sqrt(y*y + z*z)
+            sza   : sza   , $   ; atan(s,x)
+            hgt   : hgt   , $   ; altitude (km)
+            lon   : lon   , $   ; GEO longitude of spacecraft (deg)
+            lat   : lat   , $   ; GEO latitude of spacecraft  (deg)
+            R_m   : R_m   , $   ; Mean radius of Mars (km)
+            datum : datum , $   ; reference surface
+            lst   : lst   , $   ; local solar time (Mars hours)
+            slon  : slon  , $   ; GEO longitude of sub-solar point (deg)
+            slat  : slat     }  ; GEO latitude of sub-solar point (deg)
+
+; Determine the plasma regions sampled by the spacecraft along its orbit
+
 ; Shock conic (Trotignon)
 
   x0  = 0.600
@@ -709,7 +764,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   rho_p[indx] = sqrt((x[indx] - x0)^2. + s[indx]*s[indx])
   MPB[indx] = L/(1. + ecc*cos(phi[indx] < phm))
 
-; Define the regions
+; Define the nominal plasma regions (based on the above conics)
 
   ss = dblarr(npts, 5)
   ss[*,0] = x
@@ -990,8 +1045,9 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
   endif
 
 ; Package the results - statistics are on an orbit-by-orbit basis
-;check for valid results, torb, etc... may not be defined, jmm,
-;2018-12-17
+; check for valid results, torb, etc... may not be defined, jmm,
+; 2018-12-17
+
   if n_elements(torb) Gt 0 then begin
      stat = {time    : torb    , $  ; time (UTC)
              twind   : twind   , $  ; fraction of time in solar wind
@@ -1012,7 +1068,7 @@ pro maven_orbit_tplot, stat=stat, domex=domex, swia=swia, ialt=ialt, result=resu
              psza    : psza    , $  ; periapsis solar zenith angle
              datum   : datum      } ; reference surface
 
-     orbstat = stat             ; update the common block
+     orbstat = stat                 ; update the common block
 
 ; Stack up times for plotting in one panel
 

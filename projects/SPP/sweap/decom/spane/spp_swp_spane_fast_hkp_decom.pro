@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-06-14 10:41:21 -0700 (Mon, 14 Jun 2021) $
-; $LastChangedRevision: 30043 $
+; $LastChangedBy: phyllisw $
+; $LastChangedDate: 2023-07-06 12:32:38 -0700 (Thu, 06 Jul 2023) $
+; $LastChangedRevision: 31938 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/decom/spane/spp_swp_spane_fast_hkp_decom.pro $
 
 ;;; Fast Housekeeping Data as of SPAN-E FPGA rev #22, 3/10/2015
@@ -14,7 +14,8 @@ function spp_swp_spane_fast_hkp_decom,ccsds, source_dict=source_dict  ; ,ptp_hea
   ccsds_data = spp_swp_ccsds_data(ccsds)
 
   data = swap_endian(/swap_if_little_endian,  uint(ccsds_data,20,512))
-  ;plot, data
+  wi, 1
+  plot, data
 
   header    = ccsds_data[0:19]
   ;  ns = pksize - 20

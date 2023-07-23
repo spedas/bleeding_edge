@@ -28,21 +28,27 @@
 ;
 ;       SHIFTPOT:      Correct for spacecraft potential.
 ;
+;       QLEVEL:        Minimum quality level to load (0-2, default=0):
+;                        2B = good
+;                        1B = uncertain
+;                        0B = affected by low-energy anomaly
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-12-15 13:03:48 -0800 (Tue, 15 Dec 2020) $
-; $LastChangedRevision: 29495 $
+; $LastChangedDate: 2023-07-04 13:40:14 -0700 (Tue, 04 Jul 2023) $
+; $LastChangedRevision: 31934 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_get3d.pro
 ;-
 function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, burst=burst, $
-                        shiftpot=shiftpot
+                        shiftpot=shiftpot, qlevel=qlevel
 
   @mvn_swe_com
 
   if keyword_set(burst) then archive = 1
   delta_t = 1.95D/2D  ; start time to center time
+  qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
 
   if (size(time,/type) eq 0) then begin
     if not keyword_set(all) then begin
@@ -422,7 +428,20 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
 
     ddd[n].valid = 1B                          ; Yep, it's valid.
 
+; Quality flag
+
+    str_element, pkt, 'quality', quality, success=ok
+    if (ok) then ddd[n].quality = quality
+
   endfor
+
+; Filter the quality
+
+  str_element, ddd, 'quality', quality, success=ok
+  if (ok) then begin
+    indx = where(quality ge qlevel, npts)
+    if (npts gt 0L) then ddd = ddd[indx] else return, 0
+  endif else print,"Quality level not yet defined for L2 data."
 
 ; Apply cross calibration factor.  A new factor is calculated after each 
 ; MCP bias adjustment. See mvn_swe_config for these times.  Polynomial

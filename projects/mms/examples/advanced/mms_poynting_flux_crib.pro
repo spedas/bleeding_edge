@@ -14,9 +14,9 @@
 ; Open this file in a text editor and then use copy and paste to copy
 ; selected lines into an idl window. 
 ; 
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-02-06 09:56:06 -0800 (Tue, 06 Feb 2018) $
-; $LastChangedRevision: 24660 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2023-06-01 18:15:21 -0700 (Thu, 01 Jun 2023) $
+; $LastChangedRevision: 31875 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_poynting_flux_crib.pro $
 ;-
 
@@ -184,19 +184,25 @@ store_data,'S_tot1',    data={x:edp_filtered.x,y:sqrt(total(S*S,2))}
 ;nfft=128
 stride=nfft;32
 ndata    = n_elements(edp_filtered.x)
-edp_fft  = dcomplexarr(long(ndata-nfft)/stride+1,nfft,3)
-scm_fft  = dcomplexarr(long(ndata-nfft)/stride+1,nfft,3)
+nstrides = (ndata - nfft)/stride + 1L
+edp_fft  = dcomplexarr(nstrides,nfft,3)
+scm_fft  = dcomplexarr(nstrides,nfft,3)
 win      = hanning(nfft,/double)
 win     /= mean(win^2)  ; preserve energy
-i=0L
-for j=0L,ndata-nfft-1,stride do begin
+i=0L  ; which stride is being computed
+for j=0L,ndata-nfft,stride do begin
   for k=0,2 do edp_fft[i,*,k]=fft(edp_filtered.y[j:j+nfft-1,k]*win)
   for k=0,2 do scm_fft[i,*,k]=fft(scm_filtered.y[j:j+nfft-1,k]*win)
   i++
 endfor
-t    = scm_filtered.x[0]+(dindgen(i-1)*stride+nfft/2)/double(n_sample)
+t    = scm_filtered.x[0]+(dindgen(nstrides)*stride+nfft/2)/double(n_sample)
 freq = (findgen(nfft/2)+0.5)*n_sample/nfft
 bw   = n_sample/nfft
+
+; Freq calculation from IDL docs, even number of points
+fx=findgen((nfft-1)/2)+1
+freq_all = [0.0, fx, nfft/2, -nfft/2 + fx]*8192.0/nfft
+freq_nonneg = freq_all[0:nfft/2-1]
 
 if data_rate_input eq 'brst' then psd_edp_min = 1e-8  else psd_edp_min = 1e-6
 if data_rate_input eq 'brst' then psd_edp_max = 1e-4  else psd_edp_max = 1e2

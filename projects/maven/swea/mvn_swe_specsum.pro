@@ -12,18 +12,37 @@
 ;
 ;KEYWORDS:
 ;
+;       QLEVEL:        Minimum quality level to sum (0-2, default=0):
+;                        2B = good
+;                        1B = uncertain
+;                        0B = affected by low-energy anomaly
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-08-27 14:06:18 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27682 $
+; $LastChangedDate: 2023-07-06 13:42:55 -0700 (Thu, 06 Jul 2023) $
+; $LastChangedRevision: 31939 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_specsum.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_specsum.pro
 ;-
-function mvn_swe_specsum, spec
+function mvn_swe_specsum, spec, qlevel=qlevel
 
   if (size(spec,/type) ne 8) then return, 0
-  if (n_elements(spec) eq 1) then return, spec
+  npts = n_elements(spec)
+  if (npts eq 1) then return, spec
+  qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
+
+; Quality filter
+
+  str_element, spec, 'quality', success=ok
+  if (ok) then begin
+    indx = where(spec.quality ge qlevel, npts)
+    if (npts eq 0L) then begin
+      print, "No SPEC data to sum with quality >= ", qlevel, format='(a,i1)'
+      return, 0
+    endif
+    spec = spec[indx]
+  endif else print, "Quality level not yet defined for L2 data."
 
   old_units = spec[0].units_name  
   mvn_swe_convert_units, spec, 'counts'     ; convert to raw counts

@@ -18,9 +18,9 @@
 ; Examples:
 ;   See helper routine make_fgm_wave_survey_testdates
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2023-01-03 15:17:50 -0800 (Tue, 03 Jan 2023) $
-; $LastChangedRevision: 31384 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2023-06-05 14:28:56 -0700 (Mon, 05 Jun 2023) $
+; $LastChangedRevision: 31885 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/fgm_wave_survey/make_fgm_wave_survey_dynspec.pro $
 ;-
 
@@ -202,6 +202,10 @@ pro load_survey_dynspec, date, sc, dur, fge=fge, ylog=ylog, fci=fci, use_l2=use_
   timespan, in_date-60.d*60.d*dur/2.,2*dur,/hours
   If(keyword_set(use_l2)) Then Begin
     thm_load_fgm, /get_supp, probe=sc, level='l2', coord='gse'
+;check for existence of data, if it is not there, try L1
+    If ~is_string(tnames('th'+sc+'_fgl_gse')) Then Begin
+      thm_load_fgm, /get_supp, probe=sc, coord='gse', suff='_gse', level='l1'
+    Endif
   Endif Else Begin
     thm_load_fgm, /get_supp, probe=sc
     thm_cotrans, thx+'_fg'+dp, out_coord='gse', out_suff='_gse'

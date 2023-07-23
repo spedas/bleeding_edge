@@ -95,8 +95,8 @@
 ;     Please see the notes in mms_load_data for more information 
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2023-05-26 11:37:51 -0700 (Fri, 26 May 2023) $
-;$LastChangedRevision: 31871 $
+;$LastChangedDate: 2023-07-21 07:33:07 -0700 (Fri, 21 Jul 2023) $
+;$LastChangedRevision: 31958 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/feeps/mms_load_feeps.pro $
 ;-
 pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
@@ -147,7 +147,7 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
     mms_load_data, trange = tr, probes = probes_in, level = level_in, instrument = 'feeps', $
         data_rate = data_rate_in, local_data_dir = local_data_dir, source = source, $
         datatype = datatype_in, get_support_data=get_support_data, $ ; support data is needed for spin averaging, etc.
-        tplotnames = tplotnames, no_color_setup = no_color_setup, time_clip = time_clip, $
+        tplotnames = tplotnames, no_color_setup = no_color_setup, $
         no_update = no_update, suffix = suffix, varformat = varformat, cdf_filenames = cdf_filenames, $
         cdf_version = cdf_version, latest_version = latest_version, min_version = min_version, $
         spdf = spdf, available = available, versions = versions, always_prompt = always_prompt, $
@@ -230,4 +230,9 @@ pro mms_load_feeps, trange = trange, probes = probes, datatype = datatype, $
       endfor
     endfor
    
+    if ~undefined(time_clip) then begin
+      if (n_elements(tr) eq 2) and ~undefined(tplotnames) && (tplotnames[0] ne '') and ~undefined(time_clip) then begin
+        time_clip, tplotnames, tr[0], tr[1], replace=1, error=error
+      endif
+    endif
 end

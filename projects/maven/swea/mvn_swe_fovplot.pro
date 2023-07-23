@@ -46,8 +46,8 @@
 ;CREATED BY:	David L. Mitchell  2016-08-03
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 08:18:46 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31550 $
+; $LastChangedDate: 2023-06-05 12:17:33 -0700 (Mon, 05 Jun 2023) $
+; $LastChangedRevision: 31883 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fovplot.pro $
 ;-
 pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yrange, map=map, $
@@ -58,6 +58,7 @@ pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yran
 
   ctab = color_table
   crev = color_reverse
+  initct, 34  ; shows low values better in specplot
 
   gud = where(swe_sc_mask[*,1] eq 1, ngud)
   bad = where(swe_sc_mask[*,1] eq 0, nbad)
@@ -192,7 +193,10 @@ pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yran
   if (dops) then begin
     popen, psname
     initct, 34
-  endif else window,5,xsize=825,ysize=1000
+  endif else begin
+    win, /free , xsize=825, ysize=1000, /secondary, dx=10, dy=10
+    Cwin = !d.window
+  endelse
 
 ; 3D plot
 
@@ -225,7 +229,10 @@ pro mvn_swe_fovplot, dat1, dat2, bad=ondx, date=date, crange=crange, yrange=yran
   if (dops) then begin
     popen, psname + '_AzEl'
     initct, 34
-  endif else window,6,xsize=600,ysize=600
+  endif else begin
+    win, /free, xsize=600, ysize=600, relative=Cwin, dx=10, /top
+    Awin = !d.window
+  endelse
 
   titlestring = fovcal.project_name + ' ' + fovcal.data_name
   !p.multi = [2,1,2,0,0]
