@@ -1,0 +1,66 @@
+;+
+; Patch to add orbit_num to l4 spinfit, b/c this is slow to load.
+;-
+
+
+probes = ['a','b']
+root_dir = join_path([default_local_root(),'rbsp'])
+;root_dir = join_path([homedir(),'data','rbsp'])
+cdf_var = 'orbit_num'
+time_var = 'epoch'
+
+foreach probe, probes do begin
+    prefix = 'rbsp'+probe+'_'
+    rbspx = 'rbsp'+probe
+
+    tplot_var = prefix+'orbit_num'
+    skeleton = '/Users/shengtian/Projects/idl/spacephys/topics/rbsp_phasef/file_production/'+$
+        prefix+'efw-l2_e-spinfit-mgse_00000000_v03.cdf'
+    time_range = (probe eq 'a')? time_double(['2012-09-05','2019-10-13']): time_double(['2012-09-05','2019-07-16'])
+    days = break_down_times(time_range,'day')
+    foreach day, days do begin
+        str_year = time_string(day,tformat='YYYY')
+
+    ;---L4.
+        path = join_path([root_dir,rbspx,'level4',str_year])
+        base = prefix+'efw-l4_'+time_string(day,tformat='YYYYMMDD')+'_v02.cdf'
+        file = join_path([path,base])
+        if file_test(file) eq 0 then continue
+        print, file
+        if cdf_has_var(cdf_var, filename=file) then begin
+            data = cdf_read_var(cdf_var, filename=file)
+            index = where(data le 0, count)
+            if count ne 0 then begin
+                sections = time_to_range(index,time_step=1)
+                nsection = n_elements(sections)*0.5
+                for sec_id=0,nsection-1 do begin
+                    data_id = sections[sec_id,0]-1
+                    if data_id lt 0 then data_id = sections[sec_id,1]+1
+                    ; if data_id is <0 or >ndata, then there must be something wrong. will stop with an error.
+                    data[sections[sec_id,0]:sections[sec_id,1]] = data[data_id]
+                endfor
+
+                index = where(data le 0, count)
+                if count ne 0 then stop
+                cdf_save_data, cdf_var, value=data, filename=file
+            endif
+        endif else begin
+            epochs = cdf_read_var(time_var, filename=file)
+            times = convert_time(epochs, from='epoch16', to='unix')
+            phasef_read_orbit_num, day, probe=probe
+            interp_time, tplot_var, times
+            settings = cdf_read_setting(cdf_var, filename=skeleton)
+            settings['DEPEND_0'] = time_var
+            get_data, tplot_var, times, data
+            data = round(data)
+            cdf_save_var, cdf_var, value=data, filename=file
+            cdf_save_setting, settings, filename=file, varname=cdf_var
+        endelse
+
+
+;        rbsp_efw_phasef_save_orbit_num_to_file, day, probe=probe, filename=file
+;        rbsp_efw_read_l4_gen_file, day, probe=probe, filename=file
+    endforeach
+endforeach
+
+end

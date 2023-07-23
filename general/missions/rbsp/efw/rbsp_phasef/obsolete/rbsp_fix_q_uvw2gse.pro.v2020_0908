@@ -1,0 +1,221 @@
+;+
+; Fix spin tone and other artificial signals in UVW2GSE.
+;
+; time_range. The time range in sec.
+; probe=.
+; restore_eclipse=. Set to restore attitude during eclipse.
+; restore_maneuver=. Set to restore attitude during maenuver.
+;-
+
+pro rbsp_fix_q_uvw2gse, time_range, probe=probe, test=test, $
+    restore_eclipse=restore_eclipse, restore_maneuver=restore_maneuver
+
+    prefix = 'rbsp'+probe+'_'
+    q_var = prefix+'q_uvw2gse'
+    if check_if_update(q_var, time_range) then $
+        rbsp_read_quaternion, time_range, probe=probe
+
+
+;---Read matrix.
+    q_uvw2gse = get_var_data(q_var, times=times)
+    ntime = n_elements(times)
+
+    m_uvw2gse = qtom(q_uvw2gse)
+    ndim = 3
+    uvw = constant('uvw')
+    xyz = constant('xyz')
+    for ii=0,ndim-1 do begin
+        vec_gse = reform(m_uvw2gse[*,*,ii])
+        vec_var = prefix+'r'+uvw[ii]+'_gse'
+        store_data, vec_var, times, vec_gse
+        add_setting, vec_var, /smart, dictionary($
+            'display_type', 'vector', $
+            'short_name', strupcase(uvw[ii]), $
+            'unit', '#', $
+            'coord', 'GSE', $
+            'coord_labels', xyz )
+        for jj=0,ndim-1 do begin
+            store_data, prefix+uvw[ii]+xyz[jj]+'_gse', times, vec_gse[*,jj]
+        endfor
+    endfor
+
+
+;---Convert to DSC.
+    rad = constant('rad')
+    spin_phase_var = prefix+'spin_phase'
+    if check_if_update(spin_phase_var, time_range) then $
+        rbsp_read_spice, time_range, probe=probe, id='spin_phase'
+    spin_phase = get_var_data(prefix+'spin_phase', times=uts)
+    for ii=1, n_elements(uts)-1 do begin
+        if spin_phase[ii] ge spin_phase[ii-1] then continue
+        spin_phase[ii:*] += 360
+    endfor
+    spin_phase = interpol(spin_phase, uts, times)*rad
+    cost = cos(spin_phase)
+    sint = sin(spin_phase)
+    u_gse = get_var_data(prefix+'ru_gse')
+    v_gse = get_var_data(prefix+'rv_gse')
+    w_gse = get_var_data(prefix+'rw_gse')
+    vec = dblarr(ntime,ndim)
+    foreach component, xyz do begin
+        vec_var = prefix+component+'_dsc'
+        case component of
+            'x': for ii=0,ndim-1 do vec[*,ii] = u_gse[*,ii]*cost-v_gse[*,ii]*sint
+            'y': for ii=0,ndim-1 do vec[*,ii] = u_gse[*,ii]*sint+v_gse[*,ii]*cost
+            'z': vec = w_gse
+        endcase
+        store_data, vec_var, times, vec
+        add_setting, vec_var, /smart, dictionary($
+            'display_type', 'vector', $
+            'short_name', strupcase(component), $
+            'unit', '#', $
+            'coord', 'DSC', $
+            'coord_labels', xyz )
+    endforeach
+
+
+;---Correct in DSC.
+    ; 1. Fix [x,z]_dsc: a) get a smooth version; b) unit vector.
+    ; 2. Calc y and then fix x.
+    interp_window = 3600.    ; sec.
+    interp_times = make_bins(time_range, interp_window)
+    common_time_step = total(times[0:1]*[-1,1])
+    interp_index = (interp_times-time_range[0])/common_time_step
+    interp_times = interp_times[0:-2]+0.5*interp_window
+    ninterp_time = n_elements(interp_times)
+
+    ; Load attitude changes: eclipse and maneuver.
+    rbsp_read_eclipse_flag, time_range, probe=probe
+    flags = get_var_data(prefix+'eclipse_flag', times=flag_times)
+    flag_time_step = total(flag_times[0:1]*[-1,1])
+    nflag_time = n_elements(flag_times)
+    index = where(flags eq 1, count)
+    eclipse_time_ranges = (count eq 0)? !null: $
+        time_to_range(flag_times[index], time_step=flag_time_step, pad_time=[-10,2]*flag_time_step)
+    neclipse = n_elements(eclipse_time_ranges)*0.5
+    flags = intarr(nflag_time)
+    for ii=0,neclipse-1 do begin
+        index = lazy_where(flag_times, '[]', eclipse_time_ranges[ii,*], count=count)
+        if count eq 0 then continue
+        flags[index] = 1
+    endfor
+    store_data, prefix+'eclipse_flag', flag_times, flags
+
+    maneuver_time_ranges = rbsp_read_maneuver_time(time_range, probe=probe)
+    nmaneuver = n_elements(maneuver_time_ranges)*0.5
+    flags = intarr(nflag_time)
+    for ii=0,nmaneuver-1 do begin
+        index = lazy_where(flag_times, '[]', maneuver_time_ranges[ii,*], count=count)
+        if count eq 0 then continue
+        flags[index] = 1
+    endfor
+    store_data, prefix+'maneuver_flag', flag_times, flags
+
+    flags = get_var_data(prefix+'eclipse_flag') or get_var_data(prefix+'maneuver_flag')
+    store_data, prefix+'attitude_flag', flag_times, flags
+
+    index = where(flags eq 1, count)
+    attitude_time_ranges = (count eq 0)? !null: time_to_range(flag_times[index], time_step=flag_time_step, pad_time=2*flag_time_step)
+    nattitude_time_range = n_elements(attitude_time_ranges)*0.5
+    flags = intarr(ntime)
+    for ii=0,nattitude_time_range-1 do flags[lazy_where(times,'[]',attitude_time_ranges[ii,*])] = 1
+    attitude_index = where(flags eq 1, attitude_count)
+
+
+    two_colors = sgcolor(['blue','red'])
+    fillval = !values.f_nan
+    foreach component, ['x','z'] do begin
+        ; Fix 3-components.
+        foreach var, prefix+component+'_dsc' do begin
+            vec = get_var_data(var)
+            if attitude_count ne 0 then vec[attitude_index,*] = fillval
+            vec_interp = dblarr(ninterp_time,ndim)
+            for jj=0,ndim-1 do begin
+                for ii=0,ninterp_time-1 do vec_interp[ii,jj] = median(vec[interp_index[ii]:interp_index[ii+1],jj])
+            endfor
+            vec_fix = sinterpol(vec_interp, interp_times, times)
+            vec_var = var+'_fix'
+            store_data, vec_var, times, vec_fix
+        endforeach
+    endforeach
+
+    ; Orthogonality.
+    x_dsc = get_var_data(prefix+'x_dsc_fix')
+    z_dsc = get_var_data(prefix+'z_dsc_fix')
+    y_dsc = vec_cross(z_dsc, x_dsc)
+    y_dsc = sunitvec(y_dsc)
+    z_dsc = sunitvec(z_dsc)
+    x_dsc = vec_cross(y_dsc, z_dsc)
+    foreach component, xyz do begin
+        vec_var = prefix+component+'_dsc_fix'
+        case component of
+            'x': vec = x_dsc
+            'y': vec = y_dsc
+            'z': vec = z_dsc
+        endcase
+        store_data, vec_var, times, vec
+        add_setting, vec_var, /smart, dictionary($
+            'display_type', 'vector', $
+            'short_name', strupcase(component), $
+            'unit', '#', $
+            'coord', 'GSE', $
+            'coord_labels', xyz )
+    endforeach
+
+;---Change back to UVW.
+    vec = dblarr(ntime,ndim)
+    foreach component, uvw do begin
+        vec_var = prefix+component+'_gse_fix'
+        case component of
+            'u': for ii=0,ndim-1 do vec[*,ii] = x_dsc[*,ii]*cost+y_dsc[*,ii]*sint
+            'v': for ii=0,ndim-1 do vec[*,ii] =-x_dsc[*,ii]*sint+y_dsc[*,ii]*cost
+            'w': vec = z_dsc
+        endcase
+        store_data, vec_var, times, vec
+        add_setting, vec_var, /smart, dictionary($
+            'display_type', 'vector', $
+            'short_name', strupcase(component), $
+            'unit', '#', $
+            'coord', 'UVW', $
+            'coord_labels', uvw )
+    endforeach
+
+
+;---Get m and q.
+    m_uvw2gse = dblarr(ntime,ndim,ndim)
+    for ii=0,ndim-1 do m_uvw2gse[*,*,ii] = get_var_data(prefix+uvw[ii]+'_gse_fix')
+    q_uvw2gse = mtoq(m_uvw2gse)
+    store_data, prefix+'q_uvw2gse', times, q_uvw2gse, limits={spin_tone:'fixed'}
+
+
+    two_colors = sgcolor(['blue','red'])
+    if keyword_set(test) then begin
+        for ii=0,ndim-1 do begin
+            vec_gse = reform(m_uvw2gse[*,*,ii])
+            for jj=0,ndim-1 do begin
+                the_var = prefix+uvw[ii]+xyz[jj]+'_gse'
+                vec_old = get_var_data(the_var)
+                store_data, the_var, times, [[vec_old],[vec_gse[*,jj]]], $
+                    limits={colors:two_colors, labels:['orig','fixed']}
+            endfor
+        endfor
+    endif
+
+end
+
+time_range = time_double(['2013-01-01','2013-01-02'])
+time_range = time_double(['2014-06-14','2014-06-15'])
+;time_range = time_double(['2014-06-15','2014-06-16'])
+time_range = time_double(['2014-06-14','2014-06-19'])   ; eclipse.
+probe = 'b'
+
+
+time_range = time_double(['2013-03-20','2013-03-21'])   ; maneuver.
+probe = 'a'
+
+time_range = time_double(['2014-08-28','2014-08-29'])   ; maneuver.
+probe = 'b'
+
+prefix = 'rbsp'+probe+'_'
+rbsp_fix_q_uvw2gse, time_range, probe=probe, test=1;, restore_eclipse=1, restore_maneuver=1
+end

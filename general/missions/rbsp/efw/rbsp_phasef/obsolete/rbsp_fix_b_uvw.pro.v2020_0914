@@ -1,0 +1,139 @@
+;+
+; Fix spin tone in B UVW, remove bad data (Bw -9999).
+;-
+
+pro rbsp_fix_b_uvw, time_range, probe=probe, test=test, common_time_step=common_time_step
+
+    prefix = 'rbsp'+probe+'_'
+    b_var = prefix+'b_uvw'
+    if check_if_update(b_var, time_range, dtime=60.) then $
+        rbsp_read_emfisis, time_range, probe=probe, id='l2%magnetometer'
+
+
+;---Read data.
+    ndim = 3
+    uvw = constant('uvw')
+    xyz = constant('xyz')
+    if n_elements(common_time_step) eq 0 then common_time_step = 1d/16
+    if common_time_step gt 1 then message, 'Cadence too low ...'
+    common_times = make_bins(time_range, common_time_step)
+    ncommon_time = n_elements(common_times)
+    b_uvw_var = prefix+'b_uvw'
+    data_gap_window = 4*common_time_step
+    interp_time, b_uvw_var, common_times, data_gap_window=data_gap_window
+    add_setting, b_uvw_var, /smart, dictionary($
+        'display_type', 'vector', $
+        'unit', 'nT', $
+        'short_name', 'B', $
+        'coord', 'UVW', $
+        'coord_labels', uvw )
+    b_uvw = get_var_data(b_uvw_var)
+
+
+    if check_if_update(prefix+'q_uvw2gse', time_range) then begin
+        rbsp_read_q_uvw2gse, time_range, probe=probe
+    endif
+
+
+
+;---Convert to DSC.
+    rad = constant('rad')
+    spin_phase_var = prefix+'spin_phase'
+    if check_if_update(spin_phase_var, time_range) then $
+        rbsp_read_spice, time_range, probe=probe, id='spin_phase'
+    spin_phase = get_var_data(prefix+'spin_phase', times=times)
+    for ii=1, n_elements(times)-1 do begin
+        if spin_phase[ii] ge spin_phase[ii-1] then continue
+        spin_phase[ii:*] += 360
+    endfor
+    spin_phase = interpol(spin_phase, times, common_times)*rad
+    cost = cos(spin_phase)
+    sint = sin(spin_phase)
+    b_dsc = dblarr(ncommon_time,ndim)
+    b_dsc_var = prefix+'b_dsc'
+    b_dsc[*,0] = b_uvw[*,0]*cost-b_uvw[*,1]*sint
+    b_dsc[*,1] = b_uvw[*,0]*sint+b_uvw[*,1]*cost
+    b_dsc[*,2] = b_uvw[*,2]
+    store_data, b_dsc_var, common_times, b_dsc
+    add_setting, b_dsc_var, /smart, dictionary($
+        'display_type', 'vector', $
+        'short_name', 'B', $
+        'unit', '#', $
+        'coord', 'DSC', $
+        'coord_labels', xyz )
+
+
+;---Correct in DSC.
+    ; Mask invalid data.
+    flags = (b_uvw[*,2] le -99999) or (snorm(b_uvw) ge 3.5e4)
+    mask_index = where(flags eq 1, mask_count)
+    fillval = !values.f_nan
+    b_dsc = get_var_data(b_dsc_var)
+    if mask_count ne 0 then begin
+        b_dsc[mask_index,*] = fillval
+    endif
+    ; Smooth to remove wobble.
+    smooth_width = 11d/common_time_step
+    for ii=0,ndim-1 do begin
+        b_dsc[*,ii] = smooth(b_dsc[*,ii], smooth_width, /edge_mirror, /nan)
+    endfor
+;    ; Remove spikes due to mode switch.
+;    r_var = prefix+'r_gse'
+;    if check_if_update(r_var, time_range) then rbsp_read_orbit, time_range, probe=probe
+;    dis = snorm(get_var_data(r_var, times=times))
+;    dis = interpol(dis, times, common_times, /quadratic)
+;    db_dsc = b_dsc-get_var_data(b_dsc_var)
+;    flags = db_dsc[*,0]*dis^3
+;    mode_switch_dis_threshold = 2.2     ; Re.
+;    flags[where(dis le mode_switch_dis_threshold)] = fillval
+;    mode_switch_threshold = 100.
+;    index = where(abs(flags) ge mode_switch_threshold, count)
+;    if count ne 0 then begin
+;        times = common_times[index]
+;        nan_time_ranges = time_to_range(times, time_step=common_time_step, pad_time=1)
+;        nnan_time_range = n_elements(nan_time_ranges)*0.5
+;        for ii=0,nnan_time_range-1 do begin
+;            index = lazy_where(common_times, '[]', nan_time_ranges[ii,*], count=count)
+;            if count eq 0 then continue
+;            b_dsc[index,*] = fillval
+;        endfor
+;    endif
+    ; Update the data.
+    b_dsc_var = prefix+'b_dsc_fix'
+    store_data, b_dsc_var, common_times, b_dsc
+
+
+;---Change back to UVW.
+    b_dsc = get_var_data(prefix+'b_dsc_fix')
+    b_uvw[*,0] = b_dsc[*,0]*cost+b_dsc[*,1]*sint
+    b_uvw[*,1] =-b_dsc[*,0]*sint+b_dsc[*,1]*cost
+    b_uvw[*,2] = b_dsc[*,2]
+    store_data, b_uvw_var, common_times, b_uvw
+    add_setting, b_uvw_var, /smart, dictionary($
+        'display_type', 'vector', $
+        'short_name', 'B', $
+        'unit', '#', $
+        'coord', 'UVW', $
+        'coord_labels', uvw )
+
+
+;test = 1
+    two_colors = sgcolor(['blue','red'])
+    if keyword_set(test) then begin
+        vec_old = get_var_data(b_dsc_var)
+        vec_new = get_var_data(b_dsc_var+'_fix')
+        for ii=0,ndim-1 do begin
+            the_var = prefix+'b'+xyz[ii]+'_dsc'
+            store_data, the_var, common_times, [[vec_old[*,ii]],[vec_new[*,ii]]], $
+                limits={colors:two_colors, labels:['orig','fixed'], ytitle:'(nT)'}
+        endfor
+        tplot_options, 'labflag', -1
+        tplot_options, 'ynozero', 1
+    endif
+
+end
+
+time_range = time_double(['2014-08-28','2014-08-29'])
+probe = 'b'
+rbsp_fix_b_uvw, time_range, probe=probe, test=test
+end
