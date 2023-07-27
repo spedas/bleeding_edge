@@ -4,6 +4,41 @@ pro spp_fld_sc_hk_1df_load_l1, file, prefix = prefix, varformat = varformat
 
   cdf2tplot, /get_support_data, file, prefix = prefix, varformat = varformat
 
+  mags = ['spp_fld_sc_hk_1df_FIELDS1_MAGO_ACTION', $
+    'spp_fld_sc_hk_1df_FIELDS2_MAGI_ACTION']
+
+  foreach mag, mags do begin
+
+    get_data, mag, data = d
+
+    if size(/type, d) EQ 8 then begin
+
+      mag_comp = long(d.y)
+
+      exp_mod = 2l^7
+      exp_div = 2l^4
+
+      ; Calculate the sign, exponent, and mantissa from the input
+
+      sgn = ((mag_comp/exp_mod GE 1ll) * (-2)) + 1
+      exp = (mag_comp MOD exp_mod) / exp_div
+
+      exp0 = where(exp EQ 0, exp0_count, comp = exp_no0, ncomp = exp_no0_count)
+
+      man = mag_comp MOD exp_div
+
+      if exp_no0_count GT 0 then man[exp_no0] += exp_div
+      if exp_no0_count GT 0 then exp[exp_no0] -= 1
+
+      mag_decomp = sgn * man * 2l^(exp)
+
+      store_data, mag + '_decompressed', $
+        dat = {x:d.x, y:mag_decomp}
+
+    end
+
+  endforeach
+
   sc_hk_1df_names = tnames(prefix + '*')
 
   if sc_hk_1df_names[0] NE '' then begin
@@ -28,6 +63,9 @@ pro spp_fld_sc_hk_1df_load_l1, file, prefix = prefix, varformat = varformat
     endfor
 
   endif
+
+
+
 
   get_data, prefix + 'sc_hk_subseconds', data = d_hk_ss
 
