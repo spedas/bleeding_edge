@@ -890,15 +890,15 @@ function esc_esatm_reader::log_decomp_24_16, bdata
   p10 = where(bdata ge 'F000'x,c10)
                     
   if  c1 then bdata[ p1] = ishft(bdata[ p1]-'2000'x,1)
-  if  c2 then bdata[ p2] = ishft(bdata[ p2]-'4000'x,1)
-  if  c3 then bdata[ p3] = ishft(bdata[ p3]-'7000'x,1)  
-  if  c4 then bdata[ p4] = ishft(bdata[ p4]-'8000'x,1)
-  if  c5 then bdata[ p5] = ishft(bdata[ p5]-'9000'x,1)
-  if  c6 then bdata[ p6] = ishft(bdata[ p6]-'a000'x,1)
-  if  c7 then bdata[ p7] = ishft(bdata[ p7]-'b000'x,1)
-  if  c8 then bdata[ p8] = ishft(bdata[ p8]-'c000'x,1)
-  if  c9 then bdata[ p9] = ishft(bdata[ p9]-'d000'x,1)
-  if c10 then bdata[p10] = ishft(bdata[p10]-'e000'x,1)
+  if  c2 then bdata[ p2] = ishft(bdata[ p2]-'4000'x,2)
+  if  c3 then bdata[ p3] = ishft(bdata[ p3]-'7000'x,4)  
+  if  c4 then bdata[ p4] = ishft(bdata[ p4]-'8000'x,5)
+  if  c5 then bdata[ p5] = ishft(bdata[ p5]-'9000'x,6)
+  if  c6 then bdata[ p6] = ishft(bdata[ p6]-'a000'x,7)
+  if  c7 then bdata[ p7] = ishft(bdata[ p7]-'b000'x,8)
+  if  c8 then bdata[ p8] = ishft(bdata[ p8]-'c000'x,9)
+  if  c9 then bdata[ p9] = ishft(bdata[ p9]-'d000'x,10)
+  if c10 then bdata[p10] = ishft(bdata[p10]-'e000'x,11)
   
   return, bdata
   
