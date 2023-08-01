@@ -63,23 +63,25 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
     endtime=time_string(time_double(starttime)+86400.0d0)
   endelse
   
+;****************************
+;
+; MAIN LOOP for SPACECRAFT
+; 
+;****************************
   sc=['a','b']
   for isc=0,1 do begin
     probe = sc[isc]
-    if ~undefined(userprobe) then begin
-      if probe ne userprobe then continue ; if userprobe defined 
-    endif 
     if probe EQ 'a' AND starttime GT time_double('2022-09-12/00:00:00') then begin
       dprint, 'There is no valid orbit or EPD data past 2022-09-11.'
       return
     endif
 
+; *** data availability shouldn't be updated here. it should be a daily cronjob ***
+; *** it's end of mission so the data availability shouldn't need an update
 ;    if keyword_set(create_avai) then begin
 ;      days = (time_double(endtime) - time_double(starttime))/(60.*60.*24.)
 ;      elf_update_data_availability_table, endtime, probe=probe, instrument='epd', days = days
 ;    endif
-
-
 ;    if update_avai eq 1 then begin
 ;      this_remote_path=!elf.remote_data_dir+'el'+probe+'/data_availability/'
 ;      this_remote_file=['el'+probe+'_epd_all.csv','el'+probe+'_epd_nasc.csv','el'+probe+'_epd_ndes.csv','el'+probe+'_epd_sasc.csv','el'+probe+'_epd_sdes.csv']
@@ -92,22 +94,22 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
 ;      endfor    
 ;    endif
     
-    
-;    if update_phasedelay eq 1 then begin
-;      this_remote_path=!elf.remote_data_dir+'el'+probe+'/calibration_files/'
-;      this_remote_file='el'+probe+'_epde_phase_delays.csv'
-;      this_local_path=!elf.local_data_dir+'el'+probe+'/calibration_files/'      
-;      paths = spd_download(remote_file=this_remote_file, remote_path=this_remote_path, $
-;          local_file=this_remote_file, local_path=this_local_path)
-;    endif
+    if update_phasedelay eq 1 then begin
+      this_remote_path=!elf.remote_data_dir+'el'+probe+'/calibration_files/'
+      this_remote_file='el'+probe+'_epde_phase_delays.csv'
+      this_local_path=!elf.local_data_dir+'el'+probe+'/calibration_files/'      
+      paths = spd_download(remote_file=this_remote_file, remote_path=this_remote_path, $
+          local_file=this_remote_file, local_path=this_local_path)
+    endif
       
-    cwdirname=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots'
-    cd,cwdirname
-    foldername= 'temp'
-    fileresult=FILE_SEARCH(foldername)
-    if size(fileresult,/dimen) eq 0 then FILE_MKDIR,foldername
-    cd,cwdirname+'/'+foldername
-   
+;    cwdirname=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots'
+;    cd,cwdirname
+    tempfolder= !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots/temp'
+    fileresult=FILE_SEARCH(tempfolder)
+    if size(fileresult,/dimen) eq 0 then FILE_MKDIR,tempfolder
+    cd, tempfolder
+ 
+; ***** once data availability is correct and updated then this section of code can be re-instated *****  
 ;    allszs = read_csv(!elf.LOCAL_DATA_DIR + 'el' +probe+ '/data_availability/el'+probe+'_epd_data_availability.csv', n_table_header = 1)
 ;    szs_inrange = where(time_double(allszs.field1) ge time_double(starttime) and time_double(allszs.field1) le time_double(endtime), count)
 
@@ -116,9 +118,7 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
 ;      ; jwu when ela doesn't have sci zone but elb has, return has issue 
 ;      continue
 ;    endif
-;thisst=time_double(startdate)
-;thisen=thisst + 86400.
-;thistr = [thisst, thisen]
+
     ;-----------------------------
     ; DETERMINE Science Zones
     ;------------------------------
@@ -169,11 +169,8 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
     endif
     num_szs=n_elements(sz_starttimes)
 
-;*****
     szs_st = sz_starttimes
     szs_en = sz_endtimes
-;    probes = make_array(n_elements(szs_inrange), /string, VALUE = probe)
-;    probes = make_array(n_elements(sz_starttimes), /string, VALUE = probe)
 
     elf_load_state, probes=probe, trange = [szs_st[0], szs_en[n_elements(szs_en)-1]]
     get_data, 'el'+probe+'_pos_gei', data=dat_gei
@@ -185,13 +182,15 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
     get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
     store_data,'el'+probe+'_MLAT_dip',data={x:elfin_pos.x,y:lat0*180./!pi}
 
-;    i = 0
+    ; ***************************************
+    ; 
+    ; MAIN LOOP for PHASE DELAY calculations
+    ; 
+    ;****************************************
     Echannels = [0, 3, 6, 9]
     for i =0, n_elements(szs_st)-1 do begin
       tstart = szs_st[i]
       tend = szs_en[i]
-;      probe = probes[isc]
-;stop
       elf_phase_delay_AUTO, probe = probe, Echannels = Echannels, sstart = tstart, send = tend, badflag = badflag
       if badflag eq -99 then continue
       elf_mlt_l_lat,'el'+probe+'_pos_sm',MLT0=MLT0,L0=L0,lat0=lat0
@@ -199,8 +198,9 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
       get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
       store_data,'el'+probe+'_MLAT_dip',data={x:elfin_pos.x,y:lat0*180./!pi}
       get_data,'el'+probe+'_MLAT_dip',data=this_lat
-      ;lat_idx=where(this_lat.x GE tstart AND this_lat.x LE tend, ncnt)
 
+      ; based on latitude and whether s/c is ascending or descending
+      ; determine zone name
       sz_name=''
       if size(this_lat, /type) EQ 8 then begin ;change to num_scz?
         sz_tstart=time_string(tstart)
@@ -224,7 +224,6 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
       ;create 1.5 hr web page time start and stop times
       filetime=time_string(tstart, format=2, precision=-3)
       print, filetime     
-
       tstarts=[]
       tends=[]
       for j=0,23,1 do append_array, tstarts,time_double(filetime)+j*3600.
@@ -235,20 +234,24 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
       ;create array of file labels
       file_lbl=strmid(time_string(tstarts),11,2)
 
-      ; first find out what 1.5 hour interval this time fits into
+      ; find out what 1.5 hour interval this time fits into
+      ; this will either be 1 or 2 (2 if the science zone is in the last 30 minutes of the 1.5 hr interval
       idx=where(time_double(tstart) GE tstarts AND time_double(tstart) LE tends, ncnt)
-      ;idx=where(time_double(tstart) GE tstarts[j] AND time_double(tstart) LE tends[j], ncnt)
       print, ncnt
 
+      ; ******************************************************
+      ; LOOP for each 1.5 hour interval for each science zone
+      ;*******************************************************
       if ncnt GT 0 then begin
         for k=0, ncnt-1 do begin
-
+          ; this is the first png file in the 1.5 hr 
           filename='el'+probe+'_pdp_'+ filetime + '_' + file_lbl[idx[k]] + sz_name
           file_path = !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots' + '/' + strmid(filetime, 0, 4) + '/' + strmid(filetime, 4, 2) + '/' + strmid(filetime, 6, 2) + '/'
           file_mkdir, file_path
           fullfilename=file_path + filename
           file_copy,'Fitplots/bestfit.png',fullfilename+'.png',/OVERWRITE
           
+          ; if this zone rolls into next hour create 2nd png file
           sthr=strmid(tstart, 11, 2)
           enhr=strmid(tend, 11, 2)
           if sthr NE enhr then begin
@@ -269,15 +272,17 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
             endif
           endif
 
-          print, fullfilename + '.png'
-          if ~undefined(filename2) then print, fullfilename2 + '.png'
+          print, 'Created: ' + fullfilename + '.png'
+          if ~undefined(filename2) then print, 'Created: ' + fullfilename2 + '.png'
 
-        endfor
+        endfor  ;  end of 1.5 hour loop
+        
       endif
 
-    endfor
+    endfor    ; end of science zone loop
 
   endfor ; end of probe loop
+  
   ;FILE_DELETE,'Fitplots',/RECURSIVE ; delete old folder
   print, 'Done'
  

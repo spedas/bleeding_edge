@@ -158,17 +158,17 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ;make a copy of previous existing phase delay file, with date noted (akr)
 
   ;note current date
-  dateprev = time_string(systime(/seconds),format=2,precision=-3)
-  fileprev = 'el'+probe+'_epde_phase_delays_' + dateprev + '.csv'
+;  dateprev = time_string(systime(/seconds),format=2,precision=-3)
+;  fileprev = 'el'+probe+'_epde_phase_delays_' + dateprev + '.csv'
 
   ;create folder for old pdp copies
-  cwdirnametemp=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'
-  cd,cwdirnametemp
-  pdpprev_folder = 'pdpcsv_archive'
-  fileresult=file_search(pdpprev_folder)
-  if size(fileresult,/dimen) eq 0 then file_mkdir,pdpprev_folder
+;  cwdirnametemp=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'
+;  cd,cwdirnametemp
+ ; pdpprev_folder = 'pdpcsv_archive'
+;  fileresult=file_search(pdpprev_folder)
+;  if size(fileresult,/dimen) eq 0 then file_mkdir,pdpprev_folder
 
-  write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
+;  write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
   
   ;return back to original directory
   cd, cwdirname + '/' + finalfolder
@@ -1539,17 +1539,17 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ;make a copy of previous existing phase delay file, with date noted (akr)
 
   ;note current date
-  dateprev = time_string(systime(/seconds),format=2,precision=-3)
-  fileprev = 'el'+probe+'_epde_phase_delays_' + dateprev + '.csv'
+;  dateprev = time_string(systime(/seconds),format=2,precision=-3)
+;  fileprev = 'el'+probe+'_epde_phase_delays_' + dateprev + '.csv'
 
   ;create folder for old pdp copies
-  cwdirnametemp=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'
-  cd,cwdirnametemp
-  pdpprev_folder = 'pdpcsv_archive'
-  fileresult=file_search(pdpprev_folder)
-  if size(fileresult,/dimen) eq 0 then file_mkdir,pdpprev_folder
+;  cwdirnametemp=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'
+;  cd,cwdirnametemp
+;  pdpprev_folder = 'pdpcsv_archive'
+;  fileresult=file_search(pdpprev_folder)
+;  if size(fileresult,/dimen) eq 0 then file_mkdir,pdpprev_folder
 
-  write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
+;  write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
 
   ;return back to original directory
   cd, cwdirname + '/' + finalfolder
@@ -1648,7 +1648,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
       placeholder_phase = current_median
     endelse
   endelse
-  
+ 
   elf_phase_delay_SectrPhAng, current_median, angpersector, LatestMedianSectr=LatestMedianSectr, LatestMedianPhAng=LatestMedianPhAng
 
   print, current_median
@@ -1831,50 +1831,23 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     print, 'didnt classify as repeat'
   endelse
 
-  ;sorting = uniq(tstarts, sort(tstarts))
-  ;print, time_string(double(tstarts[0]))
-  ;stop
-  ;    tstarts =  [dat.tstart[0:newindex], tstart, dat.tstart[newindex+replace+1:-1]]
-  ;    tends =  [dat.tend[0:newindex], tend, dat.tend[newindex+1:-1]]
-  ;    dSectr2adds = [dat.dSectr2add[0:newindex], dSectr2add, dat.dSectr2add[newindex+1:-1]]
-  ;    dPhang2adds = [dat.dPhang2add[0:newindex], dPhang2add, dat.dPhang2add[newindex+1:-1]]
-  ;    LatestMedianSectrs = [dat.LatestMedianSectr[0:newindex], LatestMedianSectr, dat.LatestMedianSectr[newindex+1:-1]]
-  ;    LatestMedianPhAngs = [dat.LatestMedianPhAng[0:newindex], LatestMedianPhAng, dat.LatestMedianPhAng[newindex+1:-1]]
-  ;    badFlags = [dat.badFlag[0:newindex], badFlag, dat.badFlag[newindex+1:-1]]
-  ;  endelse
-  ;   newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
-  ;   write_csv, file, newdat, header = cols
-  ;endelse
+  ;note current date
+;   dateprev = time_string(systime(/seconds),format=2,precision=-3)
+;    dateprev=time_string(systime(/seconds),format=2,precision=-3)
+;    dateprev=strmid(time_string(systime(/seconds),format=2,precision=3),0,15)
+    thisdate=time_string(newentry[0], format=6)
+    fileprev = 'el'+probe+'_epde_phase_delays_' + thisdate + '.csv'
 
+  ;create folder for old pdp copies
+    cwdirnametemp=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'
+    cd,cwdirnametemp
+    pdpprev_folder = 'pdpcsv_archive'
+    fileresult=file_search(pdpprev_folder)
+    if size(fileresult,/dimen) eq 0 then file_mkdir,pdpprev_folder
 
-  ; if ~old then begin
-  ;  tstarts =  [dat.tstart[0:newindex-replace], tstart]
-  ;  tends =  [dat.tend[0:newindex-replace], tend]
-  ;  dSectr2adds = [dat.dSectr2add[0:newindex-replace], dSectr2add]
-  ;  dPhang2adds = [dat.dPhang2add[0:newindex-replace], dPhang2add]
-  ;  LatestMedianSectrs = [dat.LatestMedianSectr[0:newindex-replace], LatestMedianSectr]
-  ;  LatestMedianPhAngs = [dat.LatestMedianPhAng[0:newindex-replace], LatestMedianPhAng]
-  ;  badFlags = [dat.badFlag[0:newindex-replace], badFlag]
-  ;endif else begin
-  ;  tstarts =  [dat.tstart[0:newindex-replace], tstart, dat.tstart[newindex+replace:-1]]
-  ;  tends =  [dat.tend[0:newindex-replace], tend, dat.tend[newindex+1:-1]]
-  ;  dSectr2adds = [dat.dSectr2add[0:newindex-replace], dSectr2add, dat.dSectr2add[newindex+1:-1]]
-  ;  dPhang2adds = [dat.dPhang2add[0:newindex-replace], dPhang2add, dat.dPhang2add[newindex+1:-1]]
-  ;  LatestMedianSectrs = [dat.LatestMedianSectr[0:newindex-replace], LatestMedianSectr, dat.LatestMedianSectr[newindex+1:-1]]
-  ;  LatestMedianPhAngs = [dat.LatestMedianPhAng[0:newindex-replace], LatestMedianPhAng, dat.LatestMedianPhAng[newindex+1:-1]]
-  ;  badFlags = [dat.badFlag[0:newindex-replace], badFlag, dat.badFlag[newindex+1:-1]]
-  ;endelse
-  ;newdat = CREATE_STRUCT(cols[0], tstarts, cols[1], tends, cols[2], dSectr2adds, cols[3], dPhAng2adds, cols[4], LatestMedianSectrs, cols[5], LatestMedianPhAngs, cols[6], badFlags)
-  ;
-  print, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'+file
-  
-  write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'+file, newdat, header = cols
-  ;temporary check
-  ;temp_dub = time_double(newdat.tstart[-5:n_elements(newdat.tstart)-1])
-  ;ordered_dub = temp_dub[sort(temp_dub)]
-  ;a = temp_dub ne ordered_dub
-  ;if total(a) ge 1 then stop
-  ;end of temporary check
+    ;write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
+    print, 'Writing file: ' + !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+fileprev 
+    write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+fileprev, newentry  ;, header = cols
 
   check5 = total(n_elements(tstarts))
 
