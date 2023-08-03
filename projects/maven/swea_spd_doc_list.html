@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Jul 31 18:16:39 2023.<P>
+<STRONG>Last modified: </STRONG>Wed Aug  2 18:16:42 2023.<P>
  
 <HR>
  
@@ -232,7 +232,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_SWE_VERBOSE">MVN_SWE_VERBOSE</A>
 <br>Sets the SWEA verbosity level.
 <LI><A HREF="#NIBBLE">NIBBLE</A>
-<br>Converts a byte into an 8-element byte array where the elements are
+<br>Converts a byte, integer, long, or long64 into an N-element
 <LI><A HREF="#NIBBLE_LONG">NIBBLE_LONG</A>
 <br>Converts an unsigned long into a 32-element byte array where the
 <LI><A HREF="#NIBBLE_WORD">NIBBLE_WORD</A>
@@ -2679,8 +2679,8 @@ KEYWORDS:
                         0B = affected by low-energy anomaly
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-07-04 13:40:14 -0700 (Tue, 04 Jul 2023) $
- $LastChangedRevision: 31934 $
+ $LastChangedDate: 2023-08-02 11:14:38 -0700 (Wed, 02 Aug 2023) $
+ $LastChangedRevision: 31975 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2847,9 +2847,9 @@ KEYWORDS:
                         1B = uncertain
                         0B = affected by low-energy anomaly
 
- $LastChangedBy: muser $
- $LastChangedDate: 2023-07-03 10:38:02 -0700 (Mon, 03 Jul 2023) $
- $LastChangedRevision: 31926 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-02 11:14:38 -0700 (Wed, 02 Aug 2023) $
+ $LastChangedRevision: 31975 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -2898,8 +2898,8 @@ KEYWORDS:
                         0B = affected by low-energy anomaly
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-07-03 10:47:05 -0700 (Mon, 03 Jul 2023) $
- $LastChangedRevision: 31927 $
+ $LastChangedDate: 2023-08-02 11:14:38 -0700 (Wed, 02 Aug 2023) $
+ $LastChangedRevision: 31975 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getspec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -4574,8 +4574,8 @@ KEYWORDS:
        VERBOSE:       If set, then print diagnostic information to stdout.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2019-04-08 16:59:23 -0700 (Mon, 08 Apr 2019) $
- $LastChangedRevision: 26965 $
+ $LastChangedDate: 2023-08-02 11:13:42 -0700 (Wed, 02 Aug 2023) $
+ $LastChangedRevision: 31974 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_read_hsk.pro $
 
 CREATED BY:    David L. Mitchell
@@ -4649,8 +4649,8 @@ KEYWORDS:
        VERBOSE:       If set, then print diagnostic information to stdout.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-01-03 10:01:38 -0800 (Mon, 03 Jan 2022) $
- $LastChangedRevision: 30483 $
+ $LastChangedDate: 2023-08-02 11:13:26 -0700 (Wed, 02 Aug 2023) $
+ $LastChangedRevision: 31973 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_read_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -6197,20 +6197,29 @@ CREATED BY:    David L. Mitchell
 <PRE>
 FUNCTION:   nibble
 PURPOSE:
-  Converts a byte into an 8-element byte array where the elements are
-  the individual bits (0 or 1).  LSB is stored in element 0 and MSB is
-  in element 7.  Note: if this function is fed an integer or a long,
-  then it processes only the least significant byte without crashing.
-  No error checking for maximum speed.
+  Converts a byte, integer, long, or long64 into an N-element
+  byte array where the elements are the individual bits (0 or 1).
+  LSB is stored in element 0, and MSB is stored in element N-1.
+
 USAGE:
-  bits = nibble(byte)
-INPUTS:
-       byte : A byte scalar.
+  bits = nibble(i)
+
+INPUT:
+       i  : A scalar of type byte, integer, long, or long64.
+            Can be signed or unsigned.
+
+OUTPUT:
+     bits : An N-element byte array, where N = 8, 16, 32, or 64,
+            depending on the input data type.
+
 KEYWORDS:
-CREATED BY:	David L. Mitchell  01-15-98
-FILE:  nibble.pro
-VERSION:  1.2
-LAST MODIFICATION:  01-31-98
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-02 10:45:16 -0700 (Wed, 02 Aug 2023) $
+ $LastChangedRevision: 31971 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/nibble.pro $
+
+CREATED BY:	David L. Mitchell,  January 1998
 </PRE><P>
 <STRONG>(See <A href="swea/nibble.pro">projects/maven/swea/nibble.pro</A>)</STRONG><P>
 <HR>
@@ -7830,12 +7839,19 @@ PURPOSE:
 USAGE:
   swe_swi_cc_snap
 INPUTS:
+   None.      Data are selected from tplot window.
 
 KEYWORDS:
-CREATED BY:	David L. Mitchell  01-15-98
-FILE:  nibble.pro
-VERSION:  1.2
-LAST MODIFICATION:  01-31-98
+   NRANGES:   Number of time ranges to select.
+
+   CCAL:      Cross calibration factors.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-02 11:15:31 -0700 (Wed, 02 Aug 2023) $
+ $LastChangedRevision: 31976 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_swi_cc_snap.pro $
+
+CREATED BY:	David L. Mitchell, some time in 2014
 </PRE><P>
 <STRONG>(See <A href="swea/swe_swi_cc_snap.pro">projects/maven/swea/swe_swi_cc_snap.pro</A>)</STRONG><P>
 <HR>

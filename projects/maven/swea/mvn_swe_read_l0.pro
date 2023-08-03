@@ -58,8 +58,8 @@
 ;       VERBOSE:       If set, then print diagnostic information to stdout.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-03 10:01:38 -0800 (Mon, 03 Jan 2022) $
-; $LastChangedRevision: 30483 $
+; $LastChangedDate: 2023-08-02 11:13:26 -0700 (Wed, 02 Aug 2023) $
+; $LastChangedRevision: 31973 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_read_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -540,14 +540,14 @@ pro mvn_swe_read_l0, filename, trange=trange, cdrift=cdrift, maxbytes=maxbytes, 
 ; LUT, Checksums, Command Counter, and Digital Housekeeping (bytes 92-109)
 			   
       swe_hsk[k].SSCTL     = uint(pkt[90])*256 + uint(pkt[91])
-      swe_hsk[k].SIFCTL    = nibble_word(uint(pkt[92])*256 + uint(pkt[93]))
+      swe_hsk[k].SIFCTL    = nibble(uint(pkt[92])*256 + uint(pkt[93]))
       swe_hsk[k].MCPDAC    = uint(pkt[94])*256 + uint(pkt[95])
 	  swe_hsk[k].Chksum[0] = pkt[96]
 	  swe_hsk[k].Chksum[1] = pkt[97]
 	  swe_hsk[k].Chksum[2] = pkt[98]
 	  swe_hsk[k].Chksum[3] = pkt[99]
 	  swe_hsk[k].CmdCnt    = uint(pkt[100])*256 + uint(pkt[101])
-	  swe_hsk[k].HSKREG    = nibble_word(uint(pkt[108])*256 + uint(pkt[109]))
+	  swe_hsk[k].HSKREG    = nibble(uint(pkt[108])*256 + uint(pkt[109]))
 
 ; 2 spare bytes (110-111)
 

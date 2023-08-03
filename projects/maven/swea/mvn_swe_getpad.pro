@@ -37,9 +37,9 @@
 ;                        1B = uncertain
 ;                        0B = affected by low-energy anomaly
 ;
-; $LastChangedBy: muser $
-; $LastChangedDate: 2023-07-03 10:38:02 -0700 (Mon, 03 Jul 2023) $
-; $LastChangedRevision: 31926 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-08-02 11:14:38 -0700 (Wed, 02 Aug 2023) $
+; $LastChangedRevision: 31975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -460,7 +460,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
   if (ok) then begin
     indx = where(quality ge qlevel, npts)
     if (npts gt 0L) then pad = pad[indx] else return, 0
-  endif else print,"Quality level not yet defined for L2 data."
+  endif else print,"Quality level not defined."
 
 ; Apply cross calibration factor.  A new factor is calculated after each 
 ; MCP bias adjustment. See mvn_swe_config for these times.  Polynomial

@@ -6,12 +6,19 @@
 ;USAGE:
 ;  swe_swi_cc_snap
 ;INPUTS:
+;   None.      Data are selected from tplot window.
 ;
 ;KEYWORDS:
-;CREATED BY:	David L. Mitchell  01-15-98
-;FILE:  nibble.pro
-;VERSION:  1.2
-;LAST MODIFICATION:  01-31-98
+;   NRANGES:   Number of time ranges to select.
+;
+;   CCAL:      Cross calibration factors.
+;
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-08-02 11:15:31 -0700 (Wed, 02 Aug 2023) $
+; $LastChangedRevision: 31976 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_swi_cc_snap.pro $
+;
+;CREATED BY:	David L. Mitchell, some time in 2014
 ;-
 pro swe_swi_cc_snap, nranges=nranges, ccal=ccal
 
