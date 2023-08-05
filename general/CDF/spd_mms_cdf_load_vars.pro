@@ -137,8 +137,8 @@
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-08-11 17:16:37 -0700 (Wed, 11 Aug 2021) $
-; $LastChangedRevision: 30202 $
+; $LastChangedDate: 2023-08-04 11:32:16 -0700 (Fri, 04 Aug 2023) $
+; $LastChangedRevision: 31982 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/spd_mms_cdf_load_vars.pro $
 ;
 ;-
@@ -152,7 +152,7 @@ function spd_mms_cdf_load_vars,files,varnames=vars,varformat=vars_fmt,info=info,
 vb = keyword_set(verbose) ? verbose : 0
 vars=''
 info = 0
-dprint,dlevel=4,verbose=verbose,'$Id: spd_mms_cdf_load_vars.pro 30202 2021-08-12 00:16:37Z jwl $'
+dprint,dlevel=4,verbose=verbose,'$Id: spd_mms_cdf_load_vars.pro 31982 2023-08-04 18:32:16Z jwl $'
 ;Get cdf version, hacked from read_myCDF, jmm, 2019-10-07
 CDF_LIB_INFO, VERSION=V, RELEASE=R, COPYRIGHT=C, INCREMENT=I
 cdfversion = string(V, R, I, FORMAT='(I0,".",I0,".",I0,A)')
@@ -215,6 +215,7 @@ for fi=0,n_elements(files)-1 do begin
                 depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_TIME',default='')]   ;bpif vars[i] eq 'tha_fgl'
                 depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_0',default='')]
                 depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'LABL_PTR_1',default='')]
+                depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'UNIT_PTR',default='')]
                 ndim = vi.ndimen
                 for j=1,ndim do begin
                    depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_'+strtrim(j,2),default='')]

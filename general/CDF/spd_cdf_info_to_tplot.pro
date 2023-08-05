@@ -13,8 +13,8 @@
 ;   https://spdf.gsfc.nasa.gov/istp_guide/variables.html#Epoch
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2022-08-03 11:07:45 -0700 (Wed, 03 Aug 2022) $
-; $LastChangedRevision: 30989 $
+; $LastChangedDate: 2023-08-04 11:32:16 -0700 (Fri, 04 Aug 2023) $
+; $LastChangedRevision: 31982 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/spd_cdf_info_to_tplot.pro $
 ;-
 pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=non_record_varying, tt2000=tt2000,$
@@ -31,7 +31,7 @@ pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 30989 2022-08-03 18:07:45Z jwl $'
+dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 31982 2023-08-04 18:32:16Z jwl $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -279,6 +279,17 @@ for i=0,nv-1 do begin
 
      cdfstuff={filename:cdfi.filename,gatt:cdfi.g_attributes,vname:v.name,vatt:attr}
      units = struct_value(attr,'units',default='')
+     ; If units not set, look for indirection via units_ptr attribute
+     unit_ptr = struct_value(attr,'unit_ptr',default='')
+     if ~keyword_set(units) and keyword_set(unit_ptr) then begin
+       units_idx = where(cdfi.vars.name eq unit_ptr,c)
+       if c eq 1 then begin
+         if ptr_valid(cdfi.vars[units_idx].dataptr) then begin
+           ; str_element,/add,cdfstuff.vatt,'units',*cdfi.vars[units_idx].dataptr         
+           units=*cdfi.vars[units_idx].dataptr
+         endif
+       endif
+     endif
 
      ; Handle cases where DEPEND_N is defined, but DEPEND_M M<N is undefined.  This can sometimes happen in
      ; complex-valued spectra, where one dimension is 'real' vs 'imaginary', but the data provider has omitted
@@ -303,8 +314,8 @@ for i=0,nv-1 do begin
      if ~undefined(coord_sys) then coord_sys = strlowcase((strsplit(coord_sys, '>', /extract))[0])
 
      if centered_on_load eq 1b then begin
-       dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys}, centered_on_load: centered_on_load}
-     endif else dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys}}
+       dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys, units:units}, centered_on_load: centered_on_load}
+     endif else dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys,units:units}}
      
      if keyword_set(units) then str_element,/add,dlimit,'ysubtitle','['+units+']'
      
