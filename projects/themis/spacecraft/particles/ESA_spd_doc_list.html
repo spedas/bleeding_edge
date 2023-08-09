@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug  5 18:16:42 2023.<P>
+<STRONG>Last modified: </STRONG>Tue Aug  8 18:16:43 2023.<P>
  
 <HR>
  
@@ -48,7 +48,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_ESA_TEST_SPEC3D2">THM_ESA_TEST_SPEC3D2</A>
 <br>Wrapper for spec3d2, plots PEEF, PEER, PEEB data; the user clicks on
 <LI><A HREF="#THM_LOAD_L2_ESADIST">THM_LOAD_L2_ESADIST</A>
-<br>Loads FAST ESA L2 data for a given file(s), or time_range, or orbit range
+<br>Loads THEMIS ESA L2 data for a given file(s), or time_range
 <LI><A HREF="#THM_LOAD_PXXM_POT4ESA">THM_LOAD_PXXM_POT4ESA</A>
 <br>loads the pxxm_pot variable for ESA processing, performs a time
 <br>
@@ -747,9 +747,9 @@ HISTORY:
 NAME:
  thm_load_l2_esadist
 PURPOSE:
- Loads FAST ESA L2 data for a given file(s), or time_range, or orbit range
+ Loads THEMIS ESA L2 data for a given file(s), or time_range
 CALLING SEQUENCE:
- thm_load_l2_esadist, trange=trange, datatype=datatype, orbit=orbit
+ thm_load_l2_esadist, trange=trange, datatype=datatype
 INPUT:
  All via keyword, if none are set, then the output of timerange() is
  used for the time range, which may prompt for a time interval
@@ -767,8 +767,8 @@ OUTPUT:
 HISTORY:
  7-nov-2022, jmm, jimm@ssl.berkeley.edu
  $LastChangedBy: jimm $
- $LastChangedDate: 2023-03-14 13:02:11 -0700 (Tue, 14 Mar 2023) $
- $LastChangedRevision: 31629 $
+ $LastChangedDate: 2023-08-08 14:38:46 -0700 (Tue, 08 Aug 2023) $
+ $LastChangedRevision: 31984 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_load_l2_esadist.pro $
 </PRE><P>
 <STRONG>(See <A href="ESA/thm_load_l2_esadist.pro">projects/themis/spacecraft/particles/ESA/thm_load_l2_esadist.pro</A>)</STRONG><P>

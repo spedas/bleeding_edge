@@ -68,6 +68,7 @@ Pro thm_load_l2_esadist_type, probe, type, trange = trange, $
         dprint, 'No data for type: '+type
      Endelse
   Endif
+
 ;Which type, and what probe?
   If(probe[0] Eq 'a') Then Begin
      Case type of
@@ -212,9 +213,9 @@ End
 ;NAME:
 ; thm_load_l2_esadist
 ;PURPOSE:
-; Loads FAST ESA L2 data for a given file(s), or time_range, or orbit range
+; Loads THEMIS ESA L2 data for a given file(s), or time_range
 ;CALLING SEQUENCE:
-; thm_load_l2_esadist, trange=trange, datatype=datatype, orbit=orbit
+; thm_load_l2_esadist, trange=trange, datatype=datatype
 ;INPUT:
 ; All via keyword, if none are set, then the output of timerange() is
 ; used for the time range, which may prompt for a time interval
@@ -232,8 +233,8 @@ End
 ;HISTORY:
 ; 7-nov-2022, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-03-14 13:02:11 -0700 (Tue, 14 Mar 2023) $
-; $LastChangedRevision: 31629 $
+; $LastChangedDate: 2023-08-08 14:38:46 -0700 (Tue, 08 Aug 2023) $
+; $LastChangedRevision: 31984 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_load_l2_esadist.pro $
 ;-
 Pro thm_load_l2_esadist, probe = probe, datatype = datatype, $
