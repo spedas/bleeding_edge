@@ -5,6 +5,17 @@
 ;  byte array where the elements are the individual bits (0 or 1).
 ;  LSB is stored in element 0, and MSB is stored in element N-1.
 ;
+;  Normally, one would decompose an unsigned integer into its bits,
+;  where each bit provides the on/off state of some flag or switch.
+;  However, it also works on signed integers, which introduces an
+;  ambiguity, for example:
+;
+;    65533 = FF FD = 1 1 1 1 1 1 1 1 - 1 1 1 1 1 1 0 1
+;       -3 = FF FD = 1 1 1 1 1 1 1 1 - 1 1 1 1 1 1 0 1
+;
+;  When using signed integers, the interpretation of the result is
+;  left to the user!
+;
 ;USAGE:
 ;  bits = nibble(i)
 ;
@@ -19,8 +30,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-02 10:45:16 -0700 (Wed, 02 Aug 2023) $
-; $LastChangedRevision: 31971 $
+; $LastChangedDate: 2023-08-11 09:09:54 -0700 (Fri, 11 Aug 2023) $
+; $LastChangedRevision: 31985 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/nibble.pro $
 ;
 ;CREATED BY:	David L. Mitchell,  January 1998
