@@ -17,8 +17,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2021-02-28 12:06:11 -0800 (Sun, 28 Feb 2021) $
-; $LastChangedRevision: 29707 $
+; $LastChangedDate: 2023-08-12 05:24:54 -0700 (Sat, 12 Aug 2023) $
+; $LastChangedRevision: 31988 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_ima_load.pro $
 ;
 ;-
@@ -191,7 +191,7 @@ PRO mex_asp_ima_com, time, counts, polar, pacc, hk, file=file, verbose=verbose, 
   mex_asp_ima.hk       = hk
 
   time = MEAN(time, dim=2)
-  mex_asp_ima_ene_theta, time, polar, opidx=hk.opidx, verbose=verbose, energy=energy, theta=theta, enoise=enoise, fast=fast
+  mex_asp_ima_ene_theta, time, polar, opidx=hk.opidx, verbose=verbose, energy=energy, theta=theta, enoise=enoise, fast=fast, psa=psa
   mex_asp_ima.energy = TEMPORARY(energy)
   mex_asp_ima.theta  = TEMPORARY(theta)
   mex_asp_ima.enoise = TEMPORARY(enoise)
@@ -291,7 +291,7 @@ PRO mex_asp_ima_read, trange, verbose=verbose, time=stime, end_time=etime, count
            v = WHERE(STRMATCH(data, '*Polar Angle Index*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
 
               IF ((trange[0] GT time_double(mode[-1, 1], tformat='YYYY-DOYThh:mm:ss.fff')) OR $
                   (trange[1] LT time_double(mode[ 0, 0], tformat='YYYY-DOYThh:mm:ss.fff'))) THEN skip = 1
@@ -307,62 +307,62 @@ PRO mex_asp_ima_read, trange, verbose=verbose, time=stime, end_time=etime, count
               dprint, dlevel=2, verbose=verbose, 'Reading ' + FILE_DIRNAME(fname[idx], /mark) + $
                       'IMA_AZ**' + time_string(ftime[i], tformat='YYYYDOYhhmm') + 'C_ACCS01.CSV.'
 
-              polar.add, FIX(mode[*, -1])
+              polar.add, [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*PACC Index*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              pacc.add, FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              pacc.add, [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*Shadow Mask*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
               hk_add = REPLICATE(hk_format, nv)
-              hk_add.smask = FIX(mode[*, -1])
+              hk_add.smask = [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*High Voltage Mask*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              hk_add.hmask = FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              hk_add.hmask = [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*Operational Index*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              hk_add.opidx = FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              hk_add.opidx = [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*Solar Wind Start Index*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              hk_add.swidx = FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              hk_add.swidx = [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*Azimuth Sum Mode*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              hk_add.asum = FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              hk_add.asum = [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*Polar Angle Sum Mode*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              hk_add.psum = FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              hk_add.psum = [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*Energy Cycle Mode*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              hk_add.emode = FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              hk_add.emode = [FIX(mode[*, -1])]
            ENDIF 
            v = WHERE(STRMATCH(data, '*Mass Channel Sum Mode*') EQ 1, nv)
            IF nv GT 0 THEN BEGIN
               mode = STRSPLIT(data[v], ',', /extract)
-              mode = mode.toarray()
-              hk_add.msum = FIX(mode[*, -1])
+              IF is_string(mode) THEN mode = REFORM(mode, 1, N_ELEMENTS(mode)) ELSE mode = mode.toarray()
+              hk_add.msum = [FIX(mode[*, -1])]
            ENDIF 
            undefine, mode
            hk.add, TEMPORARY(hk_add)
@@ -393,8 +393,8 @@ PRO mex_asp_ima_read, trange, verbose=verbose, time=stime, end_time=etime, count
            undefine, index, hist, ri
 
            IF j EQ 0 THEN BEGIN
-              stime.add, time_double(st, tformat='YYYY-DOYThh:mm:ss.fff')
-              etime.add, time_double(et, tformat='YYYY-DOYThh:mm:ss.fff')
+              stime.add, [time_double(st, tformat='YYYY-DOYThh:mm:ss.fff')]
+              etime.add, [time_double(et, tformat='YYYY-DOYThh:mm:ss.fff')]
            ENDIF 
            cnts.add, cnt.toarray()
         ENDIF 

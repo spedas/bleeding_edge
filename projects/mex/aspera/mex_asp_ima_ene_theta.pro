@@ -13,12 +13,12 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-12-03 15:21:42 -0800 (Thu, 03 Dec 2020) $
-; $LastChangedRevision: 29428 $
+; $LastChangedDate: 2023-08-12 05:24:54 -0700 (Sat, 12 Aug 2023) $
+; $LastChangedRevision: 31988 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_ima_ene_theta.pro $
 ;
 ;-
-PRO mex_asp_ima_ene_theta, time, polar, opidx=opidx, energy=energy, theta=theta, enoise=enoise, verbose=verbose, fast=fast
+PRO mex_asp_ima_ene_theta, time, polar, opidx=opidx, energy=energy, theta=theta, enoise=enoise, verbose=verbose, fast=fast, psa=psa
   nan = !values.f_nan
   ldir = root_data_dir() + 'mex/aspera/ima/calib/'
   file_mkdir2, ldir
@@ -36,10 +36,14 @@ PRO mex_asp_ima_ene_theta, time, polar, opidx=opidx, energy=energy, theta=theta,
   w = WHERE(phase EQ '0', nw, complement=v, ncomplement=nv)
   IF nw GT 0 THEN phase[w] = ''
   IF nv GT 0 THEN phase[v] = '-EXT' + phase[v]
-     
-  pdir = 'MEX-M-ASPERA3-2-EDR-IMA-EXT5-V1.0/' 
-  rpath = 'ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
-    
+
+  IF undefined(psa) THEN pflg = 1 ELSE pflg = FIX(psa)
+
+  IF (pflg) THEN BEGIN
+     pdir = 'MEX-M-ASPERA3-2-EDR-IMA-EXT5-V1.0/' 
+     rpath = 'ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
+  ENDIF ELSE rpath = 'https://pds-geosciences.wustl.edu/mex/mex-m-aspera3-2-edr-ima-ext7-v1/mexasp_2107/calib/'
+  
   mtime = ['2003-06-02/17:45', '2007-03-21/18:20', '2007-03-21/19:21', $
            '2007-04-03/21:00', '2007-04-04/03:00', '2007-04-30/19:05', $
            '2009-10-27/15:00', '2009-10-28/15:00', '2009-11-16/11:00'];, '2013-12-16/11:00']
@@ -62,8 +66,9 @@ PRO mex_asp_ima_ene_theta, time, polar, opidx=opidx, energy=energy, theta=theta,
 
   FOR i=0, nphase-1 DO BEGIN
      rfile = 'IMA_ENERGY' + uphase[i] + '.TAB'
+     IF ~(pflg) THEN rfile = rfile.tolower()
      append_array, file, FILE_SEARCH(ldir, rfile, count=nfile)
-     IF nfile EQ 0 THEN file[-1] = spd_download(remote_path=rpath, remote_file=rfile, local_path=ldir, ftp_connection_mode=0) 
+     IF nfile EQ 0 THEN file[-1] = spd_download(remote_path=rpath, remote_file=rfile, local_path=ldir, ftp_connection_mode=1-pflg) 
      undefine, nfile
   ENDFOR 
 
