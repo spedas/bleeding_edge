@@ -63,6 +63,23 @@
 ;              to emphasize the returning photoelectrons and improve 
 ;              the edge detection (added by Yuki Harada).
 ;
+;   QLEVEL:    Minimum quality level for processing.  Filters out the vast
+;              majority of spectra affected by the sporadic low energy
+;              anomaly below 28 eV.  The validity levels are:
+;
+;                0B = Data are affected by the low-energy anomaly.  There
+;                     are significant systematic errors below 28 eV.
+;                1B = Unknown because: (1) the variability is too large to 
+;                     confidently identify anomalous spectra, as in the 
+;                     sheath, or (2) secondary electrons mask the anomaly,
+;                     as in the sheath just downstream of the bow shock.
+;                2B = Data are not affected by the low-energy anomaly.
+;                     Caveat: There is increased noise around 23 eV, even 
+;                     for "good" spectra.
+;
+;              Filtering (QLEVEL > 0) is essential for removing bad s/c
+;              potential estimates.  Default = 1B.
+;
 ;   PANS:      Named varible to hold the tplot panels created.
 ;
 ;   BADVAL:    If the algorithm cannot estimate the potential, then set it
@@ -78,8 +95,8 @@
 ;          keyword, and stored as a TPLOT variable.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-11 08:59:10 -0700 (Wed, 11 Aug 2021) $
-; $LastChangedRevision: 30200 $
+; $LastChangedDate: 2023-08-13 13:53:20 -0700 (Sun, 13 Aug 2023) $
+; $LastChangedRevision: 31992 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_pot.pro $
 ;
 ;-
@@ -87,7 +104,7 @@
 pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
                     ddd=ddd, abins=abins, dbins=dbins, obins=obins2, mask_sc=mask_sc, $
                     badval=badval2, angcorr=angcorr, minflux=minflux2, pans=pans, $
-                    fill=fill, reset=reset
+                    fill=fill, reset=reset, qlevel=qlevel
 
   compile_opt idl2
   
@@ -113,6 +130,7 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
   if (size(dEmax2,/type)   gt 0) then dEmax = float(dEmax2)
   if (size(minflux2,/type) gt 0) then minflux = float(minflux2)
   if (size(badval2,/type)  gt 0) then badval = float(badval2)
+  qlevel = (n_elements(qlevel) gt 0) ? byte(qlevel[0]) : 1B
 
   reset = (keyword_set(reset) or (size(swe_sc_pot,/type) ne 8))
   dofill = keyword_set(fill)
@@ -148,8 +166,24 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
 
   if (dflg) then begin
     ok = 0
-    if (size(mvn_swe_3d,/type) eq 8) then begin
-      t = mvn_swe_3d.time
+    if (size(mvn_swe_3d_arc,/type) eq 8) then begin
+      t = mvn_swe_3d_arc.time  ; center time is pre-calculated
+      npts = n_elements(t)
+      e = fltarr(64,npts)
+      f = e
+      ok = 1
+    endif
+
+    if ((not ok) and size(mvn_swe_3d,/type) eq 8) then begin
+      t = mvn_swe_3d.time  ; center time is pre-calculated
+      npts = n_elements(t)
+      e = fltarr(64,npts)
+      f = e
+      ok = 1
+    endif
+
+    if ((not ok) and size(swe_3d_arc,/type) eq 8) then begin
+      t = swe_3d_arc.time + (1.95D/2D)  ; add half-sweep to get center time
       npts = n_elements(t)
       e = fltarr(64,npts)
       f = e
@@ -157,7 +191,7 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
     endif
 
     if ((not ok) and size(swe_3d,/type) eq 8) then begin
-      t = swe_3d.time
+      t = swe_3d.time + (1.95D/2D)  ; add half-sweep to get center time
       npts = n_elements(t)
       e = fltarr(64,npts)
       f = e
@@ -170,25 +204,35 @@ pro mvn_swe_sc_pot, potential=pot, erange=erange2, thresh=thresh2, dEmax=dEmax2,
     endif
 
     for i=0L,(npts-1L) do begin
-      ddd = mvn_swe_get3d(t[i], units='eflux')
-           
-      if (ddd.time gt t_mtx[2]) then boom = 1 else boom = 0
-      ondx = where(obins[*,boom] eq 1B, ocnt)
-      onorm = float(ocnt)
-      obins_b = replicate(1B, 64) # obins[*,boom]
+      ddd = mvn_swe_get3d(t[i], units='eflux', qlevel=qlevel)
 
-      e[*,i] = ddd.energy[*,0]
-      f[*,i] = total(ddd.data * obins_b, 2, /nan)/onorm
+      if (size(ddd,/type) eq 8) then begin
+        if (ddd.time gt t_mtx[2]) then boom = 1 else boom = 0
+        ondx = where(obins[*,boom] eq 1B, ocnt)
+        onorm = float(ocnt)
+        obins_b = replicate(1B, 64) # obins[*,boom]
+
+        e[*,i] = ddd.energy[*,0]
+        f[*,i] = total(ddd.data * obins_b, 2, /nan)/onorm
+      endif else begin
+        e[*,i] = ddd.energy[*,0]
+        f[*,i] = !values.f_nan
+      endelse
     endfor
         
   endif else begin
     old_units = mvn_swe_engy[0].units_name
     mvn_swe_convert_units, mvn_swe_engy, 'eflux'
-        
+
     t = mvn_swe_engy.time
-    npts = n_elements(t)
-    e = mvn_swe_engy.energy
+    e = mvn_swe_engy[0].energy
     f = mvn_swe_engy.data
+
+    str_element, mvn_swe_engy, 'quality', success=ok
+    if (ok) then begin
+      indx = where(mvn_swe_engy.quality lt qlevel, count)
+      if (count gt 0L) then f[*,indx] = !values.f_nan
+    endif
   endelse
   
 ;  Angular distribution correction based on interpolated 3d data

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug 12 18:16:49 2023.<P>
+<STRONG>Last modified: </STRONG>Sun Aug 13 18:16:43 2023.<P>
  
 <HR>
  
@@ -149,7 +149,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_SWE_MCPCAL">MVN_SWE_MCPCAL</A>
 <br>Analyzes in-flight MCP calibration data to estimate the optimal
 <LI><A HREF="#MVN_SWE_N1D">MVN_SWE_N1D</A>
-<br>Determines density from 1D energy spectra.
+<br>Determines density and temperature moments from 1D energy spectra.
 <LI><A HREF="#MVN_SWE_N3D">MVN_SWE_N3D</A>
 <br>Determines density from a 3D distribution.  Adapted from McFadden's n_3d.pro.
 <LI><A HREF="#MVN_SWE_PAD_LC_RESTORE">MVN_SWE_PAD_LC_RESTORE</A>
@@ -197,6 +197,8 @@ This page was created by the IDL library routine
 <br>Creates a science-oriented summary plot for SWEA and MAG and optionally other
 <LI><A HREF="#MVN_SWE_SECONDARY">MVN_SWE_SECONDARY</A>
 <br>Estimates contamination caused by secondary electrons emitted from interior
+<LI><A HREF="#MVN_SWE_SET_QUALITY">MVN_SWE_SET_QUALITY</A>
+<br>Inspects SPEC, PAD and 3D data (survey and burst) in the common block.
 <LI><A HREF="#MVN_SWE_SHAPE_DAILYSAVE">MVN_SWE_SHAPE_DAILYSAVE</A>
 <LI><A HREF="#MVN_SWE_SHAPE_PAR">MVN_SWE_SHAPE_PAR</A>
 <br>Calculates SWEA energy shape parameter and stores it as a TPLOT variable.
@@ -3802,45 +3804,59 @@ FILE: mvn_swe_mcpcal.pro
 PROCEDURE: 
 	mvn_swe_n1d
 PURPOSE:
-	Determines density from 1D energy spectra.
+	Determines density and temperature moments from 1D energy spectra.
 AUTHOR: 
 	David L. Mitchell
 CALLING SEQUENCE: 
 	mvn_swe_n1d
 INPUTS: 
 KEYWORDS:
-   PANS:     Named variable to return tplot panels created.
+   PANS:      Named variable to return tplot panels created.
 
-   DDD:      Calculate density from 3D distributions (allows bin
-             masking).  Typically lower cadence and coarser energy
-             resolution.
+   DDD:       Calculate density from 3D distributions (allows bin
+              masking).  Typically lower cadence and coarser energy
+              resolution.
 
-   ABINS:    Anode bin mask -&gt; 16 elements (0 = off, 1 = on)
-             Default = replicate(1,16)
+   ABINS:     Anode bin mask -&gt; 16 elements (0 = off, 1 = on)
+              Default = replicate(1,16)
 
-   DBINS:    Deflector bin mask -&gt; 6 elements (0 = off, 1 = on)
-             Default = replicate(1,6)
+   DBINS:     Deflector bin mask -&gt; 6 elements (0 = off, 1 = on)
+              Default = replicate(1,6)
 
-   OBINS:    3D solid angle bin mask -&gt; 96 elements (0 = off, 1 = on)
-             Default = reform(ABINS # DBINS)
+   OBINS:     3D solid angle bin mask -&gt; 96 elements (0 = off, 1 = on)
+              Default = reform(ABINS # DBINS)
 
-   MASK_SC:  Mask the spacecraft blockage.  This is in addition to any
-             masking defined by the ABINS, DBINS, and OBINS.
-             Default = 1 (yes).  Set this to 0 to disable and use the
-             above 3 keywords only.
+   MASK_SC:   Mask the spacecraft blockage.  This is in addition to any
+              masking defined by the ABINS, DBINS, and OBINS.
+              Default = 1 (yes).  Set this to 0 to disable and use the
+              above 3 keywords only.
 
-   MINDEN:   Smallest reliable density (cm-3).  Default = 0.08
+   MINDEN:    Smallest reliable density (cm-3).  Default = 0.08
 
-   ERANGE:   Restrict calculation to this energy range.
+   ERANGE:    Restrict calculation to this energy range.
 
-   SEC:      Estimate and remove secondary electrons.
-             See mvn_swe_secondary for details.
+   SECONDARY: Estimate and remove secondary electrons before calculating
+              moments.  See mvn_swe_secondary for details.
+
+   QLEVEL:    Minimum quality level for calculating moments.  Filters out
+              the vast majority of spectra affected by the sporadic low energy
+              anomaly below 28 eV.  The validity levels are:
+
+                0B = Data are affected by the low-energy anomaly.  There
+                     are significant systematic errors below 28 eV.
+                1B = Unknown because: (1) the variability is too large to 
+                     confidently identify anomalous spectra, as in the 
+                     sheath, or (2) secondary electrons mask the anomaly,
+                     as in the sheath just downstream of the bow shock.
+                2B = Data are not affected by the low-energy anomaly.
+                     Caveat: There is increased noise around 23 eV, even 
+                     for &quot;good&quot; spectra.
 
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2022-05-05 13:01:03 -0700 (Thu, 05 May 2022) $
- $LastChangedRevision: 30802 $
+ $LastChangedDate: 2023-08-13 13:52:01 -0700 (Sun, 13 Aug 2023) $
+ $LastChangedRevision: 31990 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n1d.pro $
 
 </PRE><P>
@@ -4825,13 +4841,27 @@ KEYWORDS:
    RESET:     Initialize the spacecraft potential, discarding all previous 
               estimates, and start fresh.
 
+   QLEVEL:    Minimum quality level for processing.  Filters out the vast
+              majority of spectra affected by the sporadic low energy
+              anomaly below 28 eV.  The validity levels are:
+
+                0B = Data are affected by the low-energy anomaly.  There
+                     are significant systematic errors below 28 eV.
+                1B = Unknown because: (1) the variability is too large to 
+                     confidently identify anomalous spectra, as in the 
+                     sheath, or (2) secondary electrons mask the anomaly,
+                     as in the sheath just downstream of the bow shock.
+                2B = Data are not affected by the low-energy anomaly.
+                     Caveat: There is increased noise around 23 eV, even 
+                     for &quot;good&quot; spectra.
+
 OUTPUTS:
    None - Result is stored in the common block variables swe_sc_pot and 
           mvn_swe_engy, and as the TPLOT variable 'neg_pot'.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-10-02 16:46:41 -0700 (Mon, 02 Oct 2017) $
- $LastChangedRevision: 24089 $
+ $LastChangedDate: 2023-08-13 13:53:20 -0700 (Sun, 13 Aug 2023) $
+ $LastChangedRevision: 31992 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_negpot.pro $
 
 </PRE><P>
@@ -4995,6 +5025,23 @@ KEYWORDS:
               to emphasize the returning photoelectrons and improve 
               the edge detection (added by Yuki Harada).
 
+   QLEVEL:    Minimum quality level for processing.  Filters out the vast
+              majority of spectra affected by the sporadic low energy
+              anomaly below 28 eV.  The validity levels are:
+
+                0B = Data are affected by the low-energy anomaly.  There
+                     are significant systematic errors below 28 eV.
+                1B = Unknown because: (1) the variability is too large to 
+                     confidently identify anomalous spectra, as in the 
+                     sheath, or (2) secondary electrons mask the anomaly,
+                     as in the sheath just downstream of the bow shock.
+                2B = Data are not affected by the low-energy anomaly.
+                     Caveat: There is increased noise around 23 eV, even 
+                     for &quot;good&quot; spectra.
+
+              Filtering (QLEVEL &gt; 0) is essential for removing bad s/c
+              potential estimates.  Default = 1B.
+
    PANS:      Named varible to hold the tplot panels created.
 
    BADVAL:    If the algorithm cannot estimate the potential, then set it
@@ -5010,8 +5057,8 @@ OUTPUTS:
           keyword, and stored as a TPLOT variable.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-08-11 08:59:10 -0700 (Wed, 11 Aug 2021) $
- $LastChangedRevision: 30200 $
+ $LastChangedDate: 2023-08-13 13:53:20 -0700 (Sun, 13 Aug 2023) $
+ $LastChangedRevision: 31992 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_pot.pro $
 
 </PRE><P>
@@ -5021,7 +5068,7 @@ OUTPUTS:
 <A NAME="MVN_SWE_SECONDARY">
 <H2>MVN_SWE_SECONDARY</H2></A>
 <A HREF="#MVN_SWE_SC_POT">[Previous Routine]</A>
-<A HREF="#MVN_SWE_SHAPE_DAILYSAVE">[Next Routine]</A>
+<A HREF="#MVN_SWE_SET_QUALITY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_swe_secondary
@@ -5108,9 +5155,47 @@ FILE:  mvn_swe_secondary.pro
 <STRONG>(See <A href="swea/mvn_swe_secondary.pro">projects/maven/swea/mvn_swe_secondary.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_SET_QUALITY">
+<H2>MVN_SWE_SET_QUALITY</H2></A>
+<A HREF="#MVN_SWE_SECONDARY">[Previous Routine]</A>
+<A HREF="#MVN_SWE_SHAPE_DAILYSAVE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_set_quality
+PURPOSE:
+  Inspects SPEC, PAD and 3D data (survey and burst) in the common block.
+  Determines the time range spanned by the data, then reads in pre-determined
+  quality flags from IDL save/restore files.  Fills in QUALITY information
+  in the data structures.
+
+USAGE:
+  mvn_swe_set_quality
+
+INPUTS:
+       None:          All information is obtained from the common block.
+
+KEYWORDS:
+       MISSING:       Returns a 5-element array with the number of quality
+                      flags that were NOT found in the database for each of
+                      data type: 3D_SVY, 3D_ARC, PAD_SVY, PAD_ARC, SPEC.  If
+                      everything works perfectly, then MISSING = [0,0,0,0,0].
+
+       DOPLOT:        If set, makes an energy spectrogram (SPEC) tplot panel
+                      with an 'x' marking anomalous spectra (quality = 0).
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-13 13:54:03 -0700 (Sun, 13 Aug 2023) $
+ $LastChangedRevision: 31993 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_set_quality.pro $
+
+CREATED BY:  David Mitchell - August 2023
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_set_quality.pro">projects/maven/swea/mvn_swe_set_quality.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_SHAPE_DAILYSAVE">
 <H2>MVN_SWE_SHAPE_DAILYSAVE</H2></A>
-<A HREF="#MVN_SWE_SECONDARY">[Previous Routine]</A>
+<A HREF="#MVN_SWE_SET_QUALITY">[Previous Routine]</A>
 <A HREF="#MVN_SWE_SHAPE_PAR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -7180,13 +7265,15 @@ KEYWORDS:
 
        DIAG:     Returns structure of diagnostic information.
 
+       TPLOT:    Make tplot panels of diagnostics.
+
        SETFLAG:  Set the quality flag in the SPEC, PAD, and 3D data structures.
 
        QUIET:    Shhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-07-04 13:39:04 -0700 (Tue, 04 Jul 2023) $
- $LastChangedRevision: 31933 $
+ $LastChangedDate: 2023-08-13 13:52:51 -0700 (Sun, 13 Aug 2023) $
+ $LastChangedRevision: 31991 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_lowe_cluster.pro $
 
 CREATED BY:    David L. Mitchell

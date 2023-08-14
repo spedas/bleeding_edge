@@ -2,50 +2,64 @@
 ;PROCEDURE: 
 ;	mvn_swe_n1d
 ;PURPOSE:
-;	Determines density from 1D energy spectra.
+;	Determines density and temperature moments from 1D energy spectra.
 ;AUTHOR: 
 ;	David L. Mitchell
 ;CALLING SEQUENCE: 
 ;	mvn_swe_n1d
 ;INPUTS: 
 ;KEYWORDS:
-;   PANS:     Named variable to return tplot panels created.
+;   PANS:      Named variable to return tplot panels created.
 ;
-;   DDD:      Calculate density from 3D distributions (allows bin
-;             masking).  Typically lower cadence and coarser energy
-;             resolution.
+;   DDD:       Calculate density from 3D distributions (allows bin
+;              masking).  Typically lower cadence and coarser energy
+;              resolution.
 ;
-;   ABINS:    Anode bin mask -> 16 elements (0 = off, 1 = on)
-;             Default = replicate(1,16)
+;   ABINS:     Anode bin mask -> 16 elements (0 = off, 1 = on)
+;              Default = replicate(1,16)
 ;
-;   DBINS:    Deflector bin mask -> 6 elements (0 = off, 1 = on)
-;             Default = replicate(1,6)
+;   DBINS:     Deflector bin mask -> 6 elements (0 = off, 1 = on)
+;              Default = replicate(1,6)
 ;
-;   OBINS:    3D solid angle bin mask -> 96 elements (0 = off, 1 = on)
-;             Default = reform(ABINS # DBINS)
+;   OBINS:     3D solid angle bin mask -> 96 elements (0 = off, 1 = on)
+;              Default = reform(ABINS # DBINS)
 ;
-;   MASK_SC:  Mask the spacecraft blockage.  This is in addition to any
-;             masking defined by the ABINS, DBINS, and OBINS.
-;             Default = 1 (yes).  Set this to 0 to disable and use the
-;             above 3 keywords only.
+;   MASK_SC:   Mask the spacecraft blockage.  This is in addition to any
+;              masking defined by the ABINS, DBINS, and OBINS.
+;              Default = 1 (yes).  Set this to 0 to disable and use the
+;              above 3 keywords only.
 ;
-;   MINDEN:   Smallest reliable density (cm-3).  Default = 0.08
+;   MINDEN:    Smallest reliable density (cm-3).  Default = 0.08
 ;
-;   ERANGE:   Restrict calculation to this energy range.
+;   ERANGE:    Restrict calculation to this energy range.
 ;
-;   SEC:      Estimate and remove secondary electrons.
-;             See mvn_swe_secondary for details.
+;   SECONDARY: Estimate and remove secondary electrons before calculating
+;              moments.  See mvn_swe_secondary for details.
+;
+;   QLEVEL:    Minimum quality level for calculating moments.  Filters out
+;              the vast majority of spectra affected by the sporadic low energy
+;              anomaly below 28 eV.  The validity levels are:
+;
+;                0B = Data are affected by the low-energy anomaly.  There
+;                     are significant systematic errors below 28 eV.
+;                1B = Unknown because: (1) the variability is too large to 
+;                     confidently identify anomalous spectra, as in the 
+;                     sheath, or (2) secondary electrons mask the anomaly,
+;                     as in the sheath just downstream of the bow shock.
+;                2B = Data are not affected by the low-energy anomaly.
+;                     Caveat: There is increased noise around 23 eV, even 
+;                     for "good" spectra.
 ;
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-05 13:01:03 -0700 (Thu, 05 May 2022) $
-; $LastChangedRevision: 30802 $
+; $LastChangedDate: 2023-08-13 13:52:01 -0700 (Sun, 13 Aug 2023) $
+; $LastChangedRevision: 31990 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n1d.pro $
 ;
 ;-
 pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask_sc=mask_sc, $
-                 mom=mom, minden=minden, erange=erange, sec=sec
+                 mom=mom, minden=minden, erange=erange, secondary=sec, qlevel=qlevel
 
   compile_opt idl2
 
@@ -60,6 +74,7 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
   if (size(mom,/type) eq 0) then mom = 1
   if (size(minden,/type) eq 0) then minden = 0.08  ; minimum density
   dosec = keyword_set(sec)
+  qlevel = (n_elements(qlevel) gt 0) ? byte(qlevel[0]) < 2B : 0B
 
 ; Get energy spectra from SPEC or 3D distributions
 
@@ -259,6 +274,21 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
     dsig[indx] = !values.f_nan
     tsig[indx] = !values.f_nan
   endif
+
+; New version of low-energy masking
+
+  str_element, mvn_swe_engy, 'quality', success=ok
+  if (ok) then begin
+    indx = where(mvn_swe_engy.quality lt qlevel, count)
+    if (count gt 0L) then begin
+      dens[indx] = !values.f_nan
+      temp[indx] = !values.f_nan
+      dsig[indx] = !values.f_nan
+      tsig[indx] = !values.f_nan
+    endif
+  endif else print,"Quality level not defined."
+
+; Old version of low-energy masking (to be replaced)
 
   lowe_test = {x:t, y:replicate(1.,npts)}
   mvn_swe_lowe_mask, lowe_test

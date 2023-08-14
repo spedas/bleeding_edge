@@ -65,13 +65,15 @@
 ;
 ;       DIAG:     Returns structure of diagnostic information.
 ;
+;       TPLOT:    Make tplot panels of diagnostics.
+;
 ;       SETFLAG:  Set the quality flag in the SPEC, PAD, and 3D data structures.
 ;
 ;       QUIET:    Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-07-04 13:39:04 -0700 (Tue, 04 Jul 2023) $
-; $LastChangedRevision: 31933 $
+; $LastChangedDate: 2023-08-13 13:52:51 -0700 (Sun, 13 Aug 2023) $
+; $LastChangedRevision: 31991 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_lowe_cluster.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -80,7 +82,7 @@ pro swe_lowe_cluster, width=width, npts=npts, lambda=lambda, frac=frac, diag=dia
                       outlier=outlier, minpts=minpts, tstop=tstop, buffer=buffer, $
                       mindelta=mindelta, maxratio=maxratio, maxbad=maxbad, flag=flag, $
                       mobetah=mobetah, trange=trange, quality=quality, setflag=setflag, $
-                      minsup=minsup, quiet=quiet
+                      tplot=doplot, minsup=minsup, quiet=quiet
 
   @mvn_swe_com
 
@@ -110,9 +112,9 @@ pro swe_lowe_cluster, width=width, npts=npts, lambda=lambda, frac=frac, diag=dia
 
 ; Spline-smooth parameters
 
-  npts = (n_elements(npts) eq 0) ? 16 : fix(npts[0])                 ; number of points for each spline
+  npts = (n_elements(npts) eq 0) ? 8 : fix(npts[0])                  ; number of points for each spline
   lambda = (n_elements(lambda) eq 0) ? 1D : double(lambda[0])        ; tension on the spline (0 = cubic)
-  frac =  (n_elements(frac) eq 0) ? 0. : float(frac[0]) < 1.         ; fraction of lowest points to ignore
+  frac =  (n_elements(frac) eq 0) ? 0.30 : float(frac[0]) < 1.       ; fraction of lowest points to ignore
 
 ; Make sure data are loaded
 
@@ -393,83 +395,90 @@ pro swe_lowe_cluster, width=width, npts=npts, lambda=lambda, frac=frac, diag=dia
     if (count gt 0L) then flag[indx] = 1B  ; too close to shadow boundary, so unable to determine quality
   endfor
 
-  quality = {time:ut, flag:flag}
-
-  dt = systime(/utc,/sec) - tstart
+  tend = systime(/utc,/sec)
+  dt = tend - tstart
   print,"Elapsed time (hh:mm:ss): ",strmid(time_string(dt),11)
+
+; Package the result: one quality flag for each SPEC, with parameters used to control processing
+
+  quality = {time:ut, flag:flag, width:width, npts:npts, lambda:lambda, frac:frac, buffer:buff, $
+             minpts:minpts, mindelta:mindelta, maxratio:maxratio, minsup:minsup, maxbad:maxbad, $
+             mobetah:mobetah, date_processed:tend}
 
 ; Make tplot variables for the diagnostics
 
-  tt = average(diag.trange,1)
-  store_data,'cluster_sep',data={x:tt, y:transpose(diag.delta[2:3]), v:[0,1]}
-  options,'cluster_sep','ytitle','Cluster Sep'
-  options,'cluster_sep','constant',[0.5,mindelta]
-  options,'cluster_sep','colors',[4,6]
-  options,'cluster_sep','labels',['< 6 eV','6-12 eV']
-  options,'cluster_sep','labflag',1
-  options,'cluster_sep','datagap',30D
-  ylim,'cluster_sep',mindelta,30,1
+  if keyword_set(doplot) then begin
+    tt = average(diag.trange,1)
+    store_data,'cluster_sep',data={x:tt, y:transpose(diag.delta[2:3]), v:[0,1]}
+    options,'cluster_sep','ytitle','Cluster Sep'
+    options,'cluster_sep','constant',[0.5,mindelta]
+    options,'cluster_sep','colors',[4,6]
+    options,'cluster_sep','labels',['< 6 eV','6-12 eV']
+    options,'cluster_sep','labflag',1
+    options,'cluster_sep','datagap',30D
+    ylim,'cluster_sep',mindelta,30,1
 
-  store_data,'variance_ratio',data={x:tt, y:transpose(diag.vratio[2:3]), v:[0,1]}
-  options,'variance_ratio','ytitle','Variance Ratio'
-  options,'variance_ratio','constant',[maxratio]
-  options,'variance_ratio','colors',[4,6]
-  options,'variance_ratio','labels',['< 6 eV','6-12 eV']
-  options,'variance_ratio','labflag',1
-  options,'variance_ratio','datagap',30D
-  ylim,'variance_ratio',0,maxratio,0
+    store_data,'variance_ratio',data={x:tt, y:transpose(diag.vratio[2:3]), v:[0,1]}
+    options,'variance_ratio','ytitle','Variance Ratio'
+    options,'variance_ratio','constant',[maxratio]
+    options,'variance_ratio','colors',[4,6]
+    options,'variance_ratio','labels',['< 6 eV','6-12 eV']
+    options,'variance_ratio','labflag',1
+    options,'variance_ratio','datagap',30D
+    ylim,'variance_ratio',0,maxratio,0
 
-  store_data,'density_ratio',data={x:tt, y:transpose(diag.avg0[2:3]/diag.avg1[2:3]), v:[0,1]}
-  options,'density_ratio','ytitle','Density Ratio'
-  options,'density_ratio','constant',[0.1,minsup]
-  options,'density_ratio','colors',[4,6]
-  options,'density_ratio','labels',['< 6 eV','6-12 eV']
-  options,'density_ratio','labflag',1
-  options,'density_ratio','datagap',30D
-  ylim,'density_ratio',0.03,1,1
+    store_data,'density_ratio',data={x:tt, y:transpose(diag.avg0[2:3]/diag.avg1[2:3]), v:[0,1]}
+    options,'density_ratio','ytitle','Density Ratio'
+    options,'density_ratio','constant',[0.1,minsup]
+    options,'density_ratio','colors',[4,6]
+    options,'density_ratio','labels',['< 6 eV','6-12 eV']
+    options,'density_ratio','labflag',1
+    options,'density_ratio','datagap',30D
+    ylim,'density_ratio',0.03,1,1
 
-  if (0) then begin
-    store_data,'outlier_sep',data={x:tt, y:transpose(diag.delta[0:1]), v:[0,1]}
-    options,'outlier_sep','ytitle','Outlier Sep'
-    options,'outlier_sep','constant',[3]
-    options,'outlier_sep','colors',[4,6]
-    options,'outlier_sep','labels',['< 6 eV','6-12 eV']
-    options,'outlier_sep','labflag',1
-    options,'outlier_sep','datagap',30D
-    ylim,'outlier_sep',1,30,1
-  endif
+    if (0) then begin
+      store_data,'outlier_sep',data={x:tt, y:transpose(diag.delta[0:1]), v:[0,1]}
+      options,'outlier_sep','ytitle','Outlier Sep'
+      options,'outlier_sep','constant',[3]
+      options,'outlier_sep','colors',[4,6]
+      options,'outlier_sep','labels',['< 6 eV','6-12 eV']
+      options,'outlier_sep','labflag',1
+      options,'outlier_sep','datagap',30D
+      ylim,'outlier_sep',1,30,1
+    endif
 
 ; Update the pseudo-density and energy spectrum panels to show the anomalous points.
 
-  i = where(flag eq 0B, count)
+    i = where(flag eq 0B, count)
 
-  vname = 'N_hi'
-  get_data,vname,data=nhi
-  vname += '_bad'
-  if (count gt 0L) then store_data,vname,data={x:nhi.x[i], y:nhi.y[i], dy:nhi.dy[i]} $
-                   else store_data,vname,data={x:minmax(nhi.x), y:[0.001,0.001]}
-  options,vname,'psym',3
-  store_data,'N_hi_cmp',data=['N_hi','N_hi_topsmooth','N_hi_bad']
-  options,'N_hi_cmp','colors',[!p.color,6,1]
+    vname = 'N_hi'
+    get_data,vname,data=nhi
+    vname += '_bad'
+    if (count gt 0L) then store_data,vname,data={x:nhi.x[i], y:nhi.y[i], dy:nhi.dy[i]} $
+                     else store_data,vname,data={x:minmax(nhi.x), y:[0.001,0.001]}
+    options,vname,'psym',3
+    store_data,'N_hi_cmp',data=['N_hi','N_hi_topsmooth','N_hi_bad']
+    options,'N_hi_cmp','colors',[!p.color,6,1]
 
-  vname = 'N_lo'
-  get_data,vname,data=nlo
-  vname += '_bad'
-  indx = where(flag eq 0B, count)
-  if (count gt 0L) then store_data,vname,data={x:nlo.x[i], y:nlo.y[i], dy:nlo.dy[i]} $
-                   else store_data,vname,data={x:minmax(nlo.x), y:[0.001,0.001]}
-  options,vname,'psym',3
-  store_data,'N_lo_cmp',data=['N_lo','N_lo_topsmooth','N_lo_bad']
-  options,'N_lo_cmp','colors',[!p.color,4,1]
+    vname = 'N_lo'
+    get_data,vname,data=nlo
+    vname += '_bad'
+    indx = where(flag eq 0B, count)
+    if (count gt 0L) then store_data,vname,data={x:nlo.x[i], y:nlo.y[i], dy:nlo.dy[i]} $
+                     else store_data,vname,data={x:minmax(nlo.x), y:[0.001,0.001]}
+    options,vname,'psym',3
+    store_data,'N_lo_cmp',data=['N_lo','N_lo_topsmooth','N_lo_bad']
+    options,'N_lo_cmp','colors',[!p.color,4,1]
 
-  y = replicate(!values.f_nan, nspec)
-  if (count gt 0L) then y[i] = 4.4
-  store_data,'flag',data={x:ut, y:y}
-  options,'flag','psym',7
-  options,'flag','colors',0
-  options,'flag','symsize',0.6
-  store_data,'swe_a4_mask',data=['swe_a4','flag']
-  ylim,'swe_a4_mask',3,4627.5,1
+    y = replicate(!values.f_nan, nspec)
+    if (count gt 0L) then y[i] = 4.4
+    store_data,'flag',data={x:ut, y:y}
+    options,'flag','psym',7
+    options,'flag','colors',0
+    options,'flag','symsize',0.6
+    store_data,'swe_a4_mask',data=['swe_a4','flag']
+    ylim,'swe_a4_mask',3,4627.5,1
+  endif
 
 ; Set the quality flag in the SPEC, PAD, and 3D data structures
 

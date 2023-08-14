@@ -30,18 +30,32 @@
 ;   RESET:     Initialize the spacecraft potential, discarding all previous 
 ;              estimates, and start fresh.
 ;
+;   QLEVEL:    Minimum quality level for processing.  Filters out the vast
+;              majority of spectra affected by the sporadic low energy
+;              anomaly below 28 eV.  The validity levels are:
+;
+;                0B = Data are affected by the low-energy anomaly.  There
+;                     are significant systematic errors below 28 eV.
+;                1B = Unknown because: (1) the variability is too large to 
+;                     confidently identify anomalous spectra, as in the 
+;                     sheath, or (2) secondary electrons mask the anomaly,
+;                     as in the sheath just downstream of the bow shock.
+;                2B = Data are not affected by the low-energy anomaly.
+;                     Caveat: There is increased noise around 23 eV, even 
+;                     for "good" spectra.
+;
 ;OUTPUTS:
 ;   None - Result is stored in the common block variables swe_sc_pot and 
 ;          mvn_swe_engy, and as the TPLOT variable 'neg_pot'.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-10-02 16:46:41 -0700 (Mon, 02 Oct 2017) $
-; $LastChangedRevision: 24089 $
+; $LastChangedDate: 2023-08-13 13:53:20 -0700 (Sun, 13 Aug 2023) $
+; $LastChangedRevision: 31992 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_negpot.pro $
 ;
 ;-
 
-pro mvn_swe_sc_negpot, potential=pot, fill=fill, reset=reset
+pro mvn_swe_sc_negpot, potential=pot, fill=fill, reset=reset, qlevel=qlevel
 
     compile_opt idl2
     
@@ -67,6 +81,7 @@ pro mvn_swe_sc_negpot, potential=pot, fill=fill, reset=reset
     pot.method = -1
 
     badphi = !values.f_nan  ; bad value guaranteed to be a NaN
+    qlevel = (n_elements(qlevel) gt 0) ? byte(qlevel[0]) < 2B : 1B
 
 ; Get the shape parameter from tplot.  Calculate it if necessary.
 
@@ -179,6 +194,17 @@ pro mvn_swe_sc_negpot, potential=pot, fill=fill, reset=reset
             ;stop
         endif
     endfor
+
+; Filter based on QUALITY flag
+
+    str_element, mvn_swe_engy, 'quality', success=ok
+    if (ok) then begin
+      indx = where(mvn_swe_engy.quality lt qlevel, count)
+      if (count gt 0L) then begin
+        pot1[indx] = !values.f_nan
+        heii_pot1[indx] = !values.f_nan
+      endif
+    endif
 
 ; Make tplot variables
 

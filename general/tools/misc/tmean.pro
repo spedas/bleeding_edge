@@ -107,8 +107,8 @@
 ;       SILENT:  Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-06-23 12:31:08 -0700 (Fri, 23 Jun 2023) $
-; $LastChangedRevision: 31906 $
+; $LastChangedDate: 2023-08-13 15:42:47 -0700 (Sun, 13 Aug 2023) $
+; $LastChangedRevision: 31994 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/tmean.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -118,6 +118,25 @@ pro tmean, var, trange=trange, offset=offset, outlier=outlier, result=result, hi
                 t0=t0, t1=t1, maxdz=maxdz, diag=diag, keep=keep, ind=dndx, avg=doavg, zero=zero
 
   @swe_snap_common
+
+; Determine if routine is being used without a window server
+
+  xwin = strupcase(!d.name) eq 'X'
+  if (~xwin) then begin
+    ok = 1
+    if (size(var,/type) eq 0) then begin
+      print,"% tmean: VAR is required without a window server"
+      ok = 0
+    endif
+    if (n_elements(trange) lt 1) then begin
+      print,"% tmean: TRANGE is required without a window server"
+      ok = 0
+    endif
+    if (not ok) then return
+    hist = 0  ; disable histogram and variance plots
+  endif
+
+; Process keywords
 
   oflg = keyword_set(outlier)
   blab = ~keyword_set(silent)
@@ -199,13 +218,15 @@ pro tmean, var, trange=trange, offset=offset, outlier=outlier, result=result, hi
 
 ; Create plot window(s)
 
-  twin = !d.window
-  if (hist) then begin
-    win, /free, /secondary, xsize=800, ysize=600, dx=10
-    hwin = !d.window
-    if (core) then begin
-      win, /free, relative=hwin, xsize=800, ysize=600, dx=10
-      vwin = !d.window
+  if (xwin) then begin
+    twin = !d.window
+    if (hist) then begin
+      win, /free, /secondary, xsize=800, ysize=600, dx=10
+      hwin = !d.window
+      if (core) then begin
+        win, /free, relative=hwin, xsize=800, ysize=600, dx=10
+        vwin = !d.window
+      endif
     endif
   endif
 
@@ -236,7 +257,7 @@ pro tmean, var, trange=trange, offset=offset, outlier=outlier, result=result, hi
         wdelete, hwin
         if (core) then wdelete, vwin
       endif
-      wset, twin
+      if (xwin) then wset, twin
       return
     endif
 
@@ -257,7 +278,7 @@ pro tmean, var, trange=trange, offset=offset, outlier=outlier, result=result, hi
         wdelete, hwin
         if (core) then wdelete, vwin
       endif
-      wset, twin
+      if (xwin) then wset, twin
       return
     endif
     if (ntot gt 0L) then begin
@@ -547,7 +568,7 @@ pro tmean, var, trange=trange, offset=offset, outlier=outlier, result=result, hi
         oplot,x,s*f,color=fcol,thick=2
       endelse
 
-      wset, twin    
+      wset, twin
     endif
 
 ; Get the next time range
@@ -567,6 +588,6 @@ pro tmean, var, trange=trange, offset=offset, outlier=outlier, result=result, hi
     wdelete, hwin
     if (core) then wdelete, vwin
   endif
-  wset, twin
+  if (xwin) then wset, twin
 
 end
