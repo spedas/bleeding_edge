@@ -1,12 +1,13 @@
 ;+
 ; MMS ASPOC crib sheet
 ; 
-; do you have suggestions for this crib sheet?  
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-05-25 13:35:14 -0700 (Wed, 25 May 2016) $
-; $LastChangedRevision: 21199 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_aspoc_crib.pro $
 ;-
 

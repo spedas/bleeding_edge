@@ -11,12 +11,13 @@
 ;       6) H+, O+, He+, He++ flux averaged over full FoV
 ;       
 ;       
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-18 09:23:47 -0800 (Mon, 18 Dec 2017) $
-; $LastChangedRevision: 24427 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_hpca_burst_crib.pro $
 ;-
 

@@ -23,9 +23,12 @@
 ;    -ECI
 ;    -J2000 (identical to ECI)
 ;    
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-02-12 09:22:39 -0800 (Tue, 12 Feb 2019) $
-;$LastChangedRevision: 26608 $
+;$LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31998 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_qcotrans_crib.pro $
 ;-
 

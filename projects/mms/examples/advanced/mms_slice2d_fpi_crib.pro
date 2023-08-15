@@ -25,9 +25,12 @@
 ;   that no more than a few minutes of data is loaded at a time for ions
 ;   and less for electrons.
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2023-03-28 12:56:18 -0700 (Tue, 28 Mar 2023) $
-;$LastChangedRevision: 31678 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_fpi_crib.pro $
 ;-
 

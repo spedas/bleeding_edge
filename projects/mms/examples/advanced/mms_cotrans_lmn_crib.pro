@@ -6,10 +6,13 @@
 ;         Shows how to tranforms MMS vector fields to LMN (boundary-normal) coordinates
 ;         using the Shue et al., 1998 magnetopause model
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-04-13 13:14:42 -0700 (Tue, 13 Apr 2021) $
-;$LastChangedRevision: 29875 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_cotrans_lmn_crib.pro $
 ;-
 

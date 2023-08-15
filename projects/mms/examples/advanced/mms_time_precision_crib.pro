@@ -9,10 +9,13 @@
 ; nanosecond level precision using LONG64s or Big Integers
 ; 
 ; 
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-04-29 15:12:32 -0700 (Mon, 29 Apr 2019) $
-; $LastChangedRevision: 27140 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_time_precision_crib.pro $
 ;-
 

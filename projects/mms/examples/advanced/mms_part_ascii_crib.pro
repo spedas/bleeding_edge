@@ -4,9 +4,13 @@
 ;   This crib sheet shows how to save the full MMS 3D velocity distribution data to ASCII files
 ;
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-04-10 14:54:35 -0700 (Wed, 10 Apr 2019) $
-;$LastChangedRevision: 26997 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_ascii_crib.pro $
 ;-
 

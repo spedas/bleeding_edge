@@ -1,8 +1,9 @@
 ;+
 ; MMS SCM crib sheet
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ;
 ; Note:
 ; 1) Due to calibration processing L2 SCM data are set to 0 at the edges of each continuous period of waveform
@@ -10,8 +11,8 @@
 ; 3) For more information about SCM data, please contact olivier.lecontel@lpp.polytechnique.fr
 ;  
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-05-27 17:11:06 -0700 (Wed, 27 May 2020) $
-; $LastChangedRevision: 28743 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_scm_crib.pro $
 ;-
 

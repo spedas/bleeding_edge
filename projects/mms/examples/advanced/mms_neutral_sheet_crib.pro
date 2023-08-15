@@ -6,9 +6,12 @@
 ;     Example of how to load MMS position data and retrieve the 
 ;     distance from the S/C to the neutral sheet
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-11-07 12:34:30 -0800 (Mon, 07 Nov 2016) $
-;$LastChangedRevision: 22333 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_neutral_sheet_crib.pro $
 ;-
 

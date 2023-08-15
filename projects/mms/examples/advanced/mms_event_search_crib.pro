@@ -3,13 +3,14 @@
 ; This crib sheet shows how to search for events in the MMS burst-mode events database 
 ; 
 ;
-;     WARNING - EXPERIMENTAL; please report bugs to egrimes@igpp.ucla.edu
+;     WARNING - EXPERIMENTAL; please report bugs to https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ;     Initial call will take more time than subsequent calls, due to the need to download the event index
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-11-24 13:13:35 -0800 (Tue, 24 Nov 2020) $
-; $LastChangedRevision: 29388 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_event_search_crib.pro $
 ;-
 

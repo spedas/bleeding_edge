@@ -1,12 +1,13 @@
 ;+
 ; MMS CDF version #s crib sheet
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-01-15 11:43:47 -0800 (Tue, 15 Jan 2019) $
-; $LastChangedRevision: 26465 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_version_numbers_crib.pro $
 ;-
 

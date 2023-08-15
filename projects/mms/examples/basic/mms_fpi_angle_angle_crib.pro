@@ -3,9 +3,13 @@
 ;  This crib sheet shows how to create FPI angle-angle plots from the distribution functions
 ;
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2017-05-12 08:01:43 -0700 (Fri, 12 May 2017) $
-;$LastChangedRevision: 23307 $
+;$LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31998 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_fpi_angle_angle_crib.pro $
 ;-
 

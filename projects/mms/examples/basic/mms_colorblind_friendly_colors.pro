@@ -6,6 +6,8 @@
 ; Note from Naritoshi Kitamura:
 ;    "At least Science and journals of Nature portfolio require the use of colorblind-friendly color schemes for figures."
 ; 
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ;
 ; $LastChangedBy: $
 ; $LastChangedDate: $

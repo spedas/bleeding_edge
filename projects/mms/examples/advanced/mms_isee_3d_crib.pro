@@ -13,6 +13,9 @@
 ;     Updated by Kunihiro Keika, ISEE, Nagoya Univ., May 20, 2016. 
 ;     Preparedy by Kunihiro Keika, ISEE, Nagoya Univ., Mar. 2016. 
 ; 
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ; 
 
 ; - - - TIME SETTING - - - 

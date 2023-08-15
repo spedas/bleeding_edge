@@ -2,10 +2,13 @@
 ;
 ;  This crib sheet shows how to create HPCA angle-angle and angle-energy plots from the distribution functions
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-27 10:18:14 -0700 (Tue, 27 Aug 2019) $
-;$LastChangedRevision: 27666 $
+;$LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31998 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_hpca_angle_angle_crib.pro $
 ;-
 

@@ -6,9 +6,14 @@
 ;
 ; Note: results not yet validated as of 1/8/2018
 ;
+;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-01-08 16:29:26 -0800 (Mon, 08 Jan 2018) $
-;$LastChangedRevision: 24490 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_plot3d_fpi_crib.pro $
 ;-
 

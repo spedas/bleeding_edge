@@ -6,10 +6,13 @@
 ;         Crib sheet showing how to load and plot L3 FSM (FGM+SCM) data
 ;
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-05-27 17:26:03 -0700 (Wed, 27 May 2020) $
-; $LastChangedRevision: 28744 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_fsm_crib.pro $
 ;-
 

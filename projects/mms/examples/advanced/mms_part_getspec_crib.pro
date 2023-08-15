@@ -7,9 +7,12 @@
 ;  Basic example on how to use mms_part_getspec to generate particle
 ;  spectrograms and moments from level 2 MMS HPCA and FPI distributions.
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-09-20 15:07:20 -0700 (Thu, 20 Sep 2018) $
-;$LastChangedRevision: 25839 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_getspec_crib.pro $
 ;-
 

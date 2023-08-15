@@ -1,12 +1,13 @@
 ;+
 ; MMS DSP crib sheet
 ; 
-; do you have suggestions for this crib sheet?  
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-08-01 15:53:36 -0700 (Mon, 01 Aug 2016) $
-; $LastChangedRevision: 21586 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_dsp_crib.pro $
 ;-
 timespan, '2015-10-16', 1, /day

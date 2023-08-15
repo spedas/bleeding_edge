@@ -1,14 +1,15 @@
 ;+
 ; mms_burst_status_crib  
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ; 
 ; Note: status and FoM bars currently require an MMS team password for the SDC
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-03-29 13:12:06 -0700 (Thu, 29 Mar 2018) $
-; $LastChangedRevision: 24967 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_burst_status_crib.pro $
 ;-
 

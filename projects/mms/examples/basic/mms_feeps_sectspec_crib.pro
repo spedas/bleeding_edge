@@ -7,13 +7,13 @@
 ;     for checking effectiveness of sunlight masking/removal
 ;
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-09-01 11:44:55 -0700 (Tue, 01 Sep 2020) $
-; $LastChangedRevision: 29102 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_feeps_sectspec_crib.pro $
 ;-
 

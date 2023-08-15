@@ -7,9 +7,12 @@
 ;         variables then save the variables to ASCII files
 ; 
 ;   
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-07-03 14:33:15 -0700 (Tue, 03 Jul 2018) $
-; $LastChangedRevision: 25435 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_save_to_ascii.pro $
 ;-
 

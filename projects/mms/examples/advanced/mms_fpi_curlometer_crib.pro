@@ -16,9 +16,13 @@
 ;         9) DIS temperatures
 ;
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
+;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2022-03-29 10:30:58 -0700 (Tue, 29 Mar 2022) $
-; $LastChangedRevision: 30731 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_fpi_curlometer_crib.pro $
 ;-
 

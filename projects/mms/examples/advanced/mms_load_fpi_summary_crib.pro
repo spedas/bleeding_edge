@@ -7,8 +7,8 @@
 ;   This version is meant to work with v3.0.0 of the FPI CDFs
 ;   and will not work with v2.1 and below
 ; 
-; do you have suggestions for this crib sheet?  
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ; 
 ;    
 ; History:
@@ -28,8 +28,8 @@
 ; SBoaardsen added query for brst or fast
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-16 10:06:43 -0800 (Thu, 16 Feb 2017) $
-; $LastChangedRevision: 22803 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_load_fpi_summary_crib.pro $
 ;-
 

@@ -11,9 +11,12 @@
 ;See also:
 ;   mms_isee_3d_crib.pro - for examples of calling isee_3d directly without the wrapper
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-06 15:31:20 -0800 (Tue, 06 Nov 2018) $
-;$LastChangedRevision: 26059 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_isee_3d_crib_basic.pro $
 ;-
 

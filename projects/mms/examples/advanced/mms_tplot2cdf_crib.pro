@@ -3,9 +3,13 @@
 ; This crib sheet shows how to save MMS data loaded into tplot variables to a CDF file
 ;
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
+;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-13 09:12:59 -0800 (Thu, 13 Dec 2018) $
-; $LastChangedRevision: 26324 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2cdf_crib.pro $
 ;-
 

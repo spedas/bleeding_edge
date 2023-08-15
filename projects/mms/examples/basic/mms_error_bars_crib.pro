@@ -2,9 +2,13 @@
 ;
 ; This script shows how to create a plot of FPI density with error bars
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
+;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-01-05 18:48:53 -0800 (Thu, 05 Jan 2017) $
-; $LastChangedRevision: 22518 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_error_bars_crib.pro $
 ;-
 mms_load_fpi, probe=3, trange=['2015-10-16', '2015-10-17'], datatype='des-moms'

@@ -4,9 +4,12 @@
 ;
 ; See also: mms/examples/advanced/mms_tplot2cdf_crib.pro
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-01-30 13:25:23 -0800 (Wed, 30 Jan 2019) $
-; $LastChangedRevision: 26518 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2cdf_adv_crib.pro $
 ;-
 

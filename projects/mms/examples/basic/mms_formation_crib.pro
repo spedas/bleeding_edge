@@ -4,13 +4,13 @@
 ;  This script shows how to create 3D plots of the S/C formation
 ;    at a given time
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-01-24 10:38:53 -0800 (Fri, 24 Jan 2020) $
-; $LastChangedRevision: 28232 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_formation_crib.pro $
 ;-
 

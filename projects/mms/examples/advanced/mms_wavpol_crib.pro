@@ -57,9 +57,12 @@
 ; For more informations about SCM data, please contact olivier.lecontel@lpp.polytechnique.fr
 ;
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-12-21 09:37:46 -0800 (Thu, 21 Dec 2017) $
-; $LastChangedRevision: 24453 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_wavpol_crib.pro $
 ;-
 

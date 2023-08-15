@@ -6,10 +6,13 @@
 ;         Crib sheet showing how to load and plot MMS magnetometer data in burst mode 
 ;
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-10-27 11:42:30 -0700 (Thu, 27 Oct 2016) $
-;$LastChangedRevision: 22219 $
+;$LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31998 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_fgm_burst_crib.pro $
 ;-
 

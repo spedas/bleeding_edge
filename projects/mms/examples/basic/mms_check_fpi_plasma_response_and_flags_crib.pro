@@ -12,9 +12,7 @@
 ;     7) S/C potential from EDP
 ;     8) DIS and DES temperatures
 ;  
-;  
-; do you have suggestions for this crib sheet?  
-;   please send them to egrimes@igpp.ucla.edu
+;
 ; 
 ; NOTES:
 ;    see: crib_tplot_annotation if you would like to make 
@@ -23,8 +21,8 @@
 ;    are also provided at the bottom of this crib sheet
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2019-08-27 12:47:22 -0700 (Tue, 27 Aug 2019) $
-; $LastChangedRevision: 27677 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_check_fpi_plasma_response_and_flags_crib.pro $
 ;-
 

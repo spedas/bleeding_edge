@@ -6,10 +6,13 @@
 ;         This crib sheet shows how to find the start/stop times of
 ;         MMS burst intervals from the burst segments bar
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-08-18 09:28:15 -0700 (Thu, 18 Aug 2016) $
-;$LastChangedRevision: 21669 $
+;$LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31998 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_find_burst_intervals_crib.pro $
 ;-
 

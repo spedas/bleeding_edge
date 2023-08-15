@@ -4,12 +4,12 @@
 ; this crib sheet shows how to create angle-angle (polar versus azimuthal) 
 ; plots for EIS data with overlaid pitch angle contours
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2020-10-01 14:34:12 -0700 (Thu, 01 Oct 2020) $
-; $LastChangedRevision: 29201 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_eis_angle_angle_crib.pro $
 ;-
 

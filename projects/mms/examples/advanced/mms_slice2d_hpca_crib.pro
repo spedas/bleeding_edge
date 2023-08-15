@@ -19,11 +19,14 @@
 ;  'perp_xz':  The coordinate's x & z axes are projected onto the plane normal to the B field
 ;  'perp_yz':  The coordinate's y & z axes are projected onto the plane normal to the B field
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-08 15:13:05 -0800 (Thu, 08 Nov 2018) $
-;$LastChangedRevision: 26076 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_slice2d_hpca_crib.pro $
 ;-
 

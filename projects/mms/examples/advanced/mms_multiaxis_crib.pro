@@ -5,12 +5,13 @@
 ;     i.e., line plots of two tplot variables in a single panel where one has its 
 ;     y-axis/title on the left and the other has its y-axis/title on the right
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-01-22 13:00:58 -0800 (Mon, 22 Jan 2018) $
-; $LastChangedRevision: 24564 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_multiaxis_crib.pro $
 ;-
 

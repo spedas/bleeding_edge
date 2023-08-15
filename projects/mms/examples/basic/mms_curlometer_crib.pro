@@ -5,12 +5,13 @@
 ;  using mms_curl
 ;
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-04-03 08:35:22 -0700 (Mon, 03 Apr 2017) $
-; $LastChangedRevision: 23083 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_curlometer_crib.pro $
 ;-
 

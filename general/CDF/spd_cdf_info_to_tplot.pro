@@ -13,8 +13,8 @@
 ;   https://spdf.gsfc.nasa.gov/istp_guide/variables.html#Epoch
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2023-08-04 11:32:16 -0700 (Fri, 04 Aug 2023) $
-; $LastChangedRevision: 31982 $
+; $LastChangedDate: 2023-08-14 17:59:53 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 32000 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/spd_cdf_info_to_tplot.pro $
 ;-
 pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=non_record_varying, tt2000=tt2000,$
@@ -31,7 +31,7 @@ pro spd_cdf_info_to_tplot,cdfi,varnames,loadnames=loadnames, non_record_varying=
         load_labels=load_labels ;copy labels from labl_ptr_1 in attributes into dlimits
                                       ;resolve labels implemented as keyword to preserve backwards compatibility
 
-dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 31982 2023-08-04 18:32:16Z jwl $'
+dprint,verbose=verbose,dlevel=4,'$Id: spd_cdf_info_to_tplot.pro 32000 2023-08-15 00:59:53Z jwl $'
 tplotnames=''
 vbs = keyword_set(verbose) ? verbose : 0
 
@@ -317,7 +317,18 @@ for i=0,nv-1 do begin
        dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys, units:units}, centered_on_load: centered_on_load}
      endif else dlimit = {cdf:cdfstuff,spec:spec,log:log,data_att:{coord_sys:coord_sys,units:units}}
      
-     if keyword_set(units) then str_element,/add,dlimit,'ysubtitle','['+units+']'
+     if keyword_set(units) then begin
+      if n_elements(units) eq 1 then begin
+        units_str='['+units+']'
+      endif else begin
+        units_str='['
+        for ui=0, n_elements(units)-1 do begin
+          units_str=units_str+' '+units[ui] 
+        endfor
+        units_str=units_str+' ]'
+      endelse
+      str_element,/add,dlimit,'ysubtitle',units_str
+     endif
      
      if keyword_set(load_labels) then begin
        labl_ptr_1 = struct_value(attr,'labl_ptr_1',default='')

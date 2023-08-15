@@ -9,9 +9,12 @@
 ;         For this to work, you'll need to open Autoplot and enable the 'Server' feature via
 ;         the 'Options' menu with the default port (12345)
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-02-26 12:59:21 -0800 (Mon, 26 Feb 2018) $
-; $LastChangedRevision: 24785 $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_tplot2autoplot_crib.pro $
 ;-
 

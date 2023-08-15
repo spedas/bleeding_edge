@@ -9,9 +9,12 @@
 ;
 ;  see also: mms_part_getspec_crib
 ;  
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2023-03-28 16:03:34 -0700 (Tue, 28 Mar 2023) $
-;$LastChangedRevision: 31684 $
+;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31999 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_getspec_adv_crib.pro $
 ;-
 

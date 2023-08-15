@@ -20,9 +20,12 @@
 ;    -GEO
 ;    -MAG
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;$LastChangedBy: egrimes $
-;$LastChangedDate: 2016-11-07 10:41:31 -0800 (Mon, 07 Nov 2016) $
-;$LastChangedRevision: 22323 $
+;$LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+;$LastChangedRevision: 31998 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_cotrans_crib.pro $
 ;-
 

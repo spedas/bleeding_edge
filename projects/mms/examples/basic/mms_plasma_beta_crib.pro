@@ -2,10 +2,13 @@
 ;     This crib sheet shows how to calculate plasma beta 
 ;     using n, T from FPI and B from FGM
 ;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-05-09 14:44:46 -0700 (Wed, 09 May 2018) $
-; $LastChangedRevision: 25190 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_plasma_beta_crib.pro $
 ;-
 

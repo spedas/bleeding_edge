@@ -14,9 +14,12 @@
 ; Open this file in a text editor and then use copy and paste to copy
 ; selected lines into an idl window. 
 ; 
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2023-06-01 18:15:21 -0700 (Thu, 01 Jun 2023) $
-; $LastChangedRevision: 31875 $
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;
+; $LastChangedBy: egrimes $
+; $LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_poynting_flux_crib.pro $
 ;-
 

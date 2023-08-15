@@ -1,12 +1,13 @@
 ;+
 ; MMS EIS burst data crib sheet
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2021-08-05 09:24:59 -0700 (Thu, 05 Aug 2021) $
-; $LastChangedRevision: 30176 $
+; $LastChangedDate: 2023-08-14 12:44:51 -0700 (Mon, 14 Aug 2023) $
+; $LastChangedRevision: 31998 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/basic/mms_load_eis_burst_crib.pro $
 ;-
 probe = '1'
