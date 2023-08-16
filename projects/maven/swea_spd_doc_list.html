@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 14 18:16:24 2023.<P>
+<STRONG>Last modified: </STRONG>Tue Aug 15 18:16:41 2023.<P>
  
 <HR>
  
@@ -88,6 +88,8 @@ This page was created by the IDL library routine
 <br>Stores the SWEA static memory.
 <LI><A HREF="#MVN_SWE_CONFIG">MVN_SWE_CONFIG</A>
 <br>Maintains SWEA configuration changes in a common block (mvn_swe_com).
+<LI><A HREF="#MVN_SWE_CONVERT_QUALITY">MVN_SWE_CONVERT_QUALITY</A>
+<br>Converts olde format quality database into new format.
 <LI><A HREF="#MVN_SWE_CONVERT_UNITS">MVN_SWE_CONVERT_UNITS</A>
 <br>Convert units for SPEC, PAD, and 3D data.
 <LI><A HREF="#MVN_SWE_CROSSCAL">MVN_SWE_CROSSCAL</A>
@@ -1950,7 +1952,7 @@ FILE:  mvn_swe_com.pro
 <A NAME="MVN_SWE_CONFIG">
 <H2>MVN_SWE_CONFIG</H2></A>
 <A HREF="#MVN_SWE_COM">[Previous Routine]</A>
-<A HREF="#MVN_SWE_CONVERT_UNITS">[Next Routine]</A>
+<A HREF="#MVN_SWE_CONVERT_QUALITY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_swe_config
@@ -2019,9 +2021,41 @@ FILE: mvn_swe_config.pro
 <STRONG>(See <A href="swea/mvn_swe_config.pro">projects/maven/swea/mvn_swe_config.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_CONVERT_QUALITY">
+<H2>MVN_SWE_CONVERT_QUALITY</H2></A>
+<A HREF="#MVN_SWE_CONFIG">[Previous Routine]</A>
+<A HREF="#MVN_SWE_CONVERT_UNITS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_convert_quality
+PURPOSE:
+  Converts olde format quality database into new format.
+
+USAGE:
+  mvn_swe_convert_quality, trange
+
+INPUTS:
+       trange:       One or more dates, in any format accepted by time_double.
+                     Only full UT days are processed; any fractional part of
+                     the day is ignored.  When trange has more than one element,
+                     all days between the earliest and the latest (inclusive) 
+                     are processed.
+
+KEYWORDS:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-15 12:19:33 -0700 (Tue, 15 Aug 2023) $
+ $LastChangedRevision: 32004 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_convert_quality.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_convert_quality.pro">projects/maven/swea/mvn_swe_convert_quality.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_CONVERT_UNITS">
 <H2>MVN_SWE_CONVERT_UNITS</H2></A>
-<A HREF="#MVN_SWE_CONFIG">[Previous Routine]</A>
+<A HREF="#MVN_SWE_CONVERT_QUALITY">[Previous Routine]</A>
 <A HREF="#MVN_SWE_CROSSCAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -5184,8 +5218,8 @@ KEYWORDS:
                       with an 'x' marking anomalous spectra (quality = 0).
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-08-13 13:54:03 -0700 (Sun, 13 Aug 2023) $
- $LastChangedRevision: 31993 $
+ $LastChangedDate: 2023-08-15 10:44:29 -0700 (Tue, 15 Aug 2023) $
+ $LastChangedRevision: 32002 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_set_quality.pro $
 
 CREATED BY:  David Mitchell - August 2023

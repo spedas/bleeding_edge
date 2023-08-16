@@ -22,8 +22,8 @@
 ;                      with an 'x' marking anomalous spectra (quality = 0).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-13 13:54:03 -0700 (Sun, 13 Aug 2023) $
-; $LastChangedRevision: 31993 $
+; $LastChangedDate: 2023-08-15 10:44:29 -0700 (Tue, 15 Aug 2023) $
+; $LastChangedRevision: 32002 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_set_quality.pro $
 ;
 ;CREATED BY:  David Mitchell - August 2023
@@ -51,11 +51,10 @@ pro mvn_swe_set_quality, missing=missing, doplot=doplot
   endif
   trange = minmax(trange[1:*])
 
-; Restore quality flags for that time range
+; Restore quality flags
 
   rootdir='maven/data/sci/swe/anc/quality/YYYY/MM/'
   fname = 'mvn_swe_quality_YYYYMMDD.sav'
-
   file = mvn_pfp_file_retrieve(rootdir+fname,trange=trange,/daily_names,/valid)
   i = where(file ne '', nfiles)
   if (nfiles eq 0L) then begin
@@ -68,12 +67,13 @@ pro mvn_swe_set_quality, missing=missing, doplot=doplot
   restore,filename=file[0]
   qtime = quality.time
   qflag = quality.flag
-
   for j=0,nfiles-1 do begin
     restore,filename=file[j]
     qtime = [temporary(qtime), quality.time]
     qflag = [temporary(qflag), quality.flag]
   endfor
+
+  undefine, quality
 
 ; Set the quality flags
 

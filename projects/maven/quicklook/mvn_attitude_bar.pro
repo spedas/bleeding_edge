@@ -19,16 +19,20 @@
 ;KEYWORDS:
 ;       FORCE:    Ignore the SPICE checks and forge ahead anyway.
 ;
+;       KEY:      Print out the color key and return.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-02-27 08:12:53 -0800 (Mon, 27 Feb 2023) $
-; $LastChangedRevision: 31544 $
+; $LastChangedDate: 2023-08-15 10:43:47 -0700 (Tue, 15 Aug 2023) $
+; $LastChangedRevision: 32001 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_attitude_bar, force=force
+pro mvn_attitude_bar, force=force, key=key
 
   noguff = keyword_set(force)
+
+  if keyword_set(key) then goto, printkey
 
 ; Determine when the HGA points to the Sun or Earth
 
@@ -96,6 +100,19 @@ pro mvn_attitude_bar, force=force
   options,bname,'ystyle',4
   options,bname,'no_color_scale',1
   options,bname,'color_table',43
+
+; Print out the color key
+
+printkey:
+
+  print,''
+  print,'Attitude bar color key:'
+  print,'  orange = Sun point'
+  print,'  blue   = Earth point'
+  print,'  green  = Fly +/- Y'
+  print,'  red    = Fly-Z (including up and down variants)'
+  print,'  purple = Fly+Z (including up and down variants)'
+  print,''
 
   return
 end
