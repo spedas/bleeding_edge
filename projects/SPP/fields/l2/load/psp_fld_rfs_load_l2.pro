@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2023-05-09 16:27:38 -0700 (Tue, 09 May 2023) $
-; $LastChangedRevision: 31847 $
+; $LastChangedDate: 2023-08-16 16:54:57 -0700 (Wed, 16 Aug 2023) $
+; $LastChangedRevision: 32007 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l2/load/psp_fld_rfs_load_l2.pro $
 ;
 ;-
@@ -228,11 +228,16 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
           if strpos(var, '_auto_') GT 0 then begin
             if strpos(var, '_auto_averages_') GT 0 then type = 'AV'
             if strpos(var, '_auto_peaks_') GT 0 then type = 'PK'
-            src = split[-1]
             if set_colors then options, var, 'color_table', 129
             options, var, 'zlog', 1
             options, var, 'auto_downsample', 1
-            options, var, 'ztitle', '[V2/Hz]'
+            if strpos(var,'flux') LT 0 then begin
+              src = split[-1]
+              options, var, 'ztitle', '[V2/Hz]' 
+            endif else begin
+              src = split[-2]
+              options, var, 'ztitle', '[W/m2/Hz]''
+            endelse
           endif
 
           if strpos(var, '_hires_') GT 0 then begin
@@ -322,6 +327,29 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
 
   if level EQ 3 then begin
 
+    l3_new_names = tnames('psp_fld_l3_rfs_' + strlowcase(rec) + '_' + $
+      ['PSD_FLUX', 'PSD_SFU', 'STOKES_V'])
+
+    foreach name, l3_new_names do begin
+
+      ytitle = strjoin(strupcase((strsplit(name,'_',/ex))[-3:-1]),'!C')
+
+      options, name, 'ytitle', ytitle
+
+      if ytitle.Contains('STOKES') then begin
+
+        options, name, 'zrange', [-1,1]
+        options, name, 'ztitle', 'V/I'
+        if set_colors then options, name, 'color_table', 98
+
+      endif else begin
+
+        if set_colors then options, name, 'color_table', 129
+
+      endelse
+
+    endforeach
+    
     l3_pos_tnames = tnames('psp_fld_l3_rfs_?fr_position*')
 
     foreach name, l3_pos_tnames do begin
