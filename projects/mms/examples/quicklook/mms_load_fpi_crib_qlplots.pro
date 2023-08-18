@@ -7,8 +7,8 @@
 ;   This version is meant to work with v3.0.0 of the FPI CDFs
 ;   and will not work with v2.1 and below
 ; 
-; do you have suggestions for this crib sheet?  
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ; 
 ;    
 ; History:
@@ -31,8 +31,8 @@
 ;   match what's at the SDC right now)
 ; 
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-16 09:43:26 -0800 (Thu, 16 Feb 2017) $
-; $LastChangedRevision: 22801 $
+; $LastChangedDate: 2023-08-17 09:28:43 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_fpi_crib_qlplots.pro $
 ;-
 

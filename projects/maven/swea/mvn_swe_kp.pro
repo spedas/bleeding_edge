@@ -12,6 +12,8 @@
 ;   None:      Uses data currently loaded into the SWEA common block.
 ;
 ;KEYWORDS:
+;   TRANGE:    Process data in this time range.
+;
 ;   PANS:      Named variable to return tplot variables created.
 ;
 ;   MOM:       Calculate density using a moment.  This is the default and
@@ -48,19 +50,21 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 16:18:25 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29682 $
+; $LastChangedDate: 2023-08-17 16:01:19 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32021 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 ;
 ;-
 
 pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
                 mask_sc=mask_sc, mom=mom, l2only=l2only, output_path=output_path, $
-                allbad=allbad
+                allbad=allbad, trange=trange
 
   compile_opt idl2
 
   @mvn_swe_com
+
+  delta_t = 1.95D/2D
 
 ; Process inputs
 
@@ -90,6 +94,13 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
       print,"No KP PAD data generated!"
     endif
   endif else ok = 1
+
+; Set the time range for processing
+
+  if (n_elements(trange) lt 2) then begin
+    t0 = min(mvn_swe_engy.time) < min(a2.time + delta_t)
+    t1 = max(mvn_swe_engy.time) > max(a2.time + delta_t)
+  endif else tmin = min(time_double(trange), max=tmax)
 
 ; Set FOV masking
 
@@ -159,7 +170,10 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
 ;   Exclude bins that straddle 90 degrees pitch angle
 ;   Apply FOV bin masking
 
-  npts = n_elements(a2)
+  atime = a2.time + delta_t
+  indx = where((atime ge t0) and (atime le t1), npts)
+  atime = atime[indx]
+
   t = dblarr(npts)
   eflux_pos_lo = fltarr(npts)
   eflux_pos_md = eflux_pos_lo
@@ -181,8 +195,8 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
   var_neg_lo = eflux_pos_lo
   var_neg_md = eflux_pos_lo
   var_neg_hi = eflux_pos_lo
- 
-  pad = mvn_swe_getpad(a2[0].time)
+
+  pad = mvn_swe_getpad(atime[0])
   energy = pad.energy[*,0]
 
   endx_lo = where((energy ge   5.) and (energy lt  100.), nlo)
@@ -194,7 +208,7 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
   
   if (ok) then begin
     for i=0L,(npts-1L) do begin
-      pad = mvn_swe_getpad(a2[i].time, units='counts')
+      pad = mvn_swe_getpad(atime[i], units='counts')
 
       if (pad.time gt t_mtx[2]) then boom = 1 else boom = 0
       indx = where(obins[pad.k3d,boom] eq 0B, count)

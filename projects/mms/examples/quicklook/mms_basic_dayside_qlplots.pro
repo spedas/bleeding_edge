@@ -19,9 +19,13 @@
 ;   12. EDP srvy, EPSD spectra (x) mms*_edp_hfesp_srvy_l2
 ;   13. DSP, fast, bpsd omni
 ;   
+;   
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
+;     
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-16 09:43:26 -0800 (Thu, 16 Feb 2017) $
-; $LastChangedRevision: 22801 $
+; $LastChangedDate: 2023-08-17 09:28:43 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_basic_dayside_qlplots.pro $
 ;-
 tplot_options, 'xmargin', [15, 15]

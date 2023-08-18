@@ -1,12 +1,12 @@
 ;+
 ; MMS FIELDS quicklook plots crib sheet
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2016-07-26 15:53:10 -0700 (Tue, 26 Jul 2016) $
-; $LastChangedRevision: 21548 $
+; $LastChangedDate: 2023-08-17 09:28:43 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_fields_crib_qlplots.pro $
 ;-
 

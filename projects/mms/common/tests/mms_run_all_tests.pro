@@ -9,8 +9,8 @@
 ;     
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2021-09-03 10:47:50 -0700 (Fri, 03 Sep 2021) $
-; $LastChangedRevision: 30283 $
+; $LastChangedDate: 2023-08-17 09:25:14 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32009 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/tests/mms_run_all_tests.pro $
 ;-
 
@@ -59,10 +59,10 @@ pro mms_run_all_tests
     if nfail ne 0 then begin
         dprint, dlevel = 0, 'Error! Problems found while running the testsuite! '+console_out
         ; need 32-bit IDL 8.5 and send_test_notify.py to send an email via python
-        if !version.release ge 8.5 && !version.arch eq 'x86' then begin
-            sendemail = Python.Import('send_test_notify')
-            sent = sendemail.send_test_notify('egrimes@igpp.ucla.edu', 'Problems found while testing', console_out)
-        endif
+;        if !version.release ge 8.5 && !version.arch eq 'x86' then begin
+;            sendemail = Python.Import('send_test_notify')
+;            sent = sendemail.send_test_notify('egrimes@igpp.ucla.edu', 'Problems found while testing', console_out)
+;        endif
     endif else begin
         dprint, dlevel = 1, 'Done testing! No problems found '+console_out
     endelse

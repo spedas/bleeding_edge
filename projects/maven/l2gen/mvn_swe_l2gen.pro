@@ -39,8 +39,8 @@
 ; Hacked from Matt F's crib_l0_to_l2.txt, 2014-11-14: jmm
 ; Better memory management and added keywords to control processing: dlm
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-03-21 12:35:56 -0700 (Sun, 21 Mar 2021) $
-; $LastChangedRevision: 29785 $
+; $LastChangedDate: 2023-08-17 16:02:28 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32022 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_l2gen.pro $
 ;- 
 pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
@@ -51,6 +51,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
   
   l2only = keyword_set(l2only)
   allbad = keyword_set(allbad)
+  oneday = 86400D
 
 ; Construct FOV masking arrays
 ;   96 solid angles X 2 boom states
@@ -85,13 +86,14 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
   setenv, 'ROOT_DATA_DIR=/disks/data/'
 
-; Pick a day
+; Pick a day (include previous day to get SPEC data that belong with current date)
 
   if (keyword_set(date)) then time = time_string(date[0], /date_only) $
                          else time = time_string(systime(/sec,/utc), /date_only)
 
   t0 = time_double(time)
-  t1 = t0 + 86400D
+  tm1 = t0 - oneday
+  tp1 = t0 + oneday
 
 ; Added to assure that pre-orbit files are not processed
   If(t0 Lt time_double('2014-10-13')) Then Begin
@@ -100,12 +102,12 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
   Endif
 
   message, /info, 'PROCESSING: '+time_string(t0)
-  timespan, t0, 1
+  timespan, [tm1,tp1]
 
-; get SPICE time and frames kernels
+; get SPICE time, frames, and SPK kernels
 
   if (l2only) then mvn_swe_spice_init, /force, /list $
-              else mvn_swe_spice_init, /baseonly, /force, /list
+              else mvn_swe_spice_init, /nock, /force, /list
 
 ; Load L0 SWEA data
 
@@ -120,6 +122,10 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
   if (size(swe_mag1,/type) eq 8) then maglev = swe_mag1[0].level else maglev = 0B
   if (l2only and (maglev lt 2B)) then dopad = 0 else dopad = 1
 
+; Determine quality flags
+
+  mvn_swe_quality_daily, t0, /noload
+
 ; Create CDF files (up to 6 of them)
 
   if ~keyword_set(nol2) then begin
@@ -127,7 +133,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
     timer_start = systime(/sec)
     print,"Generating 3D Survey data"
-    ddd = mvn_swe_get3d([t0,t1], /all)
+    ddd = mvn_swe_get3d([t0,tp1], /all)
     if (size(ddd,/type) eq 8) then begin
       indx = where(ddd.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then ddd[indx].data *= reform(dmask1 # replicate(1.,icnt),64,96,icnt)
@@ -142,7 +148,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
     timer_start = systime(/sec)
     print,"Generating 3D Archive data"
-    ddd = mvn_swe_get3d([t0,t1], /all, /archive)
+    ddd = mvn_swe_get3d([t0,tp1], /all, /archive)
     if (size(ddd,/type) eq 8) then begin
       indx = where(ddd.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then ddd[indx].data *= reform(dmask1 # replicate(1.,icnt),64,96,icnt)
@@ -167,7 +173,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
       timer_start = systime(/sec)
       print,"Generating PAD Survey data"
-      pad = mvn_swe_getpad([t0,t1], /all)
+      pad = mvn_swe_getpad([t0,tp1], /all)
       if (size(pad,/type) eq 8) then begin
         indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
         if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
@@ -182,7 +188,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
       timer_start = systime(/sec)
       print,"Generating PAD Archive data"
-      pad = mvn_swe_getpad([t0,t1], /all, /archive)
+      pad = mvn_swe_getpad([t0,tp1], /all, /archive)
       if (size(pad,/type) eq 8) then begin
         indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
         if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
@@ -199,7 +205,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
     timer_start = systime(/sec)
     print,"Generating SPEC Survey data"
-    spec = mvn_swe_getspec([t0,t1])
+    spec = mvn_swe_getspec([t0,tp1])
     if (size(spec,/type) eq 8) then begin
       mvn_swe_lowe_mask, spec, allbad=allbad
       mvn_swe_makecdf_spec, spec, directory=directory
@@ -211,7 +217,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
     timer_start = systime(/sec)
     print,"Generating SPEC Archive data"
-    spec = mvn_swe_getspec([t0,t1], /archive)
+    spec = mvn_swe_getspec([t0,tp1], /archive)
     if (size(spec,/type) eq 8) then begin
       mvn_swe_lowe_mask, spec, allbad=allbad
       mvn_swe_makecdf_spec, spec, directory=directory
@@ -228,7 +234,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
   if ~keyword_set(nokp) then begin
     timer_start = systime(/sec)
     print,"Generating Key Parameters"
-    mvn_swe_kp, l2only=l2only, allbad=allbad
+    mvn_swe_kp, trange=[t0,tp1], l2only=l2only, allbad=allbad
     dt = systime(/sec) - timer_start
     print,dt/60D,format='("Time to process (min): ",f6.2)'
     print,""

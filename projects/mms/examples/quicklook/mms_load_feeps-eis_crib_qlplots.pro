@@ -1,12 +1,12 @@
 ;+
 ; MMS EPD-EIS quick look plots crib sheet
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-02-17 09:14:36 -0800 (Fri, 17 Feb 2017) $
-; $LastChangedRevision: 22812 $
+; $LastChangedDate: 2023-08-17 09:28:43 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_feeps-eis_crib_qlplots.pro $
 ;-
 

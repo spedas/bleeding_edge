@@ -22,8 +22,8 @@
 ;                      with an 'x' marking anomalous spectra (quality = 0).
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-15 10:44:29 -0700 (Tue, 15 Aug 2023) $
-; $LastChangedRevision: 32002 $
+; $LastChangedDate: 2023-08-17 09:30:13 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32012 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_set_quality.pro $
 ;
 ;CREATED BY:  David Mitchell - August 2023
@@ -67,7 +67,7 @@ pro mvn_swe_set_quality, missing=missing, doplot=doplot
   restore,filename=file[0]
   qtime = quality.time
   qflag = quality.flag
-  for j=0,nfiles-1 do begin
+  for j=1,nfiles-1 do begin
     restore,filename=file[j]
     qtime = [temporary(qtime), quality.time]
     qflag = [temporary(qflag), quality.flag]

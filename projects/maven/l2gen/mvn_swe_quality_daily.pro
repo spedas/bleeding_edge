@@ -15,27 +15,30 @@
 ;                     are processed.
 ;
 ;KEYWORDS:
+;       NOLOAD:       Do not initialize SPICE and do not load data.  Assumes that
+;                     these steps are performed before calling this routine.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-13 16:47:57 -0700 (Sun, 13 Aug 2023) $
-; $LastChangedRevision: 31997 $
+; $LastChangedDate: 2023-08-17 11:49:53 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32015 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_quality_daily.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_swe_quality_daily, trange
+pro mvn_swe_quality_daily, trange, noload=noload
 
   @mvn_swe_com
+
+  load = ~keyword_set(noload)
+  proot = root_data_dir() + 'maven/data/sci/swe/anc/quality/'
+  froot = 'mvn_swe_quality_'
 
   t0 = min(time_double(time_string(trange,/date_only)), max=t1)
   oneday = 86400D
   ndays = round((t1 - t0)/oneday) + 1L
 
   timespan,[t0 - oneday, t1 + oneday]
-  mvn_swe_spice_init, /nock, /force  ; no need for any CK kernels
-
-  proot = root_data_dir() + 'maven/data/sci/swe/anc/quality/'
-  froot = 'mvn_swe_quality_'
+  if (load) then mvn_swe_spice_init, /nock, /force  ; no need for any CK kernels
 
   for i=0L,(ndays - 1L) do begin
     tstart = t0 + double(i)*oneday
@@ -50,8 +53,10 @@ pro mvn_swe_quality_daily, trange
 
     ofile = opath + '/' + froot + yyyy + mm + dd + '.sav'
 
-    mvn_swe_clear
-    mvn_swe_load_l0, /nospice
+    if (load) then begin
+      mvn_swe_clear
+      mvn_swe_load_l0, /nospice
+    endif
     mvn_swe_stat, npkt=npkt, /silent
 
     if (npkt[4] gt 0L) then begin
@@ -59,7 +64,7 @@ pro mvn_swe_quality_daily, trange
       swe_lowe_cluster, trange=trange, width=75, npts=6, lambda=1.0, frac=0.30, outlier=3, $
                         buffer=[8D,16D], mindelta=0.5, minsup=0.3, maxbad=0.55, quality=quality, $
                         /quiet
-      save, quality, file=ofile
+      if (size(quality,/type) eq 8) then save, quality, file=ofile
       if (file_test(ofile,/user)) then file_chmod, ofile, '664'o $
                                   else print,"Can't chmod - I'm not the owner!"
     endif else print,"No spec data!"

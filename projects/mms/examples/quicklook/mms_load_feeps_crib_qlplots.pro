@@ -1,13 +1,12 @@
 ;+
 ; MMS FEEPS quicklook plots crib sheet
 ;
-; do you have suggestions for this crib sheet?
-;   please send them to egrimes@igpp.ucla.edu
-;
+; Suggestions for this crib sheet:
+;     https://github.com/spedas/bleeding_edge/issues
 ;
 ; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-30 07:36:07 -0700 (Mon, 30 Oct 2017) $
-; $LastChangedRevision: 24231 $
+; $LastChangedDate: 2023-08-17 09:28:43 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/quicklook/mms_load_feeps_crib_qlplots.pro $
 ;-
 

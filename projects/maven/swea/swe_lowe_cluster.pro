@@ -72,8 +72,8 @@
 ;       QUIET:    Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-13 13:52:51 -0700 (Sun, 13 Aug 2023) $
-; $LastChangedRevision: 31991 $
+; $LastChangedDate: 2023-08-17 09:29:47 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32011 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_lowe_cluster.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -109,6 +109,7 @@ pro swe_lowe_cluster, width=width, npts=npts, lambda=lambda, frac=frac, diag=dia
   maxbad = (n_elements(maxbad) eq 0) ? 0.7 : float(maxbad[0])        ; maximum fraction of bad spectra
   mobetah = keyword_set(mobetah)                                     ; assume the larger cluster is good
   maxdt = 0.25                                                       ; nn2 tolerance used with MOBETAH
+  quality = 0                                                        ; initialize quality as non-structure
 
 ; Spline-smooth parameters
 
