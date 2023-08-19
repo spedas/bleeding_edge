@@ -1,7 +1,7 @@
 ;Ali: February 2020
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 12:59:34 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30908 $
+; $LastChangedDate: 2023-08-17 18:52:32 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32023 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_wav_data.pro $
 ; $ID: $
 
@@ -16,8 +16,8 @@
 ;/genmonthly: generates monthly 1min files from the daily 1min files.
 ;/generate: runs the code with the above 3 keywords set in succession.
 
-pro spp_wav_data,trange=trange,types=types,hires=hires,hourly=hourly,monthly=monthly,$
-  genhourly=genhourly,gendaily=gendaily,genmonthly=genmonthly,generate=generate
+pro spp_wav_data,trange=trange,types=types,hires=hires,hourly=hourly,monthly=monthly,yearly=yearly,$
+  genhourly=genhourly,gendaily=gendaily,genmonthly=genmonthly,genyearly=genyearly,generate=generate
 
   t1=systime(1)
 
@@ -25,17 +25,20 @@ pro spp_wav_data,trange=trange,types=types,hires=hires,hourly=hourly,monthly=mon
     spp_wav_data,/genhourly
     spp_wav_data,/gendaily
     spp_wav_data,/genmonthly
+    spp_wav_data,/genyearly
     dprint,'Finished everything in '+strtrim(systime(1)-t1,2)+' seconds on '+systime()
     return
   endif
 
   dir='/disks/data/psp/data/sci/'
   path='psp/data/sci/sweap/.wav/$TYPE$/YYYY/MM/DD/psp_fld_l2_$TYPE$_YYYYMMDD'
+  if keyword_set(genyearly) then monthly=1
   if keyword_set(monthly) then path='psp/data/sci/sweap/.wav/$TYPE$_1sec/YYYY/MM/psp_fld_l2_$TYPE$_YYYYMM'
+  if keyword_set(yearly) then path='psp/data/sci/sweap/.wav/$TYPE$_1sec/YYYY/psp_fld_l2_$TYPE$_YYYY'
   cdfpath='psp/data/sci/fields/staging/l2/$TYPE$/YYYY/MM/psp_fld_l2_$TYPE$_YYYYMMDDhh_v??.cdf'
   cdfpath='psp/data/sci/fields/l2/$TYPE$/YYYY/MM/psp_fld_l2_$TYPE$_YYYYMMDDhh_v??.cdf'
-  if keyword_set(monthly) then lowresstr='' else lowresstr='_1sec'
-  if keyword_set(hourly) or keyword_set(gendaily) then begin
+  if keyword_set(monthly) || keyword_set(yearly) then lowresstr='' else lowresstr='_1sec'
+  if keyword_set(hourly) || keyword_set(gendaily) then begin
     path=path+'hh'
     if keyword_set(hires) then lowresstr=''
   endif else if ~keyword_set(hires) then path=path+'_1min'
@@ -136,6 +139,24 @@ pro spp_wav_data,trange=trange,types=types,hires=hires,hourly=hourly,monthly=mon
         if ~keyword_set(files) then continue
         tplot_restore,filenames=files,/verbose,/append,/sort
         filename=files[0].substring(0,-46-subs[type])+'psp_fld_l2_'+type+time_string(tmonth0-10.,tformat='_YYYYMM')+'_1min'
+        tplot_save,tpname,filename=filename ;1min monthly
+      endwhile
+      continue
+    endif
+
+    if keyword_set(genyearly) then begin
+      trange=timerange(trange)
+      tmonth=time_double(time_string(trange,tformat='YYYY'))
+      res=370.*24.*3600. ;just over 1year seconds
+      tmonth0=tmonth[0]
+      while tmonth0 le tmonth[1] do begin
+        del_data,tpname
+        tmonth1=time_double(time_string(tmonth0+res,tformat='YYYY'))
+        files=spp_file_retrieve(pathformat,trange=[tmonth0,tmonth1],/last_version,/valid_only,/hourly)
+        tmonth0=tmonth1
+        if ~keyword_set(files) then continue
+        tplot_restore,filenames=files,/verbose,/append,/sort
+        filename=files[0].substring(0,-39-subs[type])+'psp_fld_l2_'+type+time_string(tmonth0-10.,tformat='_YYYY')+'_1min'
         tplot_save,tpname,filename=filename ;1min monthly
       endwhile
       continue

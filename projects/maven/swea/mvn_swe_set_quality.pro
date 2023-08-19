@@ -13,6 +13,9 @@
 ;       None:          All information is obtained from the common block.
 ;
 ;KEYWORDS:
+;       TRANGE:        Time range to process.  If not set, then get time range
+;                      from data stored in the common block.
+;
 ;       MISSING:       Returns a 5-element array with the number of quality
 ;                      flags that were NOT found in the database for each of
 ;                      data type: 3D_SVY, 3D_ARC, PAD_SVY, PAD_ARC, SPEC.  If
@@ -21,35 +24,40 @@
 ;       DOPLOT:        If set, makes an energy spectrogram (SPEC) tplot panel
 ;                      with an 'x' marking anomalous spectra (quality = 0).
 ;
+;       SILENT:        Shhh.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-17 09:30:13 -0700 (Thu, 17 Aug 2023) $
-; $LastChangedRevision: 32012 $
+; $LastChangedDate: 2023-08-18 11:12:39 -0700 (Fri, 18 Aug 2023) $
+; $LastChangedRevision: 32033 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_set_quality.pro $
 ;
 ;CREATED BY:  David Mitchell - August 2023
 ;-
-pro mvn_swe_set_quality, missing=missing, doplot=doplot
+pro mvn_swe_set_quality, trange=trange, missing=missing, doplot=doplot, silent=silent
 
   @mvn_swe_com
 
   missing = replicate(0L,5)
   doplot = keyword_set(doplot) and (find_handle('swe_a4') gt 0)
+  blab = ~keyword_set(silent)
 
-; Get the time range from the data
+; Get the time range
 
   delta_t = 1.95D/2D  ; start time to center time for PAD and 3D packets
 
-  trange = [0D]
-  if (size(mvn_swe_engy,/type) eq 8) then trange = [trange, minmax(mvn_swe_engy.time)]
-  if (size(a2,/type) eq 8) then trange = [trange, minmax(a2.time) + delta_t]
-  if (size(a3,/type) eq 8) then trange = [trange, minmax(a3.time) + delta_t]
-  if (size(swe_3d,/type) eq 8) then trange = [trange, minmax(swe_3d.time) + delta_t]
-  if (size(swe_3d_arc,/type) eq 8) then trange = [trange, minmax(swe_3d_arc.time) + delta_t]
-  if (n_elements(trange) lt 3) then begin
-    print,"% mvn_swe_set_quality: no data found in the common block"
-    return
-  endif
-  trange = minmax(trange[1:*])
+  if (n_elements(trange) lt 2) then begin
+    trange = [0D]
+    if (size(mvn_swe_engy,/type) eq 8) then trange = [trange, minmax(mvn_swe_engy.time)]
+    if (size(a2,/type) eq 8) then trange = [trange, minmax(a2.time) + delta_t]
+    if (size(a3,/type) eq 8) then trange = [trange, minmax(a3.time) + delta_t]
+    if (size(swe_3d,/type) eq 8) then trange = [trange, minmax(swe_3d.time) + delta_t]
+    if (size(swe_3d_arc,/type) eq 8) then trange = [trange, minmax(swe_3d_arc.time) + delta_t]
+    if (n_elements(trange) lt 3) then begin
+      print,"% mvn_swe_set_quality: no data found in the common block"
+      return
+    endif
+    trange = minmax(trange[1:*])
+  endif else trange = minmax(time_double(trange))
 
 ; Restore quality flags
 
@@ -114,8 +122,10 @@ pro mvn_swe_set_quality, missing=missing, doplot=doplot
 
 ; Report missing quality flag data
 
-  msg = ['a0','a1','a2','a3','a4'] + ' flags: ' + strtrim(string(missing),2)
-  for i=0,4 do if (missing[i] gt 0L) then print,"% mvn_swe_quality: missing ",msg[i]
+  if (blab) then begin
+    msg = ['a0','a1','a2','a3','a4'] + ' flags: ' + strtrim(string(missing),2)
+    for i=0,4 do if (missing[i] gt 0L) then print,"% mvn_swe_quality: missing ",msg[i]
+  endif
 
 ; Make the enery spectrogram with 'x' overlay marking anomalous spectra
 

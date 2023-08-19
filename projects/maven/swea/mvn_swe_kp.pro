@@ -50,8 +50,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-17 16:01:19 -0700 (Thu, 17 Aug 2023) $
-; $LastChangedRevision: 32021 $
+; $LastChangedDate: 2023-08-18 10:50:29 -0700 (Fri, 18 Aug 2023) $
+; $LastChangedRevision: 32032 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 ;
 ;-
@@ -100,7 +100,7 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
   if (n_elements(trange) lt 2) then begin
     t0 = min(mvn_swe_engy.time) < min(a2.time + delta_t)
     t1 = max(mvn_swe_engy.time) > max(a2.time + delta_t)
-  endif else tmin = min(time_double(trange), max=tmax)
+  endif else t0 = min(time_double(trange), max=t1)
 
 ; Set FOV masking
 
@@ -384,14 +384,10 @@ pro mvn_swe_kp, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, $
     tplot_save, pans, file=tname
   endif else begin
     tplot_save, pans, file=tname
-    cmd = 'chgrp maven ' + fname
-    spawn, cmd, result, err
-    if (err ne '') then begin
-      print, "Error changing group for file: "
-      print, "  ", cmd
-      print, "  ", err
+    if (file_test(fname,/user)) then begin
+      file_chmod, fname, '0664'o
+      file_chgrp, fname, 'maven'
     endif
-    file_chmod, fname, '0664'o
   endelse
 
   return

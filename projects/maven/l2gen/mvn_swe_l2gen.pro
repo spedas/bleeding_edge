@@ -39,8 +39,8 @@
 ; Hacked from Matt F's crib_l0_to_l2.txt, 2014-11-14: jmm
 ; Better memory management and added keywords to control processing: dlm
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-17 16:02:28 -0700 (Thu, 17 Aug 2023) $
-; $LastChangedRevision: 32022 $
+; $LastChangedDate: 2023-08-18 11:13:10 -0700 (Fri, 18 Aug 2023) $
+; $LastChangedRevision: 32034 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_l2gen.pro $
 ;- 
 pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
@@ -125,6 +125,7 @@ pro mvn_swe_l2gen, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 ; Determine quality flags
 
   mvn_swe_quality_daily, t0, /noload
+  mvn_swe_set_quality, missing=missing, /silent
 
 ; Create CDF files (up to 6 of them)
 

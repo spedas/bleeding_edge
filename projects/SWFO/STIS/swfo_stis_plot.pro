@@ -3,10 +3,10 @@
 ; Run using:
 ; ctime,routine_name='swfo_stis_plot',/silent
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-02-24 16:27:51 -0800 (Fri, 24 Feb 2023) $
-; $LastChangedRevision: 31520 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu:36867/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_crib.pro $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2023-08-17 18:53:31 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32024 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_plot.pro $
 ; $ID: $
 ;-
 
@@ -115,10 +115,10 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
 
 
   if keyword_set(trange) then begin
-    nearest = trange[0] eq trange[1]
+    ;nearest = trange[0] eq trange[1]
     samples=param.ddata.sample(range=trange,tagname='time' ,nearest=nearest)  
     nsamples = n_elements(samples)
-    dprint,nsamples,trange-t
+    ;dprint,nsamples,trange-t
     ;tmid = average(trange)
     ;hkp_samples = hkp_data.sample(range=tmid,nearest=tmid,tagname='time')
   endif else begin
@@ -215,7 +215,7 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
         ch.lim = lim
         channels[c] = ch
         oplot,x,y ,color=ch.color,psym=ch.psym
-        if param.haskey('dofit')  && (c ge 0) && i eq n_elements(u)-1 then begin
+        if param.haskey('dofit') && keyword_set(param.dofit) && (c ge 0) && i eq n_elements(u)-1 then begin
           ;printdat,u
           ;savetomain,x
           ;savetomain,y

@@ -19,8 +19,8 @@
 ;                     these steps are performed before calling this routine.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-17 11:49:53 -0700 (Thu, 17 Aug 2023) $
-; $LastChangedRevision: 32015 $
+; $LastChangedDate: 2023-08-18 09:56:47 -0700 (Fri, 18 Aug 2023) $
+; $LastChangedRevision: 32029 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_quality_daily.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -64,9 +64,12 @@ pro mvn_swe_quality_daily, trange, noload=noload
       swe_lowe_cluster, trange=trange, width=75, npts=6, lambda=1.0, frac=0.30, outlier=3, $
                         buffer=[8D,16D], mindelta=0.5, minsup=0.3, maxbad=0.55, quality=quality, $
                         /quiet
-      if (size(quality,/type) eq 8) then save, quality, file=ofile
-      if (file_test(ofile,/user)) then file_chmod, ofile, '664'o $
-                                  else print,"Can't chmod - I'm not the owner!"
+      if (size(quality,/type) eq 8) then begin
+        save, quality, file=ofile
+        if (file_test(ofile,/user)) then file_chmod, ofile, '664'o $
+                                    else print,"Can't chmod - I'm not the owner!"
+        file_chgrp, ofile, 'maven'
+      endif
     endif else print,"No spec data!"
 
   endfor

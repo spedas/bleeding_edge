@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Aug 17 18:16:43 2023.<P>
+<STRONG>Last modified: </STRONG>Fri Aug 18 18:16:50 2023.<P>
  
 <HR>
  
@@ -3074,8 +3074,8 @@ KEYWORDS:
 OUTPUTS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-08-17 16:01:19 -0700 (Thu, 17 Aug 2023) $
- $LastChangedRevision: 32021 $
+ $LastChangedDate: 2023-08-18 10:50:29 -0700 (Fri, 18 Aug 2023) $
+ $LastChangedRevision: 32032 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_kp.pro $
 
 </PRE><P>
@@ -3625,8 +3625,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2019-03-15 16:31:45 -0700 (Fri, 15 Mar 2019) $
-   $LastChangedRevision: 26829 $
+   $LastChangedDate: 2023-08-18 10:21:25 -0700 (Fri, 18 Aug 2023) $
+   $LastChangedRevision: 32031 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_3d.pro $
 
 </PRE><P>
@@ -3664,8 +3664,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2019-03-15 16:31:37 -0700 (Fri, 15 Mar 2019) $
-   $LastChangedRevision: 26828 $
+   $LastChangedDate: 2023-08-18 10:21:25 -0700 (Fri, 18 Aug 2023) $
+   $LastChangedRevision: 32031 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_pad.pro $
 
 </PRE><P>
@@ -3702,8 +3702,8 @@ CREATED BY:    David L. Mitchell  09/18/13
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2019-03-15 16:31:31 -0700 (Fri, 15 Mar 2019) $
-   $LastChangedRevision: 26827 $
+   $LastChangedDate: 2023-08-18 10:21:25 -0700 (Fri, 18 Aug 2023) $
+   $LastChangedRevision: 32031 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_spec.pro $
 
 </PRE><P>
@@ -5211,6 +5211,9 @@ INPUTS:
        None:          All information is obtained from the common block.
 
 KEYWORDS:
+       TRANGE:        Time range to process.  If not set, then get time range
+                      from data stored in the common block.
+
        MISSING:       Returns a 5-element array with the number of quality
                       flags that were NOT found in the database for each of
                       data type: 3D_SVY, 3D_ARC, PAD_SVY, PAD_ARC, SPEC.  If
@@ -5219,9 +5222,11 @@ KEYWORDS:
        DOPLOT:        If set, makes an energy spectrogram (SPEC) tplot panel
                       with an 'x' marking anomalous spectra (quality = 0).
 
+       SILENT:        Shhh.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-08-17 09:30:13 -0700 (Thu, 17 Aug 2023) $
- $LastChangedRevision: 32012 $
+ $LastChangedDate: 2023-08-18 11:12:39 -0700 (Fri, 18 Aug 2023) $
+ $LastChangedRevision: 32033 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_set_quality.pro $
 
 CREATED BY:  David Mitchell - August 2023

@@ -91,8 +91,8 @@
 ;   Commented and cleaned up August 2016 by MPP
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2022-08-26 13:32:56 -0700 (Fri, 26 Aug 2022) $
-; $LastChangedRevision: 31047 $
+; $LastChangedDate: 2023-08-17 21:12:53 -0700 (Thu, 17 Aug 2023) $
+; $LastChangedRevision: 32025 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_rfs_float.pro $
 ;
 ;-
@@ -163,7 +163,7 @@ function spp_fld_rfs_float, rfs_input, $
   
   if keyword_set(zero_fix) then begin
 
-  if not keyword_set(cross) then begin
+    if not keyword_set(cross) then begin
 
       zero_ind = where(rfs_in_long EQ 0, zero_count)
       

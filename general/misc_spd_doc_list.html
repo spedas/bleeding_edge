@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Aug 17 18:16:43 2023.<P>
+<STRONG>Last modified: </STRONG>Fri Aug 18 18:16:50 2023.<P>
  
 <HR>
  
@@ -63,6 +63,7 @@ This page was created by the IDL library routine
 <br>Decimates polylines in an aesthetically pleasing fashion.
 <LI><A HREF="#FILE_ARCHIVE">FILE_ARCHIVE</A>
 <br>Archives files by renaming them and optionally moving them to another directory.
+<LI><A HREF="#FILE_CHGRP">FILE_CHGRP</A>
 <LI><A HREF="#FILE_COPY2">FILE_COPY2</A>
 <LI><A HREF="#FILE_DAILYNAMES">FILE_DAILYNAMES</A>
 <LI><A HREF="#FILE_OPEN">FILE_OPEN</A>
@@ -1474,7 +1475,7 @@ HISTORY:
 <A NAME="FILE_ARCHIVE">
 <H2>FILE_ARCHIVE</H2></A>
 <A HREF="#FAIRFIELD_NS_MODEL">[Previous Routine]</A>
-<A HREF="#FILE_COPY2">[Next Routine]</A>
+<A HREF="#FILE_CHGRP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -1500,9 +1501,40 @@ HISTORY:
 <STRONG>(See <A href="misc/file_archive.pro">general/misc/file_archive.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="FILE_CHGRP">
+<H2>FILE_CHGRP</H2></A>
+<A HREF="#FILE_ARCHIVE">[Previous Routine]</A>
+<A HREF="#FILE_COPY2">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE  file_chgrp
+
+PURPOSE:  Changes the group ownership of a directory or file.  Caller must be the owner
+          and a group member.  Works only in UNIX-like environments.
+
+USAGE:
+   file_chgrp, files, group
+
+INPUTS:
+   files:      One or more file names.  Caller must own these files.
+
+   group:      Desired group ownership for files.  Caller must be a member
+               of this group.
+
+KEYWORDS:
+   None
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-18 09:54:44 -0700 (Fri, 18 Aug 2023) $
+ $LastChangedRevision: 32028 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_chgrp.pro $
+</PRE><P>
+<STRONG>(See <A href="misc/file_chgrp.pro">general/misc/file_chgrp.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="FILE_COPY2">
 <H2>FILE_COPY2</H2></A>
-<A HREF="#FILE_ARCHIVE">[Previous Routine]</A>
+<A HREF="#FILE_CHGRP">[Previous Routine]</A>
 <A HREF="#FILE_DAILYNAMES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
