@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r32034_2023-08-18</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r32039_2023-08-20</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r32034_2023-08-18</H2>
+<H2>SPEDAS SW Help for spdsw_r32039_2023-08-20</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Aug 18 18:16:50 2023.<P>
+<STRONG>Last modified: </STRONG>Sun Aug 20 18:16:43 2023.<P>
  
 <HR>
  
@@ -539,6 +539,8 @@ projects/maven/sta/mvn_sta_programs</A>
 <LI><A HREF="projects/maven/sta/private_spd_doc_list.html">
 projects/maven/sta/private</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html">projects/maven/swea</A>
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html">
+projects/maven/swea/Test</A>
 <LI><A HREF="projects/maven/swia_spd_doc_list.html">projects/maven/swia</A>
 <LI><A HREF="projects/mex/aspera_spd_doc_list.html">projects/mex/aspera</A>
 <LI><A HREF="projects/mex/marsis_spd_doc_list.html">projects/mex/marsis</A>
@@ -6294,11 +6296,17 @@ MVN_SWE_HSKPLOT</A>
 <br>Initializes SWEA common block (mvn_swe_com).
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_KP">MVN_SWE_KP</A>
 <br>Calculates SWEA key parameters.  The result is stored in tplot variables,
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_KP5">MVN_SWE_KP5
+</A>
+<br>Calculates SWEA key parameters.  The result is stored in tplot variables,
 <LI><A HREF="projects/maven/l2gen_spd_doc_list.html#MVN_SWE_KPGEN">MVN_SWE_KPGEN
 </A>
 <br>Loads L0 data, creates L2 files for 1 day
 <LI><A HREF="projects/maven/l2gen_spd_doc_list.html#MVN_SWE_L2GEN">MVN_SWE_L2GEN
 </A>
+<br>Loads L0 data, creates L2 files for 1 day
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_L2GEN5">
+MVN_SWE_L2GEN5</A>
 <br>Loads L0 data, creates L2 files for 1 day
 <LI><A HREF="projects/maven/l2gen_spd_doc_list.html#MVN_SWE_L2GEN_1DAY">
 MVN_SWE_L2GEN_1DAY</A>
@@ -6311,6 +6319,9 @@ MVN_SWE_LOAD_L0</A>
 <br>Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_LOAD_L2">
 MVN_SWE_LOAD_L2</A>
+<br>Reads in MAVEN Level 2 telemetry files (CDF format).  Data are stored in
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_LOAD_L2A">
+MVN_SWE_LOAD_L2A</A>
 <br>Reads in MAVEN Level 2 telemetry files (CDF format).  Data are stored in
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_LOWE_MASK">
 MVN_SWE_LOWE_MASK</A>
@@ -6328,12 +6339,21 @@ MVN_SWE_MAGDIR</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_MAKECDF_3D">
 MVN_SWE_MAKECDF_3D</A>
 <br>Routine to produce CDF file from SWEA 3D data structures
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_MAKECDF_3D5">
+MVN_SWE_MAKECDF_3D5</A>
+<br>Routine to produce CDF file from SWEA 3D data structures
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_MAKECDF_PAD">
 MVN_SWE_MAKECDF_PAD</A>
+<br>Routine to produce CDF file from SWEA pad data structures
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_MAKECDF_PAD5">
+MVN_SWE_MAKECDF_PAD5</A>
 <br>Routine to produce CDF file from SWEA pad data structures
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_MAKECDF_SPEC">
 MVN_SWE_MAKECDF_SPEC</A>
 <br>Routine to produce CDF file from SWEA spec data structures
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_MAKECDF_SPEC5">
+MVN_SWE_MAKECDF_SPEC5</A>
+<br>Routine to produce CDF file from SWEA spec data structures.
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_MAKEFPAD">
 MVN_SWE_MAKEFPAD</A>
 <br>Constructs Hires PAD data structures from raw data.
@@ -6384,11 +6404,20 @@ MVN_SWE_QUALITY_DAILY</A>
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_READCDF_3D">
 MVN_SWE_READCDF_3D</A>
 <br>Routine to read CDF file from mvn_swe_makecdf_3d.pro
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_READCDF_3D5">
+MVN_SWE_READCDF_3D5</A>
+<br>Routine to read CDF file from mvn_swe_makecdf_3d.pro
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_READCDF_PAD">
 MVN_SWE_READCDF_PAD</A>
 <br>Routine to read CDF file from mvn_swe_makecdf_pad.pro
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_READCDF_PAD5">
+MVN_SWE_READCDF_PAD5</A>
+<br>Routine to read CDF file from mvn_swe_makecdf_pad.pro
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_READCDF_SPEC">
 MVN_SWE_READCDF_SPEC</A>
+<br>Routine to read CDF file from mvn_swe_makecdf_spec.pro
+<LI><A HREF="projects/maven/swea/Test_spd_doc_list.html#MVN_SWE_READCDF_SPEC5">
+MVN_SWE_READCDF_SPEC5</A>
 <br>Routine to read CDF file from mvn_swe_makecdf_spec.pro
 <LI><A HREF="projects/maven/swea_spd_doc_list.html#MVN_SWE_READ_HSK">
 MVN_SWE_READ_HSK</A>

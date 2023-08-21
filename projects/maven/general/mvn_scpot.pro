@@ -105,6 +105,22 @@
 ;
 ;   BIAS:      Bias to add to final potential estimates.
 ;
+;   QLEVEL:    Minimum quality level for SWEA data.  Filters out the vast
+;              majority of spectra affected by the sporadic low energy
+;              anomaly below 28 eV.  The validity levels are:
+;
+;                0B = Data are affected by the low-energy anomaly.  There
+;                     are significant systematic errors below 28 eV.
+;                1B = Unknown because: (1) the variability is too large to 
+;                     confidently identify anomalous spectra, as in the 
+;                     sheath, or (2) secondary electrons mask the anomaly,
+;                     as in the sheath just downstream of the bow shock.
+;                2B = Data are not affected by the low-energy anomaly.
+;                     Caveat: There is increased noise around 23 eV, even 
+;                     for "good" spectra.
+;
+;                Default = 1.
+;
 ;   SUCCESS:   Returns exit status.
 ;
 ;OUTPUTS:
@@ -114,15 +130,15 @@
 ;          the five unmerged methods in one panel.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-02-18 15:25:45 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29681 $
+; $LastChangedDate: 2023-08-20 17:05:27 -0700 (Sun, 20 Aug 2023) $
+; $LastChangedRevision: 32039 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot.pro $
 ;
 ;-
 
 pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
                stapot=stapot, lpwpot=lpwpot, shapot=shapot, composite=composite, $
-               pans=pans, nocalc=nocalc, bias=bias, success=success
+               pans=pans, nocalc=nocalc, bias=bias, qlevel=qlevel, success=success
 
   compile_opt idl2
 
@@ -132,6 +148,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
   pot = 0
   success = 0
   NaN = !values.f_nan
+  qlevel = (n_elements(qlevel) gt 0) ? byte(qlevel[0]) : 1B
 
   if (size(Espan,/type) eq 0) then mvn_scpot_defaults
   tmin = min(timerange(), max=tmax)
@@ -296,7 +313,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
 ; Step 2: Estimate positive potential from SWEA alone
   
   if (pospot) then begin
-    mvn_swe_sc_pot, potential=phi
+    mvn_swe_sc_pot, potential=phi, qlevel=qlevel
 
 ;   Don't trust SWE+ potentials in the EUV shadow
 
@@ -314,7 +331,7 @@ pro mvn_scpot, potential=pot, setval=setval, pospot=pospot, negpot=negpot, $
 ;   This fills in missing negative LPW-derived potentials.
 
   if (negpot) then begin    
-    mvn_swe_sc_negpot, potential=phi
+    mvn_swe_sc_negpot, potential=phi, qlevel=qlevel
     indx = where((mvn_sc_pot.method lt 1) and (phi.method eq 3), count)
     if (count gt 0) then mvn_sc_pot[indx] = phi[indx]
 

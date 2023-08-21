@@ -83,8 +83,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-07-07 10:52:39 -0700 (Fri, 07 Jul 2023) $
-; $LastChangedRevision: 31946 $
+; $LastChangedDate: 2023-08-20 17:05:27 -0700 (Sun, 20 Aug 2023) $
+; $LastChangedRevision: 32039 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_defaults.pro $
 ;
 ;-
@@ -93,8 +93,7 @@ pro mvn_scpot_defaults, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
                abins=abins, dbins=dbins, obins=obins2, mask_sc=mask_sc, $
                badval=badval2, minflux=minflux2, maxdt=maxdt2, $
                min_lpw_pot=min_lpw_pot2, list=list, $
-               min_sta_pot=min_sta_pot2, max_sta_alt=max_sta_alt2, $
-               qlevel=qlevel2
+               min_sta_pot=min_sta_pot2, max_sta_alt=max_sta_alt2
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -110,7 +109,6 @@ pro mvn_scpot_defaults, erange=erange2, thresh=thresh2, dEmax=dEmax2, $
       print, "  dEmax:        ", dEmax
       print, "  minflux:      ", minflux
       print, "  badval:       ", badval
-      print, "  qlevel:       ", qlevel
       print, "  min_lpw_pot:  ", min_lpw_pot
       print, "  min_sta_pot:  ", min_sta_pot
       print, "  max_sta_alt:  ", max_sta_alt
