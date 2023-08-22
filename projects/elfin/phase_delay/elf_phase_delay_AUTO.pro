@@ -101,9 +101,6 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   xmargin1 = 0.1
   xmargin2 = 0.2
   
-  cwdirname=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots/temp'
-  cd,cwdirname
-
   if undefined(probe) then probe='a' else if probe ne 'a' and probe ne 'b' then begin
     print, 'Please enter a valid probe.'
     return
@@ -120,13 +117,17 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ; create a new folder to save all plots for one sci zone, detele exisitng folder
   ; folder name is sci zone date and time
   ; also create a finalplot folder to save only the final results of each sci zone
-  finalfolder='Fitplots'
+  tstart_str=time_string(tstart, format=6)
+  temp_path = !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots/temp_' + tstart_str 
+  if size(temp_path,/dimen) eq 1 then FILE_DELETE,temp_path,/RECURSIVE ; delete old folder
+  FILE_MKDIR,temp_path ; make new folder
   ; check whether folder exist
+  finalfolder=temp_path+'/Fitplots'
   fileresult=FILE_SEARCH(finalfolder)
   if size(fileresult,/dimen) eq 1 then FILE_DELETE,finalfolder,/RECURSIVE ; delete old folder
   FILE_MKDIR,finalfolder ; make new folder
   CD,finalfolder
-
+ 
   if ~keyword_set(onlypng) then onlypng=1
   if ~keyword_set(outputplot) then outputplot=0
   
@@ -149,10 +150,9 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ; If phase delay file is not stored locally: copy over from server
 
   ; Read calibration (phase delay) file and store data
-  file = 'el'+probe+'_epde_phase_delays.csv'
+  file = 'el'+probe+'_epde_phase_delays_new.csv'
   filedata = read_csv(!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'+file, header = cols, types = ['String', 'String', 'Float', 'Float','Float','Float','Float','Float'])
   dat = CREATE_STRUCT(cols[0], filedata.field1, cols[1], filedata.field2, cols[2], filedata.field3, cols[3],  filedata.field4, cols[4], filedata.field5, cols[5], filedata.field6, cols[6], filedata.field7, cols[7], filedata.field8, cols[8], filedata.field9)
-  
   
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;make a copy of previous existing phase delay file, with date noted (akr)
@@ -171,9 +171,9 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
 ;  write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
   
   ;return back to original directory
-  cd, cwdirname + '/' + finalfolder
+  cd,finalfolder
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  
+
   timeduration=time_double(tend)-time_double(tstart)
   timespan,tstart,timeduration,/seconds
   pival=double(!PI)
@@ -229,12 +229,13 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   dPhAng2add = 4
   ;read, dSectr2add, PROMPT='IG, Sector: '
   ;read, dPhAng2add, PROMPT='IG Phase Angle: '
-  
+
   ; make sure you pick a time just prior to an ascending PA!!!! This will make "even" PAs ascending ones (red), and "odd" PAs descending one (blue)
   elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype, suffix='_orig',/no_spec
   elf_load_state, probes=[probe],/get_support_data
   cotrans,'el'+probe+'_pos_gei','el'+probe+'_pos_gse',/GEI2GSE
   cotrans,'el'+probe+'_pos_gse','el'+probe+'_pos_gsm',/GSE2GSM
+  cotrans,'el'+probe+'_pos_gsm','el'+probe+'_pos_sm',/GSM2SM
   tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
   tdotp,'el'+probe+'_bt89_gsm','el'+probe+'_pos_gsm',newname='el'+probe+'_Br_sign'
   get_data,'el'+probe+'_Br_sign',data=elf_Br_sign
@@ -298,6 +299,16 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   elf_pef_sectnum.x=elf_pef_sectnum.x+tcor ; (spread) sectors to full accumulation interval
   elf_pef_spinper.x=elf_pef_spinper.x+tcor ; (spread) sectors to full accumulation interval
   
+  ;JWU check time for tplot variables. sometimes they are not monotonic
+  length = n_elements(elf_pef_sectnum.x)
+  diff = elf_pef_sectnum.x[1:length-1] - elf_pef_sectnum.x[0:length-2]
+  ianynegs=where(diff lt 0,janynegs)
+  if janynegs gt 0 then begin
+    badflag = 4
+    goto, Median_Calculation
+  endif
+  ;JWU
+  ;
   ;mypxforigarray=reform(elf_pef.y,nsectors*nspinsectors)
   mypxforigarray=reform(elf_pef.y,nsectors*Max_numchannels)
   ianynegpxfs=where(mypxforigarray lt 0.,janynegpxfs) ; eliminate negative values from raw data -- these should not be there!
@@ -337,7 +348,6 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     MaxE_channels = MinE_channels+1
   ;nsectors=n_elements(elf_pef.x)
   ;nspinsectors=n_elements(reform(elf_pef.y[0,*]))  ; JWu 32 sec
-
   if dSectr2add ne 0 then begin
     xra=make_array(nsectors-abs(dSectr2add),/index,/long)
     if dSectr2add gt 0 then begin
@@ -388,6 +398,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; JWu check gaps in sectnum and detele sectors is not 0-15
   get_data,'el'+probe+'_pef_sectnum',data=elf_pef_sectnum
+  
   elf_pef_sectnum_degap=[]
   elf_pef_sectnum_tdegap=[]
   sec_zero=where(elf_pef_sectnum.y eq 0)
@@ -401,7 +412,10 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
       append_array,elf_pef_sectnum_tdegap, elf_pef_sectnum.x[seczero_start[isecgap]:seczero_end[isecgap]]
     endif
   endfor
-
+  if undefined(elf_pef_sectnum_tdegap) then begin
+    badflag=4
+    goto, Median_Calculation
+  endif
   store_data,'el'+probe+'_pef_sectnum_degap',data={x:elf_pef_sectnum_tdegap, y:elf_pef_sectnum_degap}
   copy_data,'el'+probe+'_pef_sectnum_degap','el'+probe+'_pef_sectnum'
   ; JWu this doesn't correct when sector number is not continous, so comment for now
@@ -426,6 +440,9 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ;
   ; now pad the rest of the quantities
   get_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper,dlim=myspinperdata_dlim,lim=myspinperdata_lim ; this preserved the original times
+  spin_med=median(elf_pef_spinper.y)
+  spin_var=variance(elf_pef_spinper.y)/spin_med*100.
+
   store_data,'el'+probe+'_pef_times',data={x:elf_pef_spinper.x,y:elf_pef_spinper.x-elf_pef_spinper.x[0]} ; this is to track gaps
   ;JWu start
   ;tinterpol_mxn,'el'+probe+'_pef_times','el'+probe+'_pef_sectnum',/nearest_neighbor,/NAN_EXTRAPOLATE,/over ; middle gaps have constant values after interpolation, side pads are NaNs themselves
@@ -497,6 +514,11 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   tt89,'el'+probe+'_pos_gsm',/igrf_only,newname='el'+probe+'_bt89_gsm',period=1.
   cotrans,'el'+probe+'_pos_gsm','el'+probe+'_pos_sm',/GSM2SM ; <-- use SM geophysical coordinates plus Despun Spacecraft coord's with Lvec (DSL)
   cotrans,'el'+probe+'_bt89_gsm','el'+probe+'_bt89_sm',/GSM2SM ; Bfield in same coords as well
+  get_data, 'el'+probe+'_att_gei', data=d
+  if size(d, /type) NE 8 then begin
+    badflag=4
+    goto, Median_Calculation
+  endif
   cotrans,'el'+probe+'_att_gei','el'+probe+'_att_gse',/GEI2GSE
   cotrans,'el'+probe+'_att_gse','el'+probe+'_att_gsm',/GSE2GSM
   cotrans,'el'+probe+'_att_gsm','el'+probe+'_att_sm',/GSM2SM ; attitude in SM
@@ -727,8 +749,16 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   
   elf_pef_pa_spec_signum=signum(elf_pef_pa_spec_pas[*,nspinsectors/2-1]-elf_pef_pa_spec_pas[*,0]) ; ascending vs descending. ADDED FROM PREVIOUS CODE (wt)
 
+  if undefined(elf_pef_pa_spec_signum) then begin
+    badflag=4
+    goto, Median_Calculation
+  endif
   if (elf_pef_pa_spec_signum[0] gt 0) then $ ; between halfspin 0 and 1 you can build plus and minus sorted pa maps
     ipasortmapplus=sort(elf_pef_pa_spec_pas[0,*]) else ipasortmapminus=sort(elf_pef_pa_spec_pas[0,*])
+  if n_elements(elf_pef_pa_spec_signum) EQ 1 then begin
+    badflag=4
+    goto, Median_Calculation
+  endif
   if (elf_pef_pa_spec_signum[1] gt 0) then $
     ipasortmapplus=sort(elf_pef_pa_spec_pas[1,*]) else ipasortmapminus=sort(elf_pef_pa_spec_pas[1,*])
   ; modify pas and spec accordingly to match increasing pa for both ascending and descending measurements
@@ -873,7 +903,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
             thick=5,/noisotropic,psym=1,xmargin=[xmargin1,xmargin2]
           plots,xfit,result, psym=0
           plots,x2fit,y2fit, psym=4, SymSize=2.0
-          makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispeceven[jthspec],FORMAT='(I03)')
+          makepng,finalfolder+'/Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispeceven[jthspec],FORMAT='(I03)')
           ;stop
         endif
         pef2plots_even[jthspec,*]=!Values.F_NAN
@@ -931,7 +961,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
         plots,xfit,result, psym=0
         plots,x2fit,y2fit, psym=4, SymSize=2.0
         plots,[xpeak,xpeak],[1,max(pef2plots_even[jthspec,1:-2])*1.5]
-        makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispeceven[jthspec],FORMAT='(I03)')
+        makepng,finalfolder+'/Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispeceven[jthspec],FORMAT='(I03)')
       endif
       pef2plots_even[jthspec,*]=pef2plots_even[jthspec,*]/ypeak
       pafitminus90_even[jthspec]=xpeak-90.
@@ -1055,7 +1085,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
             thick=5,/noisotropic,psym=1,xmargin=[xmargin1,xmargin2]
           plots,xfit,result, psym=0
           plots,x2fit,y2fit, psym=4, SymSize=2.0
-          makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispecodd[jthspec],FORMAT='(I03)')
+          makepng,finalfolder+'/Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispecodd[jthspec],FORMAT='(I03)')
         endif
         pef2plots_odd[jthspec,*]=!Values.F_NAN
         pafitminus90_odd[jthspec]=!Values.F_NAN
@@ -1110,7 +1140,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
         plots,x2fit,y2fit, psym=4, SymSize=2.0
         ;plots,make_array(max(pef2plots_odd[jthspec,1:-2])*1.5,value=xpeak),indgen(max(pef2plots_odd[jthspec,1:-2])*1.5)
         plots,[xpeak,xpeak],[1,max(pef2plots_odd[jthspec,1:-2])*1.5]
-        makepng,'Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispecodd[jthspec],FORMAT='(I03)')
+        makepng,finalfolder+'/Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')+'_'+string(ispecodd[jthspec],FORMAT='(I03)')
         ;stop
       endif
       pef2plots_odd[jthspec,*]=pef2plots_odd[jthspec,*]/ypeak
@@ -1178,8 +1208,8 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   for jthspec=0,n_elements(ispecodd)-1 do plotxy,[[pafitminus90_odd[jthspec]+90.,pafitminus90_odd[jthspec]+90.],[0.2*maxy,maxy]],/over,colors=['b'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
   plotxy,[[xfit],[yfit_odd]],/over,colors=['o'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
   plotxy,[[xfit],[yfit_even]],/over,colors=['g'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
-  finalfile='summary_Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')
-  makepng,finalfile
+  finalfile='/summary_Isolu'+string(Isolu,format='(I1)')+'_Iters'+string(iters,format='(I1)')
+  makepng,finalfolder+finalfile
   
   avg_nonmonotonic_frac=(nonmonotonic_frac_odd+nonmonotonic_frac_even)/2.
   print,'Times=',time_string(tstartendtimes4pa2plot[0])+' - '+strmid(time_string(tstartendtimes4pa2plot[1]),11,8)+'UT,', $
@@ -1410,7 +1440,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)-sqrt(2)*0.1,linestyle=1
     oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)+sqrt(2)*0.2,linestyle=2
     oplot,findgen(16,start=0.,incre=0.1),findgen(16,start=0.,incre=0.1)-sqrt(2)*0.2,linestyle=2
-    makepng,'gradient prec vs back'
+    makepng,finalfolder+'/gradient prec vs back'
 
 
     even_dis=abs(evendiff_45_90-evendiff_90_135)/sqrt(2)
@@ -1450,7 +1480,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     for jthspec=0,n_elements(ispecodd)-1 do plotxy,[[pafitminus90_odd[jthspec]+90.,pafitminus90_odd[jthspec]+90.],[0.2*maxy,maxy]],/over,colors=['b'],title=' ',xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
     ;plotxy,[[xfit],[yfit_odd]],/over,colors=['o'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
     ;plotxy,[[xfit],[yfit_even]],/over,colors=['g'],title=' ',linestyle=2,thick=5,yrange=[miny,maxy],xtitle='PA [deg]',ytitle='nflux [#/(cm^2 s sr MeV)]'
-    makepng,'summary_Isolu5_Iters0_BestIsolu'+string(imincostFun,format='(I1)')
+    makepng,finalfolder+'/summary_Isolu5_Iters0_BestIsolu'+string(imincostFun,format='(I1)')
     
     
     ;n_elements(where(FINITE(pafitminus90_even)))+n_elements(where(FINITE(pafitminus90_odd)))
@@ -1531,10 +1561,9 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   
   ;PHASE DELAY CSV FILE ARCHIVING
   ; Read calibration (phase delay) file and store data
-  file = 'el'+probe+'_epde_phase_delays.csv'
+  file = 'el'+probe+'_epde_phase_delays_new.csv'
   filedata = read_csv(!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'+file, header = cols, types = ['String', 'String', 'Float', 'Float','Float','Float','Float','Float', 'String'])
   dat = CREATE_STRUCT(cols[0], filedata.field1, cols[1], filedata.field2, cols[2], filedata.field3, cols[3],  filedata.field4, cols[4], filedata.field5, cols[5], filedata.field6, cols[6], filedata.field7, cols[7], filedata.field8, cols[8], filedata.field9)
-
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;make a copy of previous existing phase delay file, with date noted (akr)
 
@@ -1552,7 +1581,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
 ;  write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
 
   ;return back to original directory
-  cd, cwdirname + '/' + finalfolder
+  cd, finalfolder
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1560,7 +1589,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   ;;;MEDIANS WITH NANs, WILL BECOME OBSOLETE IN TIME {{{:
-
+  Median_Calculation:
   starttimes = time_double(dat.tstart)
   angles = dat.dSectr2add*360./dat.SectNum+dat.dPhAng2add
   meds = dat.LatestMedianSectr*360./dat.SectNum+dat.LatestMedianPhAng
@@ -1569,7 +1598,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     foreach nan, badmeds do begin
 
       int_end = starttimes[nan]
-      int_start = int_end-3600.*24.*7.
+      int_start = int_end-3600.*24.*14.
       valid_items = where(starttimes ge int_start and starttimes le int_end and dat.badflag eq 0)
       current_median = median(angles[valid_items])
 
@@ -1603,8 +1632,8 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     endforeach
 
     if ~finite(dat.LatestMedianSectr[nan]) or ~finite(dat.LatestMedianPhAng[nan]) then begin
-      print, 'Median failed'
-      stop
+      dprint, 'Median failed'
+      ;stop
     endif
   endif
   check3 = total(n_elements(dat.tstart))
@@ -1636,29 +1665,38 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
       endelse    
     endif else begin
       int_end = time_double(tstart)
-      median_range = 14. ;it will go back 7 days to find a new median
+      median_range = 21. ;it will go back 7 days to find a new median
       int_start = int_end-3600.*24.*median_range
       valid_items = where(starttimes ge int_start and starttimes le int_end and dat.badflag eq 0)
-      if valid_items[0] eq -1 then begin
+      if valid_items[0] eq -1 then begin ; 30 days good fitting result not avaialble
         print, 'The phase delay procedure has stopped because there is no entry within the median range. Will use current value as median.
-        current_median = dSectr2add*angpersector+dPhAng2add
+;        current_median = dSectr2add*angpersector+dPhAng2add
+;        placeholder_phase = current_median
+        valid_items = where(starttimes ge int_start and starttimes le int_end)
+        if valid_items[0] eq -1 then begin ; if no median found, use current value
+           current_median = dSectr2add*angpersector+dPhAng2add
+           placeholder_phase = current_median
+           if badflag ne 4 then badflag=-1 
+        endif else begin; 30 days all fitting result avaialble
+          current_median = median(angles[valid_items])
+          placeholder_phase = current_median
+        endelse
+      endif else begin ; 30 days good fitting result avaialble
+        current_median = median(angles[valid_items])
         placeholder_phase = current_median
-      endif
-      current_median = median(angles[valid_items])
-      placeholder_phase = current_median
+      endelse
     endelse
   endelse
- 
+
   elf_phase_delay_SectrPhAng, current_median, angpersector, LatestMedianSectr=LatestMedianSectr, LatestMedianPhAng=LatestMedianPhAng
 
   print, current_median
   ;print, latestmedianPhAng
-  print, latestmedianSectr
+  print, latestmedianSectr 
 
-
+;stop
   if ~finite(LatestMedianSectr) or ~finite(LatestMedianPhAng) then begin
     print, 'Median failed'
-    stop
   endif
 
   check4 = total(n_elements(dat.tstart))
@@ -1680,8 +1718,21 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ; -- badflag=1 bad: fitting is not converge
   ; -- badflag=2 bad: no fit
   ; -- badflag=3 bad: bad fgm state
+  ; -- badflag=4 bad: no able to run
   ; ---------------------------------------------------------------------------------
   ;stop
+  ;
+  ;note time that this value has been processed (and updated in the csv)
+  timeofprocessing = time_string(systime(/seconds),format=0,precision=0)
+  
+  if badflag eq 4 then begin
+    dSectr2add = LatestMedianSectr
+    dPhAng2add = LatestMedianPhAng
+    plot,[0,0],[0,0], title=' EPD Electrons EL-'+strupcase(probe)+', '+time_string(tstartendtimes4pa2plot[0])+' - '+strmid(time_string(tstartendtimes4pa2plot[1]),11,8)+ $
+      ' UT'
+
+    goto, writeCSV
+  endif
   ; badflag=-1,-2,-3 sus, needs further check
   ; badflag=-1, large difference between median and current solution (1.5 sector=35 deg)
   if abs((dSectr2add*angpersector+dPhAng2add)-(LatestMedianSectr*angpersector+LatestMedianPhAng)) gt 35 then begin
@@ -1699,15 +1750,18 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
 ;  endif
 
   ; badflag=-3, fit peak is far away from 90 degree (12 deg)
-  pafitminus90_even_mean=mean(abs(pafitminus90_even),/nan)
-  pafitminus90_odd_mean=mean(abs(pafitminus90_odd),/nan)
-  if abs(pafitminus90_even_mean) gt 12 or abs(pafitminus90_odd_mean) gt 12 then begin
-    badFlag = -3
-    ;dSectr2add=LatestMedianSectr
-    ;dPhAng2add=LatestMedianPhAng
-    ;stop
-  endif
-  
+  if undefined(pafitminus90_even) or undefined(pafitminus90_odd) then begin
+     badFlag = -3 
+  endif else begin 
+    pafitminus90_even_mean=mean(abs(pafitminus90_even),/nan)
+    pafitminus90_odd_mean=mean(abs(pafitminus90_odd),/nan)
+    if abs(pafitminus90_even_mean) gt 12 or abs(pafitminus90_odd_mean) gt 12 then begin
+      badFlag = -3
+      ;dSectr2add=LatestMedianSectr
+      ;dPhAng2add=LatestMedianPhAng
+      ;stop
+    endif
+   endelse  
   ; badflag=-4, variance of fit peak is too large (15 deg)
   pafitminus90_even_std=stddev(abs(pafitminus90_even),/nan)
   pafitminus90_odd_std=stddev(abs(pafitminus90_odd),/nan)
@@ -1732,19 +1786,23 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   endif
   
   ; badflag=3, bag fgm state
-  get_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper
-  spin_med=median(elf_pef_spinper.y)
-  spin_var=variance(elf_pef_spinper.y)
-  if spin_med lt 2.3 or spin_var/spin_med gt 0.1 then begin
+;  get_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper
+;  spin_med=median(elf_pef_spinper.y)
+;  spin_var=variance(elf_pef_spinper.y)
+;  spin_var=variance(elf_pef_spinper.y)/spin_med*100.
+;  if spin_med lt 2.3 or spin_var/spin_med gt 0.1 then begin
+;get_data, 'el'+probe+'_pef_spinper', data=spin
+;spin_med=median(spin.y)
+;spin_var=variance(spin.y)/spin_med*100.
+;stop
+  if spin_med lt 2.3 or spin_var gt 0.1 then begin
     badFlag = 3
     dSectr2add=LatestMedianSectr
     dPhAng2add=LatestMedianPhAng
     ;stop
   endif
-
-  ;note time that this value has been processed (and updated in the csv)
-  timeofprocessing = time_string(systime(/seconds),format=0,precision=0)
   
+  writeCSV:
   xyouts,  .1, .015, 'nspininsum = '+string(my_nspinsinsum2use[0],format='(I2)')+'  sectors = '+string(nspinsectors,format='(I2)'), /normal
   xyouts,  .55, .015, 'Created: '+systime()+ '   flag =' + string(badflag,FORMAT='(I2)'), /normal
   xyouts,  .81, 0.26, 'flag',/normal
@@ -1756,11 +1814,15 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   xyouts,  .81, 0.14, '-2 sus: not symmetric',/normal
   xyouts,  .81, 0.12, '-3 sus: fit peak off 90',/normal
   xyouts,  .81, 0.10, '-4 sus: peaks high var',/normal
-  makepng,'bestfit'
-  cwd,cwdirname
+  ;file_path= !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots'
+  cd, finalfolder
+  makepng,finalfolder+'/bestfit'
+;  stop
+;  stop
+  ;cwd,cwdirname
   ;stop
   ;print,'Average chi squared of fits from last iteration:', chisq_avg
-
+  
   ; Re-write to file
   if autobad then phase_result = placeholder_phase else phase_result=dSectr2add*angpersector+dPhAng2add
 
@@ -1787,11 +1849,39 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ;START OF FILE FORMATTING                     ;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;  elf_mlt_l_lat,'el'+probe+'_pos_sm',MLT0=MLT0,L0=L0,lat0=lat0
+;  get_data, 'el'+probe+'_pos_sm', data=elfin_pos
+;  ;get_data, 'el'+probe+'_pef_nflux', data=pef_nflux
+;  store_data,'el'+probe+'_MLAT_dip',data={x:elfin_pos.x,y:lat0*180./!pi}
+;  get_data,'el'+probe+'_MLAT_dip',data=this_lat
+
+  ; based on latitude and whether s/c is ascending or descending
+  ; determine zone name
+;  sz_name=''
+;  if size(this_lat, /type) EQ 8 then begin ;change to num_scz?
+;    sz_tstart=time_string(tstart)
+;    sz_lat=this_lat.y
+;    median_lat=median(sz_lat)
+;    dlat = sz_lat[1:n_elements(sz_lat)-1] - sz_lat[0:n_elements(sz_lat)-2]
+;    if median_lat GT 0 then begin
+;      if median(dlat) GT 0 then sz_plot_lbl = ', North Ascending' else $
+;        sz_plot_lbl = ', North Descending'
+;      if median(dlat) GT 0 then sz_name = 'nasc' else $
+;        sz_name = 'ndes'
+;    endif else begin
+;      if median(dlat) GT 0 then sz_plot_lbl = ', South Ascending' else $
+;        sz_plot_lbl = ', South Descending'
+;      if median(dlat) GT 0 then sz_name = 'sasc' else $
+;        sz_name =  'sdes'
+;    endelse
+;    print, sz_name
+;  endif
+;stop
   ;find index where starttime should be
   valid_items = where(starttimes le time_double(tstart)+5.*60.)
   newindex = valid_items[-1]
   newentry = [string(time_string(tstart)), string(time_string(tend)), string(dSectr2add), string(dPhang2add), string(LatestMedianSectr), string(LatestMedianPhAng), string(badFlag), string(nspinsectors), string(timeofprocessing)]
-
+;stop
   ;figure out if this science zone is new. if not, it has to be appended in a different way.
   n = where(time_double(tstart) lt starttimes-60.*5, old)
 
@@ -1814,7 +1904,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     tends =  [dat.tend, time_string(newentry[1])]
     dSectr2adds = [dat.dSectr2add, newentry[2]]
     dPhang2adds = [dat.dPhang2add, newentry[3]]
-    LatestMedianSectrs = [dat.LatestMedianSectr, newentry[4]]
+    LatestMedianSectrs = fix([dat.LatestMedianSectr, newentry[4]])
     LatestMedianPhAngs = [dat.LatestMedianPhAng,newentry[5]]
     badFlags = [dat.badFlag, newentry[6]]
     SectNum = [dat.SectNum, newentry[7]]
@@ -1836,18 +1926,25 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
 ;    dateprev=time_string(systime(/seconds),format=2,precision=-3)
 ;    dateprev=strmid(time_string(systime(/seconds),format=2,precision=3),0,15)
     thisdate=time_string(newentry[0], format=6)
-    fileprev = 'el'+probe+'_epde_phase_delays_' + thisdate + '.csv'
+    thisfile = 'el'+probe+'_epde_phase_delays_' + thisdate + '.csv'
 
   ;create folder for old pdp copies
-    cwdirnametemp=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'
-    cd,cwdirnametemp
-    pdpprev_folder = 'pdpcsv_archive'
-    fileresult=file_search(pdpprev_folder)
-    if size(fileresult,/dimen) eq 0 then file_mkdir,pdpprev_folder
+;    cwdirnametemp=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'
+;    cd,cwdirnametemp
+;    pdpprev_folder = 'pdpcsv_archive'
+    cal_path = !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files'
+    fileresult=file_search(cal_path)
+    if size(fileresult,/dimen) eq 0 then file_mkdir,cal_path
+    cd, cal_path
+    pdpcsv_folder = cal_path + '/pdpcsv_archive'
+    fileresult=file_search(pdpcsv_folder)
+    if size(fileresult,/dimen) eq 0 then file_mkdir,pdpcsv_folder
+
 
     ;write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+ fileprev, filedata, header = cols
-    print, 'Writing file: ' + !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+fileprev 
-    write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+fileprev, newentry  ;, header = cols
+    dprint, 'Writing file: ' + !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+thisfile 
+    print, newentry
+    write_csv, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/pdpcsv_archive/'+thisfile, newentry  ;, header = cols
 
   check5 = total(n_elements(tstarts))
 

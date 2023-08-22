@@ -19,9 +19,9 @@
 ;   Created by Matt Fillingim
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
-;   $LastChangedRevision: 29677 $
-;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_3d.pro $
+;   $LastChangedDate: 2023-08-21 12:14:55 -0700 (Mon, 21 Aug 2023) $
+;   $LastChangedRevision: 32048 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_readcdf_3d5.pro $
 ;
 ;-
 
@@ -347,15 +347,17 @@ pro mvn_swe_readcdf_3d5, infile, structure
   structure.data = reform(data, 64, 96, nrec)
 
 ; *** variance
+; variance -- variance in units of (differential energy flux)^2
 ; recompress the raw counts to 8-bit value, use this to index devar (swe_com)
 
-  x = alog(counts > 1.)/alog(2.)
-  i = floor(x)
-  j = floor((2.^(x - i) - 1.)*16.)
-  k = (i - 3)*16 + j
-  indx = where(counts lt 32., cnt)
-  if (cnt gt 0L) then k[indx] = round(counts[indx])
-  var = devar[k]
+  if (0) then begin
+    x = alog(counts > 1.)/alog(2.)
+    i = floor(x)
+    j = floor((2.^(x - i) - 1.)*16.)
+    k = (i - 3)*16 + j
+    indx = where(counts lt 32., cnt)
+    if (cnt gt 0L) then k[indx] = round(counts[indx])
+    var = devar[k]
 
 ; in units of counts - want in units of energy flux (data)
 ; from mvn_swe_convert_units
@@ -364,15 +366,22 @@ pro mvn_swe_readcdf_3d5, infile, structure
 ;                   where dt = integ_t ; gf = gf*eff ; eff = 1
 ;scale = 1.D/(dtc*integ_t*dt_arr*gfe) ; gfe only [64, 16]
 
-  scale = 1.D/(structure.dtc*integ_t*dt_arr*structure.gf) ; want [64, 16, nrec]
-  var = var*(scale*scale)
-  structure.var = var
+    scale = 1.D/(structure.dtc*integ_t*dt_arr*structure.gf) ; want [64, 16, nrec]
+    var = var*(scale*scale)
+    structure.var = var
+  endif
+
+  CDF_VARGET, id, 'variance', var, /ZVAR, rec_count = nrec
+
+; reform dimensions [64, 16, 6, nrec] --> [64, 96, nrec]
+
+  structure.var = reform(var, 64, 96, nrec)
 
 ; *** quality flag -- three possible values:
 ; 0 = low-energy anomaly ; 1 = unknown ; 2 = good data
 
   CDF_VARGET, id, 'quality', quality, /ZVAR, rec_count = nrec
-  structure.quality = quality
+  structure.quality = reform(quality)
 
 ; *** chksum and valid
 

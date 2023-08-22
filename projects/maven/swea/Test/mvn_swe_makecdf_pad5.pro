@@ -27,9 +27,9 @@
 ;   ISTP compliance scrub; DLM: 2016-04-08
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2023-08-18 10:21:25 -0700 (Fri, 18 Aug 2023) $
-;   $LastChangedRevision: 32031 $
-;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_pad.pro $
+;   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
+;   $LastChangedRevision: 32046 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_makecdf_pad5.pro $
 ;
 ;-
 
@@ -216,7 +216,7 @@ pro mvn_swe_makecdf_pad5, data, file = file, version = version, directory = dire
              'binning', 'counts', 'diff_en_fluxes', 'geom_factor', $
              'g_engy', 'de_over_e', 'accum_time', 'energy', 'pa', $
 	         'd_pa', 'g_pa', 'b_azim', 'b_elev', 'num_dists', 'pindex', $
-	         'pa_label', 'en_label', 'quality']
+	         'pa_label', 'en_label', 'quality', 'variance']
 
   id0  = cdf_attcreate(fileid, 'TITLE',                      /global_scope)
   id1  = cdf_attcreate(fileid, 'Project',                    /global_scope)
@@ -503,6 +503,48 @@ pro mvn_swe_makecdf_pad5, data, file = file, version = version, directory = dire
 
   mvn_swe_convert_units, data, 'eflux'
   cdf_varput, fileid, varlist[vndx], data.data
+
+; *** variance -- in units of (differential energy flux)^2 ***
+;   Note: I'm including this since it's not at all obvious how to account
+;         for digitization noise starting from raw counts.  It is assumed
+;         that the user will know that data and sqrt(variance) should have
+;         the same units.
+
+  dim_vary = [1, 1]
+  dim = [64, 16]  
+  vndx = (where(varlist eq 'variance'))[0]
+  varid = cdf_varcreate(fileid, varlist[vndx], /CDF_FLOAT, dim_vary, DIM = dim, /REC_VARY, $
+    /ZVARIABLE) 
+
+  cdf_attput, fileid, 'FIELDNAM',     varid, varlist[vndx], /ZVARIABLE
+  cdf_attput, fileid, 'FORMAT',       varid, 'E15.7',       /ZVARIABLE
+  cdf_attput, fileid, 'LABLAXIS',     varid, varlist[vndx], /ZVARIABLE
+  cdf_attput, fileid, 'VAR_TYPE',     varid, 'data',        /ZVARIABLE
+  cdf_attput, fileid, 'FILLVAL',      varid, -1.e31,        /ZVARIABLE
+  cdf_attput, fileid, 'DISPLAY_TYPE', varid, 'time_series', /ZVARIABLE
+
+  cdf_attput, fileid, 'VALIDMIN', varlist[vndx], 0.,           /ZVARIABLE
+  cdf_attput, fileid, 'VALIDMAX', varlist[vndx], 1.e14,        /ZVARIABLE
+  cdf_attput, fileid, 'SCALEMIN', varlist[vndx], 0.,           /ZVARIABLE
+  cdf_attput, fileid, 'SCALEMAX', varlist[vndx], 1.e11,        /ZVARIABLE
+  cdf_attput, fileid, 'UNITS',    varlist[vndx], $
+    'eV/[eV cm^2 sr s]',                                       /ZVARIABLE
+  cdf_attput, fileid, 'VAR_TYPE', varlist[vndx], 'data',       /ZVARIABLE
+  cdf_attput, fileid, 'CATDESC',  varlist[vndx], $
+    'Calibrated differential energy flux',                     /ZVARIABLE
+  cdf_attput, fileid, 'DEPEND_0', varlist[vndx], 'epoch',      /ZVARIABLE
+  cdf_attput, fileid, 'DEPEND_2', varlist[vndx], 'energy',     /ZVARIABLE
+  cdf_attput, fileid, 'DEPEND_1', varlist[vndx], 'pindex',     /ZVARIABLE
+  cdf_attput, fileid, 'LABL_PTR_1', varlist[vndx], 'pa_label', /ZVARIABLE
+  cdf_attput, fileid, 'LABL_PTR_2', varlist[vndx], 'en_label', /ZVARIABLE
+
+; DEPEND_X are in reverse order for row-major (PDS) vs. column-major (IDL)
+; DEPEND_1 should point to 'pa', but 'pa' is 2-dimensional, so ...
+; pindex is a dummy variable (no information content) for ISTP compliance
+
+; units are (energy flux)^2 from previous variable
+
+  cdf_varput, fileid, varlist[vndx], data.var
 
 ; *** geom_factor -- Geometric factor ***
 

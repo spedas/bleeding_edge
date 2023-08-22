@@ -63,10 +63,10 @@
 ;
 ;       NOSPICE:       Do not initialize SPICE.
 ;
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-08-21 10:46:02 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32045 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_load_l2a.pro $
 ;
 ;CREATED BY:    David L. Mitchell  02-02-15
 ;FILE: mvn_swe_load_l2a.pro

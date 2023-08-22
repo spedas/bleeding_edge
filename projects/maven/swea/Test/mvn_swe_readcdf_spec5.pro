@@ -19,10 +19,10 @@
 ;   Created by Matt Fillingim
 ;   Development code for data version 5; DLM: 2023-08
 ; VERSION:
-;   $LastChangedBy: $
-;   $LastChangedDate: $
-;   $LastChangedRevision: $
-;   $URL: $
+;   $LastChangedBy: dmitchell $
+;   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
+;   $LastChangedRevision: 32046 $
+;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_readcdf_spec5.pro $
 ;
 ;-
 
@@ -256,15 +256,17 @@ pro mvn_swe_readcdf_spec5, infile, structure
   structure.data = data
 
 ; *** variance
+; variance -- variance in units of (differential energy flux)^2
 ; recompress the raw counts to 8-bit value, use this to index devar (swe_com)
 
-  x = alog(counts > 1.)/alog(2.)
-  i = floor(x)
-  j = floor((2.^(x - i) - 1.)*16.)
-  k = (i - 3)*16 + j
-  indx = where(counts lt 32., cnt)
-  if (cnt gt 0L) then k[indx] = round(counts[indx])
-  var = devar[k]
+  if (0) then begin
+    x = alog(counts > 1.)/alog(2.)
+    i = floor(x)
+    j = floor((2.^(x - i) - 1.)*16.)
+    k = (i - 3)*16 + j
+    indx = where(counts lt 32., cnt)
+    if (cnt gt 0L) then k[indx] = round(counts[indx])
+    var = devar[k]
 
 ; in units of counts - want in units of energy flux (data)
 ; from mvn_swe_convert_units
@@ -272,15 +274,19 @@ pro mvn_swe_readcdf_spec5, infile, structure
 ; output: 'EFLUX' : scale = scale * 1D/(dtc * dt * dt_arr * gf)
 ;                   where dt = integ_t ; gf = gf*eff ; eff = 1
 
-  scale = 1D/(structure.dtc*integ_t*dt_arr*structure.gf)
-  var = var*(scale*scale)
+    scale = 1D/(structure.dtc*integ_t*dt_arr*structure.gf)
+    var = var*(scale*scale)
+    structure.var = var
+  endif
+
+  CDF_VARGET, id, 'variance', var, /ZVAR, rec_count = nrec
   structure.var = var
 
 ; *** quality flag -- three possible values:
 ; 0 = low-energy anomaly ; 1 = unknown ; 2 = good data
 
   CDF_VARGET, id, 'quality', quality, /ZVAR, rec_count = nrec
-  structure.quality = quality
+  structure.quality = reform(quality)
 
 ; *** chksum and valid (chksum is determined by mvn_swe_calib, above)
 

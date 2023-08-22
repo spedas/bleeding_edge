@@ -45,7 +45,7 @@ pro spec3d,tempdat,   $
   OVERPLOT = oplot
 ;@wind_com.pro
 
-if size(/type,tempdat) ne 8 || tempdat.valid eq 0 then begin
+if size(/type,tempdat) ne 8 || max(tempdat.valid) eq 0 then begin
   dprint, 'Invalid Data',dlevel=2,verbose=verbose
   return
 endif

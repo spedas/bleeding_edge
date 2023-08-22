@@ -11,16 +11,23 @@
 ;INPUT:
 ;   None.
 ;KEYWORDS:
-;   DATE:       If set, the input date. The default is today.
+;   DATE:      If set, the input date. The default is today.
 ;
-;   DIRECTORY:  If set, output into this directory, for testing
+;   DIRECTORY: If set, output into this directory, for testing
 ;               purposes, don't forget a slash '/'  at the end.
 ;
-;   L2ONLY:     If set, only generate PAD L2 data if MAG L2 data are available.
+;   L2ONLY:    If set, only generate PAD L2 data if MAG L2 data are available.
 ;
-;   NOKP:       If set, do not generate SWEA KP data.
+;   NOL2:      If set, do not generate SWEA L2 data.  Takes precedence over the
+;              next three keywords.
 ;
-;   NOL2:       If set, do not generate SWEA L2 data.
+;   DOSPEC:    Process the SPEC data.  Default = 1 (yes).
+;
+;   DOPAD:     Process the PAD data.  Default = 1 (yes).
+;
+;   DO3D:      Process the 3D data.  Default = 1 (yes).
+;
+;   DOKP:      Process the KP data.  Default = 1 (yes).
 ;
 ;   ABINS:     Anode bin mask -> 16 elements (0 = off, 1 = on)
 ;              Default = replicate(1,16)
@@ -57,14 +64,14 @@
 ; Better memory management and added keywords to control processing: dlm
 ; Development code for data version 5; DLM: 2023-08
 ;
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-08-21 10:46:02 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32045 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_l2gen5.pro $
 ;- 
-pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, nokp=nokp, $
+pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
                    nol2=nol2, abins=abins, dbins=dbins, obins=obsin, mask_sc=mask_sc, $
-                   kp_qlev=kp_qlev, _extra=_extra
+                   kp_qlev=kp_qlev, dospec=dospec, dopad=dopad, do3d=do3d, _extra=_extra
 
   @mvn_swe_com
   
@@ -76,7 +83,21 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
   l2only = keyword_set(l2only)
   kp_qlev = (n_elements(kp_qlev) gt 0) ? byte(kp_qlev[0]) < 2B : 1B
+  dospec = (n_elements(dospec) gt 0) ? keyword_set(dospec) : 1
+  dopad = (n_elements(dopad) gt 0) ? keyword_set(dopad) : 1
+  do3d = (n_elements(do3d) gt 0) ? keyword_set(do3d) : 1
+  dokp = (n_elements(dokp) gt 0) ? keyword_set(dokp) : 1
+  if keyword_set(nol2) then begin
+    dospec = 0
+    dopad = 0
+    do3d = 0
+  endif
   oneday = 86400D
+
+  if ((dospec + dopad + do3d + dokp) eq 0) then begin
+    print,'Nothing to do.'
+    return
+  endif
 
 ; Construct FOV masking arrays
 ;   96 solid angles X 2 boom states
@@ -149,7 +170,7 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
   mvn_swe_addmag, l2only=l2only
   if (size(swe_mag1,/type) eq 8) then maglev = swe_mag1[0].level else maglev = 0B
-  if (l2only and (maglev lt 2B)) then dopad = 0 else dopad = 1
+  if (l2only and (maglev lt 2B)) then dopad = 0
 
 ; Determine quality flags
 
@@ -158,9 +179,9 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, nokp=nokp, $
 
 ; Create CDF files (up to 6 of them)
 
-  if ~keyword_set(nol2) then begin
-    print,""
+  print,""
 
+  if (do3d) then begin
     timer_start = systime(/sec)
     print,"Generating 3D Survey data"
     ddd = mvn_swe_get3d([t0,tp1], /all)
@@ -188,47 +209,47 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, nokp=nokp, $
     endif
     ddd = 0
     print,""
+  endif
 
-    if (dopad) then begin
+  if (dopad) then begin
+    if (maglev eq 2B) then begin
+      mfile = 'maven/data/sci/mag/l2/YYYY/MM/mvn_mag_l2_YYYY???pl_YYYYMMDD_v??_r??.xml'
+      mname = mvn_pfp_file_retrieve(mfile,trange=trange,/daily,/valid,verbose=-1)
+      mname = file_basename(mname[0])
+      i = strpos(mname,'.xml')
+      if (i gt 0) then mname = strmid(mname,0,i) + '.sts' else mname = 'mag_level_2'
+    endif else mname = 'mag_level_1'
 
-      if (maglev eq 2B) then begin
-        mfile = 'maven/data/sci/mag/l2/YYYY/MM/mvn_mag_l2_YYYY???pl_YYYYMMDD_v??_r??.xml'
-        mname = mvn_pfp_file_retrieve(mfile,trange=trange,/daily,/valid,verbose=-1)
-        mname = file_basename(mname[0])
-        i = strpos(mname,'.xml')
-        if (i gt 0) then mname = strmid(mname,0,i) + '.sts' else mname = 'mag_level_2'
-      endif else mname = 'mag_level_1'
-
-      timer_start = systime(/sec)
-      print,"Generating PAD Survey data"
-      pad = mvn_swe_getpad([t0,tp1], /all)
-      if (size(pad,/type) eq 8) then begin
-        indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
-        if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
-        if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
-        mvn_swe_makecdf_pad5, pad, directory=directory, mname=mname
-        dt = systime(/sec) - timer_start
-        print,dt/60D,format='("Time to process (min): ",f6.2)'
-      endif
-      pad = 0
-      print,""
-
-      timer_start = systime(/sec)
-      print,"Generating PAD Archive data"
-      pad = mvn_swe_getpad([t0,tp1], /all, /archive)
-      if (size(pad,/type) eq 8) then begin
-        indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
-        if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
-        if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
-        mvn_swe_makecdf_pad5, pad, directory=directory, mname=mname
-        dt = systime(/sec) - timer_start
-        print,dt/60D,format='("Time to process (min): ",f6.2)'
-      endif
-      pad = 0
-      print,""
-
+    timer_start = systime(/sec)
+    print,"Generating PAD Survey data"
+    pad = mvn_swe_getpad([t0,tp1], /all)
+    if (size(pad,/type) eq 8) then begin
+      indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
+      if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
+      if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
+      mvn_swe_makecdf_pad5, pad, directory=directory, mname=mname
+      dt = systime(/sec) - timer_start
+      print,dt/60D,format='("Time to process (min): ",f6.2)'
     endif
+    pad = 0
+    print,""
 
+    timer_start = systime(/sec)
+    print,"Generating PAD Archive data"
+    pad = mvn_swe_getpad([t0,tp1], /all, /archive)
+    if (size(pad,/type) eq 8) then begin
+      indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
+      if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
+      if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
+      mvn_swe_makecdf_pad5, pad, directory=directory, mname=mname
+      dt = systime(/sec) - timer_start
+      print,dt/60D,format='("Time to process (min): ",f6.2)'
+    endif
+    pad = 0
+    print,""
+  endif
+
+  if (dospec) then begin
     timer_start = systime(/sec)
     print,"Generating SPEC Survey data"
     spec = mvn_swe_getspec([t0,tp1])
@@ -250,12 +271,9 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, nokp=nokp, $
     endif
     spec = 0
     print,""
-
   endif
 
-; Create KP save file
-
-  if ~keyword_set(nokp) then begin
+  if (dokp) then begin
     timer_start = systime(/sec)
     print,"Generating Key Parameters"
     mvn_swe_kp5, trange=[t0,tp1], l2only=l2only, qlevel=kp_qlev

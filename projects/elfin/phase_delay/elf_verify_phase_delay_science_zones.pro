@@ -1,6 +1,6 @@
-function elf_verify_phase_delay_science_zones, startdate=startdate
+function elf_verify_phase_delay_science_zones, startdate=startdate, probe=probe
 ; this routines checks each science zone for a matching phase delay.
-  probe = 'a'
+
 
 missing_zone=['']
 no_zone=['']
@@ -9,7 +9,7 @@ diffs=[1]
   ; download and read the phase delay file
   phase_delays=elf_get_phase_delays(no_download=nodownload, probe=probe, $
     instrument=instrument)
- 
+
   starttimes=phase_delays.starttimes
   endtimes=phase_delays.endtimes
 
@@ -73,7 +73,7 @@ print, 'finished sci zone determination'
       sz_tr=[sz_starttimes[j],sz_endtimes[j]]   ; add 3 seconds to ensure that full spin periods are loaded
 
       ; check phase delay start time array
-      idx = where(starttimes GE sz_tr[0]-30, ncnt)
+      idx = where(starttimes GE sz_tr[0]-15, ncnt)
       if ncnt GT 0 then begin
         print, time_string(sz_tr[0])
         print, time_string(starttimes[idx[0]])

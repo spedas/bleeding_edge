@@ -66,10 +66,10 @@
 ;
 ;OUTPUTS:
 ;
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2023-08-21 10:46:02 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32045 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_kp5.pro $
 ;
 ;-
 

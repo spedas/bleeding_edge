@@ -39,12 +39,14 @@
 
 pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = mycreate_avai, update_avai = myupdate_avai, pickrange = mypickrange, update_phasedelay = myupdate_phasedelay
 
+  exec_start=systime()
+  
   if ~keyword_set(myverbosefig) then verbosefig=0 else verbosefig=myverbosefig
   if ~keyword_set(myupdate_avai) then update_avai=0 else update_avai=myupdate_avai
   if ~keyword_set(mypickrange) then pickrange=0 else pickrange=mypickrange 
   if ~keyword_set(myupdate_phasedelay) then update_phasedelay=0 else update_phasedelay=myupdate_phasedelay
   if ~keyword_set(mycreate_avai) then create_avai=0 else create_avai=mycreate_avai
-
+ 
   elf_init
   askprompt:
   if undefined(date) or pickrange eq 1 then begin
@@ -69,7 +71,7 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
 ; 
 ;****************************
   sc=['a','b']
-  for isc=0,1 do begin
+  for isc=0,n_elements(sc)-1 do begin
     probe = sc[isc]
     if probe EQ 'a' AND starttime GT time_double('2022-09-12/00:00:00') then begin
       dprint, 'There is no valid orbit or EPD data past 2022-09-11.'
@@ -94,21 +96,14 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
 ;      endfor    
 ;    endif
     
-    if update_phasedelay eq 1 then begin
-      this_remote_path=!elf.remote_data_dir+'el'+probe+'/calibration_files/'
-      this_remote_file='el'+probe+'_epde_phase_delays.csv'
-      this_local_path=!elf.local_data_dir+'el'+probe+'/calibration_files/'      
-      paths = spd_download(remote_file=this_remote_file, remote_path=this_remote_path, $
-          local_file=this_remote_file, local_path=this_local_path)
-    endif
-      
-;    cwdirname=!elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots'
-;    cd,cwdirname
-    tempfolder= !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots/temp'
-    fileresult=FILE_SEARCH(tempfolder)
-    if size(fileresult,/dimen) eq 0 then FILE_MKDIR,tempfolder
-    cd, tempfolder
- 
+;    if update_phasedelay eq 1 then begin
+;      this_remote_path=!elf.remote_data_dir+'el'+probe+'/calibration_files/'
+;      this_remote_file='el'+probe+'_epde_phase_delays.csv'      
+;      this_local_path=!elf.local_data_dir+'el'+probe+'/calibration_files/'      
+;      paths = spd_download(remote_file=this_remote_file, remote_path=this_remote_path, $
+;          local_file=this_remote_file, local_path=this_local_path)
+;    endif
+       
 ; ***** once data availability is correct and updated then this section of code can be re-instated *****  
 ;    allszs = read_csv(!elf.LOCAL_DATA_DIR + 'el' +probe+ '/data_availability/el'+probe+'_epd_data_availability.csv', n_table_header = 1)
 ;    szs_inrange = where(time_double(allszs.field1) ge time_double(starttime) and time_double(allszs.field1) le time_double(endtime), count)
@@ -191,6 +186,14 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
     for i =0, n_elements(szs_st)-1 do begin
       tstart = szs_st[i]
       tend = szs_en[i]
+
+      ; setup working area
+      tstart_str=time_string(tstart, format=6)
+      tempfolder= !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots/temp_' + tstart_str
+      fileresult=FILE_SEARCH(tempfolder)
+      if size(fileresult,/dimen) eq 0 then FILE_MKDIR,tempfolder
+      cd, tempfolder
+;      stop
       elf_phase_delay_AUTO, probe = probe, Echannels = Echannels, sstart = tstart, send = tend, badflag = badflag
       if badflag eq -99 then continue
       elf_mlt_l_lat,'el'+probe+'_pos_sm',MLT0=MLT0,L0=L0,lat0=lat0
@@ -247,9 +250,28 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
           ; this is the first png file in the 1.5 hr 
           filename='el'+probe+'_pdp_'+ filetime + '_' + file_lbl[idx[k]] + sz_name
           file_path = !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots' + '/' + strmid(filetime, 0, 4) + '/' + strmid(filetime, 4, 2) + '/' + strmid(filetime, 6, 2) + '/'
-          file_mkdir, file_path
-          fullfilename=file_path + filename
-          file_copy,'Fitplots/bestfit.png',fullfilename+'.png',/OVERWRITE
+          fileresult=FILE_SEARCH(file_path)
+          if size(fileresult,/dimen) eq 0 then FILE_MKDIR,file_path
+          ;file_mkdir, file_path
+          fullfilename=file_path + filename 
+          temp_path = !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots/temp_' + tstart_str 
+          fileresult=FILE_SEARCH(temp_path)
+          if size(fileresult,/dimen) eq 0 then FILE_MKDIR,temp_path
+          ;cd, tempfolder
+
+          ;file_mkdir, temp_path
+          fits_path = temp_path + '/Fitplots'
+          fileresult=FILE_SEARCH(fits_path)
+          if size(fileresult,/dimen) eq 0 then FILE_MKDIR,fits_path
+
+          ;file_mkdir, fits_path
+          fitsfilename = fits_path + '/bestfit.png'
+          ;cd, fits_path
+          dprint,fitsfilename
+          dprint,fullfilename
+          spawn,'pwd',pwdname
+          dprint,pwdname
+          file_copy,fitsfilename,fullfilename+'.png',/OVERWRITE
           
           ; if this zone rolls into next hour create 2nd png file
           sthr=strmid(tstart, 11, 2)
@@ -258,31 +280,51 @@ pro elf_phase_delay_wrap_AUTO, date, verbosefig = myverbosefig, create_avai = my
             if idx[k] LT 23 then begin
               filename2='el'+probe+'_pdp_'+ filetime + '_' + file_lbl[idx[k]+1] + sz_name
               fullfilename2=file_path + filename2
-              file_copy,'Fitplots/bestfit.png',fullfilename2+'.png',/OVERWRITE
+              file_copy,fitsfilename,fullfilename2+'.png',/OVERWRITE
+              ;file_copy,'Fitplots/bestfit.png',fullfilename2+'.png',/OVERWRITE
             endif
           endif
           if verbosefig eq 1 then begin
-            fileresult=FILE_SEARCH('Fitplots_'+filename)
-            if size(fileresult,/dimen) eq 1 then FILE_DELETE,'Fitplots_'+filename,/RECURSIVE ; delete old folder
-            file_copy,'Fitplots','Fitplots_'+filename,/OVERWRITE,/RECURSIVE
+            ;fileresult=FILE_SEARCH('Fitplots_'+filename)
+            ;if size(fileresult,/dimen) eq 1 then FILE_DELETE,'Fitplots_'+filename,/RECURSIVE ; delete old folder
+            fileresult=FILE_SEARCH(fitsfilename)
+            if size(fileresult,/dimen) eq 1 then FILE_DELETE,fitsfilename,/RECURSIVE ; delete old folder
+            ;file_copy,'Fitplots','Fitplots_'+filename,/OVERWRITE,/RECURSIVE
+            file_copy,fitsfilename,fullfilename+'.png',/OVERWRITE
             if ~undefined(filename2) then begin              
-              fileresult2=FILE_SEARCH('Fitplots_'+filename2)
-              if size(fileresult2,/dimen) eq 1 then FILE_DELETE,'Fitplots_'+filename2,/RECURSIVE ; delete old folder
-              file_copy,'Fitplots','Fitplots_'+filename2,/OVERWRITE,/RECURSIVE
+              ;fileresult2=FILE_SEARCH(fitsfilename)
+              ;if size(fileresult,/dimen) eq 1 then FILE_DELETE,fitsfilename,/RECURSIVE ; delete old folder
+              ;fileresult2=FILE_SEARCH('Fitplots_'+filename)
+              ;if size(fileresult2,/dimen) eq 1 then FILE_DELETE,'Fitplots_'+filename2,/RECURSIVE ; delete old folder
+              ;file_copy,'Fitplots','Fitplots_'+filename2,/OVERWRITE,/RECURSIVE
             endif
           endif
 
           print, 'Created: ' + fullfilename + '.png'
           if ~undefined(filename2) then print, 'Created: ' + fullfilename2 + '.png'
 
+          ;temp_path = !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots/temp_' + tstart_str
+          ;cd, !elf.LOCAL_DATA_DIR + 'el' +probe+ '/phasedelayplots
+          ;cmd = 'rm -rf '+temp_path
+          ;spawn, cmd
+ 
         endfor  ;  end of 1.5 hour loop
         
       endif
 
     endfor    ; end of science zone loop
 
+    del_data,'*'
+    undefine, pef_nflux
+    undefine, sz_starrtimes
+    undefine, sz_endtimes
+    
   endfor ; end of probe loop
   
+  exec_end=systime()
+  print, num_szs
+  print, exec_start
+  print, exec_end
   ;FILE_DELETE,'Fitplots',/RECURSIVE ; delete old folder
   print, 'Done'
  

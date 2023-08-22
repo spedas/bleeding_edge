@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Aug 20 18:16:44 2023.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 21 18:16:42 2023.<P>
  
 <HR>
  
@@ -114,10 +114,10 @@ KEYWORDS:
 
 OUTPUTS:
 
- $LastChangedBy: $
- $LastChangedDate: $
- $LastChangedRevision: $
- $URL: $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-21 10:46:02 -0700 (Mon, 21 Aug 2023) $
+ $LastChangedRevision: 32045 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_kp5.pro $
 
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_kp5.pro">projects/maven/swea/Test/mvn_swe_kp5.pro</A>)</STRONG><P>
@@ -141,16 +141,23 @@ CALLING SEQUENCE:
 INPUT:
    None.
 KEYWORDS:
-   DATE:       If set, the input date. The default is today.
+   DATE:      If set, the input date. The default is today.
 
-   DIRECTORY:  If set, output into this directory, for testing
+   DIRECTORY: If set, output into this directory, for testing
                purposes, don't forget a slash '/'  at the end.
 
-   L2ONLY:     If set, only generate PAD L2 data if MAG L2 data are available.
+   L2ONLY:    If set, only generate PAD L2 data if MAG L2 data are available.
 
-   NOKP:       If set, do not generate SWEA KP data.
+   NOL2:      If set, do not generate SWEA L2 data.  Takes precedence over the
+              next three keywords.
 
-   NOL2:       If set, do not generate SWEA L2 data.
+   DOSPEC:    Process the SPEC data.  Default = 1 (yes).
+
+   DOPAD:     Process the PAD data.  Default = 1 (yes).
+
+   DO3D:      Process the 3D data.  Default = 1 (yes).
+
+   DOKP:      Process the KP data.  Default = 1 (yes).
 
    ABINS:     Anode bin mask -&gt; 16 elements (0 = off, 1 = on)
               Default = replicate(1,16)
@@ -187,10 +194,10 @@ HISTORY:
  Better memory management and added keywords to control processing: dlm
  Development code for data version 5; DLM: 2023-08
 
- $LastChangedBy: $
- $LastChangedDate: $
- $LastChangedRevision: $
- $URL: $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-21 10:46:02 -0700 (Mon, 21 Aug 2023) $
+ $LastChangedRevision: 32045 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_l2gen5.pro $
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_l2gen5.pro">projects/maven/swea/Test/mvn_swe_l2gen5.pro</A>)</STRONG><P>
 <HR>
@@ -265,10 +272,10 @@ KEYWORDS:
 
        NOSPICE:       Do not initialize SPICE.
 
- $LastChangedBy: $
- $LastChangedDate: $
- $LastChangedRevision: $
- $URL: $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-08-21 10:46:02 -0700 (Mon, 21 Aug 2023) $
+ $LastChangedRevision: 32045 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_load_l2a.pro $
 
 CREATED BY:    David L. Mitchell  02-02-15
 FILE: mvn_swe_load_l2a.pro
@@ -309,10 +316,10 @@ FILE: mvn_swe_load_l2a.pro
    ISTP compliance scrub; DLM: 2016-04-08
    Development code for data version 5; DLM: 2023-08
  VERSION:
-   $LastChangedBy: $
-   $LastChangedDate: $
-   $LastChangedRevision: $
-   $URL: $
+   $LastChangedBy: dmitchell $
+   $LastChangedDate: 2023-08-21 11:17:34 -0700 (Mon, 21 Aug 2023) $
+   $LastChangedRevision: 32047 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_makecdf_3d5.pro $
 
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_makecdf_3d5.pro">projects/maven/swea/Test/mvn_swe_makecdf_3d5.pro</A>)</STRONG><P>
@@ -352,9 +359,9 @@ FILE: mvn_swe_load_l2a.pro
    ISTP compliance scrub; DLM: 2016-04-08
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2023-08-18 10:21:25 -0700 (Fri, 18 Aug 2023) $
-   $LastChangedRevision: 32031 $
-   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makecdf_pad.pro $
+   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
+   $LastChangedRevision: 32046 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_makecdf_pad5.pro $
 
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_makecdf_pad5.pro">projects/maven/swea/Test/mvn_swe_makecdf_pad5.pro</A>)</STRONG><P>
@@ -393,10 +400,10 @@ FILE: mvn_swe_load_l2a.pro
    ISTP compliance scrub; DLM: 2016-04-08
    Development code for data version 5; DLM: 2023-08
  VERSION:
-   $LastChangedBy: $
-   $LastChangedDate: $
-   $LastChangedRevision: $
-   $URL: $
+   $LastChangedBy: dmitchell $
+   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
+   $LastChangedRevision: 32046 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_makecdf_spec5.pro $
 
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_makecdf_spec5.pro">projects/maven/swea/Test/mvn_swe_makecdf_spec5.pro</A>)</STRONG><P>
@@ -428,9 +435,9 @@ FILE: mvn_swe_load_l2a.pro
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
-   $LastChangedRevision: 29677 $
-   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_3d.pro $
+   $LastChangedDate: 2023-08-21 12:14:55 -0700 (Mon, 21 Aug 2023) $
+   $LastChangedRevision: 32048 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_readcdf_3d5.pro $
 
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_readcdf_3d5.pro">projects/maven/swea/Test/mvn_swe_readcdf_3d5.pro</A>)</STRONG><P>
@@ -462,9 +469,9 @@ FILE: mvn_swe_load_l2a.pro
    Created by Matt Fillingim
  VERSION:
    $LastChangedBy: dmitchell $
-   $LastChangedDate: 2021-02-18 15:21:40 -0800 (Thu, 18 Feb 2021) $
-   $LastChangedRevision: 29677 $
-   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_readcdf_pad.pro $
+   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
+   $LastChangedRevision: 32046 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_readcdf_pad5.pro $
 
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_readcdf_pad5.pro">projects/maven/swea/Test/mvn_swe_readcdf_pad5.pro</A>)</STRONG><P>
@@ -495,10 +502,10 @@ FILE: mvn_swe_load_l2a.pro
    Created by Matt Fillingim
    Development code for data version 5; DLM: 2023-08
  VERSION:
-   $LastChangedBy: $
-   $LastChangedDate: $
-   $LastChangedRevision: $
-   $URL: $
+   $LastChangedBy: dmitchell $
+   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
+   $LastChangedRevision: 32046 $
+   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_readcdf_spec5.pro $
 
 </PRE><P>
 <STRONG>(See <A href="Test/mvn_swe_readcdf_spec5.pro">projects/maven/swea/Test/mvn_swe_readcdf_spec5.pro</A>)</STRONG><P>
