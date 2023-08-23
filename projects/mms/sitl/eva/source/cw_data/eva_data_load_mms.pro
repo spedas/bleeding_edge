@@ -1,3 +1,7 @@
+; $LastChangedBy: moka $
+; $LastChangedDate: 2023-08-21 20:46:44 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32050 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data_load_mms.pro $
 FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
   compile_opt idl2
 
@@ -18,10 +22,12 @@ FUNCTION eva_data_load_mms, state, no_gui=no_gui, force=force
   ;----------------------
   ; NUMBER OF PARAMETERS
   ;----------------------
-  cparam = imax*pmax
+  result = where(strmatch(paramlist,'mms_*'),ncomp=N_separate,N_common)
+  cparam = N_separate*pmax
+;  cparam = imax;*pmax
   if not keyword_set(no_gui) then begin
     if cparam ge 17 then begin
-      rst = dialog_message('Total of '+strtrim(string(cparam),2)+' MMS parameters. Still plot?',/question,/center)
+      rst = dialog_message('There will be '+strtrim(string(cparam),2)+' plasma parameters. Still plot?',/question,/center)
     endif else rst = 'Yes'
     if rst eq 'No' then return, 'No'
   endif

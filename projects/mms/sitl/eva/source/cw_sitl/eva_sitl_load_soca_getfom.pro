@@ -76,6 +76,14 @@ Function eva_sitl_load_soca_getfom, pref, parent
   discussion[0:nmax-1] = ' '
   str_element,/add,unix_FOMStr,'discussion',discussion
   
+  tn=tag_names(unix_FOMStr)
+  idx=where(tn eq 'OBSSET',ct)
+  if(ct eq 0) then begin
+    obsset = bytarr(nmax)
+    obsset[0:nmax-1] = 15B
+    str_element,/add,unix_FOMstr,'obsset',obsset
+  endif
+    
   ;---- update cw_sitl label ----
   nmax = n_elements(unix_FOMstr.timestamps)
   start_time = time_string(unix_FOMstr.timestamps[0],precision=3)

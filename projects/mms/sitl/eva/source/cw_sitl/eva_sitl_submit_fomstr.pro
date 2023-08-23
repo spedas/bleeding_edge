@@ -107,11 +107,18 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
       
     case problem_status of
       0: begin
+        tn = tag_names(tai_FOMstr_mod)
+        idx = where(tn eq strupcase('UPLINK_FLAG'), nmatch)
+        if nmatch gt 0 then begin
+          strflag = strtrim(string(tai_FOMstr_mod.UPLINKFLAG),2)
+        endif else begin
+          strflag = 'WARNING: no UPLINK flag.' 
+        endelse
         msg=['The FOM structure was sent successfully to SDC. ']
         msg=[msg, 'A validation email will be sent to you (within 60 min)']
         msg=[msg, 'if successfully received at SDC.']
+        msg=[msg, '(UPLINK_FLAG='+strflag+')']
         rst = dialog_message(msg,/information,/center,title=title)
-        ;print, eva_sitluplink_log(tai_FOMstr_mod)
         end
       2: begin
         msg='Attempt to submit FOM structure interrupted, check your internet connection and try again.'

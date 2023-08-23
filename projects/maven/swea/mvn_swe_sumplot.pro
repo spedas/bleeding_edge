@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-04-11 19:18:40 -0700 (Tue, 11 Apr 2023) $
-; $LastChangedRevision: 31728 $
+; $LastChangedDate: 2023-08-22 13:45:38 -0700 (Tue, 22 Aug 2023) $
+; $LastChangedRevision: 32055 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -834,7 +834,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 ; Energy Spectra, Survey (APID A4)
 
   if (size(mvn_swe_engy,/type) ne 8) then if (size(a4,/type) eq 8) then mvn_swe_makespec
-
+ 
   if (size(mvn_swe_engy,/type) eq 8) then begin
     mvn_swe_convert_units, mvn_swe_engy, eunits
 
@@ -892,7 +892,23 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
       pdT = [pdT,'dta4']
       TClab[5] = 'A4'
     endif
-    
+
+    str_element, mvn_swe_engy, 'quality', flag
+    if (min(flag) eq 0B) then begin
+      y = replicate(!values.f_nan, n_elements(x))
+      i = where(flag eq 0B, count)
+      if (count gt 0L) then y[i] = 4.4
+
+      store_data,'flag',data={x:x, y:y}
+      options,'flag','psym',7
+      options,'flag','colors',0
+      options,'flag','symsize',0.6
+      store_data,'swe_a4_mask',data=['swe_a4','flag']
+      ylim,'swe_a4_mask',3,4627.5,1
+
+      ename = 'swe_a4_mask'
+    endif
+
     if (plotap[4]) then pans = [pans,ename]
     
   endif

@@ -7,5 +7,6 @@ FUNCTION eva_sitl_strct_sort, FOMstr
   str_element,/add,s,'SEGLENGTHS',FOMStr.SEGLENGTHS[idx]
   str_element,/add,s,'SOURCEID',FOMStr.SOURCEID[idx]
   str_element,/add,s,'DISCUSSION',FOMStr.DISCUSSION[idx]
+  str_element,/add,s,'OBSSET',FOMStr.OBSSET[idx]
   return, s
 END

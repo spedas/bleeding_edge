@@ -65,8 +65,8 @@
 ; Development code for data version 5; DLM: 2023-08
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-21 10:46:02 -0700 (Mon, 21 Aug 2023) $
-; $LastChangedRevision: 32045 $
+; $LastChangedDate: 2023-08-22 12:48:17 -0700 (Tue, 22 Aug 2023) $
+; $LastChangedRevision: 32051 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_l2gen5.pro $
 ;- 
 pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
@@ -189,6 +189,7 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
       indx = where(ddd.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then ddd[indx].data *= reform(dmask1 # replicate(1.,icnt),64,96,icnt)
       if (jcnt gt 0L) then ddd[jndx].data *= reform(dmask0 # replicate(1.,jcnt),64,96,jcnt)
+      mvn_swe_secondary, ddd
       mvn_swe_makecdf_3d5, ddd, directory=directory
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -203,6 +204,7 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
       indx = where(ddd.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then ddd[indx].data *= reform(dmask1 # replicate(1.,icnt),64,96,icnt)
       if (jcnt gt 0L) then ddd[jndx].data *= reform(dmask0 # replicate(1.,jcnt),64,96,jcnt)
+      mvn_swe_secondary, ddd
       mvn_swe_makecdf_3d5, ddd, directory=directory
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -227,6 +229,7 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
       indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
       if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
+      mvn_swe_secondary, pad
       mvn_swe_makecdf_pad5, pad, directory=directory, mname=mname
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -241,6 +244,7 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
       indx = where(pad.time gt t_mtx[2], icnt, complement=jndx, ncomplement=jcnt)
       if (icnt gt 0L) then pad[indx].data *= reform(pmask1[*,pad[indx].k3d],64,16,icnt)
       if (jcnt gt 0L) then pad[jndx].data *= reform(pmask0[*,pad[jndx].k3d],64,16,jcnt)
+      mvn_swe_secondary, pad
       mvn_swe_makecdf_pad5, pad, directory=directory, mname=mname
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -254,6 +258,7 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
     print,"Generating SPEC Survey data"
     spec = mvn_swe_getspec([t0,tp1])
     if (size(spec,/type) eq 8) then begin
+      mvn_swe_secondary, spec
       mvn_swe_makecdf_spec5, spec, directory=directory, version=version
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'
@@ -265,6 +270,7 @@ pro mvn_swe_l2gen5, date=date, directory=directory, l2only=l2only, dokp=dokp, $
     print,"Generating SPEC Archive data"
     spec = mvn_swe_getspec([t0,tp1], /archive)
     if (size(spec,/type) eq 8) then begin
+      mvn_swe_secondary, spec
       mvn_swe_makecdf_spec5, spec, directory=directory
       dt = systime(/sec) - timer_start
       print,dt/60D,format='("Time to process (min): ",f6.2)'

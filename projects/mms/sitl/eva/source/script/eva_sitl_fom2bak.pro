@@ -62,6 +62,7 @@ PRO eva_sitl_fom2bak
       fom:unix_fomstr.FOM[n], $
       BAK: BAK, $
       discussion:unix_fomstr.DISCUSSION[n], $
+      obsset:unix_fomstr.OBSSET[n], $
       var:''}
     eva_sitl_strct_update, segSelect, BAK=BAK
   endfor

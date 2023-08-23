@@ -27,8 +27,8 @@
 ;       SILENT:        Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-18 11:12:39 -0700 (Fri, 18 Aug 2023) $
-; $LastChangedRevision: 32033 $
+; $LastChangedDate: 2023-08-22 13:45:08 -0700 (Tue, 22 Aug 2023) $
+; $LastChangedRevision: 32054 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_set_quality.pro $
 ;
 ;CREATED BY:  David Mitchell - August 2023
@@ -130,21 +130,23 @@ pro mvn_swe_set_quality, trange=trange, missing=missing, doplot=doplot, silent=s
 ; Make the enery spectrogram with 'x' overlay marking anomalous spectra
 
   if doplot then begin
-    get_data, 'swe_a4', data=dat
-    flag = replicate(1B, n_elements(dat.x))
-    i = nn2(qtime, dat.x, maxdt=0.25D, /valid, vindex=j, badindex=k)
-    if (max(j) ge 0L) then flag[j] = qflag[i]
+    get_data, 'swe_a4', data=dat, index=k
+    if (k gt 0) then begin
+      flag = replicate(1B, n_elements(dat.x))
+      i = nn2(qtime, dat.x, maxdt=0.25D, /valid, vindex=j, badindex=k)
+      if (max(j) ge 0L) then flag[j] = qflag[i]
 
-    y = replicate(!values.f_nan, n_elements(dat.x))
-    i = where(flag eq 0B, count)
-    if (count gt 0L) then y[i] = 4.4
+      y = replicate(!values.f_nan, n_elements(dat.x))
+      i = where(flag eq 0B, count)
+      if (count gt 0L) then y[i] = 4.4
 
-    store_data,'flag',data={x:dat.x, y:y}
-    options,'flag','psym',7
-    options,'flag','colors',0
-    options,'flag','symsize',0.6
-    store_data,'swe_a4_mask',data=['swe_a4','flag']
-    ylim,'swe_a4_mask',3,4627.5,1
+      store_data,'flag',data={x:dat.x, y:y}
+      options,'flag','psym',7
+      options,'flag','colors',0
+      options,'flag','symsize',0.6
+      store_data,'swe_a4_mask',data=['swe_a4','flag']
+      ylim,'swe_a4_mask',3,4627.5,1
+    endif
   endif
 
 end

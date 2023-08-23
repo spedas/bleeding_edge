@@ -27,8 +27,8 @@
 ;   Development code for data version 5; DLM: 2023-08
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
-;   $LastChangedRevision: 32046 $
+;   $LastChangedDate: 2023-08-22 12:48:17 -0700 (Tue, 22 Aug 2023) $
+;   $LastChangedRevision: 32051 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_makecdf_spec5.pro $
 ;
 ;-
@@ -200,7 +200,7 @@ pro mvn_swe_makecdf_spec5, data, file = file, version = version, directory = dir
   varlist = ['epoch', 'time_tt2000', 'time_met', 'time_unix', $
              'num_accum', 'counts', 'diff_en_fluxes', 'weight_factor', $
              'geom_factor', 'g_engy', 'de_over_e', 'accum_time', 'energy', $
-             'num_spec', 'en_label', 'quality', 'variance']
+             'num_spec', 'en_label', 'quality', 'variance', 'secondary']
 
   id0  = cdf_attcreate(fileid, 'TITLE',                      /global_scope)
   id1  = cdf_attcreate(fileid, 'Project',                    /global_scope)
@@ -508,7 +508,7 @@ pro mvn_swe_makecdf_spec5, data, file = file, version = version, directory = dir
     'eV/[eV cm^2 sr s]',                                    /ZVARIABLE
   cdf_attput, fileid, 'VAR_TYPE', varlist[vndx], 'data',    /ZVARIABLE
   cdf_attput, fileid, 'CATDESC',  varlist[vndx], $
-    'Calibrated differential energy flux',                  /ZVARIABLE
+    'Variance of differential energy flux',                    /ZVARIABLE
   cdf_attput, fileid, 'DEPEND_0',   varlist[vndx], 'epoch',    /ZVARIABLE
   cdf_attput, fileid, 'DEPEND_1',   varlist[vndx], 'energy',   /ZVARIABLE
   cdf_attput, fileid, 'LABL_PTR_1', varlist[vndx], 'en_label', /ZVARIABLE
@@ -516,6 +516,36 @@ pro mvn_swe_makecdf_spec5, data, file = file, version = version, directory = dir
 ; units are (energy flux)^2 from the previous variable
 
   cdf_varput, fileid, varlist[vndx], data.var
+
+; *** secondary electrons -- in units of differential energy flux ***
+
+  dim_vary = [1]
+  dim = [64]  
+  vndx = (where(varlist eq 'secondary'))[0]
+  varid = cdf_varcreate(fileid, varlist[vndx], /CDF_FLOAT, dim_vary, DIM = dim, /REC_VARY, $
+    /ZVARIABLE) 
+
+  cdf_attput, fileid, 'FIELDNAM',     varid, varlist[vndx], /ZVARIABLE
+  cdf_attput, fileid, 'FORMAT',       varid, 'E15.7',       /ZVARIABLE
+  cdf_attput, fileid, 'LABLAXIS',     varid, varlist[vndx], /ZVARIABLE
+  cdf_attput, fileid, 'VAR_TYPE',     varid, 'data',        /ZVARIABLE
+  cdf_attput, fileid, 'FILLVAL',      varid, -1.e31,        /ZVARIABLE
+  cdf_attput, fileid, 'DISPLAY_TYPE', varid, 'time_series', /ZVARIABLE
+
+  cdf_attput, fileid, 'VALIDMIN', varlist[vndx], 0.,        /ZVARIABLE
+  cdf_attput, fileid, 'VALIDMAX', varlist[vndx], 1.e14,     /ZVARIABLE
+  cdf_attput, fileid, 'SCALEMIN', varlist[vndx], 0.,        /ZVARIABLE
+  cdf_attput, fileid, 'SCALEMAX', varlist[vndx], 1.e11,     /ZVARIABLE
+  cdf_attput, fileid, 'UNITS',    varlist[vndx], $
+    'eV/[eV cm^2 sr s]',                                    /ZVARIABLE
+  cdf_attput, fileid, 'VAR_TYPE', varlist[vndx], 'data',    /ZVARIABLE
+  cdf_attput, fileid, 'CATDESC',  varlist[vndx], $
+    'Secondary electron contamination',                        /ZVARIABLE
+  cdf_attput, fileid, 'DEPEND_0',   varlist[vndx], 'epoch',    /ZVARIABLE
+  cdf_attput, fileid, 'DEPEND_1',   varlist[vndx], 'energy',   /ZVARIABLE
+  cdf_attput, fileid, 'LABL_PTR_1', varlist[vndx], 'en_label', /ZVARIABLE
+
+  cdf_varput, fileid, varlist[vndx], data.bkg  ; units are energy flux
 
 ; *** weight_factor -- Weighting factor ***
 

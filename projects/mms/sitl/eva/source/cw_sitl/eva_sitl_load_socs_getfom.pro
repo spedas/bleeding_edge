@@ -296,6 +296,8 @@ FUNCTION eva_sitl_load_socs_getfom, tfom,$
     sourceid[0:nmax-1] = 'socs (EVA)'
     discussion = strarr(nmax)
     discussion[0:nmax-1] = ' '
+    obsset = bytarr(namx)
+    obsset[0:nmax-1] = 15B
     str_element,/add,unix_FOMStr,'NumCycles',numcycles
     str_element,/add,unix_FOMStr,'TimeStamps',D.X; UNIX TIME
     str_element,/add,unix_FOMStr,'CycleStart',D.X[0]
@@ -303,6 +305,7 @@ FUNCTION eva_sitl_load_socs_getfom, tfom,$
     str_element,/add,unix_FOMStr,'SourceID',sourceid
     str_element,/add,unix_FOMStr,'metadataevaltime',systime(/utc)
     str_element,/add,unix_FOMStr,'discussion',discussion
+    str_element,/add,unix_FOMstr,'obsset',obsset
     mms_convert_fom_unix2tai, unix_FOMStr, FOMStr
     save, FOMStr, filename=filename
 

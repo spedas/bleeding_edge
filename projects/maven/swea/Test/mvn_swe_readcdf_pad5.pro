@@ -19,8 +19,8 @@
 ;   Created by Matt Fillingim
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2023-08-21 11:11:56 -0700 (Mon, 21 Aug 2023) $
-;   $LastChangedRevision: 32046 $
+;   $LastChangedDate: 2023-08-22 12:48:17 -0700 (Tue, 22 Aug 2023) $
+;   $LastChangedRevision: 32051 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_readcdf_pad5.pro $
 ;
 ;-
@@ -302,47 +302,23 @@ pro mvn_swe_readcdf_pad5, infile, structure
 
   structure.v_flow = [0.,0.,0.]
 
-; *** bkg
-; bkg -- background (placeholder to be filled in later)
-;   This is typically the signal in highest energy channels, but not always.
-;   In units of energy flux or count rate, the background should be constant
-;   as a function of energy.
-
-  structure.bkg = 0.
-
 ; *** data
-; data -- data in units of differential energy flux
+; data in units of differential energy flux
 
   CDF_VARGET, id, 'diff_en_fluxes', data, /ZVAR, rec_count = nrec ; [16, 16, nrec]
   structure.data = data
 
-; *** variance
-; variance -- variance in units of (differential energy flux)^2
-; recompress the raw counts to 8-bit value, use this to index devar (swe_com)
-
-  if (0) then begin
-    x = alog(counts > 1.)/alog(2.)
-    i = floor(x)
-    j = floor((2.^(x - i) - 1.)*16.)
-    k = (i - 3)*16 + j
-    indx = where(counts lt 32., cnt)
-    if (cnt gt 0L) then k[indx] = round(counts[indx])
-    var = devar[k]
-
-; in units of counts - want in units of energy flux (data)
-; from mvn_swe_convert_units
-; input: 'COUNTS' : scale = 1D
-; output: 'EFLUX' : scale = scale * 1D/(dtc * dt * dt_arr * gf)
-;                   where dt = integ_t ; gf = gf*eff ; eff = 1
-;scale = 1.D/(dtc*integ_t*dt_arr*gfe) ; gfe only [64, 16]
-
-    scale = 1.D/(structure.dtc*integ_t*dt_arr*structure.gf) ; want [64, 16, nrec]
-    var = var*(scale*scale)
-    structure.var = var
-  endif
+; *** variance in units of (differential energy flux)^2
 
   CDF_VARGET, id, 'variance', var, /ZVAR, rec_count = nrec
   structure.var = var
+
+; *** secondary electrons in units of differential energy flux
+; This does not include penetrating particle background or beta decay of potassium 40
+; in the MCP glass, which are only appreciable at the highest energies.
+
+  CDF_VARGET, id, 'secondary', sec, /ZVAR, rec_count = nrec
+  structure.bkg = sec
 
 ; *** quality flag -- three possible values:
 ; 0 = low-energy anomaly ; 1 = unknown ; 2 = good data

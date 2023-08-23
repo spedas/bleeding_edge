@@ -29,6 +29,7 @@ PRO eva_sitl_combine_sav, fname1, fname2, fname_new=fname_new, loud=loud
   s2 = eva_lim2.UNIX_FOMSTR_MOD
 
   str_element,/add,eva_lim,'UNIX_FOMSTR_MOD.DISCUSSION',[s1.DISCUSSION,s2.DISCUSSION]
+  str_element,/add,eva_lim,'UNIX_FOMSTR_MOD.OBSSET',[s1.OBSSET,s2.OBSSET]
   str_element,/add,eva_lim,'UNIX_FOMSTR_MOD.FOM', [s1.FOM, s2.FOM]
   str_element,/add,eva_lim,'UNIX_FOMSTR_MOD.SEGLENGTHS', [s1.SEGLENGTHS, s2.SEGLENGTHS]
   str_element,/add,eva_lim,'UNIX_FOMSTR_MOD.SOURCEID',[s1.SOURCEID, s2.SOURCEID]

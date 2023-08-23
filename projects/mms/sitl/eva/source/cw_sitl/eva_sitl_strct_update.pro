@@ -8,8 +8,8 @@
 ;   (add, split/combine,etc) to the FOM/BAK structure file. 
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2016-09-13 10:28:52 -0700 (Tue, 13 Sep 2016) $
-; $LastChangedRevision: 21824 $
+; $LastChangedDate: 2023-08-21 20:46:44 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32050 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_strct_update.pro $
 ;
 PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVERRIDE
@@ -70,6 +70,7 @@ PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVE
     newFOM        = 0.
     newDISCUSSION    = ' '
     newISPENDING  = 1L
+    newOBSSET     = 15B
     
     ; scan all segments
     for N=0,s.Nsegs-1 do begin
@@ -95,13 +96,15 @@ PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVE
             newSEGLENGTHS = [newSEGLENGTHS, s.STOP[N] - segSTOP]
           endelse
           newDISCUSSION    = [newDISCUSSION, s.DISCUSSION[N]]
+          newOBSSET     = [newOBSSET, s.OBSSET[N]]
           newSOURCEID   = [newSOURCEID, defSourceID]
           newFOM        = [newFOM,s.FOM[N]]
           end
         2: begin; no overlap --> preserve this segment
           newSEGLENGTHS = [newSEGLENGTHS, s.SEGLENGTHS[N]]
           newSOURCEID   = [newSOURCEID, s.SOURCEID[N]]
-          newDISCUSSION    = [newDISCUSSION, s.DISCUSSION[N]]
+          newDISCUSSION = [newDISCUSSION, s.DISCUSSION[N]]
+          newOBSSET     = [newOBSSET, s.OBSSET[N]] 
           newSTART      = [newSTART, s.START[N]]
           newSTOP       = [newSTOP, s.STOP[N]]
           newFOM        = [newFOM,s.FOM[N]]
@@ -118,7 +121,8 @@ PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVE
       newSOURCEID   = [newSOURCEID, defSourceID]
       newSTART      = [newSTART, segSTART]
       newSTOP       = [newSTOP, segSTOP]
-      newDISCUSSION    = [newDISCUSSION,segSelect.DISCUSSION]
+      newDISCUSSION = [newDISCUSSION,segSelect.DISCUSSION]
+      newOBSSET     = [newOBSSET, segSelect.OBSSET] 
     endif
     
     ;update FOM structure
@@ -134,6 +138,7 @@ PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVE
       str_element,/add,s,'NSEGS',long(newNsegs)
       str_element,/add,s,'NBUFFS',long(total(newSEGLENGTHS[1:Nmax-1]))
       str_element,/add,s,'DISCUSSION',newDISCUSSION[1:Nmax-1]
+      str_element,/add,s,'OBSSET',byte(newOBSSET[1:Nmax-1])
       
       s = eva_sitl_strct_sort(s)
       
@@ -176,6 +181,7 @@ PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVE
             s.CHANGESTATUS[N] = 1L; REQUIRED BY RICK (signifies the segment was modified)
             s.SOURCEID[N] = defSourceID
             s.DISCUSSION[n] = segSelect.DISCUSSION
+            s.OBSSET[n]    = segSelect.OBSSET
           endif else begin;............................ DELETE
             s.STATUS[N] = 'DELETED'
             s.CHANGESTATUS[N] = 2L; REQUIRED BY RICK (signifies the segment was deleted) 
@@ -203,6 +209,7 @@ PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVE
         str_element,/add,s,'CREATETIME',[s.CREATETIME,'']; the UTC time the segment was defined and entered into BDM
         str_element,/add,s,'FINISHTIME',[s.FINISHTIME,'']; the UTC time when the segment was no longer pending any more processing.
         str_element,/add,s,'DISCUSSION',[s.DISCUSSION,segSelect.DISCUSSION]
+        str_element,/add,s,'OBSSET',    [s.OBSSET, segSelect.OBSSET]
       endif
 
       ; cleanup (added on 2016-09-12)
@@ -225,6 +232,7 @@ PRO eva_sitl_strct_update, segSelect, user_flag=user_flag, BAK=BAK, OVERRIDE=OVE
           str_element,/add,s,'START'        ,s.START[comp]
           str_element,/add,s,'STATUS'       ,s.STATUS[comp]
           str_element,/add,s,'STOP'         ,s.STOP[comp]
+          str_element,/add,s,'OBSSET'       ,s.OBSSET[comp]
         endif
       endfor
       

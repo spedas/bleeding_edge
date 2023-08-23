@@ -19,8 +19,8 @@
 ;                     these steps are performed before calling this routine.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-18 09:56:47 -0700 (Fri, 18 Aug 2023) $
-; $LastChangedRevision: 32029 $
+; $LastChangedDate: 2023-08-22 13:25:48 -0700 (Tue, 22 Aug 2023) $
+; $LastChangedRevision: 32052 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_quality_daily.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -33,7 +33,12 @@ pro mvn_swe_quality_daily, trange, noload=noload
   proot = root_data_dir() + 'maven/data/sci/swe/anc/quality/'
   froot = 'mvn_swe_quality_'
 
-  t0 = min(time_double(time_string(trange,/date_only)), max=t1)
+  t0 = min(time_double(time_string(trange,/date_only)), max=t1) > time_double('2019-12-01')
+  if (t0 ge t1) then begin
+    print,'This routine is intended for dates after 2019-12-01.'
+    return
+  endif
+
   oneday = 86400D
   ndays = round((t1 - t0)/oneday) + 1L
 

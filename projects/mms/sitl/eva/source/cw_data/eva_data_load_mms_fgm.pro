@@ -1,3 +1,7 @@
+; $LastChangedBy: moka $
+; $LastChangedDate: 2023-08-21 20:46:44 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32050 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data_load_mms_fgm.pro $
 PRO eva_data_load_mms_fgm, sc=sc, sfx=sfx
   
   if undefined(sfx) then sfx = 'dfg'
@@ -52,5 +56,25 @@ PRO eva_data_load_mms_fgm, sc=sc, sfx=sfx
       options, tt+'_y',ytitle=sc+'!C'+strupcase(sfx)+'!Csrvy!Cy'
       options, tt+'_z',ytitle=sc+'!C'+strupcase(sfx)+'!Csrvy!Cz'
     endif
+  endif
+  
+  ;--------------------------
+  ; Test for string-of-pearl
+  ;--------------------------
+  ; Added on 2023-08-15
+  iTEST = 0
+  
+  if iTEST then begin
+    case sc of
+      'mms1': t_shift =  0.d0
+      'mms2': t_shift =  60.d0
+      'mms3': t_shift = 300.d0
+      'mms4': t_shift =1200.d0
+    endcase
+    get_data,  sc+'_'+sfx+'_srvy_dmpa',data=D
+    store_data,sc+'_'+sfx+'_srvy_dmpa',data={x:D.x+t_shift, y:D.y}
+    get_data,  sc+'_'+sfx+'_srvy_gsm_dmpa',data=D
+    store_data,sc+'_'+sfx+'_srvy_gsm_dmpa',data={x:D.x+t_shift, y:D.y}
+    print, t_shift
   endif
 END

@@ -3,8 +3,8 @@
 ; activate = 2; sensitive (initialize)
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2022-01-17 13:09:19 -0800 (Mon, 17 Jan 2022) $
-; $LastChangedRevision: 30518 $
+; $LastChangedDate: 2023-08-21 20:46:44 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32050 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_update_board.pro $
 ;
 PRO eva_sitl_update_board, state, activate
@@ -182,109 +182,112 @@ PRO eva_sitl_update_board, state, activate
       get_data,'mms_stlm_fomstr',lim=lim
       f = lim.unix_FOMStr_mod
       
-      ; level setting
-      NBuffsMax       = state.val.BUFF_MAX; The validation structure is added at the time of login. See eva_data_login of eva_data.pro
-      if NBuffsMax lt f.TargetBuffs then message, "something is wrong with Target Buffers or Buffer Max"
-      BuffExtra = NBuffsMax - f.TargetBuffs
-      NBuffsTarget    = f.TargetBuffs
-      NBuffsWarning   = f.TargetBuffs + 0.2*BuffExtra
-      NBuffsHardLimit = 2100.0;f.TargetBuffs + 0.7*BuffExtra
+      if ~undefined(state.val) then begin 
       
-      lvlTarget    = long((255.0/NBuffsMax)*NBuffsTarget)
-      lvlWarning   = long((255.0/NBuffsMax)*NBuffsWarning)
-      lvlMax       = long((255.0));/NBuffsMax)*NBuffsMax)
-      lvlCurrent   = long((255.0/NBuffsMax)*f.NBuffs) < 255
-      
-      ; level coloring
-      color=cred
-      if f.NBuffs le NBuffsMax     then color=cyellow
-      if f.NBuffs le NBuffsWarning then color=cgreen
-      if f.NBuffs le NBuffsTarget  then color=cgreen;cwhite
-      redValues[lvlCurrent:255] = 0B
-      grnValues[lvlCurrent:255] = 0B
-      bluValues[lvlCurrent:255] = 0B
-      redValues[0:lvlCurrent] = color[0]
-      grnValues[0:lvlCurrent] = color[1]
-      bluValues[0:lvlCurrent] = color[2]
-
-      sg.myview ->SetProperty,COLOR=cblack;................ background
-      
-      cst = time_string(systime(1,/utc));................. current time
-      css = strmid(cst, 5,2)+'/'+strmid(cst, 8,2)+$
-        ' '+strmid(cst, 11,5) + ' UTC'
-      css0 = css
-      sg.oTime ->SetProperty,STRING='Current Time:';css
-      
-      
-      ;..................................................... countdown
-      dst = systime(1,/utc) - state.launchtime ; number of seconds passed since the launch of EVA
-      rem_sec = 3.123*3600.d0 - dst
-      rem_hr = string(floor(rem_sec/3600.d0),format='(I02)')
-      rem_mn = string(floor((rem_sec-rem_hr*3600.d0)/60.d0),format='(I02)')
-      rem_ss = string(floor(rem_sec-rem_hr*3600.d0-rem_mn*60.d0),format='(I02)')
-      css = 'remaining '+rem_hr+':'+rem_mn+':'+rem_ss
-      css = css0
-      sg.oTimeCtdn ->SetProperty,STRING=css
-      
-      if (f.Nsegs eq 1) and (f.NBuffs eq 1) then begin
-        fNsegs = 0
-        fNBuffs = 0
-      endif else begin
-        fNsegs = f.Nsegs
-        fNBuffs = f.NBuffs
-      endelse
-      txt = strtrim(string(fNSegs),2)+' Segs';........... # of Segment
-      ;if f.NBuffs ge 3600 then txt = 'Hard Limit'
-      sg.oNsegs ->SetProperty,STRING=txt, COLOR=color
-      
-      txt = strtrim(string(fNBuffs),2)+' Buffs';........ # of Buffs
-      ;if f.NBuffs ge 3600 then txt = '3600 Buffs'
-      sg.oNBuffs ->SetProperty,STRING = txt, COLOR=color
-      
-      minu = round((f.NBuffs*10.0)/60.0);................... Minutes
-      txt = strtrim(string(minu),2)+' min of data'
-      sg.oMinu ->SetProperty,STRING = txt, COLOR=cwhite
-      
-      ;....................................................... Error Counts
-      if state.PREF.EVA_BAKSTRUCT then begin
-        msg = 'Validation for Back Structure Mode is under construction.'
-        result = dialog_message(msg,/center)
-      endif else begin
-        get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dmod
-        get_data,'mms_soca_fomstr',data=Dorg, lim=lorg,dl=dorg
-        mms_convert_fom_unix2tai, lmod.unix_FOMStr_mod, tai_FOMstr_mod; Modified FOM to be checked
-        mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
-        header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
-        vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
-        r = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, header=header, /quiet, vcase=vcase,$
-          valstruct=state.val)
-        terr = r.error.COUNT
-      endelse
-      
-      if terr gt 0 then ecolor=cred else ecolor=cwhite
-      if terr gt 1 then txt_sfx = ' error segs' else txt_sfx = ' error seg'
-      txt = strtrim(string(terr),2)+txt_sfx
-      sg.oErr ->SetProperty,STRING = txt, COLOR=ecolor
-      
-      ; Color Bar
-      crd1 = [xC+wC,yC+hC];*NBuffsMax/NBuffsMax]
-      crd2 = [xL   ,yL2-dy-0.02                  ]
-      sg.oL2_Number ->SetProperty,STRING=strtrim(string(long(NBuffsMax)),2)+' buffs',COLOR=cywhite
-      sg.oL2_Line ->SetProperty, DATAX = [crd1[0],xLL,crd2[0],xLLL], DATAY=[crd1[1],crd1[1],crd2[1],crd2[1]], COLOR=cwhite
-      
-      crd1 = [xC+wC,yC+hC*NBuffsWarning/NBuffsMax]
-      crd2 = [xL   ,yL1-dy-0.02                    ]
-      sg.oL1_Number ->SetProperty,STRING=strtrim(string(long(NBuffsWarning)),2)+' buffs',COLOR=cwhite
-      sg.oL1_Line ->SetProperty, DATAX = [crd1[0],xLL,crd2[0],xLLL], DATAY=[crd1[1],crd1[1],crd2[1],crd2[1]], COLOR=cwhite
-      
-      crd1 = [xC+wC,yC+hC*NBuffsTarget/NBuffsMax]
-      crd2 = [xL   ,yL0-dy-0.02                 ]
-      sg.oL0_Number ->SetProperty,STRING=strtrim(string(long(NBuffsTarget)),2)+' buffs',COLOR=cwhite
-      sg.oL0_Line ->SetProperty, DATAX = [crd1[0],xLL,crd2[0],xLLL], DATAY=[crd1[1],crd1[1],crd2[1],crd2[1]], COLOR=cwhite
-      
-      sg.oColorBar ->SetProperty, red_Values=redValues,green_values=grnValues,blue_values=bluValues,color=cwhite
-      
-      mywindow->Draw, sg.myview
+        ; level setting
+        NBuffsMax       = state.val.BUFF_MAX; The validation structure is added at the time of login. See eva_data_login of eva_data.pro
+        if NBuffsMax lt f.TargetBuffs then message, "something is wrong with Target Buffers or Buffer Max"
+        BuffExtra = NBuffsMax - f.TargetBuffs
+        NBuffsTarget    = f.TargetBuffs
+        NBuffsWarning   = f.TargetBuffs + 0.2*BuffExtra
+        NBuffsHardLimit = 2100.0;f.TargetBuffs + 0.7*BuffExtra
+        
+        lvlTarget    = long((255.0/NBuffsMax)*NBuffsTarget)
+        lvlWarning   = long((255.0/NBuffsMax)*NBuffsWarning)
+        lvlMax       = long((255.0));/NBuffsMax)*NBuffsMax)
+        lvlCurrent   = long((255.0/NBuffsMax)*f.NBuffs) < 255
+        
+        ; level coloring
+        color=cred
+        if f.NBuffs le NBuffsMax     then color=cyellow
+        if f.NBuffs le NBuffsWarning then color=cgreen
+        if f.NBuffs le NBuffsTarget  then color=cgreen;cwhite
+        redValues[lvlCurrent:255] = 0B
+        grnValues[lvlCurrent:255] = 0B
+        bluValues[lvlCurrent:255] = 0B
+        redValues[0:lvlCurrent] = color[0]
+        grnValues[0:lvlCurrent] = color[1]
+        bluValues[0:lvlCurrent] = color[2]
+  
+        sg.myview ->SetProperty,COLOR=cblack;................ background
+        
+        cst = time_string(systime(1,/utc));................. current time
+        css = strmid(cst, 5,2)+'/'+strmid(cst, 8,2)+$
+          ' '+strmid(cst, 11,5) + ' UTC'
+        css0 = css
+        sg.oTime ->SetProperty,STRING='Current Time:';css
+        
+        
+        ;..................................................... countdown
+        dst = systime(1,/utc) - state.launchtime ; number of seconds passed since the launch of EVA
+        rem_sec = 3.123*3600.d0 - dst
+        rem_hr = string(floor(rem_sec/3600.d0),format='(I02)')
+        rem_mn = string(floor((rem_sec-rem_hr*3600.d0)/60.d0),format='(I02)')
+        rem_ss = string(floor(rem_sec-rem_hr*3600.d0-rem_mn*60.d0),format='(I02)')
+        css = 'remaining '+rem_hr+':'+rem_mn+':'+rem_ss
+        css = css0
+        sg.oTimeCtdn ->SetProperty,STRING=css
+        
+        if (f.Nsegs eq 1) and (f.NBuffs eq 1) then begin
+          fNsegs = 0
+          fNBuffs = 0
+        endif else begin
+          fNsegs = f.Nsegs
+          fNBuffs = f.NBuffs
+        endelse
+        txt = strtrim(string(fNSegs),2)+' Segs';........... # of Segment
+        ;if f.NBuffs ge 3600 then txt = 'Hard Limit'
+        sg.oNsegs ->SetProperty,STRING=txt, COLOR=color
+        
+        txt = strtrim(string(fNBuffs),2)+' Buffs';........ # of Buffs
+        ;if f.NBuffs ge 3600 then txt = '3600 Buffs'
+        sg.oNBuffs ->SetProperty,STRING = txt, COLOR=color
+        
+        minu = round((f.NBuffs*10.0)/60.0);................... Minutes
+        txt = strtrim(string(minu),2)+' min of data'
+        sg.oMinu ->SetProperty,STRING = txt, COLOR=cwhite
+        
+        ;....................................................... Error Counts
+        if state.PREF.EVA_BAKSTRUCT then begin
+          msg = 'Validation for Back Structure Mode is under construction.'
+          result = dialog_message(msg,/center)
+        endif else begin
+          get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dmod
+          get_data,'mms_soca_fomstr',data=Dorg, lim=lorg,dl=dorg
+          mms_convert_fom_unix2tai, lmod.unix_FOMStr_mod, tai_FOMstr_mod; Modified FOM to be checked
+          mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
+          header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
+          vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
+          r = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, header=header, /quiet, vcase=vcase,$
+            valstruct=state.val)
+          terr = r.error.COUNT
+        endelse
+        
+        if terr gt 0 then ecolor=cred else ecolor=cwhite
+        if terr gt 1 then txt_sfx = ' error segs' else txt_sfx = ' error seg'
+        txt = strtrim(string(terr),2)+txt_sfx
+        sg.oErr ->SetProperty,STRING = txt, COLOR=ecolor
+        
+        ; Color Bar
+        crd1 = [xC+wC,yC+hC];*NBuffsMax/NBuffsMax]
+        crd2 = [xL   ,yL2-dy-0.02                  ]
+        sg.oL2_Number ->SetProperty,STRING=strtrim(string(long(NBuffsMax)),2)+' buffs',COLOR=cywhite
+        sg.oL2_Line ->SetProperty, DATAX = [crd1[0],xLL,crd2[0],xLLL], DATAY=[crd1[1],crd1[1],crd2[1],crd2[1]], COLOR=cwhite
+        
+        crd1 = [xC+wC,yC+hC*NBuffsWarning/NBuffsMax]
+        crd2 = [xL   ,yL1-dy-0.02                    ]
+        sg.oL1_Number ->SetProperty,STRING=strtrim(string(long(NBuffsWarning)),2)+' buffs',COLOR=cwhite
+        sg.oL1_Line ->SetProperty, DATAX = [crd1[0],xLL,crd2[0],xLLL], DATAY=[crd1[1],crd1[1],crd2[1],crd2[1]], COLOR=cwhite
+        
+        crd1 = [xC+wC,yC+hC*NBuffsTarget/NBuffsMax]
+        crd2 = [xL   ,yL0-dy-0.02                 ]
+        sg.oL0_Number ->SetProperty,STRING=strtrim(string(long(NBuffsTarget)),2)+' buffs',COLOR=cwhite
+        sg.oL0_Line ->SetProperty, DATAX = [crd1[0],xLL,crd2[0],xLLL], DATAY=[crd1[1],crd1[1],crd2[1],crd2[1]], COLOR=cwhite
+        
+        sg.oColorBar ->SetProperty, red_Values=redValues,green_values=grnValues,blue_values=bluValues,color=cwhite
+        
+        mywindow->Draw, sg.myview
+      endif
     endelse
   endif
   

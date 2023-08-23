@@ -94,8 +94,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-08-23 12:22:04 -0700 (Tue, 23 Aug 2022) $
-; $LastChangedRevision: 31036 $
+; $LastChangedDate: 2023-08-22 13:44:21 -0700 (Tue, 22 Aug 2023) $
+; $LastChangedRevision: 32053 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -367,6 +367,10 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 ; Make energy spectra
 
   mvn_swe_makespec
+
+; Set the quality flag
+
+  mvn_swe_set_quality, /doplot
 
 ; Report status of data loaded
 

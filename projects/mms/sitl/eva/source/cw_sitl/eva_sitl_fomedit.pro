@@ -7,8 +7,8 @@
 ;   When "Save" is chosen, the "segSelect" structure will be used to update FOM/BAK structures.
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2019-05-22 14:59:10 -0700 (Wed, 22 May 2019) $
-; $LastChangedRevision: 27277 $
+; $LastChangedDate: 2023-08-21 20:46:44 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32050 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_fomedit.pro $
 ;
 PRO eva_sitl_FOMedit_event, ev
@@ -65,6 +65,10 @@ PRO eva_sitl_FOMedit_event, ev
       widget_control, wid.lblBuffs, SET_VALUE=txtbuffs
       segSelect.TE = evalue
       end
+    wid.bgMMS: begin
+      widget_control, ev.id, GET_VALUE=value;get new obsset
+      segSelect.OBSSET = eva_obsset_bitarray2byte(value)
+      end
     wid.txtDiscussion: begin
       widget_control, ev.id, GET_VALUE=new_discussion;get new discussion
       segSelect.DISCUSSION = new_discussion[0]
@@ -72,14 +76,21 @@ PRO eva_sitl_FOMedit_event, ev
       widget_control, wid.lblDiscussion, SET_VALUE='COMMENT: '+comlen+wid.DISLEN 
       end
     wid.btnSave: begin
-      print,'EVA: ***** EVENT: btnSave *****'
-      if strmatch(wid.proj,'mms') then begin
-        eva_sitl_strct_update, segSelect,BAK=wid.state.pref.EVA_BAKSTRUCT
-        eva_sitl_stack
+      if total(eva_obsset_byte2bitarray(segSelect.OBSSET)) eq 0.0 then begin
+        result = dialog_message('Please select at least one spacecraft.',/center)
+        code_exit = 2
       endif else begin
-        sppeva_sitl_tplot_update, segSelect, wid.vvv
+        print,'EVA: ***** EVENT: btnSave *****'
+        if strmatch(wid.proj,'mms') then begin
+          print, '**************'
+          
+          eva_sitl_strct_update, segSelect,BAK=wid.state.pref.EVA_BAKSTRUCT
+          eva_sitl_stack
+        endif else begin
+          sppeva_sitl_tplot_update, segSelect, wid.vvv
+        endelse
+        code_exit = 1
       endelse
-      code_exit = 1
     end
     wid.btnCancel: begin
       print,'EVA: ***** EVENT: btnCancel *****'
@@ -95,7 +106,6 @@ PRO eva_sitl_FOMedit_event, ev
   endif else begin
     eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.vvv, /rehighlight, $
       fom_min_value = wid.fom_min_value, fom_max_value=wid.fom_max_value
-    ;eva_sitl_highlight, segSelect.TS, segSelect.TE, segSelect.FOM, wid.state, /rehighlight
     str_element,/add,wid,'segSelect',segSelect
     widget_control, ev.top, SET_UVALUE=wid
   endelse
@@ -170,7 +180,7 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
   
   disable=0
   
-  if (segSelect.BAK) and (n_tags(segSelect) eq 16) then begin
+  if (segSelect.BAK) and (n_tags(segSelect) ge 16) then begin
     str_element,/add,wid,'lblBuffs',-1L
     str_element,/add,wid,'sldStart',-1L
     str_element,/add,wid,'sldStop',-1L
@@ -196,6 +206,7 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
     if disable then ssFOM = -1 else ssFOM = eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=fom_max_value, MIN_VALUE=0) 
     str_element,/add,wid,'ssFOM',ssFOM
     ;txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
+    str_element,/add,wid,'bgMMS',-1L
   endif else begin
     str_element,/add,wid,'ssFOM',eva_slider(base,title=' FOM ',VALUE=segSelect.FOM,MAX_VALUE=fom_max_value, MIN_VALUE=0)
     ;txtbuffs = 'SEGMENT SIZE: '+string(len,format='(I5)')+' buffers'
@@ -204,9 +215,19 @@ PRO eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv, proj=proj, $
       VALUE=Ts, MIN_VALUE=start_min_value, MAX_VALUE=start_max_value,  WGRID=wgrid, /time)
     str_element,/add,wid,'sldStop',eva_slider(base,title='Stop ',$
       VALUE=Te, MIN_VALUE=stop_min_value, MAX_VALUE=stop_max_value, WGRID=wgrid, /time)
-    str_element,/add,wid,'drpStatus',-1L    
+    str_element,/add,wid,'drpStatus',-1L
+    ;-----------
+    ; OBSSET
+    ;-----------
+    ProbeNamesMMS = ['MMS-1 ', 'MMS-2 ', 'MMS-3 ', 'MMS-4 ']
+    str_element,/add,wid,'bgMMS',cw_bgroup(base, ProbeNamesMMS, /ROW, /NONEXCLUSIVE,$
+      SET_VALUE=eva_obsset_byte2bitarray(segSelect.OBSSET),BUTTON_UVALUE=bua,ypad=0,space=0)    
   endelse
   
+  
+  ;-----------
+  ; DISCUSSION
+  ;-----------
   if disable then begin
     comment = 'This is a FINISHED segment. No need to edit.'
     txtDiscuss = -1

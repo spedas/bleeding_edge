@@ -66,6 +66,12 @@ PRO eva_sitl_load_soca, state, str_tspan, mdq=mdq
     unix_BAKStr_org = BAKStr
     str_element,/add,unix_BAKStr_org,'START', mms_tai2unix(BAKStr.START); START,STOP are LONG
     str_element,/add,unix_BAKStr_org,'STOP',  mms_tai2unix(BAKStr.STOP)
+    
+    nmax = n_elements(BAKStr.FOM)
+    obsset = bytarr(nmax)
+    obsset[0:nmax-1] = 0B
+    str_element,/add,unix_BAKStr_org,'OBSSET', obsset
+    
     D = eva_sitl_strct_read(unix_BAKStr_org,tspan[0])
     store_data,'mms_soca_bakstr',data=D
     options,'mms_soca_bakstr','ytitle','BAK'

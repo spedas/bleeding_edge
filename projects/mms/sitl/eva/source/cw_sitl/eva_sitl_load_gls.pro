@@ -1,7 +1,7 @@
 ;+
 ; NAME: EVA_SITL_LOAD_GLS
 ;
-; PURPOSE: To load ground-loop selections (GLS) from SDC and creates
+; PURPOSE: To load ground-loop selections (GLS) from SDC and create
 ;          a tplot varialbe to be displayed with SPEDAS.
 ;
 ; INPUT
@@ -68,12 +68,15 @@ PRO eva_sitl_load_gls, trange=trange, algo=algo
         Nsegs = n_elements(glsstr.FOM)
         SourceID = strarr(Nsegs)
         SourceID[0:*] = 'GLS:'+algo[m]
+        OBSSETarray = bytarr(Nsegs)
+        OBSSETarray[0:*] = 15B
         START = lonarr(Nsegs)
         STOP  = lonarr(Nsegs)
         str_element,/add,unix_FOMstr,'NSEGS',Nsegs
         str_element,/add,unix_FOMstr,'SOURCEID',SourceID
         str_element,/add,unix_FOMstr,'FOM',glsstr.FOM
         str_element,/add,unix_FOMstr,'DISCUSSION',glsstr.COMMENT
+        str_element,/add,unix_FOMstr,'OBSSET',OBSSETarray ; <--- Need to be modified when GLS starts to support OBSSET.
         glstart = time_double(glsstr.START)
         glstop  = time_double(glsstr.STOP)
         for n=0,Nsegs-1 do begin

@@ -4,7 +4,10 @@ FUNCTION eva_sitl_text_selection, s, email=email, bak=bak
     msg = ''
     nmax = n_elements(s.FOM)
   endif else begin
-    msg = eva_sitl_buffdistr(/msg)
+    msg =       eva_sitl_buffdistr(/msg,observatoryID='MMS1')
+    msg = [msg, eva_sitl_buffdistr(/msg,observatoryID='MMS2')]
+    msg = [msg, eva_sitl_buffdistr(/msg,observatoryID='MMS3')]
+    msg = [msg, eva_sitl_buffdistr(/msg,observatoryID='MMS4')]
     nmax = s.NSEGS
   endelse
   
@@ -27,9 +30,9 @@ FUNCTION eva_sitl_text_selection, s, email=email, bak=bak
   msg = [msg, vsep,'List of selections',vsep]
   
   if keyword_set(bak) then begin
-    msg = [msg,'START TIME          - END TIME           ,   FOM,  SIZE, ID,  DISCUSSION']
+    msg = [msg,'START TIME          - END TIME           ,   FOM,  SIZE, USER, OBSSET, DISCUSSION']
   endif else begin
-    msg = [msg,'START TIME          - END TIME           ,   FOM, ID,  DISCUSSION']
+    msg = [msg,'START TIME          - END TIME           ,   FOM, USER, OBSSET, DISCUSSION']
   endelse
 
   for n=0,nmax-1 do begin; for each segment
@@ -43,11 +46,20 @@ FUNCTION eva_sitl_text_selection, s, email=email, bak=bak
     str_fom = string(s.FOM[n],format='(F5.1)')
     discussion = s.DISCUSSION[n]
     srcID   = s.SOURCEID[n]
+    tn = tag_names(s)
+    idx=where(tn eq 'OBSSET',ct)
+    if ct eq 1 then begin
+      if s.OBSSET[n] eq 0B then begin
+        obsset = '????'
+      endif else begin
+        obsset = eva_obsset_byte2bitarray(s.OBSSET[n],/str)
+      endelse
+    endif
     if keyword_set(bak) then begin
       seglengths = string(s.SEGLENGTHS[n],format='(I4)')
-      msg = [msg,stime+' - '+etime+', '+str_fom+', '+seglengths+', '+srcID+', '+discussion]
+      msg = [msg,stime+' - '+etime+', '+str_fom+', '+seglengths+', '+srcID+', '+obsset+', '+discussion]
     endif else begin
-      msg = [msg,stime+' - '+etime+', '+str_fom+', '+srcID+', '+discussion]
+      msg = [msg,stime+' - '+etime+', '+str_fom+', '+srcID+', '+obsset+', '+discussion]
     endelse
   endfor
   msg = [msg, ' ']

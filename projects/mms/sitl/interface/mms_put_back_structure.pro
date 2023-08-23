@@ -86,7 +86,7 @@ if count_mod_errors eq 0 and count_new_errors eq 0 then begin
         sub_segments(i).fom = new_backstr.fom(loc_altered(i))
         sub_segments(i).status = status(i)
         sub_segments(i).source = new_backstr.sourceid(loc_altered(i))
-        sub_segments(i).observatoryid = "ALL"
+        sub_segments(i).observatoryid = eva_obsset_byte2observatoryid(new_backstr.OBSSET(loc_altered(i)))
         sub_segments(i).discussion = new_backstr.discussion(loc_altered(i))
       endfor
 

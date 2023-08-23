@@ -1,4 +1,7 @@
-
+; $LastChangedBy: moka $
+; $LastChangedDate: 2023-08-21 20:46:44 -0700 (Mon, 21 Aug 2023) $
+; $LastChangedRevision: 32050 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl.pro $
 PRO eva_sitl_cleanup, parent=parent
   @eva_sitl_com
 ;  id_sitl = widget_info(parent, find_by_uname='eva_sitl')
@@ -169,26 +172,14 @@ PRO eva_sitl_seg_add, trange, state=state, var=var
   endif
   
   if BAK ne -1 then begin
-    ; calculate new FOM value
-    ;  tbl       = state.fom_table
-    ;  FOMWindow = mms_burst_fom_window(nind,tbl.FOMSlope, tbl.FOMSkew, tbl.FOMBias)
-    ;  seg       = Din.y[ind]
-    ;  RealFOM   = (total(seg[sort(seg)]*FOMWindow) <255.0) > 2.0
-    ;RealFOM = 40
-    
-;    if (state.USER_FLAG eq 4) then begin
-;      RealFOM = 200
-;      valval = mms_load_fom_validation()
-;      tedef = trange[0] + valval.FPI_SEG_BOUNDS[1]*10d0
-;    endif else begin
-      RealFOM = 40
-      tedef = trange[1]
-;    endelse
+
+    RealFOM = 40
+    tedef = trange[1]
     
     ; segSelect
     if n_elements(var) eq 0 then message,'Must pass tplot-variable name'
     segSelect = {ts:trange[0], te:tedef, fom:RealFOM, BAK:BAK, discussion:' ', var:var,$
-      ts_limit:ts_limit, te_limit:te_limit}
+      ts_limit:ts_limit, te_limit:te_limit, obsset:15B}
     vvv = state.pref.EVA_BAKSTRUCT ? 'mms_stlm_bakstr' : 'mms_stlm_fomstr'
     eva_sitl_FOMedit, state, segSelect, wgrid=wgrid, vvv=vvv ;Here, change FOM value only. No trange change.
   endif
@@ -297,7 +288,7 @@ PRO eva_sitl_seg_edit, t, state=state, var=var, delete=delete, split=split
         if ct eq 1 then begin
           m = idx[0] 
           segSelect = {ts:s.START[m],te:s.STOP[m]+10.d0,fom:s.FOM[m],$
-            BAK:BAK,discussion:s.DISCUSSION[m], var:var, $
+            BAK:BAK,discussion:s.DISCUSSION[m], var:var, obsset:s.OBSSET[m], $
             createtime:s.CREATETIME[m],datasegmentid:s.DATASEGMENTID[m],finishtime:s.FINISHTIME[m],$
             inplaylist:s.INPLAYLIST[m],ispending:s.ISPENDING[m],numevalcycles:s.NUMEVALCYCLES[m],$
             parametersetid:s.PARAMETERSETID[m],seglengths:s.SEGLENGTHS[m],sourceid:s.SOURCEID[m],$
@@ -317,7 +308,7 @@ PRO eva_sitl_seg_edit, t, state=state, var=var, delete=delete, split=split
         idx = where((stime le t) and (t le etime), ct)
         if ct eq 1 then begin
           segSelect = {ts:stime[idx[0]],te:etime[idx[0]],fom:s.FOM[idx[0]],$
-            BAK:BAK, discussion:s.DISCUSSION[idx[0]], var:var}
+            BAK:BAK, discussion:s.DISCUSSION[idx[0]], var:var, obsset:s.OBSSET[idx[0]]}
         endif else segSelect = 0
         
         wgrid = [s.TIMESTAMPS,s.TIMESTAMPS[s.NUMCYCLES-1]+dtlast]
@@ -326,12 +317,12 @@ PRO eva_sitl_seg_edit, t, state=state, var=var, delete=delete, split=split
     endcase
   endif else begin
     if (BAK eq 0) or (BAK eq 1) then begin; Will be important when deleting multiple segments
-      segSelect = {ts:t[0], te:t[1], fom:0., BAK: BAK, discussion:' ', var:var}
+      segSelect = {ts:t[0], te:t[1], fom:0., BAK: BAK, discussion:' ', var:var, obsset:15B}
     endif else segSelect = -1
   endelse
 
   
-  if (n_tags(segSelect) eq 6) or (n_tags(segSelect) eq 16) then begin
+  if (n_tags(segSelect) eq 7) or (n_tags(segSelect) eq 17) then begin
     if segSelect.BAK and ~state.pref.EVA_BAKSTRUCT then begin
       msg ='This is a back-structure segment. Ask Super SITL if you really need to modify this.'
       rst = dialog_message(msg,/info,/center)
@@ -356,6 +347,7 @@ PRO eva_sitl_seg_edit, t, state=state, var=var, delete=delete, split=split
         gBAK = segSelect.BAK
         gDIS = segSelect.DISCUSSION
         gVAR = segSelect.VAR
+        gOBS = segSelect.OBSSET
         nmax = ceil((gTmax-gTmin)/gTdel)
         gTdel = (gTmax-gTmin)/double(nmax)
         if nmax gt 0 then begin
@@ -368,7 +360,7 @@ PRO eva_sitl_seg_edit, t, state=state, var=var, delete=delete, split=split
           for n=0,nmax-1 do begin
             Ts = gTmin+gTdel*n
             Te = gTmin+gTdel*(n+1)
-            segSelect = {ts:Ts,te:Te,fom:gFOM,BAK:gBAK, discussion:gDIS, var:gVAR}
+            segSelect = {ts:Ts,te:Te,fom:gFOM,BAK:gBAK, discussion:gDIS, var:gVAR, obsset:gOBS}
             eva_sitl_strct_update, segSelect, user_flag=state.user_flag
           endfor
 
