@@ -175,8 +175,8 @@
 ;       BLACK:     Use a black background for the orbit snapshot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-06-06 08:02:24 -0700 (Tue, 06 Jun 2023) $
-; $LastChangedRevision: 31886 $
+; $LastChangedDate: 2023-08-25 08:36:05 -0700 (Fri, 25 Aug 2023) $
+; $LastChangedRevision: 32062 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spice/orrery.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -544,7 +544,7 @@ pro orrery, time, noplot=noplot, nobox=nobox, label=label, scale=scale, eph=eph,
 ; Parker Solar Probe
 
       path = 'misc/spice/naif/PSP/kernels/spk/'
-      pathname = path + 'spp_nom_20180812_20250831_v036_RO3.bsp'
+      pathname = path + 'spp_nom_20180812_20250831_v039_RO6.bsp'
       fname = (mvn_pfp_file_retrieve(pathname,source=ssrc,verbose=verbose))[0]
       indx = where(mk eq fname, count)
       if (count eq 0) then begin

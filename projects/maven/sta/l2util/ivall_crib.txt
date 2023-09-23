@@ -1,0 +1,152 @@
+Running the MAVEN STATIC background file creation code:
+
+There are four levels of STATIC background calculation; for each
+level, a background is calculated and saved in a file, with the same
+variables as the STATIC L2 file, with data in the background
+variable. Files are created for app_ids = ['c0', 'c6', 'c8', 'ca',
+'d0', 'd1'].
+
+COMMAND LINE:
+
+To run from the IDL command line, for a single day
+
+tstart = '2020-09-15'
+mvn_sta_l2gen, date = tstart, temp_dir = './', iv_level = 1
+mvn_sta_l2gen, date = tstart, temp_dir = './', iv_level = 2
+mvn_sta_l2gen, date = tstart, temp_dir = './', iv_level = 3
+mvn_sta_l2gen, date = tstart, temp_dir = './', iv_level = 4
+
+The temp_dir keyword is used for temporary files created during CDF
+compression/uncompression. Here it goes into the local working
+directory.  The output files are eventually written to the datatbase,
+/disks/data/maven/data/sci/sta/iv1, 2, 3, 4. All of these directories
+and files are group-writeable or all-writeable.
+
+The processing may need data from the following day at the previous
+level, so when running in the batch job, the IDL sequence looks like
+this:
+
+tstart = time_double(date)
+one_day = 86400.0d0
+mvn_sta_l2gen, date = time_string(tstart), temp_dir = './', iv_level = 1
+mvn_sta_l2gen, date = time_string(tstart-one_day), temp_dir = './', iv_level = 2
+mvn_sta_l2gen, date = time_string(tstart-2.0*one_day), temp_dir = './', iv_level = 3
+mvn_sta_l2gen, date = time_string(tstart-3.0*one_day), temp_dir = './', iv_level = 4
+
+This insures that for each level, the data for the following day at
+the previous level is there.
+
+
+BATCH JOB:
+
+This describes the cron job that can be used to process all levels at
+the same time; there are also processes for each individual level the
+can be run, (just replace ivall with iv1, 2, 3 or 4). Examples for
+scripts are in the spdsoft/projects/maven/sta/l2util directory.
+
+To setup (if you are user jimm):
+
+Create a working directory:
+
+       mkdir /disks/maja/home/maven/jimm/
+
+Create a subdirectory, called mvn_sta_ivall_1day0:
+
+       mkdir /disks/maja/home/maven/jimm/mvn_sta_ivall_1day0/
+
+Copy the program mvn_sta_ivall_1day.pro from your local SVN working
+directory into the subdirectory:
+
+       cp /home/jimm/themis_sw/projects/maven/sta/l2util/mvn_sta_ivall_1day.pro /disks/maja/home/maven/jimm/mvn_sta_ivall_1day0/
+
+In the subdirectory, create files:
+
+       mvn_sta_ivall_1day_start_time.txt
+
+and:
+
+       mvn_sta_ivall_1day_end_time.txt
+
+The start time file contains the start date, e.g., 2020-09-15/00:00:00,
+and the end time file will create the end date, e.g., 2020-10-01.
+
+
+(There is also an IDL process called mvn_sta_setup_ivallprocess, that
+accomplishes the same thing, and can be used to create an aribtrary
+number of sub-directories for an arbitrary number of processes, but
+using more than one process can cause memory problems, so it's a good
+idea to stick with one process.)
+
+The program mvn_sta_ivall_1day.pro processes 1 day of data. First it
+creates a file:
+
+       mvn_sta_ivall_1day_lock
+
+It reads the start_time file, and runs all four background levels for
+the given start date, which creates files for that date for iv1, one
+day ealier for iv2, another day earlier for iv3 and another day
+earlier for iv4.
+
+When it finishes, it increments the start date, writes a new
+_start_time file, and deletes the _lock file.
+
+***If the process fails, then it never deletes the lock file, and all
+processing in that subdirectory stops.***
+
+Eventually, the start_time will equal the end_time. When that happens
+the processing stops.
+
+SHELL SCRIPT FOR BATCH JOB:
+
+The next step is to create a shell script that can be called from a
+cronjob. The shell script sets up the IDL path and runs the batch
+job. For this example, the script is in the maven/l2gen directory:
+
+     /home/jimm/themis_sw/projects/maven/l2gen/jmm_l2gen_multiprocess_b.csh
+
+This will need to be edited for non-jimm users, there is also an
+example for the muser user:
+
+     /home/jimm/themis_sw/projects/maven/l2gen/mvn_l2gen_multiprocess_b.csh
+
+The only difference is the IDL path, which should be setup for the current user.
+
+To run the script:
+
+     /bin/csh /home/jimm/themis_sw/projects/maven/l2gen/jmm_l2gen_multiprocess_b.csh mvn_sta_ivall_1day 1 0 /disks/maja/home/maven/jimm COMMENT
+
+The inputs are:
+                mvn_sta_ivall_1day  (the IDL program name)
+                1 (the number of sub-processes, in sub-directories of /disks/maja/home/maven/jimm)
+		0 (an offset, used if different computers are running sub-processes in the same directory, otherwise 0)
+		/disks/maja/home/maven/jimm (the working directory)
+		COMMENT (an identifier, can be anything)
+
+The shell script sets up the IDL path. Then for each subdirectory it
+cd's into that subdirectory. Next, in each subdirectory it checks for
+the _lock file. If there is no _lock file then the process starts an
+IDL job. If the _lock file is present that means there's a job
+running, or crashed, and nothing happens.
+
+This is designed to be called from a cronjob that runs multiple times
+per day. For example, here is a crontab entry: to create it call from
+the Unix command line:
+
+    crontab -e
+
+Then insert a cron entry:
+
+# STA IVALL process
+*/5 * * * * /bin/csh /home/jimm/themis_sw/projects/maven/l2gen/jmm_l2gen_multiprocess_b.csh mvn_sta_ivall_1day 1 0 /mydisks/home/maven/jimm sta_ivall_test_20220104 >/dev/null 2>&1
+
+(In the command the  >/dev/null 2>&1 insures that no extra log files or emails are generated)
+
+This runs the shell script every five minutes. So every five minutes,
+it checks for the lock file, and if it finds no file it processes the
+date in the start_time file, increments the date, deletes the _lock
+file. Then, the next 5 minute multiple, it processes the next date,
+until start_time = end_time.
+
+
+
+

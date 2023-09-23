@@ -45,11 +45,11 @@ function elf_get_phase_delays, no_download=no_download, trange=trange, probe=pro
   instrument='epde'
  
   ; check for existing phase_delays tplot var
-  get_data, 'el'+probe+'_epd_phase_delays', data=pd_struct
-  if is_struct(pd_struct) then begin
-    phase_delays=pd_struct.phase_delays[0]
-    return, phase_delays
-  endif
+;  get_data, 'el'+probe+'_epd_phase_delays', data=pd_struct
+;  if is_struct(pd_struct) then begin
+;    phase_delays=pd_struct.phase_delays[0]
+;    return, phase_delays
+;  endif
   
   ; create calibration file name
   sc='el'+probe
@@ -63,7 +63,7 @@ function elf_get_phase_delays, no_download=no_download, trange=trange, probe=pro
 
   if keyword_set(no_download) then no_download=1 else no_download=0
 
-  if no_download eq 0 then begin
+;  if no_download eq 0 then begin
 ;    ; NOTE: directory is temporarily password protected. this will be
 ;    ;       removed when data is made public.
 ;    if undefined(user) OR undefined(pw) then authorization = elf_get_authorization()
@@ -75,14 +75,14 @@ function elf_get_phase_delays, no_download=no_download, trange=trange, probe=pro
 ;      read,user,prompt='User Name: '
 ;      read,pw,prompt='Password: '
 ;    endif
-    if file_test(local_cal_dir,/dir) eq 0 then file_mkdir2, local_cal_dir
-    dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_cal_dir
-    paths = spd_download(remote_file=remote_filename, $   ;remote_path=remote_cal_dir, $
-      local_file=local_filename, $   ;local_path=local_cal_dir, $
-      ssl_verify_peer=0, ssl_verify_host=0)
-    if undefined(paths) or paths EQ '' then $
-      dprint, devel=1, 'Unable to download ' + local_filename
-  endif
+;    if file_test(local_cal_dir,/dir) eq 0 then file_mkdir2, local_cal_dir
+;    dprint, dlevel=1, 'Downloading ' + remote_filename + ' to ' + local_cal_dir
+;    paths = spd_download(remote_file=remote_filename, $   ;remote_path=remote_cal_dir, $
+;      local_file=local_filename, $   ;local_path=local_cal_dir, $
+;      ssl_verify_peer=0, ssl_verify_host=0)
+;    if undefined(paths) or paths EQ '' then $
+;      dprint, devel=1, 'Unable to download ' + local_filename
+;  endif
 
   ; check that there is a local file
   if file_test(local_filename) NE 1 then begin

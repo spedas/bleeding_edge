@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Aug 22 18:16:39 2023.<P>
+<STRONG>Last modified: </STRONG>Thu Sep 21 18:16:45 2023.<P>
  
 <HR>
  
@@ -36,6 +36,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#CTIME">CTIME</A>
 <br>Interactively uses the cursor to select a time (or times)
 <LI><A HREF="#CUTS">CUTS</A>
+<LI><A HREF="#DANGLE">DANGLE</A>
+<br>Determines the angle between two vectors in tplot.  Operates on
 <LI><A HREF="#DATA_CUT">DATA_CUT</A>
 <LI><A HREF="#DATA_TO_NORMAL">DATA_TO_NORMAL</A>
 <LI><A HREF="#DEL_DATA">DEL_DATA</A>
@@ -408,7 +410,7 @@ WARNING!
 <A NAME="CUTS">
 <H2>CUTS</H2></A>
 <A HREF="#CTIME">[Previous Routine]</A>
-<A HREF="#DATA_CUT">[Next Routine]</A>
+<A HREF="#DANGLE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:	cuts
@@ -424,9 +426,46 @@ LAST MODIFICATION:	@(#)cuts.pro	1.6 98/01/29
 <STRONG>(See <A href="tplot/cuts.pro">general/tplot/cuts.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="DANGLE">
+<H2>DANGLE</H2></A>
+<A HREF="#CUTS">[Previous Routine]</A>
+<A HREF="#DATA_CUT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   dangle
+PURPOSE:
+  Determines the angle between two vectors in tplot.  Operates on
+  variables in Cartesian coordinates, where X is an N-element time
+  array, and Y is an N x 3 array of vectors.  Two time ranges are
+  input by the cursor, and the mean vector [&lt;x&gt;, &lt;y&gt;, &lt;z&gt;] is 
+  determined in each range.  The angle between these two vectors is
+  the result.  Only makes sense when the vectors are steady in both
+  ranges.
+
+USAGE:
+   dangle, var
+
+INPUTS:
+   var    :     Tplot variable name or number.  The X tag is an 
+                N-element time array, and the Y tag is an N x 3
+                array of Cartesian vectors.
+
+KEYWORDS:
+   RESULT :     Named variable to hold the result (units = deg).
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2023-09-19 08:45:43 -0700 (Tue, 19 Sep 2023) $
+ $LastChangedRevision: 32104 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/dangle.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="tplot/dangle.pro">general/tplot/dangle.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="DATA_CUT">
 <H2>DATA_CUT</H2></A>
-<A HREF="#CUTS">[Previous Routine]</A>
+<A HREF="#DANGLE">[Previous Routine]</A>
 <A HREF="#DATA_TO_NORMAL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

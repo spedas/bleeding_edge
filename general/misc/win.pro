@@ -257,8 +257,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-08-23 12:23:44 -0700 (Tue, 23 Aug 2022) $
-; $LastChangedRevision: 31037 $
+; $LastChangedDate: 2023-09-05 08:51:31 -0700 (Tue, 05 Sep 2023) $
+; $LastChangedRevision: 32076 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/win.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -387,6 +387,9 @@ pro win, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full, $
         if keyword_set(color_reverse) then cstr += " (reverse)"
       endif else cstr = "not defined"
       print,"Color table: ", cstr
+      if n_elements(line_colors_index) then lstr = strtrim(string(line_colors_index),2) $
+                                       else lstr = "not defined"
+      print,"Line colors: ", lstr
       if (stat gt 1) then begin
         device, window_state=ws
         owin = where(ws, count)

@@ -15,12 +15,12 @@
 ;
 ;   (2) Integer that selects a predefined color scheme:
 ;
-;           0  : primary colors
+;           0  : primary and secondary colors [black, magenta, blue, cyan, green, yellow, red, white]
 ;          1-4 : four different schemes suitable for colorblind vision
-;           5  : primary colors, except orange replaces yellow for better contrast on white
-;           6  : primary colors, except gray replaces yellow for better contrast on white
-;           7  : https://www.nature.com/articles/nmeth.1618, except no reddish purple
-;           8  : https://www.nature.com/articles/nmeth.1618, except no yellow
+;           5  : same as 0, except orange replaces yellow for better contrast on white
+;           6  : same as 0, except gray replaces yellow for better contrast on white
+;           7  : see https://www.nature.com/articles/nmeth.1618, except no reddish purple
+;           8  : see https://www.nature.com/articles/nmeth.1618, except no yellow
 ;           9  : same as 8 but permuted so vector defaults are blue, orange, reddish purple
 ;          10  : Chaffin's CSV line colors, suitable for colorblind vision
 ;
@@ -80,8 +80,8 @@
 ;   colors_com:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-05 09:48:33 -0800 (Sun, 05 Mar 2023) $
-; $LastChangedRevision: 31582 $
+; $LastChangedDate: 2023-08-27 13:06:46 -0700 (Sun, 27 Aug 2023) $
+; $LastChangedRevision: 32066 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/line_colors.pro $
 ;
 ;Created by David Mitchell;  February 2023

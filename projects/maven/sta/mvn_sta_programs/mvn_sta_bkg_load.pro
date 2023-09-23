@@ -71,7 +71,7 @@
 ;	bkg10 will be treated in a separate program using outputs from mvn_sta_bkg_correct.pro
 ;-
 
-pro mvn_sta_bkg_load,trange=trange,AAA=AAA,add=add,no_update=no_update,no_bkg4=no_bkg4,no_bkg5=no_bkg5,no_bkg6=no_bkg6,no_bkg7=no_bkg7,no_bkg8=no_bkg8,no_bkg9=no_bkg9,save_d1_full=save_d1_full
+pro mvn_sta_bkg_load,trange=trange,AAA=AAA,add=add,no_update=no_update,no_bkg4=no_bkg4,no_bkg5=no_bkg5,no_bkg6=no_bkg6,no_bkg7=no_bkg7,no_bkg8=no_bkg8,no_bkg9=no_bkg9,no_bkg10=no_bkg10,save_d1_full=save_d1_full
 
 starttime = systime(1)
 
@@ -354,6 +354,14 @@ endif
 	tsmooth2,'da_bkg',11
 	get_data,'da_bkg_sm',data=da_bkg_sm
 
+;***************************************************************************************
+; get sc velocity in the APP frame - needed to check pointing for bkg4
+
+ 	mvn_ramdir,trange,frame=['MAVEN_APP'],dt=1,/polar
+	get_data,'V_sc_MAVEN_APP',data=tmp
+	tmp_angle = !radeg*acos(reform(tmp.y[*,0])/total(tmp.y*tmp.y,2)^.5)
+	time = mvn_c6_dat.time+2.
+	v_angle = interp(tmp_angle,tmp.x,time)
 
 ;***************************************************************************************
 ;***************************************************************************************
@@ -371,6 +379,7 @@ for jj=0l,npts-1 do begin
 	alt = (total(mvn_c6_dat.pos_sc_mso[ii,*]^2))^.5-3386.
 	att = mvn_c6_dat.att_ind[ii]
 	mode = mvn_c6_dat.mode[ii]
+	v_ang = v_angle[ii]
 
 ; get nearest deadtime and droop from common mvn_sta_dead, dat_dead  -- must have run: mvn_sta_dead_load,/test,/make_common
 
@@ -818,25 +827,34 @@ endelse
 ;	Esh is the highest energy where the counts in c6 exceed 1/50. of the peak counts and exceed 20 counts.
 ;	the numbers 50 and 20 are arbitrary and should be tuned to make the algorithm work optimally 
 ;	tf_bkg4 is use to prevent double counting in background removal
+;	this was modified 20210511 to account for mispointing at periapsis on contact/relay orbits while in conic mode
+;	this was modified 20230409 to prevent removal of suprathermal ions or any heavy ions above 25 eV
 
    if not keyword_set(no_bkg4) then begin						; this just turns on/off this background
 
 	tf_bkg4 = replicate(1,32,16,16,64) 
-	if alt lt 500. and att ge 2 and mode ne 6 then begin
-		c6_cnt = reform(total(mvn_c6_dat.data[ii,*,*],3))
+;	if alt lt 500. and att ge 2 and mode ne 6 then begin
+	if alt lt 500. and att ge 2 and mode ne 6 and v_ang lt 40. then begin				; modified 20210511
+		gf_nor = reform(mvn_c6_dat.gf[swp_ind,*,att]/mvn_c6_dat.gf[swp_ind,31,att])		; modified 20230409
+		sc_pot = reform(mvn_c6_dat.sc_pot[ii])							; modified 20230409
+;		c6_cnt = reform(total(mvn_c6_dat.data[ii,*,*],3))
+		c6_cnt = reform(total(mvn_c6_dat.data[ii,*,40:56],3))/gf_nor				; modified 20230409
 		c6_nrg = reform(mvn_c6_dat.energy[swp_ind,*,0])
-		pk_cnt = max(c6_cnt,pk_ind)
+;		pk_cnt = max(c6_cnt,pk_ind)							
+		pk_cnt = max(c6_cnt*(c6_nrg le 10. or c6_nrg le (1.1*(2.7-sc_pot)<20.)),pk_ind)		; modified 20230409		
 		pk_nrg = c6_nrg[pk_ind]
-;		tf_ind = where(c6_cnt gt pk_cnt/50. and c6_cnt gt 10.,count)			; 50 and 10 are arbitrary, should be tuned
-		tf_ind = where((c6_cnt gt pk_cnt/30.) or (c6_nrg lt 2.*pk_nrg),count)		; 30 and 2. are arbitrary, should be tuned
+;		tf_ind = where(c6_cnt gt pk_cnt/50. and c6_cnt gt 10.,count)				; 50 and 10 are arbitrary, should be tuned
+;		tf_ind = where((c6_cnt gt pk_cnt/30.) or (c6_nrg lt 2.*pk_nrg),count)			; 30 and 2. are arbitrary, should be tuned
+		tf_ind = where((c6_nrg lt ((2.*pk_nrg)<25.)),count)					; modified 20230409
 		if count gt 0 then begin
 			tf_min = min(tf_ind)
 			bkg4 = d1_full
+; 		   the following 5 lines were modified 20230409 changing heavies from mass_bin 32 to 28
 			if tf_min ne 0 then bkg4[0:tf_min-1,*,*,*]=0.
-			bkg4[tf_min:31,*,5:9,32:63]=0.
-			bkg4[tf_min:31,*,*,0:31]=0.					; only remove heavies
-			tf_bkg4[tf_min:31,*,0:4,32:63]=0
-			tf_bkg4[tf_min:31,*,10:15,32:63]=0
+			bkg4[tf_min:31,*,5:9,28:63]=0.					; don't remove main heavy beam
+			bkg4[tf_min:31,*,*,0:27]=0.					; only remove heavies
+			tf_bkg4[tf_min:31,*,0:4,28:63]=0				
+			tf_bkg4[tf_min:31,*,10:15,28:63]=0
 
 ; reorder for c8 -- most of the counts are in def_bin=11 for att=2, and def_bin=15 for att=3
 		   if mode ne 1 and mode ne 7 then begin
@@ -867,6 +885,8 @@ endelse
 			trbkg4[8,*,*,*]  = bkgtmp2 * .25
 			bkg4 = transpose(trbkg4,[1,0,2,3])
 		   endelse
+if ii mod 100 eq 1 then help,bkg4
+if ii mod 100 eq 1 then print,ii,time_string(mvn_c6_dat.time),total(bkg4),pk_cnt,pk_nrg,count
 		endif else bkg4=fltarr(32,16,16,64)
 	endif else bkg4=fltarr(32,16,16,64)
 

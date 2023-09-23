@@ -1,31 +1,25 @@
-pro elf_merge_phase_delay_csv, probe=probe ; starttime, endtime
+pro elf_merge_phase_delay_csv ; starttime, endtime
  
    elf_init
-   tr=time_double(['2019-09-01', '2021-07-01/23:59'])
-   if ~undefined(probe) then begin
-    print, 'No probe defined'
-    return
-   endif
+   sc=['a']
+   ;tr=time_double(['2019-04-30', '2021-07-01/23:59'])
+   tr=time_double(['2021-07-02', '2022-09-12/23:59'])
+   ;tr=time_double(['2019-09-01', '2022-09-12/23:59'])
+   ;tr=time_double(['2022-01-01', '2022-09-25/23:59'])
    for i=0,n_elements(sc) -1 do begin
     
      probe = sc[i]
-     ; if need to download file  
-     ;this_remote_path=!elf.remote_data_dir+'el'+probe+'/calibration_files/'
-     ;this_remote_file='el'+probe+'_epde_phase_delays_new.csv'
-     ;this_local_path=!elf.local_data_dir+'el'+probe+'/calibration_files/'
-     ;paths = spd_download(remote_file=this_remote_file, remote_path=this_remote_path, $
-     ;  local_file=this_remote_file, local_path=this_local_path)
 
      archive_path = !elf.local_data_dir+'el'+sc[i]+'/calibration_files/pdpcsv_archive'
      cd, archive_path
      spawn, 'ls', csv_list
+help, csv_list
 stop   
      ; check that there are files
      if csv_list[0] EQ '' then continue
      
-     ; read main csv
-     
-     csv_file='el'+sc[i]+'_epde_phase_delays_new.csv
+     ; read main csv     
+     csv_file='el'+sc[i]+'_epde_phase_delays.csv
      csv_path=!elf.local_data_dir+'el'+probe+'/calibration_files/'
      dat = read_csv(!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'+csv_file, $
        header = cols, types = ['String', 'String', 'Float', 'Float','Float','Float','Float','Float'])
@@ -33,8 +27,6 @@ stop
      ;fileresult=FILE_SEARCH(csv_file)
      ;if size(fileresult,/dimen) eq 1 then FILE_DELETE,fitsfilename,/RECURSIVE ; delete old folder
      ;file_copy,'Fitplots','Fitplots_'+filename,/OVERWRITE,/RECURSIVE
-     csv_file_save='el'+sc[i]+'_epde_phase_delays_sav.csv
-     file_copy,csv_path+csv_file,csv_path+csv_file_save,/OVERWRITE
 
      tidx=where(time_double(dat.field1) LT tr[0] OR time_double(dat.field1) GE tr[1], ncnt)
      fidx=where(time_double(dat.field1) GE tr[0] AND time_double(dat.field1) LT tr[1], ncnt)
@@ -42,6 +34,7 @@ tidx1=indgen(n_elements(dat.field1))
 help, dat
 help, fidx
 help, tidx
+print, n_elements(fidx) + n_elements(tidx)
 stop
     ; create struct
      if ncnt GT 0 then begin
@@ -103,14 +96,19 @@ help, tstart
 help, newdat
 help, idx
 stop
-     ; write  new main csv_file
-     csv_file='el'+sc[i]+'_epde_phase_delays_new.csv
-     csv_path=!elf.local_data_dir+'el'+sc[i]+'/calibration_files/'
-     newfile=csv_path+csv_file
+
+     ; save original file before copying
+     csvfile=csv_path+csv_file
+     csv_file_save='el'+sc[i]+'_epde_phase_delays_sav.csv
+     csvfile_sav=csv_path+csv_file_save
+     print, 'Copying '+csvfile+' to '+csvfile_save
+stop
+     file_copy,csvfile,csvfile_save,/OVERWRITE
+     ; write csv file
      print, 'Writing csv: '+newfile
+stop
      write_csv, newfile, newdat, header=cols
    
- stop
      ; remove files
      for j=0,n_elements(csv_list)-1 do begin
        this_file=archive_path + '/' + csv_list[j]
@@ -120,10 +118,10 @@ stop
      print, 'Removed individual csv'
 
      ; remove tempdirs
-     temp_dir=!elf.local_data_dir+'el'+sc[i]+'/phasedelayplots/temp_*'
-     cmd = 'rm -rf '+temp_dir
-     spawn, cmd
-     print, 'Removed temp_ directories'
+     ;temp_dir=!elf.local_data_dir+'el'+sc[i]+'/phasedelayplots/temp_*'
+     ;cmd = 'rm -rf '+temp_dir
+     ;spawn, cmd
+     ;print, 'Removed temp_ directories'
      
    endfor   ; end of s/c loop
 print, 'Done'   

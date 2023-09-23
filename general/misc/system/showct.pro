@@ -38,8 +38,8 @@
 ;              more functionality, but only for the current color table.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-25 15:25:34 -0700 (Sat, 25 Mar 2023) $
-; $LastChangedRevision: 31666 $
+; $LastChangedDate: 2023-09-05 08:51:54 -0700 (Tue, 05 Sep 2023) $
+; $LastChangedRevision: 32077 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
 ;-
 pro showct, color_table, reverse=color_reverse, line_clrs=lines, mycolors=mycolors, $
@@ -50,6 +50,7 @@ pro showct, color_table, reverse=color_reverse, line_clrs=lines, mycolors=mycolo
 
   cols = get_colors()
   crev = keyword_set(color_reverse)
+  plndx = cols.line_colors_index
   wnum = !d.window
 
   cwinkey = {secondary:1, dx:10, dy:-10}
@@ -106,9 +107,12 @@ pro showct, color_table, reverse=color_reverse, line_clrs=lines, mycolors=mycolo
   if ((n_elements(lines) gt 0) or (size(mycolors,/type) eq 8) or $
       (size(color_names,/type) eq 7) or keyword_set(graybkg)) then begin
     line_colors, lines, color_names=color_names, mycolors=mycolors, graybkg=graybkg, previous_lines=plines
+    newcols = get_colors()
+    lndx = newcols.line_colors_index
   endif else begin
     lines = get_line_colors()
     plines = lines
+    lndx = plndx
   endelse
 
 ; Plot the table in a grid of filled squares
@@ -128,6 +132,7 @@ pro showct, color_table, reverse=color_reverse, line_clrs=lines, mycolors=mycolo
 
   msg = 'Color Table ' + strtrim(string(ctab),2)
   if (crev) then msg = msg + ' (reverse)'
+  msg = msg + '  :  Line Colors ' + strtrim(string(lndx),2)
   xyouts,2.0,6.25,msg,align=0.5,charsize=1.8
 
 ; Show color indices along the left margin

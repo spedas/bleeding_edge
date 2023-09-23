@@ -6,40 +6,67 @@
 ;  calibration opportunities.  This routine can reset the SPICE loadlist, so
 ;  use with caution.
 ;
+;  Warning: This routine will reset timespan to cover the specified extended
+;  ephemeris, overwriting any existing timespan.  This will affect any routines
+;  that use timespan for determining what data to process.
+;
 ;USAGE:
 ;  maven_orbit_tplot, extended=1, eph=eph
 ;
 ;INPUTS:
 ;
 ;KEYWORDS:
-;       EXTENDED: Load one of four long-term predict ephemerides.  All have a
-;                 density scale factor (DSF) of 2.5, which is a weighted average
+;       EXTENDED: If set, load one of six long-term predict ephemerides.  All but one
+;                 have a density scale factor (DSF) of 2.5, which is a weighted average
 ;                 over several Mars years.  They differ in the number and timing of
-;                 apoapsis and periapsis raise maneuvers (arm, prm) and total fuel
-;                 usage (meters per second, or ms).  The date when the ephemeris was
-;                 generated is given at the end of the filename (YYMMDD).  More 
-;                 recent dates better reflect current mission goals.  When in doubt,
-;                 use the most recent.
+;                 apoapsis, periapsis, and inclination maneuvers (arm, prm, inc) and total
+;                 fuel usage (meters per second, or ms).  The date when the ephemeris was
+;                 generated is given at the end of the filename (YYMMDD).  More recent
+;                 dates better reflect current mission goals.  When in doubt, use the
+;                 most recent.
 ;
-;                   1 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp
-;                   2 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp
-;                   3 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
-;                   4 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
+;                   1 : trj_orb_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.bsp
+;                   2 : trj_orb_230322-320101_dsf1.5-prm-3.5ms_230320.bsp
+;                   3 : trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp
+;                   4 : trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp
+;                   5 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
+;                   6 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
 ;
-;                 Default = 1 (most recently generated ephemeris).  Set this keyword
-;                 to zero to load the ephemeris for a time range.
+;                 Default = 1 (most recent).
 ;
 ;       EPH:      Named variable to hold the MSO and GEO state vectors along with 
 ;                 some calculated values.
 ;
+;       LINE_COLORS: Line color scheme for altitude panel.  This can be an integer [0-10]
+;                 to select one of 11 pre-defined line color schemes.  It can also be array
+;                 of 24 (3x8) RGB values: [[R,G,B], [R,G,B], ...] that defines the first 7
+;                 colors (0-6) and the last (255).  For details, see line_colors.pro and 
+;                 color_table_crib.pro.  Default = 5.
+;
+;       COLORS:   An array with up to 3 elements to specify color indices for the
+;                 plasma regimes: [sheath, pileup, wake].  Defaults are:
+;
+;                   regime       index       LINE_COLORS=5
+;                   -----------------------------------------
+;                   sheath         4         green
+;                   pileup         5         orange
+;                   wake           2         blue
+;                   -----------------------------------------
+;
+;                 The colors you get depend on your line color scheme.  The solar wind
+;                 is always displayed in the foreground color (usually white or black).
+;
+;                 Note: Setting LINE_COLORS and COLORS here is local to this routine and
+;                       affects only the altitude panel.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-07-07 10:51:28 -0700 (Fri, 07 Jul 2023) $
-; $LastChangedRevision: 31945 $
+; $LastChangedDate: 2023-08-27 13:10:57 -0700 (Sun, 27 Aug 2023) $
+; $LastChangedRevision: 32069 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_predict.pro $
 ;
 ;CREATED BY:	David L. Mitchell
 ;-
-pro maven_orbit_predict, extended=extended, eph=eph
+pro maven_orbit_predict, extended=extended, eph=eph, line_colors=lcol, colors=col
 
   ext = n_elements(extended) ? fix(extended[0]) : 1
   if (ext eq 0) then begin
@@ -53,7 +80,7 @@ pro maven_orbit_predict, extended=extended, eph=eph
   mvn_spice_stat, summary=sstat, /silent
   if (~sstat.frames_exist) then mvn_swe_spice_init, /base
 
-  maven_orbit_tplot, /shadow, /loadonly, result=dat, eph=eph, extended=ext
+  maven_orbit_tplot, /shadow, /loadonly, result=dat, eph=eph, extended=ext, line_colors=lcol, colors=col
 
   ylim,'period',3.5,4.5,0
   options,'period','yticks',2
@@ -301,7 +328,7 @@ pro maven_orbit_predict, extended=extended, eph=eph
   bname = 'SEM'
   ylim,bname,0.1,10,1
   options,bname,'thick',2
-  Asun = (6.95e10/1.496e13)*!radeg
+  Asun = (6.957e10/1.496e13)*!radeg
   options,bname,'constant',[Asun,3.0]
 
 ; Identify ephemeris gaps and plot

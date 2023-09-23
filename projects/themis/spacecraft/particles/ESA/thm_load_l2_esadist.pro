@@ -227,14 +227,15 @@ End
 ;          finding files.
 ; no_time_clip = if set do not clip the data to the time range. The
 ;                trange is only used for file selection. Note that
-;                setting no_time_clip will always generate a reload of data
+;                setting no_time_clip will always generate a reload of
+;                data
 ;OUTPUT:
 ; No variables, data are loaded into common blocks
 ;HISTORY:
 ; 7-nov-2022, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-08-08 14:38:46 -0700 (Tue, 08 Aug 2023) $
-; $LastChangedRevision: 31984 $
+; $LastChangedDate: 2023-09-19 14:54:55 -0700 (Tue, 19 Sep 2023) $
+; $LastChangedRevision: 32106 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_load_l2_esadist.pro $
 ;-
 Pro thm_load_l2_esadist, probe = probe, datatype = datatype, $

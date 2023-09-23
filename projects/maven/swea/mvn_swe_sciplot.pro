@@ -78,8 +78,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-01-03 10:03:48 -0800 (Mon, 03 Jan 2022) $
-; $LastChangedRevision: 30484 $
+; $LastChangedDate: 2023-08-25 08:37:09 -0700 (Fri, 25 Aug 2023) $
+; $LastChangedRevision: 32063 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sciplot.pro $
 ;
 ;-
@@ -250,13 +250,16 @@ pro mvn_swe_sciplot, sun=sun, ram=ram, sep=sep, swia=swia, static=static, lpw=lp
   euv_pan = ''
   if keyword_set(euv) then mvn_swe_addeuv, pans=euv_pan
 
+; Energy panel
+
+  engy_pan = (find_handle('swe_a4_mask') gt 0) ? 'swe_a4_mask' : 'swe_a4'
+
 ; Spacecraft Potential
 
-  engy_pan = 'swe_a4'
   pot_pan = ''
   if keyword_set(sc_pot) then begin
     mvn_scpot
-    engy_pan = 'swe_a4_pot'
+    engy_pan = (find_handle('swe_a4_mask') gt 0) ? 'swe_a4_mask' : 'swe_a4_pot'
     options,engy_pan,'ytitle','SWEA elec!ceV'
     pot_pan = 'scpot_comp'
   endif

@@ -2,7 +2,7 @@
 ;NAME:
 ; thm_get_l2esadist
 ;PURPOSE:
-; Returns a single 3D distributio for THEMIS ESA
+; Returns a single 3D distribution for THEMIS ESA
 ; Equivalent to the GET_TH?_PE?? routines.
 ;CALLING SEQUENCE:
 ; dat = thm_get_l2_esadist(time, probe, datatype, $
@@ -66,8 +66,8 @@
 ;HISTORY:
 ; 2022-11-14, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-04-25 12:48:39 -0700 (Tue, 25 Apr 2023) $
-; $LastChangedRevision: 31799 $
+; $LastChangedDate: 2023-09-19 14:54:55 -0700 (Tue, 19 Sep 2023) $
+; $LastChangedRevision: 32106 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/particles/ESA/thm_get_l2_esadist.pro $
 Function thm_get_l2_esadist, time, probe0, datatype0, $
                              START=st,EN=en,ADVANCE=adv,$
@@ -323,11 +323,27 @@ Function thm_get_l2_esadist, time, probe0, datatype0, $
      cs_ptr=all_dat.cs_ptr[ind]
      nenergy=all_dat.nenergy[en_ind]
      nbins=all_dat.nbins[an_ind]
-     bins=intarr(nenergy,nbins) & bins[1:nenergy-1,*]=1
+;     bins=intarr(nenergy,nbins) & bins[1:nenergy-1,*]=1
+     bins = reform(all_dat.bins[ind,0:nenergy-1,*])
      energy = reform(all_dat.energy[0:nenergy-1,en_ind])#replicate(1.,nbins)
      denergy = reform(all_dat.denergy[0:nenergy-1,en_ind])#replicate(1.,nbins)
      an_eff = total(all_dat.an_eff#replicate(1.,nbins)*all_dat.an_map[*,0:nbins-1,an_ind],1)
-     eff = reform(all_dat.en_eff[0:nenergy-1,en_ind])#an_eff*all_dat.rel_gf[ind]
+;Special an_en_eff for electrons, reduces eff values for low energy, 2023-08-09, jmm
+     If(datatype Eq 'peef' Or datatype eq 'peer' Or datatype Eq 'peeb') Then Begin
+	an_en_eff = fltarr(nenergy,nbins) & an_en_eff[*,*]=1.
+        an_en =	reform(all_dat.an_en_eff#replicate(1.,nbins),8,8,nbins)
+        map = reform(replicate(1.,8)#reform(all_dat.an_map[*,0:nbins-1,an_ind],8*nbins),8,8,nbins)
+        an_en_tmp=total(an_en*map,2)
+        an_en_all = fltarr(32,nbins) & an_en_all[*,*]=1. & an_en_all[24:31,*]=an_en_tmp
+        en_lnk = (interp(findgen(32),reform(all_dat.energy[*,1]),reform(energy[*,0])) <31.)>0 ;removed no_extrapolate, jmm, 2016-03-30
+        en_int = fix(en_lnk) & en_plu = en_lnk-en_int & en_min = 1.-en_plu 
+        en_map1 = fltarr(nenergy,32) & en_map2 = fltarr(nenergy,32) 
+        en_map1[indgen(nenergy),(en_int+1)<31]=en_plu
+        en_map2[indgen(nenergy),en_int<31]=en_min
+        en_map=en_map1+en_map2
+        an_en_eff=total(reform(reform(en_map,nenergy*32)#replicate(1.,nbins),nenergy,32,nbins)*reform(replicate(1.,nenergy)#reform(an_en_all,32*nbins),nenergy,32,nbins),2)
+	eff    =reform( all_dat.en_eff[0:nenergy-1,en_ind])#an_eff*all_dat.rel_gf[ind]*an_en_eff
+     Endif Else eff = reform(all_dat.en_eff[0:nenergy-1,en_ind])#an_eff*all_dat.rel_gf[ind]
      theta = reform(all_dat.theta[0:nenergy-1,0:nbins-1,an_ind])
      dtheta = reform(all_dat.dtheta[0:nenergy-1,0:nbins-1,an_ind])
      phi = reform(all_dat.phi[0:nenergy-1,0:nbins-1,an_ind])+all_dat.phi_offset[ind]

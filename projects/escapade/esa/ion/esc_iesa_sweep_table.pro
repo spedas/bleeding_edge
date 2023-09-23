@@ -3,11 +3,41 @@
 ; ESC_IESA_SWEEP_TABLE
 ;
 ; $LastChangedBy: rlivi04 $
-; $LastChangedDate: 2023-06-19 23:10:31 -0700 (Mon, 19 Jun 2023) $
-; $LastChangedRevision: 31899 $
+; $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $
+; $LastChangedRevision: 32111 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro $
 ;
 ;-
+
+
+;; CRC16 Checksum
+;;   data -> byte array
+FUNCTION esc_iesa_sweep_table_crc16, data
+   
+   init_crc = uint('FFFF'x)
+
+   ;; Convert to Byte Array
+   a1 = byte(ishft(uint(data),-8))
+   a2 = byte(uint(data) OR '0xFF')
+   databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
+
+   crc = init_crc
+   FOR i=0, n_elements(databyte)-1 DO BEGIN
+
+      ;;char = uint(data[i])
+      char = databyte[i]
+      crc = (ishft(crc,-8) AND 'FF'x) OR (ishft(crc,8) AND 'FFFF'x)
+      crc = crc XOR char
+      crc = crc XOR (ishft(crc AND 'FF'x,-4))
+      crc = crc XOR (ishft(crc,12) AND 'F000'x)
+      crc = crc XOR (ishft(crc AND 'FF'x,5))
+
+   ENDFOR
+
+   return, crc
+   
+END
+
 
 
 ;; Plot Results
@@ -80,13 +110,16 @@ END
 
 
 ;; Conversion of Deflector angles in degrees to Deflector DACs
-FUNCTION esc_iesa_sweep_table_deflector_angle_to_dac, ang
+FUNCTION esc_iesa_sweep_table_deflector_angle_to_dac, ang, poly_val
 
    ;; SPAN-Ion 5th Degree Polynomial Values
    ;;p = [ -6.6967358589, 1118.9683837891, 0.5826185942, -0.0928234607, 0.0000374681, 0.0000016514]
 
    ;; HERMES SPAN-I 5th Degree Polynomial Values - 2023-01-06
-   p = [ -0.231661,     -807.011,       -1.48519,      -0.0246793,    0.000165991,  1.84911e-05 ]
+   ;;p = [ -0.231661,     -807.011,       -1.48519,      -0.0246793,    0.000165991,  1.84911e-05 ]
+
+   ;; Polynomial Values
+   p = poly_val
    
    ;; Generate DACS
    ang_dac = p[0]+p[1]*ang+p[2]*ang^2+p[3]*ang^3+p[4]*ang^4+p[5]*ang^5
@@ -117,8 +150,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2023-06-19 23:10:31 -0700 (Mon, 19 Jun 2023) $'
-      printf, 1, '# Revision: $LastChangedRevision: 31899 $'
+      printf, 1, '# Date:     $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $'
+      printf, 1, '# Revision: $LastChangedRevision: 32111 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -130,11 +163,20 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A21, F7.2)',     '# Spoiler Ratio:      ', table.const.spl_ratio
       printf, 1, format='(A21, I7, I5)',   '# Spoiler Max Energy: ', table.const.spl_max_en, ' [eV]'
       printf, 1, '# '
+      printf, 1, '# --- CRC16 Checksums ---'
+      printf, 1, format='(A21, A3, Z04)',  '# Hemisphere:         '+' 0x', table.chk.hem
+      printf, 1, format='(A21, A3, Z04)',  '# Deflector 1:        '+' 0x', table.chk.def1
+      printf, 1, format='(A21, A3, Z04)',  '# Deflector 2:        '+' 0x', table.chk.def2
+      printf, 1, format='(A21, A3, Z04)',  '# Spoiler:            '+' 0x', table.chk.spl
+      printf, 1, '# '
+      printf, 1, '# --- 5th Degree Polynomials for Deflctors ---'
+      printf, 1, '# '      
+      printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
-      printf, 1, format='(A21, F7.2)',      '# K-Factor:          ', table.const.k
-      printf, 1, format='(A21, F7.2)',      '# Hemisphere Gain:   ', table.const.hv_gain
-      printf, 1, format='(A21, F7.2)',      '# Deflector Gain:    ', table.const.def_gain
-      printf, 1, format='(A21, F7.2)',      '# Spoiler Gain:      ', table.const.spl_gain
+      printf, 1, format='(A21, F7.2)',     '# K-Factor:           ', table.const.k
+      printf, 1, format='(A21, F7.2)',     '# Hemisphere Gain:    ', table.const.hv_gain
+      printf, 1, format='(A21, F7.2)',     '# Deflector Gain:     ', table.const.def_gain
+      printf, 1, format='(A21, F7.2)',     '# Spoiler Gain:       ', table.const.spl_gain
       printf, 1, '# '
       printf, 1, '# ID_Msg_Bin', $
               'ENERGY [eV]', 'DEF1 [DEG]','DEF2 [DEG]','SPOILER', $
@@ -164,8 +206,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2023-06-19 23:10:31 -0700 (Mon, 19 Jun 2023) $'
-      printf, 1, '# Revision: $LastChangedRevision: 31899 $'
+      printf, 1, '# Date:     $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $'
+      printf, 1, '# Revision: $LastChangedRevision: 32111 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -176,6 +218,20 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A21, I7)',       '# Deflector Steps:    ', table.const.nang
       printf, 1, format='(A21, F7.2)',     '# Spoiler Ratio:      ', table.const.spl_ratio
       printf, 1, format='(A21, I7, A5)',   '# Spoiler Max Energy: ', table.const.spl_max_en, ' [eV]'
+      printf, 1, '# '
+      printf, 1, '# --- CRC16 Checksums ---'
+      printf, 1, format='(A21, A3, Z04)',  '# Hemisphere:         ',' 0x', table.chk.hem
+      printf, 1, format='(A21, A3, Z04)',  '# Deflector 1:        ',' 0x', table.chk.def1
+      printf, 1, format='(A21, A3, Z04)',  '# Deflector 2:        ',' 0x', table.chk.def2
+      printf, 1, format='(A21, A3, Z04)',  '# Spoiler:            ',' 0x', table.chk.spl
+      printf, 1, '# '
+      printf, 1, '# --- 5th Degree Polynomials for Deflctors ---'
+      printf, 1, format='(A5, F20.10)', '# P0:', table.const.poly_val[0]
+      printf, 1, format='(A5, F20.10)', '# P1:', table.const.poly_val[1]
+      printf, 1, format='(A5, F20.10)', '# P2:', table.const.poly_val[2]
+      printf, 1, format='(A5, F20.10)', '# P3:', table.const.poly_val[3]
+      printf, 1, format='(A5, F20.10)', '# P4:', table.const.poly_val[4]
+      printf, 1, format='(A5, F20.10)', '# P5:', table.const.poly_val[5]
       printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
       printf, 1, format='(A21, F7.2)',     '# K-Factor:           ', table.const.k
@@ -204,8 +260,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2023-06-19 23:10:31 -0700 (Mon, 19 Jun 2023) $'
-      printf, 1, '# Revision: $LastChangedRevision: 31899 $'
+      printf, 1, '# Date:     $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $'
+      printf, 1, '# Revision: $LastChangedRevision: 32111 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -216,6 +272,20 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A21, I7)',       '# Deflector Steps:    ', table.const.nang
       printf, 1, format='(A21, F7.2)',     '# Spoiler Ratio:      ', table.const.spl_ratio
       printf, 1, format='(A21, I7, A5)',   '# Spoiler Max Energy: ', table.const.spl_max_en, ' [eV]'
+      printf, 1, '# '
+      printf, 1, '# --- CRC16 Checksums ---'
+      printf, 1, format='(A21, A3, Z04)',  '# Hemisphere:         ',' 0x', table.chk.hem
+      printf, 1, format='(A21, A3, Z04)',  '# Deflector 1:        ',' 0x', table.chk.def1
+      printf, 1, format='(A21, A3, Z04)',  '# Deflector 2:        ',' 0x', table.chk.def2
+      printf, 1, format='(A21, A3, Z04)',  '# Spoiler:            ',' 0x', table.chk.spl
+      printf, 1, '# '
+      printf, 1, '# --- 5th Degree Polynomials for Deflctors ---'
+      printf, 1, format='(A5, F20.10)', '# P0:', table.const.poly_val[0]
+      printf, 1, format='(A5, F20.10)', '# P1:', table.const.poly_val[1]
+      printf, 1, format='(A5, F20.10)', '# P2:', table.const.poly_val[2]
+      printf, 1, format='(A5, F20.10)', '# P3:', table.const.poly_val[3]
+      printf, 1, format='(A5, F20.10)', '# P4:', table.const.poly_val[4]
+      printf, 1, format='(A5, F20.10)', '# P5:', table.const.poly_val[5]
       printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
       printf, 1, format='(A21, F7.2)',      '# K-Factor:          ', table.const.k
@@ -245,7 +315,9 @@ END
 
 
 ;; Generate DACs, voltages, and scientific values based on instrument parameters and operations
-PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, note=note, dmin=dmin,dmax=dmax
+PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
+                                   note=note, dmin=dmin,dmax=dmax, spl_ratio=spl_ratio,$
+                                   poly=poly
 
    ;; ### ESCAPADE EESA-I CONSTANTS ###
 
@@ -299,7 +371,7 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
    spl_max_en = 5000.
 
    ;; Spoiler Voltage Voltage Ratio between Spoiler/Hemisphere
-   spl_ratio = 0.25
+   IF ~keyword_set(spl_ratio) THEN spl_ratio = 0.25
 
    ;; Deflector Angle Resolution and Binning
    def_res = 1000.
@@ -310,7 +382,18 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
 
    ;; Additional Notes
    IF ~keyword_set(note) THEN note = 'esc_template'
+
+   ;; 5th Degree Polynomial Values
+   IF ~keyword_set(poly) THEN poly = 'HERMES'
    
+   ;; PSP SPAN-Ion Calibration
+   IF poly EQ 'PSP' THEN $
+    poly_val = [ -6.6967358589, 1118.9683837891, 0.5826185942, -0.0928234607, 0.0000374681, 0.0000016514]
+
+   ;; HERMES SPAN-I Calibration - 2023-01-06
+   IF poly EQ 'HERMES' THEN $
+    poly_val = [ -0.231661,     -807.011,       -1.48519,      -0.0246793,    0.000165991,  1.84911e-05 ]
+
    
    ;;##################
    ;;### Hemisphere ###
@@ -323,10 +406,10 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
    ;; Hemisphere Bin Steps
    hem_bin = reverse(reform(transpose(rebin(indgen(nenr),nenr,nang)),tot_bins))
 
-   ;; Hemisphere Voltage Sweep
+   ;; Hemisphere Sweep [V]
    hem_volts = hem_volt[hem_bin]
 
-   ;; Hemisphere Scientific Units [eV]
+   ;; Hemisphere Energy (Scientific Units [eV])
    hem_energy = hem_volts * k
 
    ;; Double DAC Hemisphere Values (Same value for both DACs, hence sqrt())
@@ -345,7 +428,7 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
    ;;##################
 
    ;; Deflector Angle to DAC
-   ang_dac = esc_iesa_sweep_table_deflector_angle_to_dac(angles)
+   ang_dac = esc_iesa_sweep_table_deflector_angle_to_dac(angles, poly_val)
 
    ;; Defletor Binning
    dbins = lindgen(nang)
@@ -405,6 +488,8 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
    tmp2 = reform(dtheta + ABS(tmp2[0,*]-tmp2[1,*]))
    sci_def_dtheta = tmp1 > tmp2
 
+
+   
    ;;###############
    ;;### Spoiler ###
    ;;###############
@@ -417,6 +502,19 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
 
    ;; ### Spoiler Science Products ###
    sci_spl_rat = mean(reform(spl_rat,mbins,tot_bins/mbins),dim=1)
+
+
+   
+   ;; ################
+   ;; ### Checksum ###
+   ;; ################
+
+   hem_chk  = esc_iesa_sweep_table_crc16(hem_dacs)
+   def1_chk = esc_iesa_sweep_table_crc16(def1_dacs)
+   def2_chk = esc_iesa_sweep_table_crc16(def2_dacs)
+   spl_chk  = esc_iesa_sweep_table_crc16(spl_dacs)
+
+
    
    ;; Assemble Structure
    table = {$
@@ -440,7 +538,8 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
                   def_gain:def_gain,$
                   spl_gain:spl_gain,$          
                   spl_max_en:spl_max_en,$
-                  spl_ratio:spl_ratio},$
+                  spl_ratio:spl_ratio,$
+                  poly_val:poly_val},$
            
            ;; Bins
            id_msg_bin:indgen(1024),$
@@ -474,8 +573,13 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
            hem_dacs:hem_dacs,$
            def1_dacs:def1_dacs,$
            def2_dacs:def2_dacs,$
-           spl_dacs:spl_dacs $
-            
+           spl_dacs:spl_dacs, $
+
+           ;; CRC16 Checksum of DAC Tables
+           chk:{hem:hem_chk,$
+                def1:def1_chk,$           
+                def2:def2_chk,$
+                spl:spl_chk} $
            }
 
    ;; Write Table to CSV
@@ -489,80 +593,175 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, not
 END
 
 
+
 ;; #######################################
 ;; ################ MAIN #################
 ;; #######################################
 ;;
 ;; Based on Instrument Data Allocations [22-10-03]
 
-PRO esc_iesa_sweep_table
+PRO esc_iesa_sweep_table, tables
    
    ;; EESA-i Table 1
    emin = 1.5
    emax = 25209.
    title = 'esc_iesa_table_1'
    note = 'Table 1: Above 1000km - Regular Apoapsis'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,title=title,note=note
+   esc_iesa_sweep_table_generate, ts1, emin=emin,emax=emax,title=title,note=note
 
    ;; EESA-i Table 2
    emin = 200.
    emax = 30000.
    title = 'esc_iesa_table_2'
    note = 'Table 2: Above 1000km - Solar Wind - Log'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,title=title,note=note
+   esc_iesa_sweep_table_generate, ts2, emin=emin,emax=emax,title=title,note=note
 
    ;; EESA-i Table 3
    emin = 0.5
    emax = 4000.
    title = 'esc_iesa_table_3'
    note = 'Table 3: Below 1000km - Regular - Log'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,title=title,note=note
+   esc_iesa_sweep_table_generate, ts3, emin=emin,emax=emax,title=title,note=note
 
    ;; EESA-i Table 4
    emin = 0.5
    emax = 450.
    title = 'esc_iesa_table_4'
    note = 'Table 4: Below 1000km - Cold Ion Outflow - Log'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,title=title,note=note
+   esc_iesa_sweep_table_generate, ts4, emin=emin,emax=emax,title=title,note=note
 
 
    ;; CALIBRATION TABLES
    
-   ;; EESA-i Calibration Table 1 --- Energies 400eV - 600eV --- Deflections -15 to +15 
+   ;; EESA-i Calibration Table 1 --- Energies 400eV - 600eV --- Deflections -15 to +15 --- Spoiler Ratio 0.25
    emin = 400.
    emax = 600.
    dmin = -15.
    dmax =  15.
+   spl_ratio = 0.25
    title = 'esc_iesa_cal_table_1'
-   note = 'Calibration Table 2: 400eV to 600eV'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note
+   note = 'Calibration Table 1: 400eV to 600eV - -15 to 15 - 0.25 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc1, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
-   ;; EESA-i Calibration Table 2 --- Energies 0.5eV - 60eV --- Deflections -15 to +15 
+   ;; EESA-i Calibration Table 2 --- Energies 0.5eV - 60eV --- Deflections -15 to +15 --- Spoiler Ratio 0.25
    emin = 0.5
    emax = 60.
    dmin = -15.
    dmax =  15.
+   spl_ratio = 0.25
    title = 'esc_iesa_cal_table_2'
-   note = 'Calibration Table 2: 0.5eV - 60eV - -15 to 15'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note
+   note = 'Calibration Table 2: 0.5eV - 60eV - -15 to 15 - 0.25 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc2, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
    ;; EESA-i Calibration Table 3 - 800eV - 1200eV
    emin =  800.
    emax = 1200.
    dmin = -15.
    dmax =  15.
+   spl_ratio = 0.25
    title = 'esc_iesa_cal_table_3'
-   note = 'Calibration Table 3: 800eV - 1200eV - -15 to 15'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,title=title,note=note
+   note = 'Calibration Table 3: 800eV - 1200eV - -15 to 15 - 0.25 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc3, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
-   ;; EESA-i Calibration Table 4 --- Energies 400eV - 600eV --- Deflections -45 - 45 
+   ;; EESA-i Calibration Table 4 --- Energies 400eV - 600eV --- Deflections -45 - 45 --- Spoiler Ratio 0.25
    emin = 400.
    emax = 600.
    dmin = -45.
    dmax =  45.
+   spl_ratio = 0.25
    title = 'esc_iesa_cal_table_4'
-   note = 'Calibration Table 4: 400eV - 600eV - -45 to 45'
-   esc_iesa_sweep_table_generate, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note
+   note = 'Calibration Table 4: 400eV - 600eV - -45 to 45 - 0.25 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc4, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
+   ;; EESA-i Calibration Table 5 --- Energies 400eV - 600eV --- Deflections -45 - 45 --- Spoiler Ratio 0.5
+   emin = 400.
+   emax = 600.
+   dmin = -45.
+   dmax =  45.
+   spl_ratio = 0.5
+   title = 'esc_iesa_cal_table_5'
+   note = 'Calibration Table 5: 400eV - 600eV - -45 to 45 - 0.5 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc5, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 6 --- Energies 400eV - 600eV --- Deflections -45 - 45 --- Spoiler Ratio 0.75
+   emin = 400.
+   emax = 600.
+   dmin = -45.
+   dmax =  45.
+   spl_ratio = 0.75
+   title = 'esc_iesa_cal_table_6'
+   note = 'Calibration Table 6: 400eV - 600eV - -45 to 45 - 0.75 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc6, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 7 --- Energies 1eV - 15eV --- Deflections -15 - 15 --- Spoiler Ratio 0.25
+   emin = 1.
+   emax = 15.
+   dmin = -15.
+   dmax =  15.
+   spl_ratio = 0.25
+   title = 'esc_iesa_cal_table_7'
+   note = 'Calibration Table 7: 1eV - 15eV - -45 to 45 - 0.25 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc7, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 8 --- Energies 1eV - 15eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
+   emin = 1.
+   emax = 15.
+   dmin = -15.
+   dmax =  15.
+   spl_ratio = 0.50
+   title = 'esc_iesa_cal_table_8'
+   note = 'Calibration Table 8: 1eV - 15eV - -45 to 45 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc8, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 9 --- Energies 1eV - 15eV --- Deflections -15 - 15 --- Spoiler Ratio 0.75
+   emin = 1.
+   emax = 15.
+   dmin = -15.
+   dmax =  15.
+   spl_ratio = 0.75
+   title = 'esc_iesa_cal_table_9'
+   note = 'Calibration Table 9: 1eV - 15eV - -45 to 45 - 0.75 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc9, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 10 - 800eV - 1200eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
+   emin =  800.
+   emax = 1200.
+   dmin = -15.
+   dmax =  15.
+   spl_ratio = 0.50
+   title = 'esc_iesa_cal_table_10'
+   note = 'Calibration Table 10: 800eV - 1200eV - -15 to 15 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc10, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
    
+   ;; EESA-i Calibration Table 11 - 1600eV - 2400eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
+   emin = 1600.
+   emax = 2400.
+   dmin = -15.
+   dmax =  15.
+   spl_ratio = 0.50
+   title = 'esc_iesa_cal_table_11'
+   note = 'Calibration Table 11: 1600eV - 2400eV - -15 to 15 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc11, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 12 - 4000eV - 6000eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
+   emin = 4000.
+   emax = 6000.
+   dmin = -15.
+   dmax =  15.
+   spl_ratio = 0.50
+   title = 'esc_iesa_cal_table_12'
+   note = 'Calibration Table 12: 4000eV - 6000eV - -15 to 15 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc12, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+   
+   
+   ;; Test Checksum Calculator   
+   
+   ;; Gather all tables into one structure
+   tables = { $
+            ts1:ts1, ts2:ts2, ts3:ts3, ts4:ts4,$
+            tc1:tc1, tc2:tc2, tc3:tc3, tc4:tc4,$
+            tc5:tc5 $
+            }
+   
+
 END

@@ -150,7 +150,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ; If phase delay file is not stored locally: copy over from server
 
   ; Read calibration (phase delay) file and store data
-  file = 'el'+probe+'_epde_phase_delays_new.csv'
+  file = 'el'+probe+'_epde_phase_delays.csv'
   filedata = read_csv(!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'+file, header = cols, types = ['String', 'String', 'Float', 'Float','Float','Float','Float','Float'])
   dat = CREATE_STRUCT(cols[0], filedata.field1, cols[1], filedata.field2, cols[2], filedata.field3, cols[3],  filedata.field4, cols[4], filedata.field5, cols[5], filedata.field6, cols[6], filedata.field7, cols[7], filedata.field8, cols[8], filedata.field9)
   
@@ -187,8 +187,9 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   elf_load_epd, probes=probe, datatype='pef', level='l1', type=mytype
   get_data, 'el'+probe+'_pef_spinper', data=spinper_current
   ;tspin_current=average(spinper_current.y)
-
-
+  spin_med=median(spinper_current.y)
+  spin_var=stddev(spinper_current.y)/spin_med
+  
   ;check
   check1 = total(n_elements(dat.tstart))
 
@@ -441,8 +442,9 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ; now pad the rest of the quantities
   get_data,'el'+probe+'_pef_spinper',data=elf_pef_spinper,dlim=myspinperdata_dlim,lim=myspinperdata_lim ; this preserved the original times
   spin_med=median(elf_pef_spinper.y)
-  spin_var=variance(elf_pef_spinper.y)/spin_med*100.
-
+  ;spin_var=variance(elf_pef_spinper.y)/spin_med
+  ;spin_var=stddev(elf_pef_spinper.y)/spin_med
+  
   store_data,'el'+probe+'_pef_times',data={x:elf_pef_spinper.x,y:elf_pef_spinper.x-elf_pef_spinper.x[0]} ; this is to track gaps
   ;JWu start
   ;tinterpol_mxn,'el'+probe+'_pef_times','el'+probe+'_pef_sectnum',/nearest_neighbor,/NAN_EXTRAPOLATE,/over ; middle gaps have constant values after interpolation, side pads are NaNs themselves
@@ -1194,8 +1196,8 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ;window,1
   miny=3.e-3
   maxy=6.; 1.
-  ;stop
-  deltaPA_est=(average(pafitminus90_even(where(FINITE(pafitminus90_even))))-average(pafitminus90_odd(where(FINITE(pafitminus90_odd)))))/2.
+
+  deltaPA_est=(average(pafitminus90_even[where(FINITE(pafitminus90_even))])-average(pafitminus90_odd[where(FINITE(pafitminus90_odd))]))/2.
   plotxy,[[reform(pa2plots_even[0,*])],[reform(pef2plots_even[0,*])]], $
     xrange=[-5.,185.],yrange=[miny,maxy],/ylog,/noisotropic, $
     xsize=800.,ysize=500.,psym=-2,colors=['r'], xmargin=[xmargin1,xmargin2],$
@@ -1234,13 +1236,13 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     PAfit_even_num[Isolu]=n_elements(where(FINITE(pafitminus90_even)))
     PAfit_odd_num[Isolu]=n_elements(where(FINITE(pafitminus90_odd)))
     LastIter[Isolu]=iters
-    PAdiff[Isolu]=(average(pafitminus90_even(where(FINITE(pafitminus90_even))))-average(pafitminus90_odd(where(FINITE(pafitminus90_odd)))))/2.
+    PAdiff[Isolu]=(average(pafitminus90_even[where(FINITE(pafitminus90_even))])-average(pafitminus90_odd[where(FINITE(pafitminus90_odd))]))/2.
     PAdSectr[Isolu]=dSectr2add
     PAdPhAng[Isolu]=dPhAng2add
-    pafit_even_med[Isolu]=average(pafitminus90_even(where(FINITE(pafitminus90_even))))+90
-    pafit_odd_med[Isolu]=average(pafitminus90_odd(where(FINITE(pafitminus90_odd))))+90
-    PAeven_var[Isolu]=variance(pafitminus90_even(where(FINITE(pafitminus90_even))))
-    PAodd_var[Isolu]=variance(pafitminus90_odd(where(FINITE(pafitminus90_odd))))
+    pafit_even_med[Isolu]=average(pafitminus90_even[where(FINITE(pafitminus90_even))])+90
+    pafit_odd_med[Isolu]=average(pafitminus90_odd[where(FINITE(pafitminus90_odd))])+90
+    PAeven_var[Isolu]=variance(pafitminus90_even[where(FINITE(pafitminus90_even))])
+    PAodd_var[Isolu]=variance(pafitminus90_odd[where(FINITE(pafitminus90_odd))])
     
     angle_3points=45
     threepoints:
@@ -1362,31 +1364,73 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
     PAdiff_norm = (abs(PAdiff)-min(abs(PAdiff)))/(max(abs(PAdiff))-min(abs(PAdiff)))
     PAeven_var_norm = (PAeven_var-min(PAeven_var))/(max(PAeven_var)-min(PAeven_var))
     PAodd_var_norm = (PAodd_var-min(PAodd_var))/(max(PAodd_var)-min(PAodd_var))
-    
+
     costFun= PAdiff_norm + alpha*(PAeven_var_norm + PAodd_var_norm)
     icostFun=sort(costFun)
+    isolu_flag= 0
     
     for i=0,n_elements(iniSec)-1 do begin
-      imincostFun=icostFun[i]
+      imincostFun=icostFun[i]  ;idx of solution
       if finite(dTotAng2add[imincostFun]) eq 1 then begin
         icomplem=where(abs(dTotAng2add[imincostFun]-dTotAng2add) lt 185 and abs(dTotAng2add[imincostFun]-dTotAng2add) gt 175,jcomplem)
         case 1 of
-          ;(jcomplem ge 1) and (abs(dTotAng2add[imincostFun]) le 90): begin ; has complementary solution, and this one is the smaller angle
-          (jcomplem ge 1) and (dTotAng2add[imincostFun] ge 0): begin ; has complementary solution, and this one is the smaller angle
-            dSectr2add= PAdSectr[imincostFun]
-            dPhAng2add= PAdPhAng[imincostFun]
-            goto,skiptime
+          (jcomplem ge 1): begin ; has complementary angle
+            ; need to check para and anti, make sure prep in the right direction
+            str2exec="get_data,'even_3points"+string(imincostFun,format='(I1)')+"',data=data"
+            dummy=execute(str2exec)
+            even_3points=data.y
+            str2exec="get_data,'odd_3points"+string(imincostFun,format='(I1)')+"',data=data"
+            dummy=execute(str2exec)
+            odd_3points=data.y
+            even_3points_avg = total(even_3points,/nan,1)
+            odd_3points_avg = total(odd_3points,/nan,1)
+            average_3points = total(even_3points,/nan,1) + total(odd_3points,/nan,1)
+         
+            if ((median(elf_Br_sign.y) le 0) and (even_3points_avg[0] ge even_3points_avg[2]) and (odd_3points_avg[0] ge odd_3points_avg[2])) $ 
+              or ((median(elf_Br_sign.y) gt 0) and (average_3points[0] le average_3points[2]) and (odd_3points_avg[0] ge odd_3points_avg[2])) then begin
+              ; northern hemisphere and pa(45)>pa(135) or southern hemisphere and pa(45)<pa(135)
+              ; this means this is the right solution
+              dSectr2add= PAdSectr[imincostFun]
+              dPhAng2add= PAdPhAng[imincostFun]
+              isolu_flag=1
+              goto,skiptime
+            endif
           end
           (jcomplem eq 0): begin ; doesn't have complementary solution
             dSectr2add= PAdSectr[imincostFun]
             dPhAng2add= PAdPhAng[imincostFun]
+            isolu_flag=1
             goto,skiptime
           end
-          else: ; has complementary solution, and this one is the larger angle
         endcase
       endif
     endfor
-
+    if isolu_flag eq 0 then begin
+    for i=0,n_elements(iniSec)-1 do begin
+      imincostFun=icostFun[i]  ;idx of solution
+      if finite(dTotAng2add[imincostFun]) eq 1 then begin
+        icomplem=where(abs(dTotAng2add[imincostFun]-dTotAng2add) lt 185 and abs(dTotAng2add[imincostFun]-dTotAng2add) gt 175,jcomplem)
+        case 1 of
+          (jcomplem ge 1): begin ; has complementary angle
+            if (dTotAng2add[imincostFun] ge -45) and ((dTotAng2add[imincostFun] le 135)) then begin
+              ; this is the angle in the correct range
+              dSectr2add= PAdSectr[imincostFun]
+              dPhAng2add= PAdPhAng[imincostFun]
+              isolu_flag=1
+              goto,skiptime
+            endif
+          end
+          (jcomplem eq 0): begin ; doesn't have complementary solution
+            dSectr2add= PAdSectr[imincostFun]
+            dPhAng2add= PAdPhAng[imincostFun]
+            isolu_flag=1
+            goto,skiptime
+          end
+        endcase
+      endif
+    endfor
+    endif
+    ;if isolu_flag eq 0 then stop
     ;-------------------skiptime------------------------
     skiptime:
     str2exec="get_data,'pa2plots_even_"+string(imincostFun,format='(I1)')+"',data=data"
@@ -1467,7 +1511,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
       endforeach
     endif
 
-    deltaPA_est=(average(pafitminus90_even(where(FINITE(pafitminus90_even))))-average(pafitminus90_odd(where(FINITE(pafitminus90_odd)))))/2.
+    deltaPA_est=(average(pafitminus90_even[where(FINITE(pafitminus90_even))])-average(pafitminus90_odd[where(FINITE(pafitminus90_odd))]))/2.
     plotxy,[[reform(pa2plots_even[0,*])],[reform(pef2plots_even[0,*])]], $
       xrange=[-5.,185.],yrange=[miny,maxy],/ylog,/noisotropic, $
       xsize=800.,ysize=500.,psym=-2,colors=['r'], xmargin=[xmargin1,xmargin2],$
@@ -1546,7 +1590,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   get_data, 'antilossconedeg', data=anti_loss_cone
   hq_flag=0
   loss_antiloss_arr=[min(loss_cone.y),max(anti_loss_cone.y)]
-  trapped=loss_antiloss_arr(sort(loss_antiloss_arr))
+  trapped=loss_antiloss_arr[sort(loss_antiloss_arr)]
   if max(min_pas) lt trapped[0] or min(max_pas) gt trapped[1] then hq_flag=1
 
   print, 'PAD high quality flag:', hq_flag
@@ -1561,7 +1605,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   
   ;PHASE DELAY CSV FILE ARCHIVING
   ; Read calibration (phase delay) file and store data
-  file = 'el'+probe+'_epde_phase_delays_new.csv'
+  file = 'el'+probe+'_epde_phase_delays.csv'
   filedata = read_csv(!elf.LOCAL_DATA_DIR + 'el' +probe+ '/calibration_files/'+file, header = cols, types = ['String', 'String', 'Float', 'Float','Float','Float','Float','Float', 'String'])
   dat = CREATE_STRUCT(cols[0], filedata.field1, cols[1], filedata.field2, cols[2], filedata.field3, cols[3],  filedata.field4, cols[4], filedata.field5, cols[5], filedata.field6, cols[6], filedata.field7, cols[7], filedata.field8, cols[8], filedata.field9)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1735,7 +1779,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   endif
   ; badflag=-1,-2,-3 sus, needs further check
   ; badflag=-1, large difference between median and current solution (1.5 sector=35 deg)
-  if abs((dSectr2add*angpersector+dPhAng2add)-(LatestMedianSectr*angpersector+LatestMedianPhAng)) gt 35 then begin
+  if abs((dSectr2add*angpersector+dPhAng2add)-(LatestMedianSectr*angpersector+LatestMedianPhAng)) gt 60 then begin
     badFlag = -1
     ;dSectr2add=LatestMedianSectr
     ;dPhAng2add=LatestMedianPhAng
@@ -1750,6 +1794,7 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
 ;  endif
 
   ; badflag=-3, fit peak is far away from 90 degree (12 deg)
+
   if undefined(pafitminus90_even) or undefined(pafitminus90_odd) then begin
      badFlag = -3 
   endif else begin 
@@ -1772,16 +1817,16 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
   ; badflag=1: not converge 
   if abs(PAdiff[5]) gt 1 then begin
     badFlag= 1
-    dSectr2add=LatestMedianSectr
-    dPhAng2add=LatestMedianPhAng
+    ;dSectr2add=LatestMedianSectr
+    ;dPhAng2add=LatestMedianPhAng
     ;stop
   endif
 
   ; badflag=2, no fit
   if n_elements(where(FINITE(pafitminus90_even))) lt 2 or n_elements(where(FINITE(pafitminus90_odd))) lt 2 then begin
     badFlag = 2
-    dSectr2add=LatestMedianSectr
-    dPhAng2add=LatestMedianPhAng
+    ;dSectr2add=LatestMedianSectr
+    ;dPhAng2add=LatestMedianPhAng
     ;stop
   endif
   
@@ -1794,11 +1839,11 @@ pro elf_phase_delay_AUTO, pick_times=pick_times, new_config=new_config, probe=pr
 ;get_data, 'el'+probe+'_pef_spinper', data=spin
 ;spin_med=median(spin.y)
 ;spin_var=variance(spin.y)/spin_med*100.
-;stop
+
   if spin_med lt 2.3 or spin_var gt 0.1 then begin
     badFlag = 3
-    dSectr2add=LatestMedianSectr
-    dPhAng2add=LatestMedianPhAng
+    ;dSectr2add=LatestMedianSectr
+    ;dPhAng2add=LatestMedianPhAng
     ;stop
   endif
   

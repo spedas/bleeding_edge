@@ -72,8 +72,8 @@
 ;HISTORY:
 ; 2014-05-12, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2022-09-20 13:24:28 -0700 (Tue, 20 Sep 2022) $
-; $LastChangedRevision: 31108 $
+; $LastChangedDate: 2023-09-20 10:54:46 -0700 (Wed, 20 Sep 2023) $
+; $LastChangedRevision: 32110 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2read.pro $
 ;-
 Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, $
@@ -186,8 +186,13 @@ Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, $
         Endif Else If(~ptr_valid(ivcdfi.vars[this_var[0]].dataptr)) Then Begin
            dprint, 'No data in CDF variable: BKG'
         Endif Else Begin ;no error check
-           cmn_dat.bkg = *ivcdfi.vars[this_var[0]].dataptr ;str_element shouldn't be needed
-;           str_element, cmn_dat, cmnvars[j], *icdfi.vars[this_var[0]].dataptr, /add_replace
+;maybe an error check?
+           bkg_tmp = *ivcdfi.vars[this_var[0]].dataptr
+           If(n_elements(bkg_tmp) Ne n_elements(cmn_dat.bkg)) Then Begin
+              dprint, dlevel = 0, 'BKG variable mismatch: Not resetting'
+              help, bkg_tmp
+              help, cmn_dat.bkg
+           Endif Else cmn_dat.bkg = bkg_tmp
         Endelse
 ;Recalculate eflux
         mvn_sta_l2eflux, cmn_dat
@@ -202,10 +207,3 @@ Function mvn_sta_cmn_l2read, filename, trange = trange, cdf_info = cdfi, $
   Endif Else Return, otp
 
 End
-
-
-
-
-     
-        
-     

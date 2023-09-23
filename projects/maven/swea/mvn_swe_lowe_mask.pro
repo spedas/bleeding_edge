@@ -16,6 +16,8 @@
 ;  Last anomalous spectrum: 2019-11-30/23:55:42
 ;  Total number of anomalous spectra: 54530
 ;
+;  THIS ROUTINE IS NOW OBSOLETE.  It has been replaced by mvn_swe_set_quality.pro.
+;
 ;USAGE:
 ;  mvn_swe_lowe_mask, data
 ;
@@ -32,8 +34,8 @@
 ;         STATUS:     Return the current coverage and return.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-05-05 13:03:07 -0700 (Thu, 05 May 2022) $
-; $LastChangedRevision: 30806 $
+; $LastChangedDate: 2023-08-25 08:40:53 -0700 (Fri, 25 Aug 2023) $
+; $LastChangedRevision: 32064 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_lowe_mask.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -43,6 +45,9 @@ pro mvn_swe_lowe_mask, data, badval=badval, allbad=allbad, status=status
 
   @mvn_swe_com
   common swe_lowe_com, anom
+
+  print,"This routine is obsolete.  Use mvn_swe_set_quality instead."
+  return
 
   if not keyword_set(badval) then badval = !values.f_nan
   allbad = keyword_set(allbad)

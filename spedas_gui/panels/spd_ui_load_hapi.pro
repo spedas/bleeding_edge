@@ -11,9 +11,9 @@
 ;   Currently, this server does not behave as a standard HAPI server in some aspects
 ;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
-;$LastChangedRevision: 30648 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2023-08-23 15:12:44 -0700 (Wed, 23 Aug 2023) $
+;$LastChangedRevision: 32059 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
 
@@ -365,7 +365,8 @@ Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
     'http://planet.physics.uiowa.edu/das/das2Server/hapi','https://iswa.gsfc.nasa.gov/IswaSystemWebApp/hapi', $
     'http://lasp.colorado.edu/lisird/hapi']
   ; If there is a SOSMAG plugin, also include the ESA HAPI server which requires special treatment due to irregularities.
-  if hapi_include_sosmag() eq 1 then hapi_servers=[hapi_servers, 'https://swe.ssa.esa.int/hapi/']
+  ; Removed 2023/08/23, because currently the user authentication does not work correctly in IDL 
+  ;if hapi_include_sosmag() eq 1 then hapi_servers=[hapi_servers, 'https://swe.ssa.esa.int/hapi/']
 
   serverList = widget_list(upLeftBase, value=hapi_servers, /align_top, ysize=n_elements(hapi_servers),uvalue='SERVERLIST', uname='SERVERLIST')
   selectServerLabelEmpty11 = widget_label(upLeftBase, value=' ', /align_top, /dynamic_resize)

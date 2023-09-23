@@ -27,8 +27,8 @@
 ;   Development code for data version 5; DLM: 2023-08
 ; VERSION:
 ;   $LastChangedBy: dmitchell $
-;   $LastChangedDate: 2023-08-22 12:48:17 -0700 (Tue, 22 Aug 2023) $
-;   $LastChangedRevision: 32051 $
+;   $LastChangedDate: 2023-09-20 16:27:14 -0700 (Wed, 20 Sep 2023) $
+;   $LastChangedRevision: 32112 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/Test/mvn_swe_makecdf_spec5.pro $
 ;
 ;-
@@ -505,7 +505,7 @@ pro mvn_swe_makecdf_spec5, data, file = file, version = version, directory = dir
   cdf_attput, fileid, 'SCALEMIN', varlist[vndx], 0.,        /ZVARIABLE
   cdf_attput, fileid, 'SCALEMAX', varlist[vndx], 1.e11,     /ZVARIABLE
   cdf_attput, fileid, 'UNITS',    varlist[vndx], $
-    'eV/[eV cm^2 sr s]',                                    /ZVARIABLE
+    '(eV/[eV cm^2 sr s])^2',                                /ZVARIABLE
   cdf_attput, fileid, 'VAR_TYPE', varlist[vndx], 'data',    /ZVARIABLE
   cdf_attput, fileid, 'CATDESC',  varlist[vndx], $
     'Variance of differential energy flux',                    /ZVARIABLE

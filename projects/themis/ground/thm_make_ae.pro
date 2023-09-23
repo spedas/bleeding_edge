@@ -62,9 +62,9 @@
 ;                   field prior to index calculation, 4-nov-2013, jmm
 ;                   Added new site list for 2015 and later 22-may-2015, clr
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-05-30 22:45:03 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30015 $
+; $LastChangedBy: crussell $
+; $LastChangedDate: 2023-08-28 14:41:30 -0700 (Mon, 28 Aug 2023) $
+; $LastChangedRevision: 32072 $
 ; $URL $
 ;-
 
@@ -117,6 +117,7 @@ pro thm_make_AE, res = res, sites = sites, no_load = no_load, max_deviation = ma
 if not keyword_set(res) then res = 60d   ; 60 sec resolution
 res=double(res)
 date2015=time_double('2015-01-01')
+date2023=time_double('2023-09-01')
 
 ; load gmag data
 ;----------------
@@ -132,20 +133,28 @@ if not keyword_set(no_load) then begin
       Return
     Endif
   endif else begin
-    if tplot_vars.options.trange[0] EQ 0 OR tplot_vars.options.trange[0] GE date2015 then begin
-     site_load = ['pbk', 'tik', 'dik', 'amd', 'nor', 'hop', 'jck', 'and', 'nal',   $
-           'roe', 'dob', 'sol', 'dmh', 'lvr', 'leth', 'naq', 'stf', 'kuv',   $
-           'nain', 'sept', 'thl', 'salu', 'vldr', 'inuk', 'rbay', 'rank',   $
-           'fsmi', 'atha', 'gill', 'fsim', 'inuv', 'whit', 'sit', 'kako',   $
-           'fykn', 'cigo', 'trap', 'ded', 'brw', 'kian', 'shu']
-    endif else begin
-     site_load = ['atha', 'chbg', 'ekat', 'fsim', 'fsmi', 'fykn', $
-                 'gako', 'gbay', 'gill', 'inuv', 'kapu', 'kian', $
-                 'kuuj', 'mcgr', 'pgeo', 'pina', 'rank', 'snap', $
-                 'snkq', 'tpas', 'whit', 'yknf', 'fcc', 'cmo', $
-                 'naq', 'lrv'] ;made an array to facilitate the use of split_vec later
-    endelse   
-
+    if tplot_vars.options.trange[0] EQ 0 OR tplot_vars.options.trange[0] GE date2023 then begin
+      site_load = ['and', 'atu', 'bfe', 'bjn', 'dmh', 'dob', 'don', 'gako', 'gdn',   $
+        'gill', 'hop', 'hov', 'jan', 'jck', 'kar', 'kuv', 'lrv', 'lyr',   $
+        'nal', 'naq', 'nor', 'ptrs', 'roe', 'roth', 'rvk', 'salu',   $
+        'sept', 'skt', 'pina', 'pokr', 'rank', 'sol', 'shu', 'sor',   $
+        'stf', 'svs', 'trap', 'thl', 'tro', 'upn', 'vldr']
+    endif else begin 
+      if tplot_vars.options.trange[0] EQ 0 OR tplot_vars.options.trange[0] GE date2015 then begin
+       site_load = ['pbk', 'tik', 'dik', 'amd', 'nor', 'hop', 'jck', 'and', 'nal',   $
+             'roe', 'dob', 'sol', 'dmh', 'lvr', 'leth', 'naq', 'stf', 'kuv',   $
+             'nain', 'sept', 'thl', 'salu', 'vldr', 'inuk', 'rbay', 'rank',   $
+             'fsmi', 'atha', 'gill', 'fsim', 'inuv', 'whit', 'sit', 'kako',   $
+             'fykn', 'cigo', 'trap', 'ded', 'brw', 'kian', 'shu']
+      endif else begin
+       site_load = ['atha', 'chbg', 'ekat', 'fsim', 'fsmi', 'fykn', $
+                   'gako', 'gbay', 'gill', 'inuv', 'kapu', 'kian', $
+                   'kuuj', 'mcgr', 'pgeo', 'pina', 'rank', 'snap', $
+                   'snkq', 'tpas', 'whit', 'yknf', 'fcc', 'cmo', $
+                   'naq', 'lrv'] ;made an array to facilitate the use of split_vec later
+      endelse   
+   endelse
+   
   endelse
   thm_load_gmag, /subtract_median, site = site_load
   sites_varnames = tnames('thg_mag_'+site_load)

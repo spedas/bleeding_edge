@@ -1,3 +1,7 @@
+; $LastChangedBy: moka $
+; $LastChangedDate: 2023-08-28 12:08:19 -0700 (Mon, 28 Aug 2023) $
+; $LastChangedRevision: 32071 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_submit_fomstr.pro $
 PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
 
   if n_elements(user_flag) eq 0 then user_flag = 1
@@ -107,17 +111,17 @@ PRO eva_sitl_submit_FOMStr, tlb, TESTING, vcase, user_flag=user_flag
       
     case problem_status of
       0: begin
+        msgsfx = 'for DRAFT.'
         tn = tag_names(tai_FOMstr_mod)
         idx = where(tn eq strupcase('UPLINK_FLAG'), nmatch)
         if nmatch gt 0 then begin
-          strflag = strtrim(string(tai_FOMstr_mod.UPLINKFLAG),2)
+          if tai_FOMstr_mod.UPLINKFLAG eq 1 then msgsfx='for UPLINK.'
         endif else begin
-          strflag = 'WARNING: no UPLINK flag.' 
+          print, '...no UPLINK flag in FOMstr.'
         endelse
-        msg=['The FOM structure was sent successfully to SDC. ']
+        msg=['The FOM structure was sent to SDC '+msgsfx]
         msg=[msg, 'A validation email will be sent to you (within 60 min)']
         msg=[msg, 'if successfully received at SDC.']
-        msg=[msg, '(UPLINK_FLAG='+strflag+')']
         rst = dialog_message(msg,/information,/center,title=title)
         end
       2: begin

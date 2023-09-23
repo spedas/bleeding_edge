@@ -2,13 +2,9 @@ pro elf_run_verify_phase_delays, probe=probe
 
   elf_init
 ; this routine is a wrapper for checking science zones against phase delays
-  if ~undefined(probe) then begin
-    print, 'Probe undefined'
-    return
-  endif
-  
-  startrun=time_double('2021-07-01')
-  endrun=time_double('2022-09-28')
+  probe='b'
+  startrun=time_double('2019-09-01')
+  endrun=time_double('2021-07-01/23:59')
   ;ndays=253
   ndays=(endrun-startrun)/86400.
   ; Read missing phase delay file and store data

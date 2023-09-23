@@ -45,8 +45,8 @@
 ;          1-4 : four different schemes suitable for colorblind vision
 ;           5  : same as 0, except orange replaces yellow for better contrast on white
 ;           6  : same as 0, except gray replaces yellow for better contrast on white
-;           7  : see https://www.nature.com/articles/nmeth.1618 except no reddish purple
-;           8  : see https://www.nature.com/articles/nmeth.1618 except no yellow
+;           7  : see https://www.nature.com/articles/nmeth.1618, except no reddish purple
+;           8  : see https://www.nature.com/articles/nmeth.1618, except no yellow
 ;           9  : same as 8 but permuted so vector defaults are blue, orange, reddish purple
 ;          10  : Chaffin's CSV line colors, suitable for colorblind vision
 ;
@@ -84,8 +84,8 @@
 ;   colors_com:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-05 09:48:09 -0800 (Sun, 05 Mar 2023) $
-; $LastChangedRevision: 31581 $
+; $LastChangedDate: 2023-09-05 12:17:00 -0700 (Tue, 05 Sep 2023) $
+; $LastChangedRevision: 32079 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/get_line_colors.pro $
 ;
 ;Created by David Mitchell;  February 2023
@@ -95,10 +95,35 @@ function get_line_colors, line_clrs, color_names=color_names, mycolors=mycolors,
 
   @colors_com
 
+; Initialize line color preset definitions
+
+  if (n_elements(line_colors_presets) eq 0) then begin
+    lcp = intarr(3,8,11)
+    ; Preset 0:  Primary and secondary colors [black, magenta, blue, cyan, green, yellow, red, white]
+    lcp[*,*,0] = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[255,255,0],[255,0,0],[255,255,255]]
+    ; Presets 1-4: Line colors suitable for colorblind vision
+    lcp[*,*,1] = [[0,0,0],[67,147,195],[33,102,172],[103,0,31],[178,24,43],[254,219,199],[244,165,130],[255,255,255]]
+    lcp[*,*,2] = [[0,0,0],[253,224,239],[77,146,33],[161,215,106],[233,163,201],[230,245,208],[197,27,125],[255,255,255]]
+    lcp[*,*,3] = [[0,0,0],[216,179,101],[140,81,10],[246,232,195],[1,102,94],[199,234,229],[90,180,172],[255,255,255]]   
+    lcp[*,*,4] = [[0,0,0],[84,39,136],[153,142,195],[216,218,235],[241,163,64],[254,224,182],[179,88,6],[255,255,255]] 
+    ; Preset 5:  Same as 0 but substitutes orange for yellow for better contrast on white background
+    lcp[*,*,5] = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[255,165,0],[255,0,0],[255,255,255]]
+    ; Preset 6:  Same as 0 but substitutes gray for yellow for better contrast on white background
+    lcp[*,*,6] = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[141,141,141],[255,0,0],[255,255,255]]
+    ; Preset 7:  Suggested by https://www.nature.com/articles/nmeth.1618, except no reddish purple
+    lcp[*,*,7] = [[0,0,0],[230,159,0],[86,180,233],[0,158,115],[240,228,66],[0,114,178],[213,94,0],[255,255,255]]
+    ; Preset 8:  Suggested by https://www.nature.com/articles/nmeth.1618, except no yellow
+    lcp[*,*,8] = [[0,0,0],[230,159,0],[86,180,233],[0,158,115],[0,114,178],[213,94,0],[204,121,167],[255,255,255]]
+    ; Preset 9:  Same as 8 but permuted so default vector colors are blue, orange, reddish purple
+    lcp[*,*,9] = [[0,0,0],[86,180,233],[0,114,178],[0,158,115],[230,159,0],[213,94,0],[204,121,167],[255,255,255]]
+    ; Preset 10: Chaffin's CSV line colors, suitable for colorblind vision
+    lcp[*,*,10] = [[0,0,0],[152,78,163],[55,126,184],[77,175,74],[255,255,51],[255,127,0],[228,26,28],[255,255,255]]
+    line_colors_presets = temporary(lcp)
+  endif
+
 ; Initialize with the current or default line colors
 
-  default = fix([[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[255,255,0],[255,0,0],[255,255,255]])
-  if (n_elements(line_colors_common) eq 24) then default = line_colors_common
+  default = (n_elements(line_colors_common) eq 24) ? line_colors_common : line_colors_presets[*,*,0]
 
 ; Three methods for setting the fixed line colors (0-6 and 255)
 
@@ -117,29 +142,9 @@ function get_line_colors, line_clrs, color_names=color_names, mycolors=mycolors,
 
   if n_elements(line_clrs) gt 0 then begin
     if n_elements(line_clrs) ne 24 then begin
-      case fix(line_clrs[0]) of
-        ; Preset 0:  Primary and secondary colors [black, magenta, blue, cyan, green, yellow, red, white]
-        0: line_clrs = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[255,255,0],[255,0,0],[255,255,255]]
-        ; Presets 1-4: Line colors suitable for colorblind vision
-        1: line_clrs = [[0,0,0],[67,147,195],[33,102,172],[103,0,31],[178,24,43],[254,219,199],[244,165,130],[255,255,255]]
-        2: line_clrs = [[0,0,0],[253,224,239],[77,146,33],[161,215,106],[233,163,201],[230,245,208],[197,27,125],[255,255,255]]
-        3: line_clrs = [[0,0,0],[216,179,101],[140,81,10],[246,232,195],[1,102,94],[199,234,229],[90,180,172],[255,255,255]]   
-        4: line_clrs = [[0,0,0],[84,39,136],[153,142,195],[216,218,235],[241,163,64],[254,224,182],[179,88,6],[255,255,255]] 
-        ; Preset 5:  Same as 0 but substitutes orange for yellow for better contrast on white background
-        5: line_clrs = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[255,165,0],[255,0,0],[255,255,255]]
-        ; Preset 6:  Same as 0 but substitutes gray for yellow for better contrast on white background
-        6: line_clrs = [[0,0,0],[255,0,255],[0,0,255],[0,255,255],[0,255,0],[141,141,141],[255,0,0],[255,255,255]]
-        ; Preset 7:  Suggested by https://www.nature.com/articles/nmeth.1618, except no reddish purple
-        7: line_clrs = [[0,0,0],[230,159,0],[86,180,233],[0,158,115],[240,228,66],[0,114,178],[213,94,0],[255,255,255]]
-        ; Preset 8:  Suggested by https://www.nature.com/articles/nmeth.1618, except no yellow
-        8: line_clrs = [[0,0,0],[230,159,0],[86,180,233],[0,158,115],[0,114,178],[213,94,0],[204,121,167],[255,255,255]]
-        ; Preset 9:  Same as 8 but permuted so default vector colors are blue, orange, reddish purple
-        9: line_clrs = [[0,0,0],[86,180,233],[0,114,178],[0,158,115],[230,159,0],[213,94,0],[204,121,167],[255,255,255]]
-        ; Preset 10: Chaffin's CSV line colors, suitable for colorblind vision
-        10: line_clrs = [[0,0,0],[152,78,163],[55,126,184],[77,175,74],[255,255,51],[255,127,0],[228,26,28],[255,255,255]]
-        ; Otherwise: Same as 1
-        else: line_clrs = [[0,0,0],[67,147,195],[33,102,172],[103,0,31],[178,24,43],[254,219,199],[244,165,130],[255,255,255]]
-      endcase
+      i = fix(line_clrs[0])
+      if ((i lt 0) or (i gt 10)) then i = 1
+      line_clrs = line_colors_presets[*,*,i]
     endif
     line_clrs = fix(line_clrs)
   endif
@@ -173,6 +178,13 @@ function get_line_colors, line_clrs, color_names=color_names, mycolors=mycolors,
      3   : line_clrs[*,7] = graybkg
     else : print,"Cannot interpret GRAYBKG."
   endcase
+
+; Determine which, if any, of the presets was used (ignore indices 0 and 255)
+
+  n = (size(line_colors_presets))[3]
+  lc = reform(line_clrs[*,1:6],18) # replicate(1,n)
+  dc = total(abs(lc - reform(line_colors_presets[*,1:6,*],18,n)),1)
+  line_colors_index = fix((where(dc eq 0))[0])
 
   return, line_clrs
 

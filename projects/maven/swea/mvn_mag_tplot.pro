@@ -19,8 +19,8 @@
 ;                  toward and away sectors.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2022-03-14 10:39:18 -0700 (Mon, 14 Mar 2022) $
-; $LastChangedRevision: 30674 $
+; $LastChangedDate: 2023-09-05 08:53:38 -0700 (Tue, 05 Sep 2023) $
+; $LastChangedRevision: 32078 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_mag_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2015-04-02
@@ -96,7 +96,8 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
   options,'mvn_mod_bcrust_amp','linestyle',2
   
   store_data, 'mvn_mag_bamp', data=['mvn_mag_' + strlowcase(lvl) + '_bamp_1sec', 'mvn_mod_bcrust_amp'], $
-              dlimits={labels: ['obs', 'model'], colors:[2,6], labflag: 1, ytitle: 'MAG ' + lvl, ysubtitle: '|B| [nT]'} 
+              dlimits={labels: ['obs', 'model'], colors:[4,6], labflag: -1, ytitle: 'MAG ' + lvl, $
+              ysubtitle: '|B| [nT]'} 
 
   if (blog) then begin
     ylim, 'mvn_mag_bamp', 0.5, bmax*1.1, 1
@@ -116,13 +117,13 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
   if (nidx gt 0) then bphi[idx] += 2.*!pi
   undefine, idx, nidx
 
-  aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], ytitle:'', color:2, yticks:2, yminor:3}
+  aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], ytitle:'', color:4, yticks:2, yminor:3}
   if tag_exist(topt,'charsize') then str_element, aopt, 'charsize', topt.charsize, /add_replace
 
   vname = 'mvn_mag_bang'
   store_data, vname, data={x: b.x, y: [[bthe*!RADEG*2.+180.], [bphi*!RADEG]]}
   options, vname, 'psym', 3
-  options, vname, 'colors', [2,6]
+  options, vname, 'colors', [4,6]
   options, vname, 'ytitle', 'MAG ' + lvl
   options, vname, 'ysubtitle', frame + ' Angles'
   options, vname, 'yticks', 4
@@ -143,7 +144,7 @@ pro mvn_mag_tplot, bvec, model=model, sang=sang
     aopt.ytitle = ''
     store_data, vname, data={x:Bgeo.x, y:[[Bgeo.elev*2.+180.], [Bgeo.azim]]}
     options, vname, 'psym', 3
-    options, vname, 'colors', [2,6]
+    options, vname, 'colors', [4,6]
     options, vname, 'ytitle', 'MAG ' + lvl
     options, vname, 'ysubtitle', 'Local Angles'
     options, vname, 'yticks', 4

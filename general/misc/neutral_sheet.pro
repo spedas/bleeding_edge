@@ -720,6 +720,134 @@ RETURN
 
 END
 
+;C
+;C  INPUT:   XGSM,YGSM,ZGSM: position of a point inside the magnetosphere
+;C           PSI:  geodipole tilt angle in radians
+;C           PDYN: solar wind ram pressure in nanoPascals
+;c           ByIMF, BzIMF:  Y- and Z- GSM components of the IMF in nT
+;c                            (averaged over previous 30 minutes)
+;C
+;c  OUTPUT:  XGSM_S,YGSM_S,ZGSM_S: GSM coordinates of a point of the TAG14 equatorial sheet,
+;c           located at the same geocentric distance R=sqrt(XGSM^2+YGSM^2+ZGSM^2)
+;c           and lying in the same GSM meridian plane as the original point {XGSM,YGSM,ZGSM}
+;c
+;c  Author: N. A. Tsyganenko, Dec.18, 2014
+;c  Reference:  Tsyganenko, N. A., V. A. Andreeva, and E. I. Gordeev, Internally and externally induced deformations
+;c              of the magnetospheric equatorial current as inferred from spacecraft data,
+;c              Ann.Geophys., v.33, pp.1-11, doi:10.5194/angeo-33-1-2015, 2015.
+;c
+;
+; Translated from FORTRAN by Chat-GPT4
+; Original FORTRAN source code:
+; https://geo.phys.spbu.ru/~tsyganenko/models/cs/TAG14.for
+;
+;
+
+PRO TAG14_EQUAT_SHEET, XGSM, YGSM, ZGSM, PSI, PDYN, ByIMF, BzIMF, XGSM_S, YGSM_S, ZGSM_S
+
+  PI = !DPI
+  ERR = 1.D-8
+
+  ; Constants
+  RH0 = 11.01595255D0
+  RH1 = 6.054799445D0
+  RH2 = 0.8376136340D0
+  RH3 = -2.283371357D0
+  RH4 = -0.2505011095D0
+  RH5 = -0.9648465280D0
+  T0 = 0.2865647076D0
+  T1 = 0.1847283161D0
+  A00 = 2.909423481D0
+  A01 = -0.1585372900D0
+  A02 = 0.5648121327D0
+  A10 = 1.889466989D0
+  A11 = 0.6086006001D-01
+  A12 = 0.4853873874D0
+  ALPHA0 = 7.128509839D0
+  DALPHA1 = 4.867577218D0
+  DALPHA2 = -0.2248219212D0
+  DALPHA3 = -0.1441988549D0
+  XAPPA = -0.2868279445D0
+  BETA0 = 2.179888855D0
+  BETA1 = 0.4035940369D0
+
+  XGSM1 = XGSM
+  YGSM1 = YGSM
+  ZGSM1 = ZGSM
+  R = SQRT(XGSM1^2 + YGSM1^2 + ZGSM1^2)
+  THETA = ACOS(ZGSM1/R)
+
+  IF (XGSM1 EQ 0.D0 AND YGSM1 EQ 0.D0) THEN BEGIN
+    PHI = 0.D0
+  ENDIF ELSE BEGIN
+    PHI = ATAN(YGSM1, XGSM1)
+  ENDELSE
+
+  BYFACT = ByIMF/5.D0
+  BZFACT = BzIMF/5.d0
+
+  PDYN_0 = 2.D0
+  PFACT = (PDYN/PDYN_0)^XAPPA - 1.D0
+
+  CPS = COS(PSI)
+  SPS = SIN(PSI)
+  CP = COS(PHI)
+  SP = SIN(PHI)
+  TH1 = 0.D0
+  TH2 = PI
+
+  WHILE ABS(TH1 - TH2) GT ERR DO BEGIN
+    TH = 0.5D0 * (TH1 + TH2)
+
+    XGSM1 = R * SIN(TH) * CP
+    YGSM1 = R * SIN(TH) * SP
+    ZGSM1 = R * COS(TH)
+    XSM = XGSM1 * CPS - ZGSM1 * SPS
+    YSM = YGSM1
+    ZSM = XGSM1 * SPS + ZGSM1 * CPS
+
+    RHO = SQRT(XSM^2 + YSM^2)
+
+    IF (ABS(RHO) LT 1.D-6) THEN BEGIN
+      COSPHI = 1.D0
+      SINPHI = 0.D0
+    ENDIF ELSE BEGIN
+      COSPHI = XSM / RHO
+      SINPHI = YSM / RHO
+    ENDELSE
+
+    ALPHA = ALPHA0 + DALPHA1 * COSPHI + DALPHA2 * PFACT + DALPHA3 * BZFACT
+    BETA = BETA0 + BETA1 * BZFACT
+
+    RH = RH0 + RH1 * PFACT + RH2 * BZFACT + (RH3 + RH4 * PFACT + RH5 * BZFACT) * COSPHI
+    T = T0 + T1 * PFACT
+    A0 = A00 + A01 * PFACT + A02 * BZFACT
+    A1 = A10 + A11 * PFACT + A12 * BZFACT
+
+    F = 1.D0 - (1.D0 + (RHO/RH)^ALPHA)^(1.D0/ALPHA)
+    G = A0 + A1 * COSPHI
+    F1 = T * BYFACT * (RHO/10.D0)^BETA * SINPHI
+
+    ZSM_SHEET = RH * TAN(PSI) * F * G + F1
+
+    FF = ZSM - ZSM_SHEET
+
+    IF (FF GT 0.D0) THEN BEGIN
+      TH1 = TH
+    ENDIF ELSE BEGIN
+      TH2 = TH
+    ENDELSE
+  ENDWHILE
+
+  THETA_S_GSM = 0.5D0 * (TH1 + TH2)
+
+  XGSM_S = R * SIN(THETA_S_GSM) * CP
+  YGSM_S = R * SIN(THETA_S_GSM) * SP
+  ZGSM_S = R * COS(THETA_S_GSM)
+
+  RETURN
+END
+
 PRO neutral_sheet, time, pos, kp = kp, model = model, mlt = mlt, in_coord = incoord, $
                    distance2NS = distance2NS, sc2NS = sc2NS
 

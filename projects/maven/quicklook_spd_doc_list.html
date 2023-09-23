@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Aug 22 18:16:39 2023.<P>
+<STRONG>Last modified: </STRONG>Thu Sep 21 18:16:45 2023.<P>
  
 <HR>
  
@@ -65,6 +65,9 @@ MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG</A>
 <br>Wrapper for MVN_MAG_GEOM that loads mag data, and Spice kernels
 <LI><A HREF="#MVN_QLOOK_VCHECK">MVN_QLOOK_VCHECK</A>
 <br>CHecks to see if data exists for a list of variables. Also will
+<LI><A HREF="#MVN_SPACEWEATHER">MVN_SPACEWEATHER</A>
+<LI><A HREF="#MVN_SPACEWEATHER_OVERPLOT">MVN_SPACEWEATHER_OVERPLOT</A>
+<br>MAVEN Spaceweather plots
 <LI><A HREF="#RUN_MVN_OVER_SHELL30">RUN_MVN_OVER_SHELL30</A>
 <br>Designed to run from a cronjob, sets up a lock file, and
 <LI><A HREF="#RUN_PFPL2PLOT">RUN_PFPL2PLOT</A>
@@ -149,9 +152,10 @@ KEYWORDS:
 HISTORY:
 Hacked from mvn_call_sta_l2gen.pro 2015-06-02, jmm
 Added call to mvn_pfpl2_longplot, 2019-12-10, jmm
+Added call to mvn_spaceweather_overplot, 2023-09-05, jmm
  $LastChangedBy: jimm $
- $LastChangedDate: 2020-01-24 12:38:49 -0800 (Fri, 24 Jan 2020) $
- $LastChangedRevision: 28237 $
+ $LastChangedDate: 2023-09-06 16:06:50 -0700 (Wed, 06 Sep 2023) $
+ $LastChangedRevision: 32086 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_call_pfpl2plot.pro $
 </PRE><P>
 <STRONG>(See <A href="quicklook/mvn_call_pfpl2plot.pro">projects/maven/quicklook/mvn_call_pfpl2plot.pro</A>)</STRONG><P>
@@ -1016,7 +1020,7 @@ LAST MODIFICATION:
 <A NAME="MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG">
 <H2>MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG</H2></A>
 <A HREF="#MVN_QL_PFP_TPLOT_YTICKNAME_MINUS_LOG">[Previous Routine]</A>
-<A HREF="#RUN_MVN_OVER_SHELL30">[Next Routine]</A>
+<A HREF="#MVN_SPACEWEATHER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Helper function -- split out of mvn_ql_pfp_tplot. Generates ytickformat
@@ -1030,9 +1034,97 @@ LAST MODIFICATION:
 <STRONG>(See <A href="quicklook/mvn_ql_pfp_tplot_ytickname_plus_log.pro">projects/maven/quicklook/mvn_ql_pfp_tplot_ytickname_plus_log.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SPACEWEATHER">
+<H2>MVN_SPACEWEATHER</H2></A>
+<A HREF="#MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG">[Previous Routine]</A>
+<A HREF="#MVN_SPACEWEATHER_OVERPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       MVN_SPACEWEATHER
+
+PURPOSE:         Creates tplot variables w.r.t the spaceweather events at Mars observed by MAVEN.
+                 It is anticipated that the result will be sent to the M2M/CCMC team.
+
+INPUTS:          Time range to be loaded.
+
+KEYWORDS:
+
+      PATH:      Spacifies the PATH where to output the result. Default is './' (i.e., current directory).
+
+     TPLOT:      If set, visualizes the result on the tplot window.
+                 This keyword is useful for C. Lee's spaceweather report at the MAVEN Thursday telecon.
+
+     PRINT:      If set, the result will be output to .dat file(s).
+
+   HALEKAS:      If set, J. Halekas's upstream driver file is downloaded and then used.
+
+    NOLOAD:      If users have already loaded tplot variables yet, users can skip the data loading section when it is on.
+
+      TEST:      If set, users can check whether it works well.
+
+CREATED BY:      Takuya Hara on 2022-11-04.
+
+LAST MODIFICATION:
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2023-09-11 14:39:44 -0700 (Mon, 11 Sep 2023) $
+ $LastChangedRevision: 32091 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_spaceweather.pro $
+
+</PRE><P>
+<STRONG>(See <A href="quicklook/mvn_spaceweather.pro">projects/maven/quicklook/mvn_spaceweather.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_SPACEWEATHER_OVERPLOT">
+<H2>MVN_SPACEWEATHER_OVERPLOT</H2></A>
+<A HREF="#MVN_SPACEWEATHER">[Previous Routine]</A>
+<A HREF="#RUN_MVN_OVER_SHELL30">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mvn_spaceweather_overplot
+PURPOSE:
+ MAVEN Spaceweather plots
+CALLING SEQUENCE:
+ mvn_spaceweather_overplot, date = date, time_range = time_range, $
+               makepng=makepng, device = device, directory = pdir
+INPUT:
+ No explicit input, everthing is via keyword.
+OUTPUT:
+ Plots, on the screen or in 3 png files
+KEYWORDS:
+ date = If set, a plot for the input date. If /makepng is set, then 3 plots
+ time_range = If set, plot this time range, note that this supercedes
+              the date keyword, if both are set, the time range is
+              attempted, and this will plot a single plot, not for 3
+              different date ranges
+ makepng = If set, make png files, with filenames:
+           mvn_spaceweather_date_1d.png, for a single day starting at
+           the input date
+           mvn_spaceweather_date_3d.png, for 3 days starting at
+           the input date
+           mvn_spaceweather_date_7d.png, for 7 days starting at
+           the input date
+ device = a device for set_plot, the default is to use the current
+          setting, for cron jobs, device = 'z' is recommended. Note
+          that this does not reset the device at the end of the
+          program.
+ directory = If a pngs are created, this is the output directory, the
+             default is the current working directory. The plots are
+             created in subdirectories /1day, /3day, /7day
+HISTORY:
+ 2023-09-05, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: jimm $
+ $LastChangedDate: 2023-09-19 10:23:42 -0700 (Tue, 19 Sep 2023) $
+ $LastChangedRevision: 32105 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_spaceweather_overplot.pro $
+</PRE><P>
+<STRONG>(See <A href="quicklook/mvn_spaceweather_overplot.pro">projects/maven/quicklook/mvn_spaceweather_overplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RUN_MVN_OVER_SHELL30">
 <H2>RUN_MVN_OVER_SHELL30</H2></A>
-<A HREF="#MVN_QL_PFP_TPLOT_YTICKNAME_PLUS_LOG">[Previous Routine]</A>
+<A HREF="#MVN_SPACEWEATHER_OVERPLOT">[Previous Routine]</A>
 <A HREF="#RUN_PFPL2PLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

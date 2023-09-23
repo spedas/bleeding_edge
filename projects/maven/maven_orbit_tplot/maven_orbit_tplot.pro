@@ -34,6 +34,22 @@
 ;INPUTS:
 ;
 ;KEYWORDS:
+;       TRANGE: A date or date range in any format accepted by time_double.
+;               Only the date is used (hh:mm:ss is ignored).  If not specified,
+;               then try to get the time range from tplot_com (TRANGE_FULL).
+;               If that fails, then prompt the user for the time range.
+;
+;               Ephemeris data are loaded from one day before to one day after
+;               TRANGE.  This ensures that interpolation is well defined even at
+;               the edges of your date range.
+;
+;       RESET_TRANGE: OBSOLETE.  This keyword has no effect.  Timespan is reset
+;                 only when EXTENDED is set (see below).
+;
+;       TIMECROP: OBSOLETE.  This keyword has no effect.
+;
+;       NOCROP:   OBSOLETE.  This keyword has no effect.
+;
 ;       STAT:     Named variable to hold the plasma regime statistics.
 ;
 ;       SWIA:     Calculate viewing geometry for SWIA, based on nominal s/c
@@ -58,7 +74,7 @@
 ;                 boundaries vary with orbit period.
 ;
 ;       RESULT:   Named variable to hold the MSO ephemeris with some calculated
-;                 quantities.  OBSOLETE.  Use keyword EPH instead.
+;                 quantities.  OBSOLETE.  Still works, but use keyword EPH instead.
 ;
 ;       EPH:      Named variable to hold the MSO and GEO state vectors along with 
 ;                 some calculated values.
@@ -92,38 +108,40 @@
 ;                   5 : trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp
 ;                   6 : trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp
 ;
-;       HIRES:    OBSOLETE - this keyword has no effect at all.
+;                 Warning: using this keyword will reset timespan to cover the specified
+;                 extended ephemeris, overwriting any existing timespan.  This will affect
+;                 any routines that use timespan for determining what data to process.
+;
+;       HIRES:    OBSOLETE.  This keyword has no effect.
 ;
 ;       LOADONLY: Create the TPLOT variables, but do not plot.
 ;
 ;       NOLOAD:   Don't load or refresh the ephemeris information.  Just fill in any
 ;                 keywords and exit.
 ;
-;       RESET_TRANGE: If set, then reset the time span to cover the entire ephemeris
-;                     time range, overwriting any existing time range.  This will
-;                     affect any routines that use timespan for determining what
-;                     data to process.  Use with caution.
 ;
-;       TIMECROP: An array with at least two elements, in any format accepted by 
-;                 time_double.  Only ephemeris data between the earliest and
-;                 latest times in this array are retained.  Default is to crop
-;                 data to current timespan, if it exists -- otherwise, load and
-;                 display all available ephemeris data (same as NOCROP).
+;       LINE_COLORS: Line color scheme for altitude panel.  This can be an integer [0-10]
+;                 to select one of 11 pre-defined line color schemes.  It can also be array
+;                 of 24 (3x8) RGB values: [[R,G,B], [R,G,B], ...] that defines the first 7
+;                 colors (0-6) and the last (255).  For details, see line_colors.pro and 
+;                 color_table_crib.pro.  Default = 5.
 ;
-;       NOCROP:   Load and display all available ephemeris data.  Overrides TIMECROP.
+;       COLORS:   An array with up to 3 elements to specify color indices for the
+;                 plasma regimes: [sheath, pileup, wake].  Passed to maven_orbit_tplot.
+;                 Defaults are:
 ;
-;       COLORS:   An array with up to 3 elements to specify the color indices for 
-;                 the plasma regimes: [sheath, pileup, wake].  The defaults are:
-;
-;                   regime       index       color (table 43)
+;                   regime       index       LINE_COLORS=5
 ;                   -----------------------------------------
 ;                   sheath         4         green
-;                   pileup       199         orange
+;                   pileup         5         orange
 ;                   wake           2         blue
 ;                   -----------------------------------------
 ;
-;                 The colors you get depend on your color table.  The solar wind is
-;                 always displayed in the foreground color (usually white or black).
+;                 The colors you get depend on your line color scheme.  The solar wind
+;                 is always displayed in the foreground color (usually white or black).
+;
+;                 Note: Setting LINE_COLORS and COLORS here is local to this routine and
+;                       affects only the altitude panel.
 ;
 ;       VARS:     Array of TPLOT variables created.
 ;
@@ -134,6 +152,9 @@
 ;       VERBOSE:  Verbosity level passed to mvn_pfp_file_retrieve.  Default = 0
 ;                 (suppress most messages).  Try a value > 2 to see more
 ;                 messages; > 4 for lots of messages.
+;
+;                 Also used to control the verbosity of spd_download_plus by
+;                 temporarily setting the debug level for dprint to VERBOSE.
 ;
 ;       CLEAR:    Clear the common block and exit.
 ;
@@ -154,23 +175,26 @@
 ;                 arbitrary set of ephemeris conditions.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-07-15 18:17:50 -0700 (Sat, 15 Jul 2023) $
-; $LastChangedRevision: 31954 $
+; $LastChangedDate: 2023-08-27 13:10:15 -0700 (Sun, 27 Aug 2023) $
+; $LastChangedRevision: 32068 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
 ;-
-pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=extended, $
-                       eph=eph, current=current, loadonly=loadonly, vars=vars, hires=hires, $
-                       timecrop=timecrop, now=now, colors=colors, reset_trange=reset_trange, $
-                       nocrop=nocrop, spk=spk, segments=segments, shadow=shadow, datum=datum2, $
-                       noload=noload, pds=pds, verbose=verbose, clear=clear, success=success, $
-                       save=save, restore=restore, mission=mission
+pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=result, $
+                       extended=extended, eph=eph, current=current, loadonly=loadonly, $
+                       vars=vars, hires=hires, now=now, colors=colors, reset_trange=reset_trange, $
+                       spk=spk, segments=segments, shadow=shadow, datum=datum2, noload=noload, $
+                       pds=pds, verbose=verbose, clear=clear, success=success, save=save, $
+                       restore=restore, mission=mission, timecrop=timecrop, nocrop=nocrop, $
+                       line_colors=lcol
 
   @maven_orbit_common
 
   rootdir = 'maven/anc/spice/sav/'
   ssrc = mvn_file_source(archive_ext='')  ; don't archive old files
+  moi = time_double('2014-09-22/02:24')   ; Mars orbit insertion
+  oneday = 86400D
 
 ; Clear the common block and return
 
@@ -234,17 +258,17 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
 
   if keyword_set(mission) then begin
     fname = 'maven_moi_present.sav'
-    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=2)
+    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
     if (nfiles eq 1) then restore, file else print,"File not found: " + fname
 
     fname = 'maven_moi_present.tplot'
-    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=2)
+    file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
     if (nfiles eq 1) then tplot_restore, file=file else print,"File not found: " + fname
 
     timefit, var='alt'
-    options, 'alt2', 'datagap', 2D*86400D
+    options, 'alt2', 'datagap', 2D*oneday
     return
   endif
 
@@ -264,10 +288,12 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
 
   maven_orbit_options, get=key, /silent
   ktag = tag_names(key)
-  tlist = ['STAT','SWIA','IALT','RESULT','EXTENDED','EPH','CURRENT','LOADONLY', $
-           'VARS','HIRES','TIMECROP','NOW','COLORS','RESET_TRANGE','NOCROP', $
-           'SPK','SEGMENTS','SHADOW','DATUM2','NOLOAD','PDS','VERBOSE','CLEAR', $
-           'SUCCESS','SAVE','RESTORE','MISSION']
+  active = ['STAT','SWIA','IALT','RESULT','EXTENDED','EPH','LOADONLY','VARS', $
+           'TRANGE','NOW','COLORS','SPK','SEGMENTS','SHADOW','DATUM2','NOLOAD', $
+           'PDS','VERBOSE','CLEAR','SUCCESS','SAVE','RESTORE','MISSION', $
+           'LINE_COLORS']
+  obsolete = ['TIMECROP','NOCROP','RESET_TRANGE','HIRES','CURRENT']
+  tlist = [active, obsolete]
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -279,6 +305,11 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
              end
       else : print, "Keyword ambiguous: ", ktag[j]
     endcase
+  endfor
+
+  for i=0,(n_elements(obsolete)-1) do begin
+    ok = execute('kset = size(' + obsolete[i] + ',/type) gt 0',0,1)
+    if (kset) then print,'Keyword ',obsolete[i],' is obsolete.  It has no effect.'
   endfor
 
 ; Determine the reference surface for calculating altitude
@@ -298,16 +329,38 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
            end
   endcase
 
-  treset = 0  
-  tplot_options, get=topt
-  if (max(topt.trange_full) eq 0D) then treset = 1
-  if keyword_set(reset_trange) then treset = 1
-  if (treset) then nocrop = 1
+; Determine if extended predict ephemeris is requested
+
+  if (n_elements(extended) gt 0) then begin
+    extended = fix(extended[0])
+    extflg = (extended ge 1) or (extended le 6)
+  endif else extflg = 0B
+
+; Get the time range
+
+  treset = 0
+  case n_elements(trange) of
+      0  : begin
+             tplot_options, get=topt
+             str_element, topt, 'trange_full', tspan
+             if ((tspan[1] eq 0D) and ~extflg) then begin
+               timespan
+               tplot_options, get=topt
+               str_element, topt, 'trange_full', tspan
+             endif
+           end
+      1  : tspan = time_double(time_string(trange,prec=-3)) + [0D, oneday]
+    else : begin
+             tspan = time_double(time_string(minmax(time_double(trange)),prec=-3))
+             if ((tspan[1] - tspan[0]) lt oneday) then tspan[1] = tspan[0] + oneday
+           end
+  endcase
+
+  tspan = tspan + [-oneday, oneday]  ; pad by one day before and after
 
   if (size(shadow,/type) eq 0) then shadow = 1
   sflg = keyword_set(shadow)
   if not keyword_set(ialt) then ialt = !values.f_nan
-  if keyword_set(hires) then res = '20sec' else res = '60sec'
 
   mname = 'maven_spacecraft_mso_??????' + '.sav'
   gname = 'maven_spacecraft_geo_??????' + '.sav'
@@ -347,8 +400,6 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
                ename = 'maven_spacecraft_eph_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.sav'
                timespan, ['2023-03-22','2032-01-01']
                treset = 1
-               nocrop = 1
-               timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.bsp"
                ttitle = "trj_orb_230322-320101_dsf2.5-arm-prm-inc-17.5ms_230320.bsp"
@@ -359,8 +410,6 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
                ename = 'maven_spacecraft_eph_230322-320101_dsf1.5-prm-3.5ms_230320.sav'
                timespan, ['2023-03-22','2032-01-01']
                treset = 1
-               nocrop = 1
-               timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_230322-320101_dsf1.5-prm-3.5ms_230320.bsp"
                ttitle = "trj_orb_230322-320101_dsf1.5-prm-3.5ms_230320.bsp"
@@ -371,8 +420,6 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
                ename = 'maven_spacecraft_eph_2022-2032_dsf2.5_arm_prm_19.2ms_220802.sav'
                timespan, ['2022-08-10','2032-01-01']
                treset = 1
-               nocrop = 1
-               timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
                ttitle = "trj_orb_220810-320101_dsf2.5_arm_prm_19.2ms_220802.bsp"
@@ -383,8 +430,6 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
                ename = 'maven_spacecraft_eph_2022-2032_dsf2.5_arms_18ms_210930.sav'
                timespan, ['2022-01-01','2032-01-01']
                treset = 1
-               nocrop = 1
-               timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_220101-270101_dsf2.5_arms_18ms_210930.bsp"
                ttitle = "trj_orb_220101-320101_dsf2.5_arms_18ms_210930.bsp"
@@ -395,8 +440,6 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
                ename = 'maven_spacecraft_eph_2022-2032_dsf2.5_arm_prm_13.5ms_210908.sav'
                timespan, ['2022-01-01','2032-01-01']
                treset = 1
-               nocrop = 1
-               timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_220101-270101_dsf2.5_arm_prm_13.5ms_210908.bsp"
                ttitle = "trj_orb_220101-320101_dsf2.5_arm_prm_13.5ms_210908.bsp"
@@ -407,8 +450,6 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
                ename = 'maven_spacecraft_eph_2021-2030_dsf2.5_210330.sav'
                timespan, ['2021-03-26','2030-12-30']
                treset = 1
-               nocrop = 1
-               timecrop = 0
                print,"Using extended predict ephemeris."
                print,"  SPK = trj_orb_210326-260101_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
                ttitle = "trj_orb_210326-301230_dsf2.5-otm0.4-arms-prm-13.9ms_210330.bsp"
@@ -428,29 +469,15 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
     endcase
   endif else extended = 0
 
-  if (n_elements(timecrop) gt 1L) then begin
-    tspan = minmax(time_double(timecrop))
-    docrop = 1
-  endif else begin
-    tplot_options, get_opt=topt
-    tspan_exists = (max(topt.trange_full) gt time_double('2013-11-18'))
-    if (tspan_exists) then begin
-      tspan = topt.trange_full
-      docrop = 1
-    endif else begin
-      timespan
-      docrop = 0
-    endelse
-  endelse  
-  if keyword_set(nocrop) then docrop = 0
+; Set the color scheme for the altitude panel (assumes line color scheme 5):
+;   colors 1-6 = [magenta, blue, cyan, green, orange, red]
 
-; Pad time span by one UT day on both sides (guarantees > 10 orbits)
+  lcol = (n_elements(lcol) gt 0) ? fix(lcol[0]) : 5
 
-  if (docrop) then tspan += [-86400D, 86400D]
-
-  blue = 2
-  green = 4
-  orange = 5
+              ; wind is shown in the foreground color (!p.color)
+  blue = 2    ; shadow
+  green = 4   ; sheath
+  orange = 5  ; pileup
   case n_elements(colors) of
     0 : rcols = [green, orange, blue]
     1 : rcols = [round(colors), orange, blue]
@@ -459,7 +486,7 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
     else : rcols = round(colors[0:2])
   endcase
   if keyword_set(now) then donow = 1 else donow = 0
-  
+
 ; Restore the MSO state vectors
 
   file = mvn_pfp_file_retrieve(rootdir+mname,last_version=0,source=ssrc,verbose=verbose)
@@ -479,16 +506,14 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
     date = time_double(date)
 
     if (tspan[0] gt maxdate) then begin
-      print,"No ephemeris coverage past ",time_string(maxdate)
+      print,"No ephemeris coverage after ",time_string(maxdate)
       return
     endif
     if (tspan[1] lt date[0]) then begin
       print,"No ephemeris coverage before ",time_string(date[0])
       return
     endif
-  endif
 
-  if (docrop) then begin
     i = max(where(date lt tspan[0], icnt))
     if (icnt eq 0) then i = 0
     j = min(where(date gt tspan[1], jcnt))
@@ -542,16 +567,14 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
     date = time_double(date)
 
     if (tspan[0] gt maxdate) then begin
-      print,"No ephemeris coverage past ",time_string(maxdate)
+      print,"No ephemeris coverage after ",time_string(maxdate)
       return
     endif
     if (tspan[1] lt date[0]) then begin
       print,"No ephemeris coverage before ",time_string(date[0])
       return
     endif
-  endif
-    
-  if (docrop) then begin
+
     i = max(where(date lt tspan[0], icnt))
     if (icnt eq 0) then i = 0
     j = min(where(date gt tspan[1], jcnt))
@@ -583,9 +606,9 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
 
   maven_g = 0
 
-; Trim the data to requested time range
+; Trim ephemeris to the requested time range
 
-  if (docrop) then begin
+  if (extended eq 0) then begin
     indx = where((time ge tspan[0]) and (time le tspan[1]), npts)
 
     if (npts gt 0L) then begin
@@ -637,18 +660,12 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
     lat = dat.lat
 
     mvn_spice_stat, summary=sinfo, /silent
-    if (sinfo.planets_exist and sinfo.frames_exist) then begin
-      print,"Calculating local time and sub-solar point."
-      mvn_mars_localtime, time, lon, result=dat
-      lst = dat.lst
-      slon = dat.slon
-      slat = dat.slat
-    endif else begin
-      print,"WARNING: Spice not initialized - can't determine local time and sub-solar point."
-      lst = dblarr(n_elements(time))
-      slon = lst
-      slat = lst
-    endelse
+    if ~sinfo.planets_exist then mvn_swe_spice_init, /baseonly
+    print,"Calculating local time and sub-solar point."
+    mvn_mars_localtime, time, lon, result=dat
+    lst = dat.lst
+    slon = dat.slon
+    slat = dat.slat
 
     eph = maven_orbit_eph()
     undefine, dat
@@ -863,10 +880,10 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
   store_data,'wind',data={x:time, y:wind[*,4]}
 
   store_data,'iono',data={x:[tmin,tmax], y:[ialt,ialt]}
-  options,'iono','color',6
+  options,'iono','color',6  ; hard-coded to red in line color scheme 5
   options,'iono','linestyle',2
   options,'iono','thick',2
-  
+
   store_data,'alt_lab',data={x:minmax(time), y:replicate(-1.,2,4), v:indgen(4)}
   options,'alt_lab','labels',[stype+' SHD','PILEUP','SHEATH','WIND']
   options,'alt_lab','colors',[reverse(rcols),!p.color]
@@ -874,6 +891,7 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
 
   store_data,'alt2',data=['alt_lab','alt','sheath','pileup','wake','wind','iono']
   ylim, 'alt2', 0, 1000*ceil(max(hgt)/1000.), 0
+  options,'alt2','line_colors',lcol
   options,'alt2','ytitle','Altitude (km)!c' + strlowcase(datum)
 
 ; 6200-km apoapsis: options,'alt2','constant',[500,1200,4970,5270]
@@ -1135,9 +1153,15 @@ pro maven_orbit_tplot, stat=stat, swia=swia, ialt=ialt, result=result, extended=
      options,'lat','yminor',3
      options,'lat','panel_size',0.5
 
-; Determine orbit numbers
+; Determine orbit number
 
-     orbnum = mvn_orbit_num(time=time, verbose=-1)
+     print, 'Getting orbit numbers ... ', format='(a,$)'
+     dprint,' ', getdebug=bug, dlevel=4
+       dprint,' ', setdebug=verbose, dlevel=4
+       orbnum = mvn_orbit_num(time=time)
+     dprint,' ', setdebug=bug, dlevel=4
+     print,'done'
+
      store_data,'orbnum',data={x:time, y:orbnum}
      tplot_options,'var_label','orbnum'
 

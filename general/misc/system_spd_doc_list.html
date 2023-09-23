@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Aug 22 18:16:39 2023.<P>
+<STRONG>Last modified: </STRONG>Thu Sep 21 18:16:45 2023.<P>
  
 <HR>
  
@@ -325,8 +325,8 @@ INPUTS:
           1-4 : four different schemes suitable for colorblind vision
            5  : same as 0, except orange replaces yellow for better contrast on white
            6  : same as 0, except gray replaces yellow for better contrast on white
-           7  : see https://www.nature.com/articles/nmeth.1618 except no reddish purple
-           8  : see https://www.nature.com/articles/nmeth.1618 except no yellow
+           7  : see https://www.nature.com/articles/nmeth.1618, except no reddish purple
+           8  : see https://www.nature.com/articles/nmeth.1618, except no yellow
            9  : same as 8 but permuted so vector defaults are blue, orange, reddish purple
           10  : Chaffin's CSV line colors, suitable for colorblind vision
 
@@ -364,8 +364,8 @@ common blocks:
    colors_com:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-05 09:48:09 -0800 (Sun, 05 Mar 2023) $
- $LastChangedRevision: 31581 $
+ $LastChangedDate: 2023-09-05 12:17:00 -0700 (Tue, 05 Sep 2023) $
+ $LastChangedRevision: 32079 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/get_line_colors.pro $
 
 Created by David Mitchell;  February 2023
@@ -571,12 +571,12 @@ INPUTS:
 
    (2) Integer that selects a predefined color scheme:
 
-           0  : primary colors
+           0  : primary and secondary colors [black, magenta, blue, cyan, green, yellow, red, white]
           1-4 : four different schemes suitable for colorblind vision
-           5  : primary colors, except orange replaces yellow for better contrast on white
-           6  : primary colors, except gray replaces yellow for better contrast on white
-           7  : https://www.nature.com/articles/nmeth.1618, except no reddish purple
-           8  : https://www.nature.com/articles/nmeth.1618, except no yellow
+           5  : same as 0, except orange replaces yellow for better contrast on white
+           6  : same as 0, except gray replaces yellow for better contrast on white
+           7  : see https://www.nature.com/articles/nmeth.1618, except no reddish purple
+           8  : see https://www.nature.com/articles/nmeth.1618, except no yellow
            9  : same as 8 but permuted so vector defaults are blue, orange, reddish purple
           10  : Chaffin's CSV line colors, suitable for colorblind vision
 
@@ -636,8 +636,8 @@ common blocks:
    colors_com:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-05 09:48:33 -0800 (Sun, 05 Mar 2023) $
- $LastChangedRevision: 31582 $
+ $LastChangedDate: 2023-08-27 13:06:46 -0700 (Sun, 27 Aug 2023) $
+ $LastChangedRevision: 32066 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/line_colors.pro $
 
 Created by David Mitchell;  February 2023
@@ -780,8 +780,8 @@ SEE ALSO:
               more functionality, but only for the current color table.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-03-25 15:25:34 -0700 (Sat, 25 Mar 2023) $
- $LastChangedRevision: 31666 $
+ $LastChangedDate: 2023-09-05 08:51:54 -0700 (Tue, 05 Sep 2023) $
+ $LastChangedRevision: 32077 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
 </PRE><P>
 <STRONG>(See <A href="system/showct.pro">general/misc/system/showct.pro</A>)</STRONG><P>

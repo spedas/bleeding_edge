@@ -1,18 +1,21 @@
-function spp_fld_rfs_freqs, lfr = lfr, plasma = plasma
+function spp_fld_rfs_freqs, lfr = lfr, plasma = plasma, lusee = lusee
+  compile_opt idl2
 
   rfs_freqs = dictionary()
 
   slash = path_sep()
-  sep   = path_sep(/search_path)
+  sep = path_sep(/search_path)
 
-  dirs = ['.',strsplit(!path,sep,/extract)]
+  dirs = ['.', strsplit(!path, sep, /extract)]
 
   if keyword_set(lfr) then begin
-    ;csv_file_name = 'freq_spacing_38400000_4096_64HFR_48LFR_8LO_8O_32T_275000fp_LFR_withNeighbors.csv'
     csv_file_name = 'rfs_freq_LFR.csv'
+    if keyword_set(lusee) then $
+      csv_file_name = csv_file_name.replace('rfs', 'lusee')
   endif else begin
-    ;csv_file_name = 'freq_spacing_38400000_4096_64HFR_48LFR_8LO_8O_32T_275000fp_HFR_withNeighbors.csv'
     csv_file_name = 'rfs_freq_HFR.csv'
+    if keyword_set(lusee) then $
+      csv_file_name = csv_file_name.replace('rfs', 'lusee')
   endelse
 
   csv_path = file_search(dirs + slash + csv_file_name)
@@ -20,7 +23,8 @@ function spp_fld_rfs_freqs, lfr = lfr, plasma = plasma
   csv_source_file = csv_path[0]
 
   csv_data = read_csv(csv_source_file, $
-    types = ["Long", "Double", "Double", "Long", "Long", "Long", "Long", "Double"])
+    types = ["Long", "Double", "Double", "Long", $
+      "Long", "Long", "Long", "Double"])
 
   rfs_freqs.csv_source_file = csv_source_file
 
@@ -28,18 +32,20 @@ function spp_fld_rfs_freqs, lfr = lfr, plasma = plasma
   rfs_freqs.full_freq = double(csv_data.field2)
   rfs_freqs.full_pfb_db = double(csv_data.field3)
 
-  reduced_ind = long(where(csv_data.field5 NE 0))
+  reduced_ind = long(where(csv_data.field5 ne 0))
 
   rfs_freqs.reduced_index = long(csv_data.field4[reduced_ind])
-  rfs_freqs.reduced_indices = long([$
+  rfs_freqs.reduced_indices = long([ $
     [csv_data.field5[reduced_ind]], $
     [csv_data.field6[reduced_ind]], $
     [csv_data.field7[reduced_ind]]])
-  rfs_freqs.reduced_pfb_db = double(rfs_freqs.full_pfb_db[rfs_freqs.reduced_indices])
+  rfs_freqs.reduced_pfb_db = $
+    double(rfs_freqs.full_pfb_db[rfs_freqs.reduced_indices])
   rfs_freqs.reduced_freq = double(csv_data.field8[reduced_ind])
 
-  ;csv_plasma_name = 'freq_spacing_38400000_4096_64HFR_48LFR_8LO_8O_32T_275000fp_LFR_PlasmaTable.csv'
   csv_plasma_name = 'rfs_freq_LFR_Plasma.csv'
+  if keyword_set(lusee) then $
+    csv_plasma_name = csv_plasma_name.replace('rfs', 'lusee')
 
   csv_path = file_search(dirs + slash + csv_plasma_name)
 
@@ -47,10 +53,10 @@ function spp_fld_rfs_freqs, lfr = lfr, plasma = plasma
 
   pldat = read_csv(csv_source_file, $
     types = ["Long", "Long", "Double", $
-    "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long", $
-    "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long", $
-    "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long", $
-    "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long"])
+      "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long", $
+      "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long", $
+      "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long", $
+      "Long", "Long", "Long", "Long", "Long", "Long", "Long", "Long"])
 
   plasma = dictionary()
 
@@ -69,5 +75,4 @@ function spp_fld_rfs_freqs, lfr = lfr, plasma = plasma
     ])
 
   return, rfs_freqs
-
 end

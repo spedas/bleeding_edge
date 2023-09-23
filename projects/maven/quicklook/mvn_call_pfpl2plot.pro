@@ -31,9 +31,10 @@
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen.pro 2015-06-02, jmm
 ;Added call to mvn_pfpl2_longplot, 2019-12-10, jmm
+;Added call to mvn_spaceweather_overplot, 2023-09-05, jmm
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-01-24 12:38:49 -0800 (Fri, 24 Jan 2020) $
-; $LastChangedRevision: 28237 $
+; $LastChangedDate: 2023-09-06 16:06:50 -0700 (Wed, 06 Sep 2023) $
+; $LastChangedRevision: 32086 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_call_pfpl2plot.pro $
 ;-
 Pro mvn_call_pfpl2plot, time_in = time_in, $
@@ -92,6 +93,10 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
            print, '***************FILE SKIPPED****************'
            goto, SKIP_FILE
         end
+        'spaceweather':Begin
+           print, '***************FILE SKIPPED****************'
+           goto, SKIP_FILE
+        end
         else: goto, SKIP_ALL
      endcase
   endif
@@ -99,7 +104,7 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
 
 ;--------------------------------
   If(keyword_set(instrument)) Then instr = instrument $
-  Else instr = ['pfpl2', 'pfpl2_long']
+  Else instr = ['pfpl2', 'pfpl2_long','spaceweather']
   ninstr = n_elements(instr)
   If(~keyword_set(days_in) && ~keyword_set(search_time_range)) Then Begin
      If(keyword_set(time_in)) Then Begin
@@ -140,6 +145,11 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
               sdir = '/disks/data/maven/data/sci/'+instr_dir+'/l2/*/*/*.'+suffix
 ;Add bcrust save files:
               sdir = [sdir, '/disks/data/maven/data/mod/bcrust/*/*/*.tplot']
+           End
+           'spaceweather': Begin
+              instr_dir = ['lpw','mag','sep','sta','swe','swi']
+              suffix = ['cdf','sts','cdf','cdf','cdf','cdf']
+              sdir = '/disks/data/maven/data/sci/'+instr_dir+'/l2/*/*/*.'+suffix
            End
            Else: sdir = '/disks/data/maven/data/sci/'+instrk+'/l2/*/*/*.cdf'
         Endcase
@@ -234,6 +244,16 @@ Pro mvn_call_pfpl2plot, time_in = time_in, $
                  load_position = 'pfp12_long'
                  mvn_pfpl2_longplot, date = timei, directory = filei_dir, $
                                      device = 'z', _extra = _extra
+              End
+              'spaceweather': Begin
+                 load_position = 'spaceweather'
+                 filei_dir = '/disks/data/maven/anc/ccmc/' ;the full output path is handled in the overplot program
+                 If(is_string(file_search(filei_dir)) Eq 0) Then Begin
+                    message, /info, 'Creating: '+filei_dir
+                    file_mkdir, filei_dir
+                 Endif
+                 mvn_spaceweather_overplot, date = timei, directory = filei_dir, $
+                                            device = 'z', /makepng, _extra =_extra
               End
               Else: Begin
                  dprint, 'No instrument defined: '+instrk
