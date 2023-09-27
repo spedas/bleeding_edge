@@ -6,15 +6,15 @@
 ;Example:
 ; thm_fitmom_overviews,'2007-03-23','b',dir='~/out',device='z'
 ;
-; $LastChangedBy: lphilpott $
-; $LastChangedDate: 2012-06-15 12:50:32 -0700 (Fri, 15 Jun 2012) $
-; $LastChangedRevision: 10570 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2023-09-25 13:43:30 -0700 (Mon, 25 Sep 2023) $
+; $LastChangedRevision: 32122 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_set_lim.pro $
 ;-
 
-pro thm_set_lim,mnem,start,stop,min,max,log
+pro thm_set_lim,mnem,start,stop,min0,max0,log
 
-COMPILE_OPT idl2,hidden
+COMPILE_OPT idl2
 
 if tnames(mnem) then begin 
 
@@ -28,7 +28,7 @@ if tnames(mnem) then begin
 
    
       if(t_idx[0] eq -1) then begin
-         ylim,mnem,min,max,log
+         ylim,mnem,min0,max0,log
          return
       endif
 
@@ -42,11 +42,8 @@ if tnames(mnem) then begin
 
       if(i_idx[0] ne -1) then dy = dy[i_idx]
 
-      min2 = min(dy)
-      max2 = max(dy)
-
-      if(min2 lt min) then minf = min else minf=min2
-      if(max2 gt max) then maxf = max else minf=max2
+      minf = min(dy) > min0
+      maxf = max(dy) < max0
 
    endif else begin
       
@@ -87,16 +84,14 @@ if tnames(mnem) then begin
          Endelse
       endfor
    
-      if(min2 lt min) then minf = min else minf=min2
-      if(max2 gt max) then maxf = max else minf=max2
-
+      minf = min2 > min0
+      maxf = max2 < max0
 ;      minf = max(min2,min)
 ;      maxf = min(max2,max)
 ;      if(max2 gt maxf) then maxf = max else minf=max2
    endelse
 
    ylim,mnem,minf,maxf,log
-
 endif else begin
    dprint,'Mnemonic does not exist: ' + mnem
 endelse

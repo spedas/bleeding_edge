@@ -53,8 +53,8 @@
 ;OUTPUTS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-13 13:52:01 -0700 (Sun, 13 Aug 2023) $
-; $LastChangedRevision: 31990 $
+; $LastChangedDate: 2023-09-25 16:30:03 -0700 (Mon, 25 Sep 2023) $
+; $LastChangedRevision: 32129 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_n1d.pro $
 ;
 ;-
@@ -290,12 +290,14 @@ pro mvn_swe_n1d, pans=pans, ddd=ddd, abins=abins, dbins=dbins, obins=obins, mask
 
 ; Old version of low-energy masking (to be replaced)
 
-  lowe_test = {x:t, y:replicate(1.,npts)}
-  mvn_swe_lowe_mask, lowe_test
-  dens *= lowe_test.y
-  temp *= lowe_test.y
-  dsig *= lowe_test.y
-  tsig *= lowe_test.y
+  if (0) then begin
+    lowe_test = {x:t, y:replicate(1.,npts)}
+    mvn_swe_lowe_mask, lowe_test
+    dens *= lowe_test.y
+    temp *= lowe_test.y
+    dsig *= lowe_test.y
+    tsig *= lowe_test.y
+  endif
 
 ; Create TPLOT variables
 

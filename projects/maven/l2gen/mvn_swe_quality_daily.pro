@@ -19,8 +19,8 @@
 ;                     these steps are performed before calling this routine.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-22 13:25:48 -0700 (Tue, 22 Aug 2023) $
-; $LastChangedRevision: 32052 $
+; $LastChangedDate: 2023-09-25 16:21:09 -0700 (Mon, 25 Sep 2023) $
+; $LastChangedRevision: 32128 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/mvn_swe_quality_daily.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -32,11 +32,16 @@ pro mvn_swe_quality_daily, trange, noload=noload
   load = ~keyword_set(noload)
   proot = root_data_dir() + 'maven/data/sci/swe/anc/quality/'
   froot = 'mvn_swe_quality_'
+  tmin = time_double('2019-12-01')
 
-  t0 = min(time_double(time_string(trange,/date_only)), max=t1) > time_double('2019-12-01')
-  if (t0 ge t1) then begin
+  t0 = min(time_double(time_string(trange,/date_only)), max=t1)
+  if (t1 lt tmin) then begin
     print,'This routine is intended for dates after 2019-12-01.'
     return
+  endif
+  if (t0 lt tmin) then begin
+    print,'This routine is intended for dates after 2019-12-01.'
+    t0 = tmin
   endif
 
   oneday = 86400D
@@ -69,6 +74,7 @@ pro mvn_swe_quality_daily, trange, noload=noload
       swe_lowe_cluster, trange=trange, width=75, npts=6, lambda=1.0, frac=0.30, outlier=3, $
                         buffer=[8D,16D], mindelta=0.5, minsup=0.3, maxbad=0.55, quality=quality, $
                         /quiet
+
       if (size(quality,/type) eq 8) then begin
         save, quality, file=ofile
         if (file_test(ofile,/user)) then file_chmod, ofile, '664'o $

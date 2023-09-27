@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Sep 21 18:16:45 2023.<P>
+<STRONG>Last modified: </STRONG>Tue Sep 26 03:17:03 2023.<P>
  
 <HR>
  
@@ -21,6 +21,7 @@ This page was created by the IDL library routine
 <H1>projects/SPP/fields/util</H1>
 <LI><A HREF="#READ_XML8">READ_XML8</A>
 <br>READ an XML document file into IDL (Interactive Data Language, ITT).
+<LI><A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">SPP_FLD_MAKE_OR_RETRIEVE_CDF</A>
 <LI><A HREF="#[1]">[1]</A>
 <LI><A HREF="#SPP_FLD_STATUSPLOT">SPP_FLD_STATUSPLOT</A>
 <br>Procedure used to display status bars on a TPLOT.
@@ -35,7 +36,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="READ_XML8">
 <H2>READ_XML8</H2></A>
-<A HREF="#SPP_FLD_STATUSPLOT">[Next Routine]</A>
+<A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -98,9 +99,30 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="util/read_xml8.pro">projects/SPP/fields/util/read_xml8.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_FLD_MAKE_OR_RETRIEVE_CDF">
+<H2>SPP_FLD_MAKE_OR_RETRIEVE_CDF</H2></A>
+<A HREF="#READ_XML8">[Previous Routine]</A>
+<A HREF="#SPP_FLD_STATUSPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ This program is outdated, and in nearly every case it is simpler and easier
+ to use 'spp_fld_load' (or, equivalently, 'psp_fld_load') instead.
+
+ Kept around for backward compatibility with some old routines.
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2023-09-25 14:01:58 -0700 (Mon, 25 Sep 2023) $
+ $LastChangedRevision: 32125 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_make_or_retrieve_cdf.pro $
+
+</PRE><P>
+<STRONG>(See <A href="util/spp_fld_make_or_retrieve_cdf.pro">projects/SPP/fields/util/spp_fld_make_or_retrieve_cdf.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPP_FLD_STATUSPLOT">
 <H2>SPP_FLD_STATUSPLOT</H2></A>
-<A HREF="#READ_XML8">[Previous Routine]</A>
+<A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">[Previous Routine]</A>
 <A HREF="#STR_CLEAN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

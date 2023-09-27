@@ -342,9 +342,9 @@ options,'th'+probe+'_peim_density',colors=0
 
 if tnames('den_mom') then begin
 
-options,'den_mom','ytitle','Density'
+   options,'den_mom','ytitle','Density'
 
-thm_set_lim,'den_mom',times[0],times[1],0,200,1
+   thm_set_lim,'den_mom',times[0],times[1],1.0e-3,100.0,1
 
 endif else begin
    
@@ -402,7 +402,7 @@ if tnames('th'+probe+'_peir_magt3') && $
 
    options,'Tieperpara',ytitle='magt3!C[eV]'
 
-   thm_set_lim,'Tieperpara',times[0],times[1],-1*!VALUES.D_INFINITY,!VALUES.D_INFINITY,1
+   thm_set_lim,'Tieperpara',times[0],times[1],0.1, 9999.0,1
 
 endif else begin
 
@@ -656,12 +656,12 @@ thm_set_lim,fgs_name+'+t',times[0],times[1],-100D,100D,0
 
 thm_set_lim,fgs_name+'-t89',times[0],times[1],-100D,100D,0
 
-thm_set_lim,'den_mom',times[0],times[1],0,200,1
+thm_set_lim,'den_mom',times[0],times[1],1.0e-3,100.0,1
 
-thm_set_lim,'Tieperpara',times[0],times[1],-1*!VALUES.D_INFINITY,!VALUES.D_INFINITY,1
-thm_set_lim,pei_vel_name+'+t',times[0],times[1],-1500D,1500D
+thm_set_lim,'Tieperpara',times[0],times[1],0.1, 9999.0,1
+thm_set_lim,pei_vel_name+'+t',times[0],times[1],-1500D,1500D, 0
 
-thm_set_lim,pee_vel_name+'+t',times[0],times[1],-1500D,1500D
+thm_set_lim,pee_vel_name+'+t',times[0],times[1],-1500D,1500D, 0
 
 thm_set_lim,'pressure_vars',times[0],times[1],0D,50D,1
 
@@ -703,10 +703,10 @@ if keyword_set(makepng) then begin
 ;Set limits for this time period
     thm_set_lim, fgs_name+'+t', tr0[0], tr0[1], -100D, 100D, 0
     thm_set_lim, fgs_name+'-t89', tr0[0], tr0[1], -100D, 100D, 0
-    thm_set_lim, 'den_mom', tr0[0], tr0[1], 0, 200, 1
-    thm_set_lim, 'Tieperpara', tr0[0], tr0[1], -1*!VALUES.D_INFINITY, !VALUES.D_INFINITY, 1
-    thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D
-    thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D
+    thm_set_lim, 'den_mom', tr0[0], tr0[1], 1.0e-3, 100.0, 1
+    thm_set_lim, 'Tieperpara', tr0[0], tr0[1], 0.1, 9999.0, 1
+    thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
+    thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
     thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0D, 50D, 1
     tplot, trange = tr0
     makepng, dir+'th'+probe+'_l2_moms_'+ymd+'_'+hshf, /no_expose
@@ -720,10 +720,10 @@ if keyword_set(makepng) then begin
 ;Set limits for this time period
     thm_set_lim, fgs_name+'+t', tr0[0], tr0[1], -100D, 100D, 0
     thm_set_lim, fgs_name+'-t89', tr0[0], tr0[1], -100D, 100D, 0
-    thm_set_lim, 'den_mom', tr0[0], tr0[1], 0, 200, 1
-    thm_set_lim, 'Tieperpara', tr0[0], tr0[1], -1*!VALUES.D_INFINITY, !VALUES.D_INFINITY, 1
-    thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D
-    thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D
+    thm_set_lim, 'den_mom', tr0[0], tr0[1], 1.0e-3, 100.0, 1
+    thm_set_lim, 'Tieperpara', tr0[0], tr0[1], 0.1, 9999.0, 1
+    thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
+    thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
     thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0D, 50D, 1
     tplot, trange = tr0
     makepng, dir+'th'+probe+'_l2_moms_'+ymd+'_'+hshf, /no_expose

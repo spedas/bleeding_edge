@@ -24,8 +24,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
-; $LastChangedRevision: 30691 $
+; $LastChangedDate: 2023-09-25 22:41:22 -0700 (Mon, 25 Sep 2023) $
+; $LastChangedRevision: 32131 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_overview_plot.pro $
 ;-
 
@@ -53,6 +53,7 @@ pro goesr_overview_plot, date = date, probe = probe_in, directory = directory, d
   if undefined(date) then overviewdate = '2021-02-01' else overviewdate = time_string(date)
   if undefined(duration) then duration = 1 ; days
   if undefined(oplot_calls) then suffix = '' else suffix = strcompress('_op'+string(oplot_calls[0]), /rem)
+  createpngfiles = 1
 
   timespan, overviewdate, duration, /day
   time = time_struct(overviewdate)
@@ -123,27 +124,40 @@ pro goesr_overview_plot, date = date, probe = probe_in, directory = directory, d
   ; Panel 3: igrf_delta, magnetic field components subtracted from IGRF
   panel_3 = prefix+'_delta_b_sm'+suffix
 
-  ; Load the ephemeris data in GEI coordinates.
-  ephem = goes_load_pos(trange = time_string(tr), probe = probe, coord_sys='geij2000')
-  if is_struct(ephem) then begin
-    ; store the data attributes structure
-    data_att = {project: 'GOES', observatory: (strsplit(prefix,'_', /extra))[0], $
-      instrument: 'ephem', units: 'km', coord_sys: 'gei', st_type: 'pos'}
-    dlimits = {data_att: data_att, colors: [2,4,6], labels: ['x','y','z']+'_gei', ysubtitle: '[km]'}
-    store_data, prefix + '_pos_gei' + suffix, data={x: ephem.time, y: ephem.pos_values}, dlimits=dlimits
+  ; Load locations in GEO (lat, lon, r)
+  goesloc = prefix + '_orbit_llr_geo' + suffix
+  goesgeo = prefix + '_pos_geo' + suffix
+  goesgei = prefix + '_pos_gei' + suffix
+  goesgse = prefix + '_pos_gse' + suffix
+  goesgsm = prefix + '_pos_gsm' + suffix
+  goessm = prefix + '_pos_sm' + suffix
+  goesmlt = prefix + '_pos_mlt' + suffix
+
+  get_data, goesloc, data=d_loc, dl=dl_loc
+  if is_struct(d_loc) then begin
+    get_data, magtotal, data=d_b_total ;use this to find NaN values
+    idx = where(~finite(d_b_total.y), countnan)
+    if countnan gt 0 then begin
+      d_loc.y[idx, *] = !VALUES.F_NAN
+    endif
+
+    sphere_to_cart,d_loc.y[*, 2]/1000., d_loc.y[*, 0],d_loc.y[*, 1], x, y, z,vec = vec0
+    store_data, goesgeo, data={x:d_loc.x, y:[vec0]}, dl=dl_loc
+    options, goesgeo, 'ysubtitle', '[km]', /def
+    options, goesgeo, 'data_att.units', 'km', /def
+    options, goesgeo, 'data_att.COORD_SYS', 'geo', /def
+    cotrans, goesgeo, goesgei, /GEO2GEI
+    cotrans, goesgei, goesgse, /GEI2GSE
+    cotrans, goesgse, goesgsm, /GSE2GSM
+    cotrans, goesgsm, goessm, /GSM2SM
   endif else begin
-    dprint, dlevel=1, 'Error loading ephemeris data. No data returned from goes_load_pos()'
-    filler=fltarr(2,3)
-    filler[*,*]=float('NaN')
-    store_data,prefix + '_pos_gei' + suffix,data={x:time_double(overviewdate)+findgen(2),y:filler}
+    dprint, 'No lacation data found. No png files will be created.'
+    createpngfiles=0  ; if there is no location data, do not create png files
   endelse
 
-  if tnames(magfield) ne '' && igp_test() eq 1 then begin
+  if tnames(goesgsm) ne '' && igp_test() eq 1 then begin
 
-    cotrans, prefix+'_pos_gei'+suffix, prefix+'_pos_gse'+suffix, /GEI2GSE
-    cotrans, prefix+'_pos_gse'+suffix, prefix+'_pos_gsm'+suffix, /GSE2GSM
-
-    get_data, prefix+'_pos_gsm'+suffix, data=pos_data
+    get_data, goesgsm, data=pos_data
 
     igrf_bx = fltarr(n_elements(pos_data.y[*,0]))
     igrf_by = fltarr(n_elements(pos_data.y[*,1]))
@@ -209,8 +223,8 @@ pro goesr_overview_plot, date = date, probe = probe_in, directory = directory, d
   goesr_load_data, datatype='mpsh', probes = probe, suffix = suffix
 
   panel_4a = prefix+'_AvgDiffProtonFlux'+suffix + '_0'
-  get_data, panel_4a, data=d
-  if ~is_struct(d) then begin
+  get_data, panel_4a, data=d_4a
+  if ~is_struct(d_4a) then begin
     filler=fltarr(2,11)
     filler[*,*]=float('NaN')
     store_data,panel_4a,data={x:time_double(overviewdate)+findgen(2),y:filler}
@@ -317,41 +331,37 @@ pro goesr_overview_plot, date = date, probe = probe_in, directory = directory, d
     gprefix = 'goes' + probe
     outnames = gprefix + '_pos_gsm_' + ['x', 'y', 'z']
     outnamesi = gprefix + '_pos_gsm_' + ['z', 'y', 'x'] ; tplot needs inverse order from tplot_gui
-    goesr_load_data, datatype = 'mag', probes = probe, suffix = suffix
-    get_data, gprefix+'_b_total'+suffix, data=d_b_total ;use this to find NaN values
-    get_data, gprefix+'_orbit_llr_geo' + suffix, data=d_geo, dl=dl_geo, limits=l_geo
-    if is_struct(d_geo) && is_struct(d_b_total) then begin
-      idx = where(~finite(d_b_total.y), countnan)
-      if countnan gt 0 then begin
-        d_geo.y[idx, *] = !VALUES.F_NAN
-      endif
-      lat = d_geo.y[*, 0]
-      lon = d_geo.y[*, 1]
-      r = d_geo.y[*, 2]/6371000.2
-      xx = r * cos(lat) * cos(lon)
-      yy = r * cos(lat) * sin(lon)
-      zz = r * sin(lat)
-      loc_geo = gprefix + '_location' + suffix
-      loc_gsm = loc_geo + '_gsm'
 
-      store_data, loc_geo, data={x:d_geo.x, y:[[xx], [yy], [zz]]}, dlimits=dl
-      thm_cotrans, loc_geo, in_coord='geo', out_suf='_gsm', out_coord='gsm'
-      get_data, loc_gsm, data=tmp_gsm
+    ; Split GSM x, y, z
+    get_data, goesgsm, data=tmp_gsm
+    if is_struct(tmp_gsm) then begin
+      data_att = {project:'GOES', observatory:'g'+probe, instrument:'mag', units:'RE', coord_sys:'gsm', st_type:'pos'}
+      dlimits = {data_att: data_att, colors: [2,4,6], labels: ['x','y','z']+'_gsm', ytitle:'GSM'}
+      store_data, outnames[0], data={x:tmp_gsm.x, y:tmp_gsm.y[*,0]/earth_radius}, dlimits=dlimits
+      options, outnames[0], ytitle='X-GSM', /add
+      store_data, outnames[1], data={x:tmp_gsm.x, y:tmp_gsm.y[*,1]/earth_radius}, dlimits=dlimits
+      options, outnames[1], ytitle='Y-GSM', /add
+      store_data, outnames[2], data={x:tmp_gsm.x, y:tmp_gsm.y[*,2]/earth_radius}, dlimits=dlimits
+      options, outnames[2], ytitle='Z-GSM', /add
+      time_clip, outnames, tr[0], tr[1], replace=1, error=error
+    endif else begin
+      dprint,'No GSM position data found'
+    endelse
 
-      if is_struct(tmp_gsm) then begin
-        data_att = {project:'GOES', observatory:'g'+probe, instrument:'mag', units:'km', coord_sys:'gsm', st_type:'pos'}
-        dlimits = {data_att: data_att, colors: [2,4,6], labels: ['x','y','z']+'_gsm', ytitle:'GSM'}
-        store_data, outnames[0], data={x:tmp_gsm.x, y:tmp_gsm.y[*,0]}, dlimits=dlimits
-        options, outnames[0], ytitle='X-GSM', /add
-        store_data, outnames[1], data={x:tmp_gsm.x, y:tmp_gsm.y[*,1]}, dlimits=dlimits
-        options, outnames[1], ytitle='Y-GSM', /add
-        store_data, outnames[2], data={x:tmp_gsm.x, y:tmp_gsm.y[*,2]}, dlimits=dlimits
-        options, outnames[2], ytitle='Z-GSM', /add
-        time_clip, outnames, tr[0], tr[1], replace=1, error=error      
-      endif else begin
-        dprint,'No GSM position data found'
-      endelse
-    end
+    ; MLT
+    get_data, goessm, data=goes_pos_sm
+    if is_struct(goes_pos_sm) then begin
+      mlt_values = sm2mlt(goes_pos_sm.y[*, 0], goes_pos_sm.y[*, 1], goes_pos_sm.y[*, 2])
+      store_data, goesmlt, data={x: goes_pos_sm.X, y: mlt_values}
+      options, goesmlt, ytitle='MLT'
+
+      outnames = [outnames, goesmlt]
+      outnamesi = [goesmlt, outnamesi]
+    endif else begin
+      dprint,'No SM position data found'
+    endelse
+
+
   end
 
   ;=============================================================================
@@ -365,7 +375,7 @@ pro goesr_overview_plot, date = date, probe = probe_in, directory = directory, d
   loadct2,43
   !p.charsize=0.8
 
-  tplot_options, 'title', 'GOES-'+probe+' Overview ('+overviewdate+')'
+  tplot_options, 'title', 'GOES-'+probe
 
   if undefined(gui_overplot) then begin
     if ~undefined(device) then begin
@@ -374,7 +384,9 @@ pro goesr_overview_plot, date = date, probe = probe_in, directory = directory, d
       window, 1, xsize=window_xsize, ysize=window_ysize
       tplot, all_panels, window=1, var_label=outnamesi
     endelse
-    if keyword_set(makepng) then begin
+    if createpngfiles eq 1  and keyword_set(makepng) then begin
+      ; Does not create png files if there is no location data loaded
+      ; This prevents the creation of empty summary plot files
       thm_gen_multipngplot, 'goes_goes'+probe, overviewdate, directory = dir, /mkdir
     endif
   endif else begin

@@ -44,8 +44,8 @@
 ;  This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 ;
 ;$LastChangedBy: jimm $
-;$LastChangedDate: 2020-11-24 11:07:28 -0800 (Tue, 24 Nov 2020) $
-;$LastChangedRevision: 29387 $
+;$LastChangedDate: 2023-09-25 13:55:05 -0700 (Mon, 25 Sep 2023) $
+;$LastChangedRevision: 32123 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -582,8 +582,15 @@ no_npot:
     options, name1, 'ytitle', 'Ne!C[1/cc]'
     options, name1, 'ysubtitle', ''
     ok_esae_moms[j] = 1
+;For THE, post 2022-09-22, calculate calculate n_opt using 'peem'
+;data, and EESa data
+    IF(sc Eq 'e' AND time_double(date) Gt time_double('2022-09-22')) THEN BEGIN
+       thm_scpot2dens_opt_n, probe = sc, datatype_esa = 'peem'
+       stop
+    ENDIF ELSE BEGIN
 ;Npot calculation, 2009-10-12, jmm
-    thm_scpot2dens_opt_n, probe = sc, /no_data_load, datatype_esa = 'pee'+mtyp[j]
+       thm_scpot2dens_opt_n, probe = sc, /no_data_load, datatype_esa = 'pee'+mtyp[j]
+    ENDELSE
 ;degap after npot calculation
     tdegap, name1, /overwrite, dt = 600.0
     name1x = tnames(etest+'_density_npot')
@@ -654,14 +661,16 @@ no_npot:
     options, Ne_kluge_name, 'labflag', 1
   Endelse
 ; Set plot limits here, 2018-03-06, jmm
-  get_data, itest+'_density', data=di0 ;ions
-  if is_struct(di0) then begin
-     nmaxi = max(di0.y, /nan) < 1.0e8
-     undefine, di0
-     ylim, itest+'_density', 0.001, nmax, 1
-  endif else nmaxi = -1.0
-  nmaxe = max(dummy, /nan) < 1.0e8
-  nmax = max([nmaxi, nmaxe])
+;  get_data, itest+'_density', data=di0 ;ions
+;  if is_struct(di0) then begin
+;     nmaxi = max(di0.y, /nan) < 1.0e8
+;     undefine, di0
+;     ylim, itest+'_density', 0.001, nmax, 1
+;  endif else nmaxi = -1.0
+;Set plot limit max to 1.0e2
+;  nmaxe = max(dummy, /nan) < 1.0e8
+;  nmax = max([nmaxi, nmaxe])
+  nmax = 1.0e2
   options, Ne_kluge_name, 'yrange', [0.001, nmax]
   options, Ne_kluge_name, 'ylog', 1
   store_data, thx+'_Nie'+mtyp[j], data = [itest+'_density', Ne_kluge_name]

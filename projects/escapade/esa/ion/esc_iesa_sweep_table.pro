@@ -3,8 +3,8 @@
 ; ESC_IESA_SWEEP_TABLE
 ;
 ; $LastChangedBy: rlivi04 $
-; $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $
-; $LastChangedRevision: 32111 $
+; $LastChangedDate: 2023-09-24 14:07:32 -0700 (Sun, 24 Sep 2023) $
+; $LastChangedRevision: 32119 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro $
 ;
 ;-
@@ -150,8 +150,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $'
-      printf, 1, '# Revision: $LastChangedRevision: 32111 $'
+      printf, 1, '# Date:     $LastChangedDate: 2023-09-24 14:07:32 -0700 (Sun, 24 Sep 2023) $'
+      printf, 1, '# Revision: $LastChangedRevision: 32119 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -206,8 +206,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $'
-      printf, 1, '# Revision: $LastChangedRevision: 32111 $'
+      printf, 1, '# Date:     $LastChangedDate: 2023-09-24 14:07:32 -0700 (Sun, 24 Sep 2023) $'
+      printf, 1, '# Revision: $LastChangedRevision: 32119 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -247,7 +247,7 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       ENDFOR
 
       close, 1
-      
+
    ENDIF
 
 
@@ -260,8 +260,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2023-09-20 13:18:10 -0700 (Wed, 20 Sep 2023) $'
-      printf, 1, '# Revision: $LastChangedRevision: 32111 $'
+      printf, 1, '# Date:     $LastChangedDate: 2023-09-24 14:07:32 -0700 (Sun, 24 Sep 2023) $'
+      printf, 1, '# Revision: $LastChangedRevision: 32119 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -493,7 +493,7 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    ;;###############
    ;;### Spoiler ###
    ;;###############
-      
+   
    spl_rat = spl_ratio < ((4.*spl_gain) / hem_volts)
    spl_ind = where(hem_volts GT (spl_max_en/k))
    spl_rat[spl_ind] = 0.
@@ -503,8 +503,6 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    ;; ### Spoiler Science Products ###
    sci_spl_rat = mean(reform(spl_rat,mbins,tot_bins/mbins),dim=1)
 
-
-   
    ;; ################
    ;; ### Checksum ###
    ;; ################
@@ -700,7 +698,7 @@ PRO esc_iesa_sweep_table, tables
    dmax =  15.
    spl_ratio = 0.25
    title = 'esc_iesa_cal_table_7'
-   note = 'Calibration Table 7: 1eV - 15eV - -45 to 45 - 0.25 SPL Ratio'
+   note = 'Calibration Table 7: 1eV - 15eV - -15 to 15 - 0.25 SPL Ratio'
    esc_iesa_sweep_table_generate, tc7, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
    ;; EESA-i Calibration Table 8 --- Energies 1eV - 15eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
@@ -710,7 +708,7 @@ PRO esc_iesa_sweep_table, tables
    dmax =  15.
    spl_ratio = 0.50
    title = 'esc_iesa_cal_table_8'
-   note = 'Calibration Table 8: 1eV - 15eV - -45 to 45 - 0.50 SPL Ratio'
+   note = 'Calibration Table 8: 1eV - 15eV - -15 to 15 - 0.50 SPL Ratio'
    esc_iesa_sweep_table_generate, tc8, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
    ;; EESA-i Calibration Table 9 --- Energies 1eV - 15eV --- Deflections -15 - 15 --- Spoiler Ratio 0.75
@@ -720,7 +718,7 @@ PRO esc_iesa_sweep_table, tables
    dmax =  15.
    spl_ratio = 0.75
    title = 'esc_iesa_cal_table_9'
-   note = 'Calibration Table 9: 1eV - 15eV - -45 to 45 - 0.75 SPL Ratio'
+   note = 'Calibration Table 9: 1eV - 15eV - -15 to 15 - 0.75 SPL Ratio'
    esc_iesa_sweep_table_generate, tc9, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
    ;; EESA-i Calibration Table 10 - 800eV - 1200eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
@@ -733,25 +731,65 @@ PRO esc_iesa_sweep_table, tables
    note = 'Calibration Table 10: 800eV - 1200eV - -15 to 15 - 0.50 SPL Ratio'
    esc_iesa_sweep_table_generate, tc10, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
    
-   ;; EESA-i Calibration Table 11 - 1600eV - 2400eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
-   emin = 1600.
-   emax = 2400.
+   ;; EESA-i Calibration Table 11 - 1200eV - 2800eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
+   emin = 1200.
+   emax = 2800.
    dmin = -15.
    dmax =  15.
    spl_ratio = 0.50
    title = 'esc_iesa_cal_table_11'
-   note = 'Calibration Table 11: 1600eV - 2400eV - -15 to 15 - 0.50 SPL Ratio'
+   note = 'Calibration Table 11: 1200eV - 2800eV - -15 to 15 - 0.50 SPL Ratio'
    esc_iesa_sweep_table_generate, tc11, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
-   ;; EESA-i Calibration Table 12 - 4000eV - 6000eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
-   emin = 4000.
-   emax = 6000.
+   ;; EESA-i Calibration Table 12 - 2500eV - 7500eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
+   emin = 2500.
+   emax = 7500.
    dmin = -15.
    dmax =  15.
    spl_ratio = 0.50
    title = 'esc_iesa_cal_table_12'
-   note = 'Calibration Table 12: 4000eV - 6000eV - -15 to 15 - 0.50 SPL Ratio'
+   note = 'Calibration Table 12: 2500eV - 7500eV - -15 to 15 - 0.50 SPL Ratio'
    esc_iesa_sweep_table_generate, tc12, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+   
+   ;; EESA-i Calibration Table 13 --- Energies 0.5eV - 15eV --- Deflections -45 - 45 --- Spoiler Ratio 0.50
+   emin = 0.5
+   emax = 15.
+   dmin = -45.
+   dmax =  45.
+   spl_ratio = 0.50
+   title = 'esc_iesa_cal_table_13'
+   note = 'Calibration Table 13: 0.5eV - 15eV - -45 to 45 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc13, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 14 --- Energies 250eV - 750eV --- Deflections -45 - 45 --- Spoiler Ratio 0.50
+   emin = 250.
+   emax = 750.
+   dmin = -45.
+   dmax =  45.
+   spl_ratio = 0.50
+   title = 'esc_iesa_cal_table_14'
+   note = 'Calibration Table 14: 250eV - 750eV - -45 to 45 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc14, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 15 --- Energies 250eV - 750eV --- Deflections -45 - 45 --- Spoiler Ratio 0.75
+   emin = 250.
+   emax = 750.
+   dmin = -45.
+   dmax =  45.
+   spl_ratio = 0.75
+   title = 'esc_iesa_cal_table_15'
+   note = 'Calibration Table 15: 250eV - 750eV - -45 to 45 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc15, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
+
+   ;; EESA-i Calibration Table 16 - 600eV - 1400eV --- Deflections -15 - 15 --- Spoiler Ratio 0.50
+   emin =  600.
+   emax = 1400.
+   dmin = -15.
+   dmax =  15.
+   spl_ratio = 0.50
+   title = 'esc_iesa_cal_table_16'
+   note = 'Calibration Table 16: 600eV - 1400eV - -15 to 15 - 0.50 SPL Ratio'
+   esc_iesa_sweep_table_generate, tc16, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
    
    
    ;; Test Checksum Calculator   
