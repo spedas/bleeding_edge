@@ -1,0 +1,108 @@
+name: Mirror SPEDAS bleeding_edge
+
+on:
+  schedule:
+    # Runs daily at 02:17 America/Los_Angeles (09:17 UTC). Adjust as desired.
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Override bleeding_edge.zip URL (optional)"
+        required: false
+        type: string
+
+# Let this workflow push commits
+permissions:
+  contents: write
+
+concurrency:
+  group: mirror-bleeding-edge
+  cancel-in-progress: false
+
+env:
+  # Change if your default branch is not 'main'
+  TARGET_BRANCH: main
+  # Prefer a manual 'url' input; otherwise use repo variable BLEEDING_URL
+  BLEEDING_URL: ${{ github.event.inputs.url || vars.BLEEDING_URL }}
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check required config
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${BLEEDING_URL:-}" ]]; then
+            echo "ERROR: BLEEDING_URL not set. Define it as a repo variable or pass via workflow_dispatch input."
+            exit 1
+          fi
+          echo "BLEEDING_URL=${BLEEDING_URL}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Ensure we're on the branch we want to update
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+
+      - name: Sync bleeding_edge.zip into repo and push
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Create a temp workspace
+          WORK="$(mktemp -d)"
+          echo "Working dir: $WORK"
+
+          echo "Downloading $BLEEDING_URL ..."
+          curl -fL "$BLEEDING_URL" -o "$WORK/bleeding_edge.zip"
+
+          echo "Unzipping ..."
+          unzip -q "$WORK/bleeding_edge.zip" -d "$WORK/extracted"
+
+          # If the zip contains a single top-level folder, use its contents;
+          # otherwise use the extraction root.
+          shopt -s dotglob nullglob
+          entries=("$WORK/extracted"/*)
+          if [[ ${#entries[@]} -eq 1 && -d "${entries[0]}" ]]; then
+            SRC="${entries[0]}"
+          else
+            SRC="$WORK/extracted"
+          fi
+          echo "Source to mirror: $SRC"
+
+          # Mirror contents into repo root while preserving repo infrastructure.
+          # Tweak the --exclude list if you want to keep additional files.
+          echo "Rsync to repo root ..."
+          rsync -a --delete \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "README.md" \
+            --exclude "LICENSE" \
+            --exclude ".gitattributes" \
+            --exclude ".gitignore" \
+            "$SRC"/ ./ 
+
+          echo "Git status after sync:"
+          git status --porcelain || true
+
+          # Commit and push only if there are changes
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Changes detected; preparing commit."
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git add -A
+
+            SHA="$(sha256sum "$WORK/bleeding_edge.zip" | awk '{print $1}')"
+            MSG="Mirror SPEDAS bleeding_edge.zip (${SHA:0:12}) on $(date -u +'%Y-%m-%d %H:%M:%SZ')"
+            git commit -m "$MSG" -m "Source: $BLEEDING_URL"
+
+            # Push to the target branch
+            git push origin "${TARGET_BRANCH}"
+            echo "Pushed updates to ${TARGET_BRANCH}."
+          else
+            echo "No changes; nothing to commit."
+          fi
