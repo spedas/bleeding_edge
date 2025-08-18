@@ -79,8 +79,6 @@ jobs:
           rsync -a --delete \
             --exclude ".git/" \
             --exclude ".github/" \
-            --exclude "README.md" \
-            --exclude "LICENSE" \
             --exclude ".gitattributes" \
             --exclude ".gitignore" \
             "$SRC"/ ./ 
