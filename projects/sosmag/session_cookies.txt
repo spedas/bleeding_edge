@@ -1,7 +1,0 @@
-Verbose: Header In:   Location: http://swe.ssa.esa.int/login/openam
-Verbose: Header In:   Location: https://swe.ssa.esa.int/login/openam
-Verbose: Header In:   Location: https://sso.ssa.esa.int/am/oauth2/authorize?client_id=swep_hapi_oauth&redirect_uri=http://swe.ssa.esa.int/login/openam&response_type=code&scope=openid%20profile&state=Gb7mRf
-Verbose: Header In:   Location: http://swe.ssa.esa.int/login/openam?code=7d2c8fea-4a52-4a35-ad0e-349300339330&scope=openid%20profile&state=Gb7mRf
-Verbose: Header In:   Location: https://swe.ssa.esa.int/login/openam?code=7d2c8fea-4a52-4a35-ad0e-349300339330&scope=openid%20profile&state=Gb7mRf
-Verbose: Header In:   Location: http://swe.ssa.esa.int/hapi/capabilities
-Verbose: Header In:   Location: https://swe.ssa.esa.int/hapi/capabilities

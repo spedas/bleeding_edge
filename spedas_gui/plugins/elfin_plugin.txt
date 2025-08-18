@@ -1,2 +1,0 @@
-project: ELFIN
-load_data: elf_ui_load_data

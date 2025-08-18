@@ -1,0 +1,18 @@
+;-----------------
+; Magnetic Field
+;-----------------
+mms*_dfg_srvy_gsm_dmpa; Bx, By, Bz
+mms*_dfg_srvy_gsm_dmpa_btot; |B|
+
+;----------------------------------
+; Density, Velocity
+;----------------------------------
+mms*_fpi_density; ... FPI
+mms*_fpi_ion_vel_dbcs;... FPI
+
+
+;--------------------
+; Spectrograms
+;--------------------
+mms*_fpi_ions ;.............. FPI
+

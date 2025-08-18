@@ -1,0 +1,32 @@
+;-----------------
+; Magnetic Field
+;-----------------
+;mmsw_dfg_srvy_gsm_dmpa_m; |B|
+mmsw_dfg_srvy_gsm_dmpa_x
+mmsw_dfg_srvy_gsm_dmpa_y
+mmsw_dfg_srvy_gsm_dmpa_z
+
+
+;----------------------------------
+; Density
+;----------------------------------
+;mmsw_fpi_density_e
+mmsw_fpi_density_i
+
+;----------------------------------
+; Velocity
+;----------------------------------
+;mmsw_fpi_ion_vel_dbcs_m; |V|
+mmsw_fpi_ion_vel_dbcs_x
+mmsw_fpi_ion_vel_dbcs_y
+mmsw_fpi_ion_vel_dbcs_z
+
+;--------------------
+; SITL
+;--------------------
+mms*_sroi; Science ROIs
+mms_stlm_fomstr; FOM (current) (being modified by a SITL)
+mms*_stlm_fomstr; FOM for individual spacecraft
+mms_stlm_fomstr_copy; FOM (temporary selections for comparison with FOM (current))
+;mms_soca_bakstr; BAK (SITL) (Latest BDM status after SITL modification)
+mms_stlm_bakstr; BAK (current) (being modified by a super-SITL)
