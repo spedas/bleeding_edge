@@ -21,7 +21,7 @@ concurrency:
 
 env:
   # Change if your default branch is not 'main'
-  TARGET_BRANCH: main
+  TARGET_BRANCH: master
   # Prefer a manual 'url' input; otherwise use repo variable BLEEDING_URL
   BLEEDING_URL: ${{ github.event.inputs.url || vars.BLEEDING_URL }}
 
