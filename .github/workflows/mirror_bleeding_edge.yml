@@ -83,10 +83,17 @@ jobs:
             --exclude "/LICENSE.txt" \
             --exclude ".gitattributes" \
             --exclude ".gitignore" \
-            "$SRC"/ ./ 
+            "$SRC"/ ./ || rc=$?
+          if [[ ${rc:-0} -ne 0 && ${rc} -ne 24 ]]; then
+            echo "rsync failed with code $rc"
+            exit $rc
+          fi
 
-          echo "Git status after sync:"
-          git status --porcelain || true
+          # Detect changes and exit successfully if none
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "No changes; exiting successfully."
+            exit 0
+          fi
 
           # Commit and push only if there are changes
           if [[ -n "$(git status --porcelain)" ]]; then
