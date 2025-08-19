@@ -112,4 +112,5 @@ jobs:
             echo "Pushed updates to ${TARGET_BRANCH}."
           else
             echo "No changes; nothing to commit."
+            exit 0
           fi
