@@ -80,7 +80,7 @@ jobs:
             --exclude ".git/" \
             --exclude ".github/" \
             --exclude "/README.md" \
-            --exclude "/LICENSE" \
+            --exclude "/LICENSE.txt" \
             --exclude ".gitattributes" \
             --exclude ".gitignore" \
             "$SRC"/ ./ 
