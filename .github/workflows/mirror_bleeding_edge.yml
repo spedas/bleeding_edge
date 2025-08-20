@@ -2,8 +2,8 @@ name: Mirror SPEDAS bleeding_edge
 
 on:
   schedule:
-    # Runs daily at 02:17 America/Los_Angeles (09:17 UTC). Adjust as desired.
-    - cron: "17 9 * * *"
+    # Runs every Monday at 02:17 America/Los_Angeles (09:17 UTC). Adjust as desired.
+    - cron: "17 9 * * 1"
   workflow_dispatch:
     inputs:
       url:
