@@ -43,8 +43,8 @@
 ;                      then no data are returned.  Default = 4 sec.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-08-17 14:32:49 -0700 (Sun, 17 Aug 2025) $
-; $LastChangedRevision: 33550 $
+; $LastChangedDate: 2025-08-25 13:35:48 -0700 (Mon, 25 Aug 2025) $
+; $LastChangedRevision: 33574 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getspec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -55,8 +55,8 @@ function mvn_swe_getspec, timein, archive=archive, sum=sum, units=units, yrange=
 
   @mvn_swe_com  
 
-  time = time_double(timein)
-  npts = n_elements(time)
+  npts = n_elements(timein)
+  if (npts gt 0L) then time = time_double(timein)
   archive = keyword_set(archive) or keyword_set(burst)
   qlevel = n_elements(qlevel) gt 0L ? byte(qlevel[0]) < 2B : 0B
   maxdt = n_elements(maxdt) gt 0L ? double(maxdt[0]) : 4D
