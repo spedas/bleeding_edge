@@ -3,9 +3,9 @@
 
 ; filename = 'SWFO_STIS_ioncal__combined_l0b.nc'
 ; filename = 'stis_e2e4_rfr_realtime_30min_combined_l0b.nc'
-filename = 'SWFO_STIS_xray_combined_l0b_decimation_factor_bits_2_3_5_6.nc'
+; filename = 'SWFO_STIS_xray_combined_l0b_decimation_factor_bits_2_3_5_6.nc'
 ; filename = 'SWFO_STIS_xray_combined_l0b_decimation_factor_bits_6_5_3_2.nc'
-; filename = 'STIS_L0B_SSL_Xray_upd.nc'
+filename = 'STIS_L0B_SSL_Xray_upd.nc'
 ; filename = 'STIS_L0B_SSL_iongun_upd.nc'
 l0b = swfo_ncdf_read(filenames=filename, force_recdim=0)
 l1a =   swfo_stis_sci_level_1a(l0b)
@@ -45,5 +45,25 @@ tplot, ['swfo_stis_l1b_eta', 'swfo_stis_elec_Ch1_flux',$
         'swfo_stis_elec_Ch3_flux', 'swfo_stis_elec_hdr_flux',$
         'quality_bits']
 ; stop
+
+store_data, 'swfo_stis_ion_elec_ratio', data={x: l1b.time_unix, y: l1b.ion_elec_ratio}
+
+store_data, 'swfo_stis_ion_pixel_ratio', data={x: l1b.time_unix, y: l1b.ion_pixel_ratio} 
+store_data, 'swfo_stis_elec_pixel_ratio', data={x: l1b.time_unix, y: l1b.elec_pixel_ratio}
+store_data, 'swfo_stis_ion_pixel_ratio_error', data={x: l1b.time_unix, y: l1b.ion_pixel_ratio_error} 
+store_data, 'swfo_stis_elec_pixel_ratio_error', data={x: l1b.time_unix, y: l1b.elec_pixel_ratio_error}
+
+store_data, 'swfo_stis_pixel_ratio', data=['swfo_stis_ion_pixel_ratio', 'swfo_stis_elec_pixel_ratio']
+options, 'swfo_stis_pixel_ratio', labflag=1, labels=['ion', 'elec'], colors='rb'
+
+store_data, 'swfo_stis_pixel_ratio_error', data=['swfo_stis_ion_pixel_ratio_error', 'swfo_stis_elec_pixel_ratio_error']
+options, 'swfo_stis_pixel_ratio_error', labflag=1, labels=['ion', 'elec'], colors='rb'
+
+tplot, ['swfo_stis_l1b_eta',$
+        'swfo_stis_elec_Ch1_flux', 'swfo_stis_elec_Ch3_flux', 'swfo_stis_elec_hdr_flux',$
+        'swfo_stis_ion_Ch1_flux', 'swfo_stis_ion_Ch3_flux', 'swfo_stis_ion_hdr_flux',$
+        'quality_bits', 'swfo_stis_pixel_ratio', 'swfo_stis_pixel_ratio_error']
+
+ylim, 'swfo_stis_pixel_ratio', 0, 0.05
 
 end

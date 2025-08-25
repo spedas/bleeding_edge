@@ -53,9 +53,9 @@
 ;
 ;CREATED BY:    Davin Larson  Oct 1996
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-10-17 12:47:15 -0700 (Wed, 17 Oct 2018) $
-; $LastChangedRevision: 25991 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_struct.pro $
 ;-
 function time_struct,time,epoch=epoch,no_clean=no_clean,$

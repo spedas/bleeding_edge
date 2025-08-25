@@ -7,8 +7,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2022-03-04 11:48:01 -0800 (Fri, 04 Mar 2022) $
-;$LastChangedRevision: 30648 $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_mva.pro $
 ;
 ;----------------------------------------------

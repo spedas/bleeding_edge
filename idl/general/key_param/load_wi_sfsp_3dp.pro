@@ -16,9 +16,9 @@
 ;  "make_cdf_index","loadcdf","loadcdfstr","loadallcdf"
 ;
 ;CREATED BY:	Davin Larson
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2017-03-10 14:53:59 -0800 (Fri, 10 Mar 2017) $
-; $LastChangedRevision: 22941 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/key_param/load_wi_sfsp_3dp.pro $
 ;-
 pro load_wi_sfsp_3dp $

@@ -74,9 +74,9 @@
 ;       Yuki Harada on 2014-05-26
 ;       Modified from 'thm_esa_slice2d' written by Arjun Raj & Xuzhi Zhou
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-01-02 15:04:01 -0800 (Tue, 02 Jan 2018) $
-; $LastChangedRevision: 24474 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/slice2d.pro $
 ;-
 

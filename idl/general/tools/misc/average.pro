@@ -10,9 +10,9 @@
 ;
 ;Notes:
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2017-05-01 12:37:30 -0700 (Mon, 01 May 2017) $
-; $LastChangedRevision: 23254 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/average.pro $
 ;-
 function average,x,d,nan=nan,stdev=s,do_stdev=do_stdev $

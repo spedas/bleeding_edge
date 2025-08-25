@@ -37,9 +37,9 @@
 ;                 time_clip,'thb_peem_velocity','thb_fgs_gsm',thb_fgs_gsm',/tvar
 ;
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time_clip.pro $
 ;-
 

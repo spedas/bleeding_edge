@@ -1,4 +1,4 @@
-;swfo_test
+;swfo_ccsds_l0gpa_read_crib
 ; $LastChangedBy: davin-mac $
 ; $LastChangedDate: 2025-01-17 04:27:14 -0800 (Fri, 17 Jan 2025) $
 ; $LastChangedRevision: 33069 $
@@ -16,7 +16,8 @@ if 1 || ~keyword_set(files) then begin
   
   files = '~/analysis/SWFO_STIS_xray_L0A.bin'
   files = '~/analysis/SWFO_STIS_ioncal_L0A.bin'
-
+  files = 'SWFO_STIS_ioncal_L0A.bin'
+  ; files = 'swfo_stis_ioncal_l0a_2023-07-27T04_00_00_2023-07-27T05_00_00.bin'
   hexprint,files
   
   ;stop
@@ -65,9 +66,9 @@ level_1b_structs =   swfo_stis_sci_level_1b(level_1a_structs)
 
 
 
-level_0b_da.make_ncdf,filename='STIS_L0B_test.nc'
-level_1a_da.make_ncdf,filename='STIS_L1A_test.nc'
-level_1b_da.make_ncdf,filename='STIS_L1B_test.nc'
+; level_0b_da.make_ncdf,filename='STIS_L0B_test.nc'
+; level_1a_da.make_ncdf,filename='STIS_L1A_test.nc'
+; level_1b_da.make_ncdf,filename='STIS_L1B_test.nc'
 
 
 swfo_stis_tplot,'cpt2',/set

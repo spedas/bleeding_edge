@@ -1,7 +1,7 @@
 ;+
-;$LastChangedBy: ali $
-;$LastChangedDate: 2023-03-13 12:37:21 -0700 (Mon, 13 Mar 2023) $
-;$LastChangedRevision: 31623 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/nul_data.pro $
 
 ;PROCEDURE: nul_data

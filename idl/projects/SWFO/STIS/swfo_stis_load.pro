@@ -1,6 +1,6 @@
-;$LastChangedBy: davin-mac $
-;$LastChangedDate: 2024-10-27 01:24:49 -0700 (Sun, 27 Oct 2024) $
-;$LastChangedRevision: 32908 $
+;$LastChangedBy: rjolitz $
+;$LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
+;$LastChangedRevision: 33568 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_load.pro $
 
 pro swfo_stis_load,file_type=file_type,station=station,host=host, ncdf_resolution=ncdf_resolution , $
@@ -283,7 +283,7 @@ pro swfo_stis_load,file_type=file_type,station=station,host=host, ncdf_resolutio
           tplot_options,title='Real Time (PTP)'
           
         endif else begin
-          dprint,dlevel=0, 'Warning:  This file type is Obsolete and the code is not tested;
+          dprint,dlevel=0, 'Warning:  This file type is Obsolete and the code is not tested;'
           if opts.haskey('filenames') then begin
             opts.file_type = 'ptp_file'
             swfo_ptp_file_read,opts.filenames,file_type=opts.file_type  ;,/no_clear

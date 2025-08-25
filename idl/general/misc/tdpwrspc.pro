@@ -31,9 +31,9 @@
 ; 27-mar-2007, jmm, jimm.ssl.berkeley.edu
 ; 10-apr-2007, jmm, fixed 2 bugs wrt structure definition
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2023-04-25 12:00:09 -0700 (Tue, 25 Apr 2023) $
-; $LastChangedRevision: 31797 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tdpwrspc.pro $
 ;-
 Pro tdpwrspc, varname, newname = newname, $

@@ -1,6 +1,6 @@
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-07-21 15:44:21 -0700 (Mon, 21 Jul 2025) $
-; $LastChangedRevision: 33479 $
+; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
+; $LastChangedRevision: 33568 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -200,6 +200,51 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     hdr_elec_flux = swfo_stis_hdr(elec_flux_big, elec_flux_small, $
       eta_smallpixel=eta1_ion, eta_largepixel=eta2_F)
 
+    ; pixel merging anomalous?
+
+    if total(ion_rate_big) gt 1 then begin
+      ion_pixel_ratio = total(ion_rate_small) / total(ion_rate_big)
+      ion_pixel_ratio_error = sqrt(1/total(ion_rate_small) + 1/total(ion_rate_big))
+    endif else begin
+      ion_pixel_ratio = !values.f_nan
+      ion_pixel_ratio_error = !values.f_nan
+    endelse
+
+    if total(elec_rate_big) gt 1 then begin
+      elec_pixel_ratio = total(elec_rate_small) / total(elec_rate_big)
+      elec_pixel_ratio_error = sqrt(1/total(elec_rate_small) + 1/total(elec_rate_big))
+    endif else begin
+      elec_pixel_ratio = !values.f_nan
+      elec_pixel_ratio_error = !values.f_nan
+    endelse
+
+      ; print, 100. * counts_small_ion / counts_big_ion
+    ;   print, counts_big_ion / 100, counts_small_ion, sqrt(counts_small_ion)
+    ;   print, counts_small_ion + sqrt(counts_small_ion), counts_small_ion - sqrt(counts_small_ion)
+    ;   print, counts_small_ion + sqrt(counts_small_ion) - counts_big_ion / 100
+    ;   print, (counts_small_ion + sqrt(counts_small_ion))/(counts_big_ion / 100)
+    ;   stop
+
+    ; endif
+    ; stop
+
+    ; electron contamination?
+    ; only set if likely
+    elec_contam_erange = [50, 200]
+
+    overlap_index = where(F_energy gt elec_contam_erange[0] and F_energy lt elec_contam_erange[1], n_overlap)
+    ; overlap_index = where(O_energy gt elec_contam_erange[0] and O_energy lt elec_contam_erange[1], n_overlap)
+
+
+    if n_overlap gt 0 then begin
+      total_elec_overlap = total(elec_rate_big[overlap_index])
+      total_ion_overlap = total(ion_rate_big[overlap_index])
+
+
+      ion_elec_ratio = total_ion_overlap / total_elec_overlap
+    endif
+
+
     ; ion_energy = bins.energy
     ; w = where(bins.species eq 1,/null)
     ; ion_energy= ion_energy[w]
@@ -229,6 +274,11 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
       Ch1_elec_flux :   elec_flux_small,  $
       Ch3_elec_flux :   elec_flux_big,  $
       hdr_elec_flux:  hdr_elec_flux, $
+      ion_pixel_ratio: ion_pixel_ratio, $
+      elec_pixel_ratio: elec_pixel_ratio, $
+      ion_pixel_ratio_error: ion_pixel_ratio_error, $
+      elec_pixel_ratio_error: elec_pixel_ratio_error, $
+      ion_elec_ratio: ion_elec_ratio, $
       lut_id: 0 }
 
     sci = create_struct(str,sci_ex)

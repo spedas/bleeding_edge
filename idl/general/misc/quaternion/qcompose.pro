@@ -23,9 +23,9 @@
 ;
 ;Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-06-02 10:32:30 -0700 (Fri, 02 Jun 2017) $
-; $LastChangedRevision: 23388 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/qcompose.pro $
 ;-
 

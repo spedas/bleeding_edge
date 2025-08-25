@@ -33,9 +33,9 @@
 ; bin1D,Ygse,[[Ni],[Ti],[Vx],[fx],[Qx],[Eylep]],-15.,15.,1.,kinbin,Ycntrs,avrg,std,med
 ; Niavg=avrg(*,0)&Tiavg=avrg(*,1)&Vxavg=avrg(*,2)&fxavg=avrg(*,3)&Qxavg=avrg(*,4)&Eylepavg=avrg(*,5)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-; $LastChangedRevision: 24506 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/bin1d.pro $
 ;-
 pro bin1D,binarr,arrs2bin,minval,maxval,binwidth,kinbin,bincenters,averages,stdevs,medians,revarr=iinbin,maxvarvec=maxvarvec,minvarvec=minvarvec,flag4nodata=flag4nodata

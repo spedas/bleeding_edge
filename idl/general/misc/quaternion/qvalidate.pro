@@ -25,9 +25,9 @@
 ;Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 ;
 ;
-; $LastChangedBy: pcruce $
-; $LastChangedDate: 2016-10-14 11:01:12 -0700 (Fri, 14 Oct 2016) $
-; $LastChangedRevision: 22098 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/qvalidate.pro $
 ;-
 

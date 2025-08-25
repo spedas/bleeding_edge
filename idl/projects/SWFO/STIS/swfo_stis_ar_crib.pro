@@ -8,8 +8,8 @@ if ~isa(level_0b_da) then begin
   trange = ['23 7 27 4','23 7 27 24']  & station='S2'   ; Calibration with ion gun
   trange = ['2023-7-27 2','2023-7-27 5'] & station='S2' ; Calibration with ion gun with high ion flux and DECIMATION on 
   ;trange = ['23 7 27 17 ','23 7 27 19']  & station='S2'   ; High flux ions from calibration
-  ;trange = ['23 6 1','23 6 1 4']  & station='S0'     ; 1/r^2 test with x-ray source
-   stop
+  trange = ['23 6 1','23 6 1 4']  & station='S0'     ; 1/r^2 test with x-ray source
+   ; stop
 
   ; Keywords for write testing:
   test_ncdf_write = 0

@@ -14,9 +14,9 @@ end
 ;INPUT:
 ;   id:   CDF file ID.
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: ali $
-; $LastChangedDate: 2020-03-04 13:03:28 -0800 (Wed, 04 Mar 2020) $
-; $LastChangedRevision: 28371 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/cdf_info.pro $
 ;-
 

@@ -73,9 +73,9 @@
 ;See also:
 ;   "get_colors","colors_com","bytescale","get_line_colors","line_colors","showct","initct"
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-05-16 16:13:31 -0700 (Tue, 16 May 2023) $
-; $LastChangedRevision: 31864 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/loadct2.pro $
 ;
 ;Created by Davin Larson;  August 1996

@@ -64,9 +64,9 @@
 ; Added twonanpergap, jmm, 14-aug-2012
 ; Return inputs instead of -1 if no gaps found, added n_gaps keyword, af 2016-05-03
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-05-03 13:28:56 -0700 (Tue, 03 May 2016) $
-;$LastChangedRevision: 21010 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/xdegap.pro $
 ;-
 pro xdegap, dt, margin, ct0, y, ct_out, y_out, nowarning = nowarning, $

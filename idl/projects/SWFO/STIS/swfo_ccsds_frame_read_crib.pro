@@ -1,7 +1,7 @@
 ;swfo_test
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-02-17 12:53:26 -0800 (Mon, 17 Feb 2025) $
-; $LastChangedRevision: 33137 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2025-08-18 14:15:43 -0700 (Mon, 18 Aug 2025) $
+; $LastChangedRevision: 33554 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_frame_read_crib.pro $
 
 
@@ -88,6 +88,7 @@ if 1 || ~keyword_set(files) then begin
   ;https://sprg.ssl.berkeley.edu/data/swfo/outgoing/swfo-l1/l0/
   source = {$
     remote_data_dir:'http://sprg.ssl.berkeley.edu/data/', $
+    master_file:'swfo/.master', $
     no_update : no_update ,$
     no_download :no_download ,$
     resolution: 900L  }

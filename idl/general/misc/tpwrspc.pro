@@ -47,9 +47,9 @@
 ; 
 ;HISTORY:
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2023-12-15 14:11:08 -0800 (Fri, 15 Dec 2023) $
-;$LastChangedRevision: 32290 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tpwrspc.pro $
 ;-
 Pro tpwrspc, varname, newname = newname, $

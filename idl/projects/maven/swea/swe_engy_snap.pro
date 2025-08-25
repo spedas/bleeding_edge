@@ -236,6 +236,11 @@ end
 ;
 ;       LINE_COLORS:   Use this for the line colors.
 ;
+;       TMARK:         On the time series window, mark the currently selected 
+;                      PAD time interval with transient timebars that show the 
+;                      start, center and end times.  This shows precisely which
+;                      PAD spectra are included in the average.
+;
 ;       QLEVEL:        Minimum quality level for summing and plotting.  Filters out
 ;                      the vast majority of spectra affected by the sporadic low energy
 ;                      anomaly below 28 eV.  The validity levels are:
@@ -251,8 +256,8 @@ end
 ;                             for "good" spectra.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-23 09:23:37 -0700 (Mon, 23 Jun 2025) $
-; $LastChangedRevision: 33402 $
+; $LastChangedDate: 2025-08-20 09:34:00 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33559 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -269,7 +274,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    endx=endx, twot=twot, rcolors=rcolors, cuii=cuii, fmfit=fmfit, nolab=nolab, $
                    showdead=showdead, dead=dead, monitor=monitor, der=der, color_table=color_table, $
                    reverse_color_table=reverse_color_table, line_colors=line_colors, noraw=noraw, $
-                   qlevel=qlevel, result=result, background=background,$
+                   qlevel=qlevel, result=result, background=background, tmark=tmark, $
                    mkpng=mkpng,figname=figname
 
   @mvn_swe_com
@@ -282,6 +287,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   c3 = 4D*!dpi*1d-5*sqrt(mass/2D)  ; assume isotropic electron distribution
   tiny = 1.e-31
   maxarg = 80.
+  dts = 1.95D/2D  ; start time to center time
 
   phi = findgen(49)*(2.*!pi/49.)
   usersym,cos(phi),sin(phi),/fill
@@ -301,7 +307,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            'POPEN','TIMES','FLEV','PYLIM','K_E','PEREF','ERROR_BARS','TRANGE', $
            'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
            'FMFIT','NOLAB','SHOWDEAD','DEAD','MONITOR','COLOR_TABLE','REVERSE_COLOR_TABLE', $
-           'LINE_COLORS','NORAW','QLEVEL','RESULT','BACKGROUND']
+           'LINE_COLORS','NORAW','QLEVEL','RESULT','BACKGROUND','TMARK']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -343,6 +349,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   dobkg = keyword_set(bkg)
   doraw = ~keyword_set(noraw) or ~dosec
   qlevel = (n_elements(qlevel) gt 0) ? byte(qlevel[0]) < 2B : 0B
+  tmark = keyword_set(tmark)
 
   spflg = keyword_set(shiftpot)
   if (n_elements(xrange) ne 2) then xrange = [1.,1.e4]
@@ -572,8 +579,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
 
     if ((npts eq 1) and (~dosmo)) then begin
       dt = min(abs(trange[0] - tspec.time), i)
-      spec = {time:tspec.time[i], data:reform(tspec.data[i,*]), var:reform(tspec.var[i,*]), $
-              energy:tspec.energy, units_name:tspec.units_name, sc_pot:pot}
+      spec = {time:tspec.time[i], end_time:(tspec.time[i]+dts), data:reform(tspec.data[i,*]), $
+              var:reform(tspec.var[i,*]), energy:tspec.energy, units_name:tspec.units_name, sc_pot:pot}
     endif else begin
       tmin = min(trange, max=tmax)
       i = where((tspec.time ge tmin) and (tspec.time le tmax), nspec)
@@ -592,8 +599,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         avg = total(dat[i,*], 1, /nan)/nrm
         var = total(var[i,*], 1, /nan)/nrm
 
-        spec = {time:mean(tspec.time[i]), data:avg, var:var, energy:tspec.energy, $
-                units_name:tspec.units_name, sc_pot:pot}
+        spec = {time:mean(tspec.time[i]), end_time:(max(tspec.time[i])+dts), data:avg, $
+                var:var, energy:tspec.energy, units_name:tspec.units_name, sc_pot:pot}
       endif
     endelse
   endif else begin
@@ -670,7 +677,9 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       title = tstart + ' - ' + tend
     endif else title = time_string(spec.time)
 
+    ttime = spec.time + [-delta_t,0D,delta_t]
     str_element, result, 'trange', [spec.time-delta_t, spec.end_time], /add
+    if (tmark) then timebar,ttime,/line,/transient
 
     if ((nplot eq 0) or oflg) then plot_oo,x,y,yrange=yrange,/ysty,xrange=xrange,/xsty, $
             xtitle='Energy (eV)', ytitle=ytitle,charsize=csize2,psym=psym,title=title, $
@@ -1430,6 +1439,8 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
         if (hflg) then dt = min(abs(swe_hsk.time - trange[0]), jref)
       endif else ok = 0
     endif else ok = 0
+
+    if (tmark) then timebar,ttime,/line,/transient
 
   endwhile
 

@@ -26,11 +26,11 @@
 ;
 ;CREATED BY:	Davin Larson  4-30-96
 ;FILE:  interp.pro
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-06-04 16:43:03 -0700 (Tue, 04 Jun 2024) $
-; $LastChangedRevision: 32686 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/interp.pro $
-; $Id: interp.pro 32686 2024-06-04 23:43:03Z dmitchell $
+; $Id: interp.pro 33563 2025-08-20 18:11:05Z jwl $
 ;-
 function interp,y,x,u,index=i,no_check_monotonic=ch_mon,no_extrapolate=no_extrap,interp_threshold=int_th, $
   ignore_nan=ignore_nan,last_value=last_value,missing = missing,xlog=xlog,ylog=ylog

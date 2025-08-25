@@ -65,9 +65,9 @@
 ;       success:     Returns 1 if topology information available (at whatever
 ;                    quality), 0 otherwise.
 ;
-; $LastChangedBy: xussui_lap $
-; $LastChangedDate: 2023-01-24 11:09:22 -0800 (Tue, 24 Jan 2023) $
-; $LastChangedRevision: 31420 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_topo.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 11/03/2017

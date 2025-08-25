@@ -44,9 +44,9 @@
 ;
 ;CREATED BY:    Davin Larson  Oct 1996
 ;
-;$LastChangedBy: davin-mac $
-;$LastChangedDate: 2015-11-04 21:35:03 -0800 (Wed, 04 Nov 2015) $
-;$LastChangedRevision: 19252 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_double.pro $
 ;
 ;-

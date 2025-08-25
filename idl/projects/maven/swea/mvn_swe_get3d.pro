@@ -34,14 +34,14 @@
 ;                        0B = affected by low-energy anomaly
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-04-17 15:22:14 -0700 (Thu, 17 Apr 2025) $
-; $LastChangedRevision: 33264 $
+; $LastChangedDate: 2025-08-17 14:32:49 -0700 (Sun, 17 Aug 2025) $
+; $LastChangedRevision: 33550 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_get3d.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_get3d.pro
 ;-
-function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, burst=burst, $
+function mvn_swe_get3d, timein, archive=archive, all=all, sum=sum, units=units, burst=burst, $
                         shiftpot=shiftpot, qlevel=qlevel
 
   @mvn_swe_com
@@ -50,7 +50,7 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
   delta_t = 1.95D/2D  ; start time to center time
   qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
 
-  if (size(time,/type) eq 0) then begin
+  if (size(timein,/type) eq 0) then begin
     if not keyword_set(all) then begin
       print,"You must specify a time."
       return, 0
@@ -69,9 +69,7 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
         return, 0
       endif
     endelse
-  endif
-
-  time = time_double(time)
+  endif else time = time_double(timein)
 
   if (size(units,/type) ne 7) then units = 'EFLUX'
   if keyword_set(shiftpot) then if (n_elements(swe_sc_pot) lt 2) then mvn_scpot
@@ -89,7 +87,7 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
           if (indx eq -1) then npts = 0L else npts = 1L
         endif else begin
           tmin = min(time, max=tmax, /nan)
-          indx = where((mvn_swe_3d_arc.time ge tmin) and (mvn_swe_3d_arc.time le tmax), npts)
+          indx = where((mvn_swe_3d_arc.time-delta_t ge tmin) and (mvn_swe_3d_arc.time+delta_t le tmax), npts)
         endelse
         if (npts gt 0L) then time = mvn_swe_3d_arc[indx].time $
                         else print,"No 3D archive data at specified time(s)."        
@@ -108,7 +106,7 @@ function mvn_swe_get3d, time, archive=archive, all=all, sum=sum, units=units, bu
           if (indx eq -1) then npts = 0L else npts = 1L
         endif else begin
           tmin = min(time, max=tmax, /nan)
-          indx = where((mvn_swe_3d.time ge tmin) and (mvn_swe_3d.time le tmax), npts)
+          indx = where((mvn_swe_3d.time-delta_t ge tmin) and (mvn_swe_3d.time_delta_t le tmax), npts)
         endelse
         if (npts gt 0L) then time = mvn_swe_3d[indx].time $
                         else print,"No 3D survey data at specified time(s)."

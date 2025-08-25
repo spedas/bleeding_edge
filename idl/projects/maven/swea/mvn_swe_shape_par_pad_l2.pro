@@ -53,9 +53,9 @@
 ;
 ;   Tplot variable "EFlux_ratio": store the flux ratio for two directions
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-23 10:14:21 -0700 (Mon, 23 Jun 2025) $
-; $LastChangedRevision: 33407 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_shape_par_pad_l2.pro $
 ;
 ;CREATED BY:    Shaosui Xu  12-08-16

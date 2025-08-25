@@ -28,9 +28,9 @@
 ;   Data files for each data set are available per minute 
 ;
 ; VERSION:
-;   $LastChangedBy: crussell $
-;   $LastChangedDate: 2017-11-02 08:14:23 -0700 (Thu, 02 Nov 2017) $
-;   $LastChangedRevision: 24249 $
+;   $LastChangedBy: jwl $
+;   $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;   $LastChangedRevision: 33563 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/seca_overlay_plots.pro $
 ;-
 pro seca_overlay_plots, $ 

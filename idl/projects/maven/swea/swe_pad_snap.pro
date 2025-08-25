@@ -187,14 +187,19 @@
 ;
 ;        NOTE:         Insert a text label.  Keep it short.
 ;
+;        TMARK:        On the time series window, mark the currently selected 
+;                      PAD time interval with transient timebars that show the 
+;                      start, center and end times.  This shows precisely which
+;                      PAD spectra are included in the average.
+;
 ;        QLEVEL:       Minimum quality level to plot (0-2, default=0):
 ;                         2B = good
 ;                         1B = uncertain
 ;                         0B = affected by low-energy anomaly
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-04-05 14:36:55 -0700 (Sat, 05 Apr 2025) $
-; $LastChangedRevision: 33233 $
+; $LastChangedDate: 2025-08-18 13:26:56 -0700 (Mon, 18 Aug 2025) $
+; $LastChangedRevision: 33553 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -214,7 +219,7 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
                   result=result, vdis=vdis, padmap=padmap, sec=sec, sconfig=sconfig, $
                   color_table=color_table, reverse_color_table=reverse_color_table, $
                   line_colors=line_colors, pyrange=pyrange, qlevel=qlevel, _extra=_extra,$
-                  mkpng=mkpng,figname=figname
+                  mkpng=mkpng, tmark=tmark, figname=figname
 
   @mvn_swe_com
   @putwin_common
@@ -230,6 +235,7 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
   tiny = 1.e-31
   badpad = swe_pad_struct
   badpad.quality = 255B
+  delta_t = 1.95D/2D  ; 1/2 measurement interval
 
   if (size(windex,/type) eq 0) then win, config=0  ; win acts like window
 
@@ -245,7 +251,7 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
            'ERROR_BARS','YRANGE','TRANGE2','NOTE','MINCOUNTS','MAXRERR', $
            'TSMO','SUNDIR','WSCALE','CSCALE','FSCALE','RESULT','VDIS', $
            'PADMAP','COLOR_TABLE','REVERSE_COLOR_TABLE','LINE_COLORS', $
-           'PYRANGE','QLEVEL','SCONFIG']
+           'PYRANGE','QLEVEL','SCONFIG','TMARK']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -281,6 +287,7 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
   pyrange = keyword_set(pyrange) ? minmax(pyrange) : [0.1, 10.]
   padmap = keyword_set(padmap)
   qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
+  tmark = keyword_set(tmark)
 
   case n_elements(trange2) of
        0 : tflg = 0
@@ -550,11 +557,11 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
   plut3 = [5B]
 
   if (size(mvn_swe_pad,/type) eq 8) then begin
-    ptime2 = mvn_swe_pad.time
+    ptime2 = mvn_swe_pad.time     ; already center times
     plut2 = replicate(5B, n_elements(ptime2))
   endif else begin
     if (size(a2,/type) eq 8) then begin
-      ptime2 = a2.time + 1.95D/2D  ; center times
+      ptime2 = a2.time + delta_t  ; center times
       plut2 = a2.lut
     endif
   endelse
@@ -573,11 +580,11 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
   endif
 
   if (size(mvn_swe_pad_arc,/type) eq 8) then begin
-    ptime3 = mvn_swe_pad_arc.time
+    ptime3 = mvn_swe_pad_arc.time  ; already center times
     plut3 = replicate(5B, n_elements(ptime3))
   endif else begin
     if (size(a3,/type) eq 8)  then begin
-      ptime3 = a3.time + 1.95D/2D  ; center times
+      ptime3 = a3.time + delta_t   ; center times
       plut3 = a3.lut
     endif
   endelse
@@ -601,13 +608,13 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
      
   wset,Twin
   if (~tflg) then begin
-    ctime,trange,npoints=npts,/silent
+    ctime,trange,npoints=npts,silent=2
     if (npts gt 1) then cursor,cx,cy,/norm,/up  ; Make sure mouse button released
   endif else trange = trange2
   pdflg = 1
 
-  if (size(trange,/type) eq 2) then begin          ; Abort before first time select.
-    if (~rflg) then wdelete,Pwin                   ; Don't keep empty windows.
+  if (size(trange,/type) eq 2) then begin       ; Abort before first time select.
+    if (~rflg) then wdelete,Pwin                ; Don't keep empty windows.
     if (sflg) then wdelete,Nwin
     if (dospec) then wdelete,Ewin
     if (rflg or hflg or uflg) then wdelete,Pwin
@@ -653,10 +660,10 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
        if (n_elements(trange) gt 1) then begin
          tmin = min(trange, max=tmax)
          if (aflg) then begin
-           indx = where((ptime3 ge tmin) and (ptime3 le tmax), count)
+           indx = where((ptime3-delta_t ge tmin) and (ptime3+delta_t le tmax), count)
            if (max(plut3[indx]) gt 6B) then dwell = 1 else dwell = 0
          endif else begin
-           indx = where((ptime2 ge tmin) and (ptime2 le tmax), count)
+           indx = where((ptime2-delta_t ge tmin) and (ptime2+delta_t le tmax), count)
            if (max(plut2[indx]) gt 6B) then dwell = 1 else dwell = 0
          endelse
        endif else begin
@@ -693,24 +700,24 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
          tprec = 3
        endif else begin
          dt = max(trange) - min(trange)
-         if (dt lt 4D) then trange = mean(trange)
          pad = mvn_swe_getpad(trange,archive=aflg,all=doall,/sum,units=units,qlevel=qlevel)
          if (size(pad,/type) ne 8) then begin
            pad = badpad
-           pad.time = mean(trange)
-           pad.end_time = max(trange)
+           pad.time = mean(time)
+           pad.end_time = max(time)
            hflg = 0
          endif
          if (hflg) then pad = mvn_swe_padmap_32hz(pad, fbdata=fbdata, /verbose, maglev=maglev)
          n_e = 64
-         tprec = 0
+         tprec = (dt lt 10D) ? 1 : 0
        endelse
     endif
 
     if (size(pad,/type) eq 8) then begin
-
-      delta_t = pad.end_time - pad.time
-      str_element, pad, 'trange', [(pad.time - delta_t), pad.end_time], /add
+      dt = pad.end_time - pad.time
+      ttime = pad.time + [-dt,0D,dt]
+      str_element, pad, 'trange', [(pad.time - dt), pad.end_time], /add
+      if (tmark) then timebar,ttime,/line,/transient
 
       pmask = replicate(1.,n_e,16)
       counts = pad
@@ -759,9 +766,9 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
         else     : zlo = 1
       endcase
 
-      delta_t = pad.end_time - pad.time
-      if (delta_t gt 1D) then begin
-        tstart = time_string(pad.time - delta_t, prec=tprec)
+      dt = pad.end_time - pad.time
+      if (dt gt 1D) then begin
+        tstart = time_string(pad.time - dt, prec=tprec)
         tend   = time_string(pad.end_time, prec=tprec)
         tstring = tstart + ' - ' + strmid(tend,11)
       endif else tstring = time_string(pad.time, prec=tprec)
@@ -1608,11 +1615,13 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
 
     if (pdflg and ~tflg) then begin
        wset,Twin
-       ctime,trange,npoints=npts,/silent
-       if (npts gt 1) then cursor,cx,cy,/norm,/up ; make sure mouse button is released
+       ctime,trange,npoints=npts,silent=2
+       if (npts gt 1) then cursor,cx,cy,/norm,/up   ; make sure mouse button is released
        if (size(trange,/type) eq 5) then ok = 1 else ok = 0
     endif else ok = 0
-    
+
+    if (tmark) then timebar,ttime,/line,/transient
+
   endwhile
 
   if keyword_set(mkpng) then begin

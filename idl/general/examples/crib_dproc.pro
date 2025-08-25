@@ -10,9 +10,9 @@
 ;
 ;Warning: this crib uses some data from the THEMIS branch.  You'll require those routines to run this crib
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-09-22 11:16:22 -0700 (Tue, 22 Sep 2020) $
-; $LastChangedRevision: 29178 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_dproc.pro $
 ;
 ;-

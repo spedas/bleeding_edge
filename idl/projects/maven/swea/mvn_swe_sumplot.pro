@@ -67,9 +67,9 @@
 ;
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-01-03 14:09:26 -0800 (Fri, 03 Jan 2025) $
-; $LastChangedRevision: 33043 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12

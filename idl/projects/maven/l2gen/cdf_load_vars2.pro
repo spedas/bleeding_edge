@@ -133,9 +133,9 @@
 ; Side Effects:
 ;   Data is returned in pointer variables. Calling routine is responsible for freeing up heap memory - otherwise a memory leak will occur.
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2022-07-06 13:05:07 -0700 (Wed, 06 Jul 2022) $
-; $LastChangedRevision: 30909 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/l2gen/cdf_load_vars2.pro $
 ;
 ;-
@@ -149,7 +149,7 @@ function cdf_load_vars2, files, varnames=vars, varformat=vars_fmt,info=info, ver
   vb = keyword_set(verbose) ? verbose : 0
   vars=''
   info = 0
-  dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars2.pro 30909 2022-07-06 20:05:07Z ali $'
+  dprint,dlevel=4,verbose=verbose,'$Id: cdf_load_vars2.pro 33563 2025-08-20 18:11:05Z jwl $'
 
     on_ioerror, ferr
   for fi=0,n_elements(files)-1 do begin

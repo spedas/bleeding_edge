@@ -25,9 +25,9 @@
 ;Written by: Patrick Cruce(pcruce@igpp.ucla.edu)
 ;
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-12-16 13:31:22 -0800 (Wed, 16 Dec 2020) $
-; $LastChangedRevision: 29515 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/quaternion/mtoq.pro $
 ;-
 

@@ -31,9 +31,9 @@
 ;   None - Potential results are stored as a TPLOT variable 'negpot_pad'. 
 ;          Four additional TPLOT variables are created for diagnostics. 
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-23 16:18:35 -0700 (Mon, 23 Jun 2025) $
-; $LastChangedRevision: 33411 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sc_negpot_twodir_burst.pro $
 ;
 ;CREATED BY:    Shaosui Xu  01-03-2017

@@ -14,9 +14,9 @@
 ;HISTORY
 ; Written by Davin Larson
 ;
-;$LastChangedBy: davin $
-;$LastChangedDate: 2015-11-06 15:38:27 -0800 (Fri, 06 Nov 2015) $
-;$LastChangedRevision: 19299 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/init_devices.pro $
 ;-
 pro init_devices,colortable=colortable

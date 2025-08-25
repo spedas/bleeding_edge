@@ -6,6 +6,8 @@
 ;	time:		dbl		time of data to be returned
 ;
 ;KEYWORDS:
+;   NOPLOT:     If set, then do not create a tplot variable.  (Allows this function to be called
+;               in a loop.)
 ;
 ;CREATED BY:	J. McFadden
 ;VERSION:	1
@@ -15,7 +17,7 @@
 ;NOTES:	  
 ;	kk3 ion suppression correction may be limited to times after 20151101
 ;-
-FUNCTION mvn_sta_get_kk3,time
+FUNCTION mvn_sta_get_kk3,time,noplot=noplot
 
 common mvn_sta_kk3,kk3
 
@@ -1448,8 +1450,10 @@ if time_double(time) gt time_double('2024-04-28/00:00') and kk3_anode then kk3 =
 
 	; 20240429 periapsis moves to dayside 
 
-tt=timerange()
-store_data,'mvn_sta_kk3',data={x:tt,y:transpose([[kk3],[kk3]])}
+if ~keyword_set(noplot) then begin
+  tt=timerange()
+  store_data,'mvn_sta_kk3',data={x:tt,y:transpose([[kk3],[kk3]])}
+endif
 
 return,kk3
 

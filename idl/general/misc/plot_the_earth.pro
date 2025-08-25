@@ -18,9 +18,9 @@
 ;   Alexander Drozdov
 ;
 ; VERSION:
-;  $LastChangedBy: adrozdov $
-;  $LastChangedDate: 2017-10-25 12:57:57 -0700 (Wed, 25 Oct 2017) $
-;  $LastChangedRevision: 24214 $
+;  $LastChangedBy: jwl $
+;  $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;  $LastChangedRevision: 33563 $
 ;  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/plot_the_earth.pro $
 
 ;-

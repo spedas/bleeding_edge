@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  6 18:18:26 2025.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 25 03:18:29 2025.<P>
  
 <HR>
  
@@ -22,6 +22,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#AVERAGE">AVERAGE</A>
 <br>Returns the average value of an array.
 <LI><A HREF="#AVERAGE_HIST">AVERAGE_HIST</A>
+<LI><A HREF="#CATSTRUCT">CATSTRUCT</A>
+<br>Concatenates two arrays of structures whose tags are not necessarily in the same order.
 <LI><A HREF="#DGEN">DGEN</A>
 <LI><A HREF="#DYNAMICARRAY__DEFINE">DYNAMICARRAY__DEFINE</A>
 <LI><A HREF="#ENCLOSED">ENCLOSED</A>
@@ -68,9 +70,9 @@ PURPOSE:
 
 Notes:
 
- $LastChangedBy: ali $
- $LastChangedDate: 2017-05-01 12:37:30 -0700 (Mon, 01 May 2017) $
- $LastChangedRevision: 23254 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+ $LastChangedRevision: 33563 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/average.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/average.pro">general/tools/misc/average.pro</A>)</STRONG><P>
@@ -79,7 +81,7 @@ Notes:
 <A NAME="AVERAGE_HIST">
 <H2>AVERAGE_HIST</H2></A>
 <A HREF="#AVERAGE">[Previous Routine]</A>
-<A HREF="#DGEN">[Next Routine]</A>
+<A HREF="#CATSTRUCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION average_hist(d,x [,STDEV=stdev])
@@ -105,9 +107,41 @@ NOTE:  d can be an array of structures:
 <STRONG>(See <A href="misc/average_hist.pro">general/tools/misc/average_hist.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CATSTRUCT">
+<H2>CATSTRUCT</H2></A>
+<A HREF="#AVERAGE_HIST">[Previous Routine]</A>
+<A HREF="#DGEN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   catstruct
+PURPOSE:
+  Concatenates two arrays of structures whose tags are not necessarily in the same order. 
+
+USAGE:
+  result = catstruct(a,b)
+
+INPUTS:
+       a:         An array of structures.
+
+       b:         Another array of structures.  Must have the same tags as a, but they
+                  can be in a different order.
+
+KEYWORDS:
+       none
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2025-08-22 12:45:07 -0700 (Fri, 22 Aug 2025) $
+ $LastChangedRevision: 33569 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/catstruct.pro $
+
+Created by D.L. Mitchell (February 2023)
+</PRE><P>
+<STRONG>(See <A href="misc/catstruct.pro">general/tools/misc/catstruct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="DGEN">
 <H2>DGEN</H2></A>
-<A HREF="#AVERAGE_HIST">[Previous Routine]</A>
+<A HREF="#CATSTRUCT">[Previous Routine]</A>
 <A HREF="#DYNAMICARRAY__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

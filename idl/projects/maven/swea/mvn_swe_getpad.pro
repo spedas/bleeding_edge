@@ -37,14 +37,14 @@
 ;                        0B = affected by low-energy anomaly
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-23 16:20:05 -0700 (Mon, 23 Jun 2025) $
-; $LastChangedRevision: 33413 $
+; $LastChangedDate: 2025-08-17 14:32:49 -0700 (Sun, 17 Aug 2025) $
+; $LastChangedRevision: 33550 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
 ;FILE: mvn_swe_getpad.pro
 ;-
-function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, burst=burst, $
+function mvn_swe_getpad, timein, archive=archive, all=all, sum=sum, units=units, burst=burst, $
                          shiftpot=shiftpot, L0=L0, qlevel=qlevel
 
   @mvn_swe_com
@@ -53,7 +53,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
   if keyword_set(burst) then archive = 1
   qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
 
-  if (size(time,/type) eq 0) then begin
+  if (size(timein,/type) eq 0) then begin
     if not keyword_set(all) then begin
       print,"You must specify a time."
       return, 0
@@ -83,7 +83,7 @@ function mvn_swe_getpad, time, archive=archive, all=all, sum=sum, units=units, b
         return, 0
       endif
     endelse
-  endif else time = time_double(time)
+  endif else time = time_double(timein)
 
   if (size(units,/type) ne 7) then units = 'EFLUX'
   if keyword_set(shiftpot) then if (n_elements(swe_sc_pot) lt 2) then mvn_scpot

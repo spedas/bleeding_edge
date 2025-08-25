@@ -9,9 +9,9 @@
 ;
 ;CREATED BY:    Davin Larson
 ;LAST MODIFICATION:     @(#)minmax.pro	1.2 02/04/17
-; $LastChangedBy: orlando $
-; $LastChangedDate: 2022-11-28 12:25:39 -0800 (Mon, 28 Nov 2022) $
-; $LastChangedRevision: 31300 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/minmax.pro $
 
 ;-

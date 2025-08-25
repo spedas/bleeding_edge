@@ -23,9 +23,9 @@
 ; OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2017-11-03 16:47:48 -0700 (Fri, 03 Nov 2017) $
-;$LastChangedRevision: 24262 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/spedas_plugin/secs_ui_overview_plots.pro $
 ;-
 function secs_ui_time_string, tr_obj, event, tenseconds=tenseconds

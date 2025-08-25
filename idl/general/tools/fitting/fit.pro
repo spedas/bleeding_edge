@@ -307,9 +307,9 @@ end
 ;             be fit.
 ;           - Allowed vectors and recursively searched structures to be fit as well.
 ;           
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2022-06-29 16:35:37 -0700 (Wed, 29 Jun 2022) $
-; $LastChangedRevision: 30892 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/fitting/fit.pro $
 ;           
 ;           

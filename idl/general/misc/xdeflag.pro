@@ -26,9 +26,9 @@
 ;HISTORY:
 ; 2-feb-2007, jmm, jimm.ssl.berkeley.edu from Vassilis' clip_deflag.pro
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2020-09-23 15:50:05 -0700 (Wed, 23 Sep 2020) $
-;$LastChangedRevision: 29179 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/xdeflag.pro $
 ;-
 Pro xdeflag, method0, t0, y, flag = flag, maxgap = maxgap, $

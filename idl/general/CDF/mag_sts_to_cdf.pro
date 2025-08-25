@@ -25,7 +25,7 @@
 ; HISTORY:
 ;
 ; VERSION:
-;   $LastChangedBy: nikos $
+;   $LastChangedBy: jwl $
 ;   $LastChangedDate: 2014-10-03 15:10:00 -0500 (Fri, 03 Otc 2014)$
 ;   $LastChangedRevision: 2014-10-03 15:10:00 -0500 (Fri, 03 Otc 2014)$
 ;   $URL:svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/projects/general/CDF/mag_sts_to_cdf.pro$

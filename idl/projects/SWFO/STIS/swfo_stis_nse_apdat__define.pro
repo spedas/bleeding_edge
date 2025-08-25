@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-04-03 17:23:26 -0700 (Thu, 03 Apr 2025) $
-; $LastChangedRevision: 33226 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-08-21 11:49:46 -0700 (Thu, 21 Aug 2025) $
+; $LastChangedRevision: 33567 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -24,7 +24,7 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
   ;help,self.last_data
 
   if n_elements(last_str) eq 0 || (abs(last_str.time-ccsds.time) gt 300) then lastdat = nsedata
-  nse_diff = nsedata-lastdat
+  nse_diff = nsedata-lastdat    ; subtracting two uints will produce a uint which is the correct method to use
   lastdat = nsedata
 
   ;dprint,reform(nse_diff,10,6)
@@ -33,7 +33,7 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   str2 = {$
     raw: nsedata, $
-    histogram:float(nse_diff),$
+    histogram:float(nse_diff),$    ; The UINT gets cast into a float here. This allows the value to be made into a NAN  (for example the very first instance)
     gap:ccsds.gap}
 
   str=create_struct(str1,str2)

@@ -21,9 +21,9 @@
 ;  "loadcdf2", "loadallcdf", "print_cdf_info","make_cdf_index"
 ;
 ;CREATED BY:	Davin Larson
-; $LastChangedBy: ali $
-; $LastChangedDate: 2021-05-30 19:48:04 -0700 (Sun, 30 May 2021) $
-; $LastChangedRevision: 30012 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/obsolete/loadcdfstr.pro $
 ;-
 

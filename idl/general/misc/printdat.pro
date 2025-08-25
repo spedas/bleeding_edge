@@ -21,9 +21,9 @@
 ;
 ;Written by Davin Larson, May 1997.
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2018-11-01 15:30:14 -0700 (Thu, 01 Nov 2018) $
-; $LastChangedRevision: 26039 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/printdat.pro $
 ;-
 pro printdat,data,data2,data3,data4,data5,data6,data7,data8,  $

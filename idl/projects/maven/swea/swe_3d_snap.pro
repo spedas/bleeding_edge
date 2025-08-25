@@ -157,14 +157,19 @@
 ;
 ;       LINE_COLORS:   Set the line colors. (See line_colors.pro for more info.)
 ;
+;       TMARK:         On the time series window, mark the currently selected 
+;                      3D time interval with transient timebars that show the 
+;                      start, center and end times.  This shows precisely which
+;                      3D spectra are included in the average.
+;
 ;       QLEVEL:        Minimum quality level to plot (0-2, default=0):
 ;                         2B = good
 ;                         1B = uncertain
 ;                         0B = affected by low-energy anomaly
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-04-18 14:04:25 -0700 (Fri, 18 Apr 2025) $
-; $LastChangedRevision: 33268 $
+; $LastChangedDate: 2025-08-20 09:34:00 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33559 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_3d_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -179,7 +184,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
                  zrange=zrange, monitor=monitor, esum=esum, color_table=color_table, $
                  reverse_color_table=reverse_color_table, line_colors=line_colors, $
                  qlevel=qlevel, qratio=qratio, pgroup=pgroup, result=result, thick=thick, $
-                 scp=scp
+                 scp=scp, tmark=tmark
 
   @mvn_swe_com
   @putwin_common
@@ -191,6 +196,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   csize1 = 1.2
   csize2 = 1.4
   tiny = 1.e-31
+  dts = 1.95D/2D
 
   bad3d = swe_3d_struct
   bad3d.energy = swe_swp[*,0] # replicate(1.,96)
@@ -209,7 +215,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
            'SYMDIAG','POWER','MAP','ABINS','DBINS','OBINS','MASK_SC','BURST', $
            'PLOT_SC','PADMAP','POT','PLOT_FOV','LABSIZE','TRANGE2','TSMO', $
            'WSCALE','ZLOG','ZRANGE','MONITOR','ESUM','COLOR_TABLE', $
-           'REVERSE_COLOR_TABLE','QLEVEL','QRATIO','PGROUP','THICK']
+           'REVERSE_COLOR_TABLE','QLEVEL','QRATIO','PGROUP','THICK','TMARK']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -242,6 +248,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
   labsize = (n_elements(labsize) gt 0) ? float(labsize[0]) : 1.
   wscale = (n_elements(wscale) gt 0) ? float(wscale[0]) : 1.
   thick = (n_elements(thick) gt 0) ? float(thick[0]) : 1.
+  tmark = keyword_set(tmark)
 
   omask = replicate(1.,96,2)
   indx = where(obins eq 0B, count)
@@ -476,7 +483,7 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
     wset,Twin
     if (~tflg) then begin
-      ctime,trange,npoints=npts,/silent
+      ctime,trange,npoints=npts,silent=2
       if (npts gt 1) then cursor,cx,cy,/norm,/up  ; Make sure mouse button released
     endif else trange = trange2
 
@@ -536,6 +543,10 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
 
     if (size(ddd,/type) eq 8) then begin
       data = ddd.data
+      dt = ddd.end_time - ddd.time
+      ttime = ddd.time + [-dt,0D,dt]
+      str_element, ddd, 'trange', [(ddd.time - dt), ddd.end_time], /add
+      if (tmark) then timebar,ttime,/line,/transient
       if (ddd.time gt t_mtx[2]) then boom = 1 else boom = 0
 
       if keyword_set(energy) then begin
@@ -863,6 +874,8 @@ pro swe_3d_snap, spec=spec, keepwins=keepwins, archive=archive, ebins=ebins, $
       if (npts gt 1) then cursor,cx,cy,/norm,/up  ; make sure mouse button is released
       if (size(trange,/type) eq 5) then ok = 1 else ok = 0
     endif else ok = 0
+
+    if (tmark) then timebar,ttime,/line,/transient
 
   endwhile
 

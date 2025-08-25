@@ -90,9 +90,9 @@ end
 ;  time_string(1514851198) = 2018-01-01/23:59:58 (Correct!)  
 ;
 ;CREATED BY:    Davin Larson  Oct 1996
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-05-24 15:55:33 -0700 (Sat, 24 May 2025) $
-; $LastChangedRevision: 33332 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_string.pro $
 ;-
 function time_string,time0, $

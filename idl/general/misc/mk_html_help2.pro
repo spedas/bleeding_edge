@@ -1,4 +1,4 @@
-; $Id: mk_html_help2.pro 24506 2018-01-11 01:03:26Z adrozdov $
+; $Id: mk_html_help2.pro 33563 2025-08-20 18:11:05Z jwl $
 ;+
 ; NAME:
 ;	MK_HTML_HELP2

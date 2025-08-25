@@ -137,8 +137,8 @@
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-23 16:19:42 -0700 (Mon, 23 Jun 2025) $
-; $LastChangedRevision: 33412 $
+; $LastChangedDate: 2025-08-17 14:34:37 -0700 (Sun, 17 Aug 2025) $
+; $LastChangedRevision: 33552 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -419,37 +419,45 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 
   IF NOT keyword_set(dtype) THEN BEGIN
      if keyword_set(archive) then begin
-       if (size(a3,/type) eq 8) then dat_time = a3.time + delta_t  ; center time
-       if (size(mvn_swe_pad_arc,/type) eq 8) then dat_time = mvn_swe_pad_arc.time
-       if (size(dat_time,/type) eq 0) then begin
-         print,'  No PAD archive data.'
-         archive = 0
-       endif
+       case (1) of
+         size(a3,/type) eq 8              : dat_time = a3.time + delta_t
+         size(mvn_swe_pad_arc,/type) eq 8 : dat_time = mvn_swe_pad_arc.time
+         else : begin
+                  print,'  No PAD archive data.'
+                  archive = 0
+                end
+       endcase
      endif
      if not keyword_set(archive) then begin
-       if (size(a2,/type) eq 8) then dat_time = a2.time + delta_t  ; center time
-       if (size(mvn_swe_pad,/type) eq 8) then dat_time = mvn_swe_pad.time
-       if (size(dat_time,/type) eq 0) then begin
-         print,'  No PAD survey data.  Nothing to resample.'
-         return
-       endif
+       case (1) of
+         size(a2,/type) eq 8          : dat_time = a2.time + delta_t
+         size(mvn_swe_pad,/type) eq 8 : dat_time = mvn_swe_pad.time
+         else : begin
+                  print,'  No PAD survey data.  Nothing to resample.'
+                  return
+                end
+       endcase
      endif
   ENDIF ELSE BEGIN
      if keyword_set(archive) then begin
-       if (size(swe_3d_arc,/type) eq 8) then dat_time = swe_3d_arc.time + delta_t  ; center time
-       if (size(mvn_swe_3d_arc,/type) eq 8) then dat_time = mvn_swe_3d_arc.time
-       if (size(dat_time,/type) eq 0) then begin
-         print,'  No 3D archive data.'
-         archive = 0
-       endif
+       case (1) of
+         size(swe_3d_arc,/type) eq 8     : dat_time = swe_3d_arc.time + delta_t
+         size(mvn_swe_3d_arc,/type) eq 8 : dat_time = mvn_swe_3d_arc.time
+         else : begin
+                  print,'  No 3D archive data.'
+                  archive = 0
+                end
+       endcase
      endif
      if not keyword_set(archive) then begin
-       if (size(swe_3d,/type) eq 8) then dat_time = swe_3d.time + delta_t  ; center time
-       if (size(mvn_swe_3d,/type) eq 8) then dat_time = mvn_swe_3d.time
-       if (size(dat_time,/type) eq 0) then begin
-         print,'  No 3D survey data.  Nothing to resample.'
-         return
-       endif
+       case (1) of
+         size(swe_3d,/type) eq 8     : dat_time = swe_3d.time + delta_t
+         size(mvn_swe_3d,/type) eq 8 : dat_time = mvn_swe_3d.time
+         else : begin
+                  print,'  No 3D survey data.  Nothing to resample.'
+                  return
+                end
+       endcase
      endif
 
      IF keyword_set(symdir) THEN BEGIN
@@ -502,8 +510,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 
   if (not dwell) then begin
     IF SIZE(var, /type) NE 0 THEN BEGIN
-       trange = var
-       IF SIZE(trange, /type) EQ 7 THEN trange = time_double(trange)
+       trange = time_double(var)
        IF SIZE(plot, /type) EQ 0 THEN plot = 1
        CASE N_ELEMENTS(trange) OF
           1: BEGIN

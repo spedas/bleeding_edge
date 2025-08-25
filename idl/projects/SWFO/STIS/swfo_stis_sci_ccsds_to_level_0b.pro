@@ -10,6 +10,7 @@
   ;trange = ['23 7 27 17 ','23 7 27 19']  & station='S2'   ; High flux ions from calibration
   trange = ['23 6 1','23 6 1 4']  & station='S0'     ; 1/r^2 test with x-ray source
   l0b_filename = 'STIS_L0B_SSL_Xray_upd.nc'
+  l0b_filename = 'swfo_stis_ioncal_l0a_2023-07-27T04_00_00_2023-07-27T05_00_00.bin'
 
   ; Load data if not already in memory:
   swfo_stis_apdat_init,/save_flag
@@ -38,6 +39,7 @@
   rdr.add_handler, 'raw_tlm',  gsemsg_reader(name='SWFO_reader',/no_widget,mission='SWFO')
   rdr.add_handler, 'raw_ball', ccsds_reader(/no_widget,name='BALL_reader' , sync_pattern = ['2b'xb,  'ad'xb ,'ca'xb, 'fe'xb], sync_mask= [0xef,0xff,0xff,0xff] )
   rdr.file_read,files
+  stop
 
   ; swfo_apdat_info,/print,/all,/create_tplot_var
 

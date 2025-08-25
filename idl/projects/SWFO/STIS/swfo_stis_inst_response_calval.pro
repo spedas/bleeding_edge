@@ -17,10 +17,10 @@
 ;     printdat, alt_cal
 ; 
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-02 16:12:14 -0700 (Sat, 02 Aug 2025) $
-; $LastChangedRevision: 33524 $
+; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
+; $LastChangedRevision: 33568 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 33524 2025-08-02 23:12:14Z rjolitz $
+; $Id: swfo_stis_inst_response_calval.pro 33568 2025-08-21 22:42:58Z rjolitz $
 
 
 
@@ -84,7 +84,12 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ; TIDs / FTO IDs
     ; (Assume O is Telescope index 0, and F is Index 1)
     ; tid = [0, 1]
-    calval.telescope_id_map = reform(replicate_array([replicate(0, 48), replicate(1, 48)], 7), 672)
+    
+;    calval.telescope_id_map = reform(replicate_array([replicate(0, 48), replicate(1, 48)], 7), 672)
+    ;i = indgen(48,14)
+    
+    calval.telescope_id_map = reform(byte((  indgen(48,14 ) / 48) mod 2), 672)
+
     fto_id = 1 + replicate(1,48) # indgen(7)
     calval.fto_logic_id_map =$
       [fto_id[*, 0], fto_id[*, 0], fto_id[*, 1], fto_id[*, 1], fto_id[*, 2],$
@@ -94,6 +99,17 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ; Dictionary mapping coincidence type to positional index in the data array:
     calval.coincidence_map = dictionary()
     for i=0, 13 do calval.coincidence_map[calval.coincidence[i]] = i
+
+    ; efficiency:
+    ; scaling factor of the geometric factor.
+    ; 0 for the lowest energy channel, 1 elsewhere:
+    efficiency = replicate(1,48,14)  ; 48 x 14 array
+    efficiency[0, *] = 0
+    calval.efficiency = efficiency
+
+    ; temperature coefficient:
+    ; true energy = energy_coefficient + (T_difference) 
+    calval.temperature_coefficient = 0.001 + fltarr(6)
 
     ; Deadtime:
     ; calval.deadtime_s = 1e-6
@@ -223,7 +239,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 33524 2025-08-02 23:12:14Z rjolitz $'
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 33568 2025-08-21 22:42:58Z rjolitz $'
     swfo_stis_inst_response_calval_dict  = calval
     dprint,'Using Revision: '+calval.rev_date
   endif

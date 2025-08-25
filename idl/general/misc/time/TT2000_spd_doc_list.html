@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  6 18:18:26 2025.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 25 03:18:29 2025.<P>
  
 <HR>
  
@@ -22,6 +22,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#ADD_TT2000_OFFSET">ADD_TT2000_OFFSET</A>
 <LI><A HREF="#CDF_LEAP_SECOND_INIT">CDF_LEAP_SECOND_INIT</A>
 <LI><A HREF="#CRIB_TT2000">CRIB_TT2000</A>
+<LI><A HREF="#TEST_UNIX_TO_TT2000_VECT">TEST_UNIX_TO_TT2000_VECT</A>
 <LI><A HREF="#TT2000_2_UNIX">TT2000_2_UNIX</A>
 <br>Converts TT2000 times to unix times. This function converts the input time
 <LI><A HREF="#TT2000_CONFIG_FILEDIR">TT2000_CONFIG_FILEDIR</A>
@@ -31,6 +32,8 @@ This page was created by the IDL library routine
 <br>Writes the tt2000_config file
 <LI><A HREF="#UNIX_TO_TT2000">UNIX_TO_TT2000</A>
 <br>Converts unix times to TT2000 times.
+<LI><A HREF="#UNIX_TO_TT2000_VECT">UNIX_TO_TT2000_VECT</A>
+<br>Converts unix times to TT2000 times, as a vectorized alternative to unix_to_tt2000.pro.
 <br>
 </UL><P>
 <HR>
@@ -123,7 +126,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="CRIB_TT2000">
 <H2>CRIB_TT2000</H2></A>
 <A HREF="#CDF_LEAP_SECOND_INIT">[Previous Routine]</A>
-<A HREF="#TT2000_2_UNIX">[Next Routine]</A>
+<A HREF="#TEST_UNIX_TO_TT2000_VECT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -141,9 +144,21 @@ Notes: Requires CDF 3.4.0 or newer
 <STRONG>(See <A href="TT2000/crib_tt2000.pro">general/misc/time/TT2000/crib_tt2000.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TEST_UNIX_TO_TT2000_VECT">
+<H2>TEST_UNIX_TO_TT2000_VECT</H2></A>
+<A HREF="#CRIB_TT2000">[Previous Routine]</A>
+<A HREF="#TT2000_2_UNIX">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ 
+ 
+</PRE><P>
+<STRONG>(See <A href="TT2000/test_unix_to_tt2000_vect.pro">general/misc/time/TT2000/test_unix_to_tt2000_vect.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TT2000_2_UNIX">
 <H2>TT2000_2_UNIX</H2></A>
-<A HREF="#CRIB_TT2000">[Previous Routine]</A>
+<A HREF="#TEST_UNIX_TO_TT2000_VECT">[Previous Routine]</A>
 <A HREF="#TT2000_CONFIG_FILEDIR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -255,6 +270,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="UNIX_TO_TT2000">
 <H2>UNIX_TO_TT2000</H2></A>
 <A HREF="#TT2000_WRITE_CONFIG">[Previous Routine]</A>
+<A HREF="#UNIX_TO_TT2000_VECT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  FUNCTION:
@@ -283,5 +299,38 @@ $LastChangedRevision: 29011 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/unix_to_tt2000.pro $
 </PRE><P>
 <STRONG>(See <A href="TT2000/unix_to_tt2000.pro">general/misc/time/TT2000/unix_to_tt2000.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="UNIX_TO_TT2000_VECT">
+<H2>UNIX_TO_TT2000_VECT</H2></A>
+<A HREF="#UNIX_TO_TT2000">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION:
+         unix_to_tt2000_vect
+
+ PURPOSE:
+         Converts unix times to TT2000 times, as a vectorized alternative to unix_to_tt2000.pro.
+ Notes:
+         Code run time could be reduced if method introduced to bypass loop to populate 
+         
+ INPUT:
+         unix_times: unix time values
+
+ EXAMPLE:
+         IDL&gt; tt2000_time = unix_to_tt2000(1.4501376e+09)
+         IDL&gt; tt2000_time
+               503409664183998107
+
+          convert back:
+         IDL&gt; print, tt2000_2_unix(503409664183998107ll)
+               1.4501376e+09
+
+$LastChangedBy: dcarpenter $
+$LastChangedDate: 2025-08-14 17:03:01 -0700 (Thu, 14 Aug 2025) $
+$LastChangedRevision: 33546 $
+$URL (NEEDS COMMIT): svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/tags/spedas_6_1/general/misc/time/TT2000/unix_to_tt2000_vect.pro $
+</PRE><P>
+<STRONG>(See <A href="TT2000/unix_to_tt2000_vect.pro">general/misc/time/TT2000/unix_to_tt2000_vect.pro</A>)</STRONG><P>
 <HR>
  

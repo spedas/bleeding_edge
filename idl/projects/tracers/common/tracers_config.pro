@@ -24,8 +24,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-07-31 17:36:13 -0700 (Thu, 31 Jul 2025) $
-; $LastChangedRevision: 33518 $
+; $LastChangedDate: 2025-08-20 16:06:21 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33566 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/tracers/common/tracers_config.pro $
 ;
 ;-
@@ -65,6 +65,7 @@ pro tracers_config, colortable=colortable, no_color_setup=no_color_setup
   ; Global Sytem Variables
   ;------------------------
   ; Please note: These settings will affect all IDL routines, NOT JUST tracers routines!
+  
 
   ;====
   ;===== COLOR SETUP

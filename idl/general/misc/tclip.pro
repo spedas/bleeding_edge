@@ -28,9 +28,9 @@
 ;HISTORY:
 ; 2-feb-2007, jmm, jimm.ssl.berkeley.edu
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-11-30 12:04:47 -0800 (Fri, 30 Nov 2018) $
-;$LastChangedRevision: 26204 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tclip.pro $
 ;-
 Pro tclip, varnames_in, amin, amax, newname = newname, display_object=display_object, interior_clip=interior_clip, $

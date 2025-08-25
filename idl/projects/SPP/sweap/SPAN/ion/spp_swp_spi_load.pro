@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2024-02-27 18:48:49 -0800 (Tue, 27 Feb 2024) $
-; $LastChangedRevision: 32463 $
+; $LastChangedBy: orlando $
+; $LastChangedDate: 2025-08-13 09:50:58 -0700 (Wed, 13 Aug 2025) $
+; $LastChangedRevision: 33544 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/ion/spp_swp_spi_load.pro $
 ; Created by Davin Larson 2018
 
@@ -69,7 +69,7 @@ end
 
 pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname_prefix=tname_prefix,save=save,$
   verbose=verbose,varformat=varformat,fileprefix=fileprefix,overlay=overlay,spcname=spcname,$
-  diag=diag,rtn_frame=rtn_frame,magname=magname,f2_100bps=f2_100bps,dens_name=dens_name
+  diag=diag,rtn_frame=rtn_frame,magname=magname,f2_100bps=f2_100bps,dens_name=dens_name,fovflag=fovflag
 
   if ~keyword_set(level) then level='L3'
   level=strupcase(level)
@@ -327,5 +327,8 @@ pro spp_swp_spi_load,types=types,level=level,trange=trange,no_load=no_load,tname
     store_data,'psp_swp_density',data = 'psp_swp_spc_l3i_np_moment psp_swp_spc_l3i_np_fit psp_swp_spi_??0[01]_L3_DENS',dlimit={yrange:[10,1e4],ylog:1}
   endif
 
+  if keyword_set(fovflag) then begin
+    spp_swp_spi_load_fovflag
+  endif
 
 end

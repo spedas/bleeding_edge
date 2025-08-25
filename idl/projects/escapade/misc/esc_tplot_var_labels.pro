@@ -11,8 +11,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2025-07-15 18:29:18 -0700 (Tue, 15 Jul 2025) $
-; $LastChangedRevision: 33470 $
+; $LastChangedDate: 2025-08-15 16:23:06 -0700 (Fri, 15 Aug 2025) $
+; $LastChangedRevision: 33548 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/misc/esc_tplot_var_labels.pro $
 ;
 ;-
@@ -23,13 +23,15 @@ PRO esc_tplot_var_labels, data=data, limits=limits
   str_element, tlim, 'yrange', [0., 1.], /add
   str_element, tlim, 'ystyle', 5, /add
   str_element, tlim, 'xstyle', 5, /add
+  IF tag_exist(tlim, 'ytitle', /quiet) THEN str_element, tlim, 'ytitle', /delete
+  IF tag_exist(tlim, 'constant', /quiet) THEN str_element, tlim, 'constant', /delete
   data.y[*] = !values.f_nan
   mplot, data=data, limits=TEMPORARY(tlim)
 
   chsize = limits.charsize
   col  = limits.colors
   pos = limits.position
-  vtitle = limits.labels
+  IF tag_exist(limits, 'labels', /quiet) THEN vtitle = limits.labels ELSE vtitle = limits.ytitle
   IF tag_exist(limits, 'format', /quiet) THEN format = limits.format ELSE format = '(F0.1)'
 
   xspace = chsize * !d.x_ch_size / !d.x_size

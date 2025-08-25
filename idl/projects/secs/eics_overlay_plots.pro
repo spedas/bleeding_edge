@@ -26,16 +26,16 @@
 ;   timerange.
 ;   If no time has not been set the user will be queried for the time.  
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2017-11-03 16:31:55 -0700 (Fri, 03 Nov 2017) $
-;$LastChangedRevision: 24261 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/eics_overlay_plots.pro $
 ;-
 
 ; VERSION:
-;   $LastChangedBy: adrozdov $
-;   $LastChangedDate: 2017-11-03 16:31:55 -0700 (Fri, 03 Nov 2017) $
-;   $LastChangedRevision: 24261 $
+;   $LastChangedBy: jwl $
+;   $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;   $LastChangedRevision: 33563 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/secs/eics_overlay_plots.pro $
 ;-
 function eics_coordtinate_convert, st, device=device, data=data

@@ -19,9 +19,9 @@
 ;                      end_day and ndays are not specified, ndays=7
 ;
 ;
-; $LastChangedBy: xussui $
-; $LastChangedDate: 2025-04-10 11:39:12 -0700 (Thu, 10 Apr 2025) $
-; $LastChangedRevision: 33251 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_scpot_comp_dailysave.pro $
 ;
 ;CREATED BY:    Shaosui Xu, 08/01/2017

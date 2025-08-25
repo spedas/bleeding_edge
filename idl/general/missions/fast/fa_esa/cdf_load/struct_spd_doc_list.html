@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  6 18:18:26 2025.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 25 03:18:29 2025.<P>
  
 <HR>
  
@@ -32,41 +32,23 @@ This page was created by the IDL library routine
 <A HREF="#FA_ESA_STRUCT_L2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-
 PURPOSE:	To return a data structure for a specific time from a FAST l1 common block.
-
 USEAGE:	dat=fa_esa_struct_l1(t,all_dat=all_dat,get_ind=get_ind)
-
 			dat=fa_esa_struct_l1(all_dat=all_dat,get_ind=get_ind) will call ctime.pro to get t.
-
 			The routine assumes the l1 common block for datatype is already loaded into IDL.
-
 KEYWORDS:	/START to return data structure for the first time in l1 common block.
-
 			/EN to return data structure for the last time in l1 common block.
-
 			/ADVANCE to return the next data structure in the l1 common block.
-
 			/RETREAT to return the previous data structure in the l1 common block.
-
 			INDEX=INDEX to return the INDEXth data structure in the l1 common block.
-
 			/CALIB does nothing.
-
 			/TIMES returns array of starting times in l1 common block instead of data structure.
-
 			/SDT is for debugging only.  Don't touch it.
-
 			UNITS=UNITS allows you to choose the returned data's units.  Default is compressed.
-
 BUGS:		None that I know of.
-
 UPDATES:	Written by Dillon Wong.
-
 			June 18, 2010 - Fixed /ADVANCE keyword for Electron Burst Data.
-
 			June 21, 2010 - Minor Update.
-
 </PRE><P>
 <STRONG>(See <A href="struct/fa_esa_struct_l1.pro">general/missions/fast/fa_esa/cdf_load/struct/fa_esa_struct_l1.pro</A>)</STRONG><P>
 <HR>
@@ -104,37 +86,21 @@ UPDATES:	Hacked from fa_esa_struct_l1.pro, jmm, jimm@ssl.berkeley.edu
 <A HREF="#FA_ESA_STRUCT_L2">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-
 PURPOSE:	To return a data structure for a specific time from a FAST l1 common block.
-
 USEAGE:	dat=fa_seb_struct_l1(t,all_dat=all_dat,get_ind=get_ind)
-
 			dat=fa_seb_struct_l1(all_dat=all_dat,get_ind=get_ind) will call ctime.pro to get t.
-
 			The routine assumes the l1 common block for datatype is already loaded into IDL.
-
 KEYWORDS:	/START to return data structure for the first time in l1 common block.
-
 			/EN to return data structure for the last time in l1 common block.
-
 			/ADVANCE to return the next data structure in the l1 common block.
-
 			/RETREAT to return the previous data structure in the l1 common block.
-
 			INDEX=INDEX to return the INDEXth data structure in the l1 common block.
-
 			/CALIB does nothing.
-
 			/TIMES returns array of starting times in l1 common block instead of data structure.
-
 			/SDT is for debugging only.  Don't touch it.
-
 			UNITS=UNITS allows you to choose the returned data's units.  Default is compressed.
-
 BUGS:		None that I know of.
-
 UPDATES:
-
 </PRE><P>
 <STRONG>(See <A href="struct/fa_seb_struct_l1.pro">general/missions/fast/fa_esa/cdf_load/struct/fa_seb_struct_l1.pro</A>)</STRONG><P>
 <HR>

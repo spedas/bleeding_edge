@@ -8,9 +8,9 @@
 ; CREATED BY: Mitsuo Oka   Sep 2018
 ;
 ;
-; $LastChangedBy: moka $
-; $LastChangedDate: 2020-11-23 14:42:29 -0800 (Mon, 23 Nov 2020) $
-; $LastChangedRevision: 29382 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/sppeva/sppeva.pro $
 ;-
 

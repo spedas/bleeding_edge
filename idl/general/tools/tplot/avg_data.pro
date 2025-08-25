@@ -15,9 +15,9 @@
 ;Modified by O. Le Contel, LPP, Feb. 19, 2016
 ; in order to deal with L64 integer
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-05-17 10:42:31 -0700 (Fri, 17 May 2019) $
-; $LastChangedRevision: 27256 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/tplot/avg_data.pro $
 ;-
 

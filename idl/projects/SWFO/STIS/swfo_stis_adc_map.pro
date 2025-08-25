@@ -2,8 +2,8 @@
 ;
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-07-21 09:58:52 -0700 (Mon, 21 Jul 2025) $
-; $LastChangedRevision: 33476 $
+; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
+; $LastChangedRevision: 33568 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -64,8 +64,8 @@ end
 ; map = swfo_stis_adc_map(data_sample={ptcu_bits: [0, 0, 1, 0], detector_bits: [1, 0, 63], sci_resolution: 3, sci_translate: 16})
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-07-21 09:58:52 -0700 (Mon, 21 Jul 2025) $
-; $LastChangedRevision: 33476 $
+; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
+; $LastChangedRevision: 33568 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -128,6 +128,7 @@ function swfo_stis_adc_map, data_sample=data_sample, cal=cal
   ftoi = cal.coincidence_map
   coincidence_index = cal.geometric_factor_coincidence_index
   adcm = cal.adc_coincidence_multiplier
+  efficiency = cal.efficiency
 
   ; center_adc_bins = [    234.06952     ,  228.35745    ,  231.78710     ,  232.06377      ,  232.78850      ,  231.65691    ]  
   ;kev_per_adc = 59.5 / ( [25.12, 22.58, 25.65, 25.48, 23.61,  24.7 ] *8)
@@ -164,7 +165,7 @@ function swfo_stis_adc_map, data_sample=data_sample, cal=cal
     dadc_n[*,n] = d_adc0 * adcm[n]
     
     conv_n[*,n] = kev_per_adc[coincidence_index[n]] 
-    geom_n[*,n] = geomfactor[coincidence_index[n]]
+    geom_n[*,n] = geomfactor[coincidence_index[n]] * efficiency[*,n]
 
 
   endfor

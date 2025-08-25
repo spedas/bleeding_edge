@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r33543_2025-08-06</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r33570_2025-08-22</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r33543_2025-08-06</H2>
+<H2>SPEDAS SW Help for spdsw_r33570_2025-08-22</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Wed Aug  6 18:18:26 2025.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 25 03:18:29 2025.<P>
  
 <HR>
  
@@ -863,6 +863,7 @@ AGYRO_3D_NEW">AGYRO_3D_NEW</A>
 <br>Multidimensional minimization of a function FUNC(X), where
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#
 ANGLE_TO_BINS">ANGLE_TO_BINS</A>
+<br>Returns the angle &quot;bins&quot; array defined by &quot;an&quot; limits
 <LI><A HREF="general/tools/tplot_spd_doc_list.html#ANG_DATA">ANG_DATA</A>
 <br>Creates a tplot variable that is the angle between two tplot variables.
 <LI><A HREF="general/spedas_tools/tplot2ap_spd_doc_list.html#AP2TPLOT">AP2TPLOT
@@ -1104,6 +1105,8 @@ CALC_EVXB">CALC_EVXB</A>
 <LI><A HREF="general/misc_spd_doc_list.html#CART_TO_SPHERE">CART_TO_SPHERE</A>
 <LI><A HREF="projects/wind/3dp/idl_spd_doc_list.html#CART_TO_SPHERE2">
 CART_TO_SPHERE2</A>
+<LI><A HREF="general/tools/misc_spd_doc_list.html#CATSTRUCT">CATSTRUCT</A>
+<br>Concatenates two arrays of structures whose tags are not necessarily in the same order.
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#CB_4D">CB_4D
 </A>
 <br>Returns the density array, n, 1/cm^3, corrects for spacecraft potential if dat.sc_pot exists
@@ -1398,6 +1401,7 @@ CONFIGDATA__DEFINE[7]</A>
 CONFIGDATA__DEFINE[8]</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#CONTOUR2D
 ">CONTOUR2D</A>
+<br>Produces contour plots of pitch angle dist.s from 2D data structures.
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#CONTOUR4D">
 CONTOUR4D</A>
 <br>Produces contour plots of energy-mass distributions from 4D data structures.
@@ -2029,6 +2033,7 @@ DYNAMICARRAY__DEFINE</A>
 <br>Convert coordinates from geographic to geomagnetic and computes
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#EC_2D_NEW
 ">EC_2D_NEW</A>
+<br>Returns the characteristic energy, Ec, eV
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
 EC_3D_NEW">EC_3D_NEW</A>
 <br>Returns the characteristic energy, Ec, eV
@@ -2485,6 +2490,7 @@ EXTREMA</A>
 <br>This function returns the locations of the local extrema in a
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#E_SEC_EFF
 ">E_SEC_EFF</A>
+<br>Returns the fractional secondary electron flux with energy &gt; pot
 <A NAME="LIST_F">
 <LI><A HREF="general/misc/SSW_spd_doc_list.html#F2PL">F2PL</A>
 <br>Calculates values the double power law
@@ -2738,6 +2744,7 @@ FUV_ROTATION_MATRIX</A>
 FU_FIT2D</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#FU_SPEC2D
 ">FU_SPEC2D</A>
+<br>Plots the differential funct(dat) versus energy, funct(dat) is integrated over angle only
 <LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXADDPAR">FXADDPAR
 </A>
 <LI><A HREF="external/astron/fits_bintable_spd_doc_list.html#FXBADDCOL">
@@ -2898,6 +2905,7 @@ GETRESOURCEPATH</A>
 <br>Routine that uses the cursor to select points.
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#GET_2DT">
 GET_2DT</A>
+<br>To generate time series data for &quot;tplot.pro&quot;
 <LI><A HREF="general/science_spd_doc_list.html#GET_3DT">GET_3DT</A>
 <br>To generate time series data for &quot;tplot&quot;
 <LI><A HREF="projects/wind/3dp/idl_spd_doc_list.html#GET_3D_STRUCT">
@@ -2935,6 +2943,7 @@ GET_ELF_SCIENCE_ZONE_START_END">GET_ELF_SCIENCE_ZONE_START_END</A>
 <br>Gets eesa moment structure.
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#
 GET_EN_SPEC">GET_EN_SPEC</A>
+<br>Generates energy-time spectrogram data structures for tplot
 <LI><A HREF="projects/wind/3dp/idl_spd_doc_list.html#GET_EXCFG">GET_EXCFG</A>
 <LI><A HREF="general/missions/fast/fa_esa/get_l1_spd_doc_list.html#GET_FA1_EEB">
 GET_FA1_EEB</A>
@@ -3084,6 +3093,7 @@ GET_SOURCE_URL_LIST</A>
 <br>Creates &quot;TPLOT&quot; variable by summing 3D data over selected angle bins.
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#
 GET_SP_SPEC">GET_SP_SPEC</A>
+<br>Generates spin phase angle vs. time spectrogram data structures for tplot
 <LI><A HREF="general/science_spd_doc_list.html#GET_SYMM">GET_SYMM</A>
 <LI><A HREF="external/IDL_GEOPACK/ta15_spd_doc_list.html#GET_TA15_PARAMS">
 GET_TA15_PARAMS</A>
@@ -3931,6 +3941,7 @@ JEO_3D_NEW">JEO_3D_NEW</A>
 <br>Returns the omin directional energy flux,  eV/(cm^2-s)
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#JE_2D_NEW
 ">JE_2D_NEW</A>
+<br>Returns the field aligned energy flux, JEz, ergs/cm^2-sec
 <LI><A HREF="general/science_spd_doc_list.html#JE_3D">JE_3D</A>
 <br>Returns the energy flux, [Je_x,Je_y,Je_z], ergs/(cm^2-s)
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
@@ -3945,6 +3956,7 @@ JE_PAR_3D_NEW">JE_PAR_3D_NEW</A>
 <LI><A HREF="general/tplot_spd_doc_list.html#JOIN_VEC">JOIN_VEC</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#JO_2D_NEW
 ">JO_2D_NEW</A>
+<br>Returns the omin-directional flux, nv, 1/s-cm^2, corrects for spacecraft potential if dat.sc_pot exists
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
 JO_3D_NEW">JO_3D_NEW</A>
 <br>Returns the omin directional flux,  1/(cm^2-s)
@@ -3956,6 +3968,7 @@ JSON_READER__DEFINE</A>
 <br>Load data from the Juno mission
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#J_2D_NEW">
 J_2D_NEW</A>
+<br>Returns the field aligned flux, Jz, #/cm^2-sec
 <LI><A HREF="general/science_spd_doc_list.html#J_3D">J_3D</A>
 <br>Returns the flux, [Jx,Jy,Jz], 1/(cm^2-s)
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
@@ -6977,6 +6990,7 @@ NORMALITY_TEST">NORMALITY_TEST</A>
 NUM_TO_STR_PAD</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#N_2D_NEW">
 N_2D_NEW</A>
+<br>Returns the density, n, 1/cm^3, corrects for spacecraft potential if dat.sc_pot exists
 <LI><A HREF="general/science_spd_doc_list.html#N_3D">N_3D</A>
 <br>Returns the density, n, 1/cm^3
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
@@ -6993,6 +7007,7 @@ N_3D_NEW">N_3D_NEW</A>
 OMNI2BINDEX</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#OMNI2D">
 OMNI2D</A>
+<br>Produces an energy or angle averaged data structure
 <LI><A HREF="external/IDL_GEOPACK/ta15_spd_doc_list.html#OMNI2NINDEX">
 OMNI2NINDEX</A>
 <LI><A HREF="external/developers/solarwind_spd_doc_list.html#OMNI2_LOAD">
@@ -7083,6 +7098,7 @@ PATCH_ORBIT_NUM_FOR_L4">PATCH_ORBIT_NUM_FOR_L4</A>
 <LI><A HREF="general/misc_spd_doc_list.html#PCLOSE">PCLOSE</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#PEAK_2D">
 PEAK_2D</A>
+<br>Returns the energy of the energy flux peak, eV
 <LI><A HREF="general/missions/rbsp/efw/rbsp_phasef/misc_spd_doc_list.html#
 PERIGEE_CORRECTION_PLOT1">PERIGEE_CORRECTION_PLOT1</A>
 <LI><A HREF="general/missions/rbsp/efw/rbsp_phasef/file_production_spd_doc_list.html#
@@ -7172,6 +7188,7 @@ PHASEF_SAVE_SPINAXIS_GSE_TO_FILE">PHASEF_SAVE_SPINAXIS_GSE_TO_FILE</A>
 </A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#PITCH2D">
 PITCH2D</A>
+<br>Plots 2d data as pitch angle distributions.
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#PLASMA_MOVIE">PLASMA_MOVIE</A>
 <LI><A HREF="general/science_spd_doc_list.html#PLOT3D">PLOT3D</A>
 <br>Draws a series of 3d color plots, one plot per energy step.
@@ -7384,6 +7401,7 @@ PY_VALIDATION_EXAMPLE_UT__DEFINE">PY_VALIDATION_EXAMPLE_UT__DEFINE</A>
 <br>This object is an example of using MGunit to build unit tests that validate Python code
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#P_2D_NEW">
 P_2D_NEW</A>
+<br>Returns the pressure tensor, [Pxx,Pyy,Pzz,Pxy,Pxz,Pyz], eV/cm^3
 <LI><A HREF="general/science_spd_doc_list.html#P_3D">P_3D</A>
 <br>Returns the pressure tensor, [Pxx,Pyy,Pzz,Pxy,Pxz,Pyz], eV/cm^3
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
@@ -10654,6 +10672,7 @@ SPD_UNH_MMS_FILE_FILTER</A>
 SPD_UNITS_STRING</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#SPEC2D">
 SPEC2D</A>
+<br>Plots 2d data as energy spectra.
 <LI><A HREF="general/science_spd_doc_list.html#SPEC3D">SPEC3D</A>
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#SPEC4D">
 SPEC4D</A>
@@ -11360,6 +11379,8 @@ TEST_CROSS_SPEC">TEST_CROSS_SPEC</A>
 <br>Determines whether a given year is a leap year, and
 <LI><A HREF="general/missions/wind/waves_spd_doc_list.html#TEST_SPD_DATE_FORMAT
 ">TEST_SPD_DATE_FORMAT</A>
+<LI><A HREF="general/misc/time/TT2000_spd_doc_list.html#TEST_UNIX_TO_TT2000_VECT
+">TEST_UNIX_TO_TT2000_VECT</A>
 <LI><A HREF="external/astron/fits_misc_spd_doc_list.html#TEXTCLOSE">TEXTCLOSE
 </A>
 <br>Close a text outpu file previously opened with TEXTOPEN
@@ -12851,6 +12872,7 @@ TVECTOR_ROTATE</A>
 TWAVPOL_MODIFIED">TWAVPOL_MODIFIED</A>
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#T_2D_NEW">
 T_2D_NEW</A>
+<br>Returns the temperature, [Tx,Ty,Tz,Tavg], eV
 <LI><A HREF="general/science_spd_doc_list.html#T_3D">T_3D</A>
 <br>Returns the temperature, [Tx,Ty,Tz,Tavg], eV
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#
@@ -12881,6 +12903,9 @@ UNH_MMS_FILE_FILTER</A>
 <LI><A HREF="general/misc/time/TT2000_spd_doc_list.html#UNIX_TO_TT2000">
 UNIX_TO_TT2000</A>
 <br>Converts unix times to TT2000 times.
+<LI><A HREF="general/misc/time/TT2000_spd_doc_list.html#UNIX_TO_TT2000_VECT">
+UNIX_TO_TT2000_VECT</A>
+<br>Converts unix times to TT2000 times, as a vectorized alternative to unix_to_tt2000.pro.
 <LI><A HREF="external/CDAWlib_spd_doc_list.html#UNPACK">UNPACK</A>
 <br>Uncompress a compressed image
 <LI><A HREF="projects/iugonet/tools/statistical_package_spd_doc_list.html#
@@ -13011,6 +13036,7 @@ VXB_3D_NEW">VXB_3D_NEW</A>
 <br>Returns VxB, mV/m, corrects for spacecraft potential if dat.sc_pot exists
 <LI><A HREF="general/missions/fast/fa_esa/functions_spd_doc_list.html#V_2D_NEW">
 V_2D_NEW</A>
+<br>Returns the velocity, [Vx,Vy,Vz], km/s
 <LI><A HREF="general/science_spd_doc_list.html#V_3D">V_3D</A>
 <br>Returns the velocity, [Vx,Vy,Vz], km/s
 <LI><A HREF="projects/themis/spacecraft/particles/ESA/packet/functions_spd_doc_list.html#

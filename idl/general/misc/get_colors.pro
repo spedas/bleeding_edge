@@ -25,9 +25,9 @@
 ;
 ;Written by: Davin Larson    96-01-31
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-02-03 13:32:18 -0800 (Mon, 03 Feb 2025) $
-; $LastChangedRevision: 33109 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/get_colors.pro $
 ;-
 function  get_colors,colors=cols,array=array,input

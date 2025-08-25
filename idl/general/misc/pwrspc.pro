@@ -32,9 +32,9 @@
 ;            input units 
 ; err_msg = named variable that contains any error message that might occur
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2018-06-20 11:48:31 -0700 (Wed, 20 Jun 2018) $
-;$LastChangedRevision: 25376 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/pwrspc.pro $
 ;
 ;-

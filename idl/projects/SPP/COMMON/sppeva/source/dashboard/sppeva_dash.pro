@@ -6,9 +6,9 @@
 ; CREATED BY: Mitsuo Oka   Sep 2018
 ;
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-09 22:05:02 -0700 (Thu, 09 Apr 2020) $
-; $LastChangedRevision: 28538 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/sppeva/source/dashboard/sppeva_dash.pro $
 ;-
 

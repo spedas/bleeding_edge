@@ -24,9 +24,9 @@
 ; 9-oct-2007, added option to clip the points adjacent to the bad
 ;             ones, as in tdespike_ae.pro 
 ; 20-Oct-2007, Jmm, Added this comment to test commit comand
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2018-11-30 12:03:45 -0800 (Fri, 30 Nov 2018) $
-;$LastChangedRevision: 26203 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/xclip.pro $
 ;-
 Pro xclip, amin, amax, y, flag = flag, clip_adjacent = clip_adjacent, interior_clip=interior_clip, $

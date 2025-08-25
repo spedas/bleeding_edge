@@ -204,7 +204,9 @@ end
 ;    NPOINTS: Max number of points to return
 ;    PSYM:    If set to a psym number, the cooresponding psym is plotted at
 ;             selected points
-;    SILENT:  Do not print data point information
+;    SILENT:  0 = print instructions and data point information
+;             1 = print instructions but not data point information
+;             2 = print nothing
 ;    PANEL:   Set to a named variable to return an array of tplot panel numbers
 ;             coresponding to the variables points were chosen from.
 ;    XNORM:   Set to a named variable to return an array of normalized x
@@ -327,7 +329,7 @@ if size(/type,sleep) eq 0    then sleep  = 0.01 ;if not set: 0.01, if set 0: 0
 if not keyword_set(exact)   then exact  = 0    else exact  = 1
 if not keyword_set(npoints) then max    = 2000 else max    = npoints > 1
 if not keyword_set(silent)  then silent = 0
-if not silent then begin
+if (silent lt 1) then begin
   if size(/type,prompt) ne 7 then $
     prompt='Use button 1 to select time, 2 to erase time, and 3 to quit.'
   prompt2 = ' point         name:             date/time              yvalue'
@@ -406,7 +408,7 @@ endif else begin
   v =  !values.f_nan
   var = 'Null'
 endelse
-print,form=form1,var,time_string(t,prec=prec,local_time=local_time),float(v),cr
+if (silent lt 2) then print,form=form1,var,time_string(t,prec=prec,local_time=local_time),float(v),cr
 ;;;;;;
 
 ;;;;;; create an error handling routine
@@ -454,7 +456,7 @@ if (exact ne 0) and (var ne 'Null') then $
 xnorm = make_array(max, value = !values.f_nan, /float)
 ynorm = make_array(max, value = !values.f_nan, /float)
 ;------ end JBT block ----
-print,'Use right button to exit'
+if (silent lt 2) then print,'Use right button to exit'
 while n lt max do begin
   ;the main loop calls cursor,
   ;which waits until there is a button press or cursor movement
@@ -531,7 +533,7 @@ while n lt max do begin
       plots,[hx,hx],[0,1], color=color,/norm,/thick,lines=0
     endif
 
-    if not silent then begin    ;print the new data
+    if (silent lt 1) then begin    ;print the new data
       if keyword_set(subvar) then varn = var+"->"+subvar else varn = var
       tstr = time_string(t,prec=prec,local_time=local_time)
       if ind2 eq -1 then print,form=form1,varn,     tstr,v,spaces,cr $
@@ -555,7 +557,7 @@ while n lt max do begin
         np = n_elements(time)
         append_array,inds,ind
         append_array,inds2,ind2 > 0     ;if ind2 eq -1 set to zero
-        if not silent then begin
+        if (silent lt 1) then begin
           if ind2 eq -1 then print,form=form3,np-1,varn,     tstr,v,spaces $
           else if spec then  print,form=form6,np-1,varn,ind2,tstr,v,z      $
           else               print,form=form4,np-1,varn,ind2,tstr,v,spaces
@@ -573,7 +575,7 @@ while n lt max do begin
           inds   = inds[0:np-2]
           inds2  = inds2[0:np-2]
           zvalue = zvalue[0:np-2]
-          if not silent then $
+          if (silent lt 1) then $
             print,form="(79x,a,TL79,'last sample (',i0,') deleted.')",cr,np-1
           n = n-1
         endif else if (np ne 0) and (time[0] ne 0) then begin
@@ -584,7 +586,7 @@ while n lt max do begin
           inds   = 0
           inds2  = 0
           zvalue = 0
-          if not silent then print,$
+          if (silent lt 1) then print,$
             form="(79x,a,TL79,'Zero sample (',i0,') set to zero.')",cr,np-1
           n = (n-1) > 0
         end

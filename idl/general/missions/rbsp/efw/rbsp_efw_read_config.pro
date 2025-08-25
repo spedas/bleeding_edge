@@ -14,9 +14,9 @@
 ;           structure
 ;HISTORY:
 ; 01-jul-2011, peters
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2015-11-18 14:03:31 -0800 (Wed, 18 Nov 2015) $
-;$LastChangedRevision: 19411 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/efw/rbsp_efw_read_config.pro $
 ;-
 Function rbsp_efw_config_template

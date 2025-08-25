@@ -38,9 +38,9 @@
 ; 28-apr-2008, pcruce, Added interp_resolution option, added memory warning, 
 ;                        mod to guarantee that precision of output is at least as 
 ;                        large as precision of input
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2018-01-10 17:03:26 -0800 (Wed, 10 Jan 2018) $
-;$LastChangedRevision: 24506 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+;$LastChangedRevision: 33563 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/thigh_pass_filter.pro $
 ;-
 

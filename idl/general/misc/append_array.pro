@@ -19,9 +19,9 @@
 ;   FILLNAN:  Set this keyword to fill padded values with NANs.
 ;   DONE: Equivalent to calling without the a1 argument.
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2020-04-04 00:09:13 -0700 (Sat, 04 Apr 2020) $
-; $LastChangedRevision: 28501 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/append_array.pro $
 
 ;LAST MODIFIED: @(#)append_array.pro    1.6 98/08/13

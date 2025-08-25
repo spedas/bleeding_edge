@@ -21,9 +21,9 @@
 ;       PARNG:         Shape parameter calculated based on 30, 45, and 60 deg, 
 ;                      corresponding to PARNG=1,2,3. Default is PA=45
 ;       
-; $LastChangedBy: xussui_lap $
-; $LastChangedDate: 2024-09-17 15:35:33 -0700 (Tue, 17 Sep 2024) $
-; $LastChangedRevision: 32842 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
+; $LastChangedRevision: 33563 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_shape_restore.pro $
 ;
 ;CREATED BY:    Shaosui Xu  06-23-17
