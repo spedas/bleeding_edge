@@ -3,7 +3,6 @@ Pro fa_despun_e_load_type, type, trange = trange, orbit = orbit, $
                            no_time_clip = no_time_clip, version = version, $
                            force = force, _extra = _extra
 
-  common fa_esv_saved_tranges, tr0_esv, tr0_e4k, tr0_e16k, tr0_esv_long
 ;Keep track of software versioning here
   If(keyword_set(version)) Then Begin
      sw_vsn = version
@@ -25,85 +24,58 @@ Pro fa_despun_e_load_type, type, trange = trange, orbit = orbit, $
      start_orbit = long(fa_time_to_orbit(tr0[0]))
      end_orbit = long(fa_time_to_orbit(tr0[1]))
   Endelse
-;Only load data if no_time_clip is set, and the saved trange does not
-;match the new one
-  tr0_test = [0.0d0, 0.0d0]
-  Case type of
-     'esv' : Begin
-        If(n_elements(tr0_esv) Eq 2) Then tr0_test = tr0_esv
-     End
-     'e4k' : Begin
-        If(n_elements(tr0_e4k) Eq 2) Then tr0_test = tr0_e4k
-     End
-     'e16k' : Begin
-        If(n_elements(tr0_e16k) Eq 2) Then tr0_test = tr0_e16k
-     End
-     'esv_long' : Begin
-        If(n_elements(tr0_esv_long) Eq 2) Then tr0_test = tr0_esv_long
-     End
-     Else: Begin
-        dprint, 'Bad Input Data Type, Returning'
-        Return
-     End
-  Endcase
-  timetest = total(abs(tr0-tr0_test))
-  If(timetest Gt 0.0 || keyword_set(no_time_clip) || keyword_set(force)) Then Begin
-;reset saved time
-     Case type of
-        'esv' : tr0_esv = tr0
-        'e4k' : tr0_e4k = tr0
-        'e16k' : tr0_e16k = tr0
-        'esv_long' : tr0_esv_long = tr0
-     Endcase
-     orbits = indgen(end_orbit-start_orbit+1)+start_orbit
-     orbits_str = strcompress(string(orbits,format='(i05)'), /remove_all)
-     orbit_dir = strmid(orbits_str,0,2)+'000'
-     relpathnames='l2/'+type+'/'+orbit_dir+'/fa_despun_'+type+'_l2_*_'+orbits_str+'_'+vxx+'.cdf'
-     filex=file_retrieve(relpathnames,_extra = !fast)
+  orbits = indgen(end_orbit-start_orbit+1)+start_orbit
+  orbits_str = strcompress(string(orbits,format='(i05)'), /remove_all)
+  orbit_dir = strmid(orbits_str,0,2)+'000'
+  relpathnames='l2/'+type+'/'+orbit_dir+'/fa_despun_'+type+'_l2_*_'+orbits_str+'_'+vxx+'.cdf'
+  filex=file_retrieve(relpathnames,_extra = !fast)
 ;Only files that exist here
-     filex = file_search(filex)
-     If(~is_string(filex)) Then Begin
-        dprint, 'No files found for time range and type:'+type
-        Return
-     Endif
+  filex = file_search(filex)
+  If(~is_string(filex)) Then Begin
+     dprint, 'No files found for time range and type:'+type
+     Return
+  Endif
 ;Only unique files here
-     filex_u = filex[bsort(filex)]
-     filex = filex_u[uniq(filex_u)]
-     cdf2tplot, files = filex, varformat = '*', tplotnames = tvars
-     If(~is_string(tnames(tvars))) Then Begin
-        dprint, 'No Variables Loaded'
-        Return
-     Endif
+  filex_u = filex[bsort(filex)]
+  filex = filex_u[uniq(filex_u)]
+  cdf2tplot, files = filex, varformat = '*', tplotnames = tvars
+  If(~is_string(tnames(tvars))) Then Begin
+     dprint, 'No Variables Loaded'
+     Return
+  Endif
 ;Check time range
-     If(~keyword_set(files) and ~keyword_set(no_time_clip)) Then Begin
-        time_clip, tnames(tvars), tr0[0], tr0[1], /replace
-     Endif
+  If(~keyword_set(files) and ~keyword_set(no_time_clip)) Then Begin
+     time_clip, tnames(tvars), tr0[0], tr0[1], /replace
+  Endif
 ;Add labels for 3D fields
-     colors = [ 2, 4, 6]
-     labels = [ 'Ex', 'Ey', 'Ez']
-     get_data,'fa_e0_s_dsc',data = edsc
-     If(is_struct(edsc)) Then Begin
-        options, 'fa_e0_s_dsc', 'colors', colors
-        options, 'fa_e0_s_dsc', 'labels', labels+' (DSC)'
-     Endif
-     get_data,'fa_e0_s_gse',data = egse
-     If(is_struct(egse)) Then Begin
-        options, 'fa_e0_s_gse', 'colors', colors
-        options, 'fa_e0_s_gse', 'labels', labels+' (GSE)'
-     Endif
-     get_data,'fa_e0_s_gsm',data = egsm
-     If(is_struct(egsm)) Then Begin
-        options, 'fa_e0_s_gsm', 'colors', colors
-        options, 'fa_e0_s_gsm', 'labels', labels+' (GSM)'
-     Endif
+  colors = [ 2, 4, 6]
+  labels = [ 'Ex', 'Ey', 'Ez']
+  get_data,'fa_e0_s_dsc',data = edsc
+  If(is_struct(edsc)) Then Begin
+     options, 'fa_e0_s_dsc', 'colors', colors
+     options, 'fa_e0_s_dsc', 'labels', labels+' (DSC)'
+  Endif
+  get_data,'fa_e0_s_gse',data = egse
+  If(is_struct(egse)) Then Begin
+     options, 'fa_e0_s_gse', 'colors', colors
+     options, 'fa_e0_s_gse', 'labels', labels+' (GSE)'
+  Endif
+  get_data,'fa_e0_s_gsm',data = egsm
+  If(is_struct(egsm)) Then Begin
+     options, 'fa_e0_s_gsm', 'colors', colors
+     options, 'fa_e0_s_gsm', 'labels', labels+' (GSM)'
+  Endif
 ;Add bitplot and labels for data quality
-     options, 'fa_data_quality', 'ytitle' ,'1-B Notch,2-S Notch!C3-Both'
-     options, 'fa_data_quality', 'ysubtitle' ,0
-     options, 'fa_data_quality', 'yrange', [0,4]
-  Endif Else Begin
-     dprint, dlevel=2, 'Not reloading '+type+' data'
-  Endelse
-  Return
+  options, 'fa_data_quality', 'ytitle' ,'FA_EFI Data Quality, Bits'
+
+  options, 'fa_data_quality', 'ysubtitle' ,0
+  options, 'fa_data_quality', 'yrange', [-0.1, 3.1]
+  options, 'fa_data_quality', 'ystyle', 1
+  options, 'fa_data_quality', 'tplot_routine', 'bitplot'
+  options, 'fa_data_quality', 'labels', ['B notch 12', $
+                                         'S notch 12', $
+                                         'B notch 58', $
+                                         'S notch 58']
 End
 
 ;+

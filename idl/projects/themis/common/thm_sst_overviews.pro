@@ -14,9 +14,9 @@
 ;Example:
 ; thm_sst_overviews,'2007-03-23',dir='~/out',device='z'
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2021-10-19 11:41:37 -0700 (Tue, 19 Oct 2021) $
-; $LastChangedRevision: 30377 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-30 12:15:38 -0700 (Sat, 30 Aug 2025) $
+; $LastChangedRevision: 33589 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sst_overviews.pro $
 ;-
 
@@ -103,7 +103,7 @@ for i = 0L,n_elements(probe_list)-1L do begin
       dprint, 'NO SST REDUCED Data for Probe: '+sc
     Endif Else Begin
       instr_do = instr_do[ok_instr]
-      thm_part_moments_old, probe = sc, instrument = instr_do, $
+      thm_part_moments, probe = sc, instrument = instr_do, $
         moments = ['density', 'velocity', 't3'],method_clean='automatic'
     Endelse
 endfor

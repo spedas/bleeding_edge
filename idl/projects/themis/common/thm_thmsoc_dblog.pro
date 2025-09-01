@@ -35,8 +35,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2023-06-28 10:36:20 -0700 (Wed, 28 Jun 2023) $
-;$LastChangedRevision: 31913 $
+;$LastChangedDate: 2025-08-27 12:28:20 -0700 (Wed, 27 Aug 2025) $
+;$LastChangedRevision: 33582 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_thmsoc_dblog.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ pro thm_thmsoc_dblog, server_run=server_run, process_name=process_name, severity
   if keyword_set(testing) then str_message = 'Testing, please ignore!' + string(10B) + string(10B) + str_message
   if keyword_set(args) then str_message = str_message + string(10B) + string(10B) + 'Command line args: ' + args
   if server_run eq 1 then begin
-    cmd_string = 'unsetenv LD_LIBRARY_PATH; /usr/bin/php /disks/socware/thmsoc_dp_current/src/php/thmsoc_dblog.php ' $
+    cmd_string = 'unset LD_LIBRARY_PATH; /usr/bin/php /disks/socware/thmsoc_dp_current/src/php/thmsoc_dblog.php ' $
          + process_name + ' ' + strtrim(string(severity),2) + ' "' + str_message + '"'
     spawn, cmd_string
   endif

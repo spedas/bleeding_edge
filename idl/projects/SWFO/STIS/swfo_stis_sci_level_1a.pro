@@ -1,6 +1,33 @@
+;+
+;FUNCTION:  SWFO_STIS_SCI_LEVEL_1A
+;PURPOSE: Creates an array of structures,
+; where each structure has fields corresponding
+; to the Level 1a data product for SWFO STIS, using
+; the array of Level 0b structures produced
+; by SWFO_STIS_SCI_LEVEL_0b.pro or read from
+; a Level 0b netcdf via swfo_ncdf_read.
+;
+; This data product sorts the science counts into
+; each detector and sensor (O1-O3, F1-F3),
+; retrieves the energy bins and bin widths
+; (which can vary depending on commanding,
+;  see SWFO_STIS_ADC_MAP),
+; scales counts if the decimation flag is enabled,
+; determines the noise histogram, std dev (sigma),
+; and center (baseline),
+; and assigns quality flags for instrument
+; and spacecraft conditions that can affect the
+; observation.
+;
+; Example call:
+;  > l1a =   swfo_stis_sci_level_1a(l0b)
+;
+; Cribsheets that demonstrate Level 1a loading:
+; - swfo_stis_sci_qflag_crib.pro: quality flag demo
+;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-02 16:12:25 -0700 (Sat, 02 Aug 2025) $
-; $LastChangedRevision: 33525 $
+; $LastChangedDate: 2025-08-30 12:14:43 -0700 (Sat, 30 Aug 2025) $
+; $LastChangedRevision: 33588 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -292,10 +319,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, pb=pb, cal=cal
     q = q or ishft(rate_flag[5]*1ull, cal.high_rate_qflag_index[5])
     ; if total(rate_flag) ne 0 then stop
 
-    ; Q flag: bits at positional index 24-25 will be set in Level 1b or 2,
-    ; since 24 is the the pixel merging and 25 is for electron contamination.
-
-    ; Q flag: bit at positional index 26 set if temperature
+    ; Q flag: bit at positional index 24 set if temperature
     ; limit exceeded:
     temps = [l0b.temp_dap, l0b.temp_sensor1, l0b.temp_sensor2]
     temp_dap_flag = temps[0] lt cal.dap_temperature_range[0] or temps[0] gt cal.dap_temperature_range[1]
@@ -305,9 +329,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, pb=pb, cal=cal
     q = q or ishft(temp_flag*1ull, cal.extreme_temperature_qflag_index)
     ; if temp_flag ne 0 then stop
 
-    ; Q flag: bits at positional index 27-29 unset, reserved for future use.
-
-    ; Q flag: bit at position index 30 set if nonstandard configuration,
+    ; Q flag: bit at position index 25 set if nonstandard configuration,
     ; where standard config defined as:
     ; - sci_translate = 16
     ; - nonlut_mode (second bit of detector_bits) = 0 [AKA log bins]
@@ -327,6 +349,9 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, pb=pb, cal=cal
     nonstandard_flag = translate_flag or nonlut_flag or uselut_flag or noise_enable_flag or user_09_flag
     q = q or ishft(nonstandard_flag * 1ull, cal.nonstandard_config_qflag_index)
     ; if nonstandard_flag ne 0 then stop
+
+    ; Q flag: bits at positional index 26-30 will be set in Level 1b.
+    ; since 26-29 are for the the pixel merging and 30 is for electron contamination.
 
     ; Q flag: bit at position 31 unset, reserved for future use.
 

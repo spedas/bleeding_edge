@@ -1,6 +1,30 @@
+;+
+;FUNCTION:  SWFO_STIS_SCI_LEVEL_1B
+;PURPOSE: Creates an array of structures,
+; where each structure has fields corresponding
+; to the Level 1b data product for SWFO STIS, using
+; the array of Level 1a structures produced
+; by SWFO_STIS_SCI_LEVEL_1A.pro.
+;
+; Unlike the Level 1a, this data product contains
+; fluxes determined by numerically merging the
+; smaller pixel with the larger pixel for both species.
+;
+; Also assigns quality flag bits for potentially
+; supicious pixel merging and electron contamination.
+;
+; Note that currently, all fields from Level 1a are
+; included in the Level 1b.
+;
+; Example call:
+;  > l1b =   swfo_stis_sci_level_1b(l1a, cal=cal)
+;
+; Cribsheets that demonstrate Level 1b loading:
+; - swfo_stis_sci_l1b_crib.pro
+;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
-; $LastChangedRevision: 33568 $
+; $LastChangedDate: 2025-08-30 12:14:43 -0700 (Sat, 30 Aug 2025) $
+; $LastChangedRevision: 33588 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -17,6 +41,28 @@ function swfo_stis_hdr, F_largepixel, F_smallpixel, eta_smallpixel=eta_smallpixe
     hdr = (eta_smallpixel * F_smallpixel + eta_largepixel * F_largepixel)/A
 
     return,hdr
+
+end
+
+; Function to take the difference between recorded count rates
+; and a line between the flux at the endpoints
+
+function swfo_stis_deviation_from_linfit, energy, count_rate
+
+    ; Take the logarithm of the energy and count rates:
+    log_energy = alog10(energy)
+    log_rate = alog10(count_rate)
+
+    ; get the slope and y-intercept of the line between the endpoints:
+    m = (log_rate[-1] - log_rate[0])/(log_energy[-1] - log_energy[0])
+    b = log_rate[0] - m*log_energy[0]
+
+    ; calculate the expected line at each log(energy) point:
+    fit = m * log_energy + b
+
+    ; take the difference between the log rate and the fit:
+    deviation = (log_rate - fit)
+    return, deviation
 
 end
 
@@ -52,6 +98,15 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
   N_low = poisson[0]
   N_high = poisson[1]
   a = cal.poisson_statistics_power_coefficient
+
+  ; Get the calvals out for common access:
+  pixel_ratio_low = cal.expected_pixel_ratio[0]
+  pixel_ratio_high = cal.expected_pixel_ratio[1]
+  ion_pixel_qflag = cal.bad_ion_pixel_merge_qflag_index
+  elec_pixel_qflag = cal.bad_elec_pixel_merge_qflag_index
+
+  contam_min_ion_energy = cal.contam_min_ion_energy
+  contam_min_electron_energy = cal.contam_min_electron_energy
 
   ; Get the deadlayer / spline info for access in forloop:
   if cal.energy_response_function then begin
@@ -198,51 +253,135 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     hdr_ion_flux = swfo_stis_hdr(ion_flux_big, ion_flux_small, $
       eta_smallpixel=eta1_ion, eta_largepixel=eta2_O)
     hdr_elec_flux = swfo_stis_hdr(elec_flux_big, elec_flux_small, $
-      eta_smallpixel=eta1_ion, eta_largepixel=eta2_F)
+      eta_smallpixel=eta1_elec, eta_largepixel=eta2_F)
 
-    ; pixel merging anomalous?
+    hdr_ion_rate = swfo_stis_hdr(ion_rate_big, ion_rate_small, $
+      eta_smallpixel=eta1_ion, eta_largepixel=eta2_O)
+    hdr_elec_rate = swfo_stis_hdr(elec_rate_big, elec_rate_small, $
+      eta_smallpixel=eta1_elec, eta_largepixel=eta2_F)
 
-    if total(ion_rate_big) gt 1 then begin
-      ion_pixel_ratio = total(ion_rate_small) / total(ion_rate_big)
-      ion_pixel_ratio_error = sqrt(1/total(ion_rate_small) + 1/total(ion_rate_big))
-    endif else begin
+    ; Quality flag determination:
+    ; First, retrieve the quality flag from level 1a
+    ; We will augment this:
+    q = str.quality_bits
+
+    ; Q flag: bits at positional index 26-29 set if the pixel merging
+    ; is suspect/anomalous for:
+    ; - ion channel:
+    ;    - 26: small pixel counting too few or big pixel counting too many
+    ;    - 27: small pixel counting too many or big pixel counting too few
+    ; - elec channel:
+    ;    - 28: small pixel counting too few or big pixel counting too many
+    ;    - 29: small pixel counting too many or big pixel counting too few
+
+    ; Calculate the ratio of count rate in small pixel to count rate
+    ; in big pixel:
+    ; - sum over all energy channels to improve signal response
+    ;   - this will allow detection energy-dependent differential
+    ;     behavior from small-to-big pixel, which shouldn't happen
+    ; - divide by the big pixel count rate, since that should have the
+    ;   most counts. should give a number of ~0.01
+    ;    - if have zero counts in big pixel, can't determine, so NaN
+    ;      it and move on. (will not set the qf in that case,
+    ;      since can't be determined).
+    if total(ion_rate_big) gt 1 then ion_pixel_ratio = total(ion_rate_small) / total(ion_rate_big) else $
       ion_pixel_ratio = !values.f_nan
-      ion_pixel_ratio_error = !values.f_nan
-    endelse
-
-    if total(elec_rate_big) gt 1 then begin
-      elec_pixel_ratio = total(elec_rate_small) / total(elec_rate_big)
-      elec_pixel_ratio_error = sqrt(1/total(elec_rate_small) + 1/total(elec_rate_big))
-    endif else begin
+    if total(elec_rate_big) gt 1 then elec_pixel_ratio = total(elec_rate_small) / total(elec_rate_big) else $
       elec_pixel_ratio = !values.f_nan
-      elec_pixel_ratio_error = !values.f_nan
-    endelse
 
-      ; print, 100. * counts_small_ion / counts_big_ion
-    ;   print, counts_big_ion / 100, counts_small_ion, sqrt(counts_small_ion)
-    ;   print, counts_small_ion + sqrt(counts_small_ion), counts_small_ion - sqrt(counts_small_ion)
-    ;   print, counts_small_ion + sqrt(counts_small_ion) - counts_big_ion / 100
-    ;   print, (counts_small_ion + sqrt(counts_small_ion))/(counts_big_ion / 100)
-    ;   stop
-
-    ; endif
-    ; stop
-
-    ; electron contamination?
-    ; only set if likely
-    elec_contam_erange = [50, 200]
-
-    overlap_index = where(F_energy gt elec_contam_erange[0] and F_energy lt elec_contam_erange[1], n_overlap)
-    ; overlap_index = where(O_energy gt elec_contam_erange[0] and O_energy lt elec_contam_erange[1], n_overlap)
+    ; ; Error determination (couldn't make this work):
+    ; ion_pixel_ratio_error = !values.f_nan
+    ; if total(ion_rate_big) gt 1 then ion_pixel_ratio_error = sqrt(1/total(ion_rate_small) + 1/total(ion_rate_big))
+    ; elec_pixel_ratio_error = !values.f_nan
+    ; if total(elec_rate_big) gt 1 then elec_pixel_ratio_error = sqrt(1/total(elec_rate_small) + 1/total(elec_rate_big))
 
 
-    if n_overlap gt 0 then begin
-      total_elec_overlap = total(elec_rate_big[overlap_index])
-      total_ion_overlap = total(ion_rate_big[overlap_index])
+    ; set quality flag if ratio is outside of expected range:
 
+    q = q or ishft((ion_pixel_ratio lt pixel_ratio_low)*1ull, ion_pixel_qflag[0])
+    q = q or ishft((ion_pixel_ratio gt pixel_ratio_high)*1ull, ion_pixel_qflag[1])
+    q = q or ishft((elec_pixel_ratio lt pixel_ratio_low)*1ull, elec_pixel_qflag[0])
+    q = q or ishft((elec_pixel_ratio gt pixel_ratio_high)*1ull, elec_pixel_qflag[1])
 
-      ion_elec_ratio = total_ion_overlap / total_elec_overlap
+    ; Q flag: bits at positional index 30 set if suspicious for electron contamination.
+    ;  Based on SEP, anticipate STIS will have contamination by electrons
+    ;  in the ion channel in the ion bins of ~50 keV to 1 MeV. This only
+    ;  occurs during electron-rich events with a sizable high energy component.
+    ;  It is easiest to recognize as a blurry horizontal "line" at around 200 keV,
+    ;  especially in data that has been time-averaged over several samples (e.g. 5 min).
+    ;
+    ; This is the hardest flag to assess, so it requires multiple
+    ; criterion.
+    ; - Enough ion counts in the sample: >1 at the selected sensitive energy (~100 keV)
+    ; - High electron count rate: >10 counts/sec in the highest elec energy
+    ;   bin that is least affected by ion bleedthrough from high enerrges (~100 keV)
+    ; - Low ion-electron count rate ratio (O/O+F): <0.25 for 100 keV
+    ;   (NOTE: this is better than O/F since more numerically constrained)
+    ; - High deviation of affected O count rates from a power law fit to
+    ;   affected bin  energy range: >0.1 for 50-1000 keV
+
+    ; Don't eval if data not available in these areas
+    ions_in_range = (contam_min_electron_energy lt ion_energy[0] or $
+                     contam_min_electron_energy gt ion_energy[-1])
+    elecs_in_range = (contam_min_electron_energy lt elec_energy[0] or $
+                      contam_min_electron_energy gt elec_energy[-1])
+
+    qflag_econtam = 0
+
+    if elecs_in_range and ions_in_range then begin
+      ; get closest energy to ion, to see if enough
+      ; ions
+
+      min_ion_index = (where(ion_energy ge contam_min_ion_energy))[0]
+      ion_rate_at_en = hdr_ion_rate[min_ion_index]
+
+      ; and electrons:
+      min_elec_index = (where(elec_energy ge contam_min_electron_energy))[0]
+      elec_rate_at_en = hdr_elec_rate[min_elec_index]
+
+      ; enough ions and electrons?
+      enough = ((ion_rate_at_en gt cal.contam_min_ion_count_rate) and $
+        (elec_rate_at_en gt cal.contam_min_electron_count_rate))
+
+      ; if so, then eval the flux ratio
+      ; elec contam only a risk for electron-rich ion-poor events:
+      if enough then begin
+        ; print, 'enough ions + elecs'
+        ; print, 'elec rate', elec_rate_at_en, ' at ', elec_energy[min_elec_index]
+        ; print, 'ion rate', ion_rate_at_en, ' at ', ion_energy[min_ion_index]
+        O_index = (where(O_energy ge cal.contam_min_ion_ratio_energy))[0]
+        ion_rate_for_ratio = hdr_ion_rate[O_index]
+        elec_rate_for_ratio = hdr_elec_rate[O_index]
+        ratio = ion_rate_for_ratio/(elec_rate_for_ratio + ion_rate_for_ratio)
+        ; stop
+
+        ; and if THIS criterion is met, determine
+        ; if there is a bump in the spectra in the contamination
+        ; energy range. do this by calculating the linear fit
+        ; to the count rate at the ends of the energy range,
+        ; and then taking the sum of the difference between
+        ; the measurement and linear fit.
+
+        ; if this is above the max deviation, THEN
+        ; set the qflag for elec contamination:
+        if ratio lt cal.contam_min_ion_ratio then begin
+          elec_contam_index =$
+            where(O_energy gt cal.contam_ion_energy_range[0] and $
+                  O_energy lt cal.contam_ion_energy_range[1], n_elec_contam)
+
+          if n_elec_contam gt 2 then begin
+            ; need at least two observations to run the below code,
+            ; and need at least three to calculate a nonzero deviation
+            dev = swfo_stis_deviation_from_linfit(ion_energy[elec_contam_index], hdr_ion_rate[elec_contam_index])
+            avg_deviation = mean(dev, /nan)
+            if avg_deviation gt cal.contam_ion_max_deviation_power_law then qflag_econtam = 1
+          endif
+
+        endif
+      endif
     endif
+    q = q or ishft(qflag_econtam*1ull, cal.elec_contam_qflag_index)
+    str.quality_bits = q
 
 
     ; ion_energy = bins.energy
@@ -276,9 +415,6 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
       hdr_elec_flux:  hdr_elec_flux, $
       ion_pixel_ratio: ion_pixel_ratio, $
       elec_pixel_ratio: elec_pixel_ratio, $
-      ion_pixel_ratio_error: ion_pixel_ratio_error, $
-      elec_pixel_ratio_error: elec_pixel_ratio_error, $
-      ion_elec_ratio: ion_elec_ratio, $
       lut_id: 0 }
 
     sci = create_struct(str,sci_ex)

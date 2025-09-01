@@ -3,7 +3,7 @@
 ;     goesr_load_data
 ;
 ; Purpose:
-;     Loads data from GOES-R satelites (GOES-16, GOES-17)
+;     Loads data from GOES-R satelites (GOES-16, GOES-17, GOES-18, GOES-19)
 ;     or from reprocessed data from earlier satelites (GOES 8-15).
 ;
 ; Keywords:
@@ -31,8 +31,8 @@
 ;     data:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2024-06-08 13:44:22 -0700 (Sat, 08 Jun 2024) $
-; $LastChangedRevision: 32691 $
+; $LastChangedDate: 2025-08-27 12:00:07 -0700 (Wed, 27 Aug 2025) $
+; $LastChangedRevision: 33581 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 ;-
 
@@ -71,7 +71,7 @@ pro goesr_sgps_postprocessing, varnames, prefix = prefix, suffix = suffix
   v = prefix + 'DiffProtonEffectiveEnergy' + suffix
   protons_energies =  goesr_find_in_list(varnames, v)
 
-  if protons ne '' and protons ne -1 then begin
+  if protons ne '' and protons ne '-1' then begin
     get_data, protons, data=dp, dl=dlp
     get_data, protons_energies, data=dpen, dl=dlpen
     dlp.ylog = 1
@@ -106,7 +106,7 @@ pro goesr_mpsh_postprocessing, varnames, prefix = prefix, suffix = suffix
   protons_energies = protons_energies[0]
 
   tprotons = ['T1', 'T4', 'T2', 'T5', 'T3']
-  if protons ne '' and protons ne -1 then begin
+  if protons ne '' and protons ne '-1' then begin
     get_data, protons, data=dp, dl=dlp
     get_data, protons_energies, data=dpen, dl=dlpen
     dlp.ylog = 1
@@ -132,7 +132,7 @@ pro goesr_mpsh_postprocessing, varnames, prefix = prefix, suffix = suffix
   electrons_energies =  goesr_find_in_list(varnames, v)
 
   telectrons = ['T3', 'T1', 'T4', 'T2', 'T5']
-  if electrons ne '' and electrons ne -1 then begin
+  if electrons ne '' and electrons ne '-1' then begin
     get_data, electrons, data=de, dl=dle
     get_data, electrons_energies, data=deen, dl=dleen
     dle.ylog = 1

@@ -26,24 +26,12 @@ filename = 'MR3_RFR/gpa_generated_products/stis_realtime_s20250613T160000_e20250
 ; ; E2E5
 ; filename = 'E2E5_RFR/gpa_generated_products/stis_realtime_s20250625T200001_e20250625T235159_p20250731T191157.055653_0b.nc'
 
-
+cal = swfo_stis_inst_response_calval()
 l0b = swfo_ncdf_read(filenames=filename, force_recdim=0)
-l1a =   swfo_stis_sci_level_1a(l0b)
-
-qflag_labels = ['Playback', 'P1 Enabled', 'P2 Enabled', 'P3 Enabled', 'P4 Enabled', 'P5 Enabled', 'P6 Enabled', $
-                '1: High Nse Sigma', '2: High Nse Sigma', '3: High Nse Sigma', $
-                '4: High Nse Sigma', '5: High Nse Sigma', '6: High Nse Sigma', $
-                'Disabled detectors', '2: Dec On', $
-                '3: Dec on', '5: Dec on', '6: Dec on', $
-                '1: Rate > Thr.', '2: Rate > Thr.', '3: Rate > Thr.', $
-                '4: Rate > Thr.', '5: Rate > Thr.', '6: Rate > Thr.', $
-                'Sus pixel merge', 'E- Contam', 'T > Tlim', $
-                '', '', '', 'Nonstand. config', '', $
-                'RxWh 1', 'RxWh 2', 'RxWh 3', 'RxWh 4', '', '', $
-                'any IRU invalid', 'Offpoint', 'Sun in FOV']
+l1a =   swfo_stis_sci_level_1a(l0b, cal=cal)
 
 store_data, 'quality_bits', data={x: l1a.time_unix, y: l1a.quality_bits}
-options, 'quality_bits', tplot_routine='bitplot', labels=qflag_labels, psyms=1
+options, 'quality_bits', tplot_routine='bitplot', labels=cal.qflag_labels, psyms=1
 ylim, 'quality_bits', -1, 42
 
 store_data, 'total6', data={x: l1a.time_unix, y: transpose(l1a.total6)}

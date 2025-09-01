@@ -14,9 +14,9 @@
 ;Example:
 ; thm_esa_overviews,'2007-03-23',dir='~/out',device='z'
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2025-03-31 15:28:47 -0700 (Mon, 31 Mar 2025) $
-; $LastChangedRevision: 33219 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-08-30 12:57:11 -0700 (Sat, 30 Aug 2025) $
+; $LastChangedRevision: 33590 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_esa_overviews.pro $
 ;-
 
@@ -76,7 +76,7 @@ for i = 0L,n_elements(probe_list)-1L do begin
       instr_all = ['peif', 'peir', 'peib', 'peef', 'peer', 'peeb']
       for j = 0, 5 do begin
         test_index = where('th'+sc+'_'+instr_all[j]+'_en_counts' eq tnames())
-        If(test_index[0] Ne -1) Then thm_part_moments_old, probe = sc, instrument = instr_all[j]
+        If(test_index[0] Ne -1) Then thm_part_moments, probe = sc, instrument = instr_all[j]
       endfor
     endif   
 endfor

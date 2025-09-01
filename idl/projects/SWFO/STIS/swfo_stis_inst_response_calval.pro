@@ -17,10 +17,10 @@
 ;     printdat, alt_cal
 ; 
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
-; $LastChangedRevision: 33568 $
+; $LastChangedDate: 2025-08-30 12:14:43 -0700 (Sat, 30 Aug 2025) $
+; $LastChangedRevision: 33588 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 33568 2025-08-21 22:42:58Z rjolitz $
+; $Id: swfo_stis_inst_response_calval.pro 33588 2025-08-30 19:14:43Z rjolitz $
 
 
 
@@ -163,6 +163,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ; in spacecraft reference frame, unit vector for the FOV is (0.643, 0, 0.766)
     ; calval.stis_boresight_unit_vector = [cos(50. * !dtor), 0, sin(50. * !dtor)]
     calval.stis_boresight_sc_unit_vector = [0.643, 0, 0.766]
+    calval.expected_pixel_ratio = [1e-3, 0.03]
 
     ; Qflag indices:
     calval.pulser_on_qflag_index = indgen(6) + 1
@@ -170,12 +171,34 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.any_detector_disabled_qflag_index = 13
     calval.decimation_qflag_index = indgen(4) + 14
     calval.high_rate_qflag_index = indgen(6) + 18
-    calval.extreme_temperature_qflag_index = 26
-    calval.nonstandard_config_qflag_index = 30
+    calval.extreme_temperature_qflag_index = 24
+    calval.nonstandard_config_qflag_index = 25
+    calval.bad_ion_pixel_merge_qflag_index = [26, 27]
+    calval.bad_elec_pixel_merge_qflag_index = [28, 29]
+    calval.elec_contam_qflag_index = 30
     calval.high_reaction_wheel_speed_qflag_index = indgen(4) + 32
     calval.bad_iru_qflag_index = 38
     calval.swfo_offpointing_qflag_index = 39
     calval.sun_in_stis_fov_qflag_index = 40
+
+    qflag_labels = strarr(64)
+    qflag_labels[0] = "Playback"
+    qflag_labels[calval.pulser_on_qflag_index] = ['P1 Enabled', 'P2 Enabled', 'P3 Enabled', 'P4 Enabled', 'P5 Enabled', 'P6 Enabled']
+    qflag_labels[calval.high_noise_sigma_qflag_index] = ['1: High Nse Sigma', '2: High Nse Sigma', '3: High Nse Sigma', $
+                                                         '4: High Nse Sigma', '5: High Nse Sigma', '6: High Nse Sigma']
+    qflag_labels[calval.any_detector_disabled_qflag_index] = 'Disabled detectors'
+    qflag_labels[calval.decimation_qflag_index] =  ['2: Dec On', '3: Dec on', '5: Dec on', '6: Dec on']
+    qflag_labels[calval.high_rate_qflag_index] = ['1: Rate > Thr.', '2: Rate > Thr.', '3: Rate > Thr.', '4: Rate > Thr.', '5: Rate > Thr.', '6: Rate > Thr.']
+    qflag_labels[calval.extreme_temperature_qflag_index] = 'T > Tlim'
+    qflag_labels[calval.nonstandard_config_qflag_index] = 'Nonstand. config'
+    qflag_labels[calval.bad_ion_pixel_merge_qflag_index] = ['Sus i+ merge: 100x O1 > O3', 'Sus i+ merge: 100x O1 < O3']
+    qflag_labels[calval.bad_elec_pixel_merge_qflag_index] = ['Sus e- merge: 100x F1 > F3', 'Sus e- merge: 100x F1 < F3']
+    qflag_labels[calval.elec_contam_qflag_index] = 'E- Contam'
+    qflag_labels[calval.high_reaction_wheel_speed_qflag_index] = ['RxWh 1', 'RxWh 2', 'RxWh 3', 'RxWh 4']
+    qflag_labels[calval.bad_iru_qflag_index] = 'any IRU invalid'
+    qflag_labels[calval.swfo_offpointing_qflag_index] = 's/c offpointing'
+    qflag_labels[calval.sun_in_stis_fov_qflag_index] = 'Sun in FOV'
+    calval.qflag_labels = qflag_labels
 
     ; nonlut ADC corresponds to clog_17_6 (compressed log)
     calval.nonlut_adc_min  =$
@@ -232,14 +255,25 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     
 
     ; For l1b flag:
-    calval.electron_contam_factor = 0.5
+    ; Need a lot of parameters to determine the electron
+    ; contamination flag:
+    ; calval.electron_contam_factor = 0.5
+    calval.contam_min_ion_count_rate = 1
+    calval.contam_min_ion_energy = 100
+    calval.contam_min_electron_count_rate = 10
+    calval.contam_min_electron_energy = 100
+    calval.contam_min_ion_ratio_energy = 100
+    calval.contam_min_ion_ratio = 0.25
+    calval.contam_ion_energy_range = [50, 1000]
+    calval.contam_ion_max_deviation_power_law = 0.1
+
 
     ; For L2:
     calval.epam_ion_edge_energies = [47., 68., 115., 195., 315., 583., 1060., 1900., 4800.]
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 33568 2025-08-21 22:42:58Z rjolitz $'
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 33588 2025-08-30 19:14:43Z rjolitz $'
     swfo_stis_inst_response_calval_dict  = calval
     dprint,'Using Revision: '+calval.rev_date
   endif

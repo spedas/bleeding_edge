@@ -8,28 +8,28 @@
 filename = 'STIS_L0B_SSL_Xray_upd.nc'
 ; filename = 'STIS_L0B_SSL_iongun_upd.nc'
 l0b = swfo_ncdf_read(filenames=filename, force_recdim=0)
-l1a =   swfo_stis_sci_level_1a(l0b)
-l1b =   swfo_stis_sci_level_1b(l1a)
+cal = swfo_stis_inst_response_calval()
+l1a =   swfo_stis_sci_level_1a(l0b, cal=cal)
+l1b =   swfo_stis_sci_level_1b(l1a, cal=cal)
 
 swfo_stis_hdr_tplot, l1b, /elec, /ion
 ; tplot, ['swfo_stis_l1b_eta', 'swfo_stis_ion_Ch1_flux', 'swfo_stis_ion_Ch3_flux', 'swfo_stis_ion_hdr_flux']
 options, '*_flux', zrange=[1e-2, 1e5]
 
+; Detector bits + sci_resolution/translate:
+store_data, 'swfo_stis_detector_bits', data={x: l0b.time_unix, y: l0b.detector_bits}
+detector_flag_labels = ['Det. 1 Enabled', 'Det. 2 Enabled', 'Det. 3 Enabled', 'Det. 4 Enabled', 'Det. 5 Enabled', 'Det. 6 Enabled', 'Linear', 'Decimate On']
+options, 'swfo_stis_detector_bits', tplot_routine='bitplot', psyms=1, labels=detector_flag_labels
+store_data, 'swfo_stis_sci_resolution', data={x: l0b.time_unix, y: l0b.sci_resolution}
+store_data, 'swfo_stis_sci_translate', data={x: l0b.time_unix, y: l0b.sci_translate}
 
-qflag_labels = ['Playback', 'P1 Enabled', 'P2 Enabled', 'P3 Enabled', 'P4 Enabled', 'P5 Enabled', 'P6 Enabled', $
-                '1: High Nse Sigma', '2: High Nse Sigma', '3: High Nse Sigma', $
-                '4: High Nse Sigma', '5: High Nse Sigma', '6: High Nse Sigma', $
-                'Disabled detectors', '2: Dec On', $
-                '3: Dec on', '5: Dec on', '6: Dec on', $
-                '1: Rate > Thr.', '2: Rate > Thr.', '3: Rate > Thr.', $
-                '4: Rate > Thr.', '5: Rate > Thr.', '6: Rate > Thr.', $
-                'Sus pixel merge', 'E- Contam', 'T > Tlim', $
-                '', '', '', 'Nonstand. config', '', $
-                'RxWh 1', 'RxWh 2', 'RxWh 3', 'RxWh 4', '', '', $
-                'any IRU invalid', 'Offpoint', 'Sun in FOV']
+tplot, ['swfo_stis_elec_Ch1_flux', 'swfo_stis_elec_Ch3_flux', 'swfo_stis_elec_hdr_flux',$
+        'swfo_stis_sci_translate', 'swfo_stis_detector_bits', 'swfo_stis_sci_resolution']
+stop
 
-store_data, 'quality_bits', data={x: l1a.time_unix, y: l1a.quality_bits}
-options, 'quality_bits', tplot_routine='bitplot', labels=qflag_labels, psyms=1
+
+store_data, 'quality_bits', data={x: l1b.time_unix, y: l1b.quality_bits}
+options, 'quality_bits', tplot_routine='bitplot', labels=cal.qflag_labels, psyms=1
 
 store_data, 'total6', data={x: l1a.time_unix, y: transpose(l1a.total6)}
 options, 'total6', labels=['Ch1', 'Ch2', 'Ch3', 'Ch4', 'Ch5', 'Ch6'], ylog=1, labflag=1
@@ -46,23 +46,23 @@ tplot, ['swfo_stis_l1b_eta', 'swfo_stis_elec_Ch1_flux',$
         'quality_bits']
 ; stop
 
-store_data, 'swfo_stis_ion_elec_ratio', data={x: l1b.time_unix, y: l1b.ion_elec_ratio}
+; store_data, 'swfo_stis_ion_elec_ratio', data={x: l1b.time_unix, y: l1b.ion_elec_ratio}
 
 store_data, 'swfo_stis_ion_pixel_ratio', data={x: l1b.time_unix, y: l1b.ion_pixel_ratio} 
 store_data, 'swfo_stis_elec_pixel_ratio', data={x: l1b.time_unix, y: l1b.elec_pixel_ratio}
-store_data, 'swfo_stis_ion_pixel_ratio_error', data={x: l1b.time_unix, y: l1b.ion_pixel_ratio_error} 
-store_data, 'swfo_stis_elec_pixel_ratio_error', data={x: l1b.time_unix, y: l1b.elec_pixel_ratio_error}
+; store_data, 'swfo_stis_ion_pixel_ratio_error', data={x: l1b.time_unix, y: l1b.ion_pixel_ratio_error} 
+; store_data, 'swfo_stis_elec_pixel_ratio_error', data={x: l1b.time_unix, y: l1b.elec_pixel_ratio_error}
 
 store_data, 'swfo_stis_pixel_ratio', data=['swfo_stis_ion_pixel_ratio', 'swfo_stis_elec_pixel_ratio']
 options, 'swfo_stis_pixel_ratio', labflag=1, labels=['ion', 'elec'], colors='rb'
 
-store_data, 'swfo_stis_pixel_ratio_error', data=['swfo_stis_ion_pixel_ratio_error', 'swfo_stis_elec_pixel_ratio_error']
-options, 'swfo_stis_pixel_ratio_error', labflag=1, labels=['ion', 'elec'], colors='rb'
+; store_data, 'swfo_stis_pixel_ratio_error', data=['swfo_stis_ion_pixel_ratio_error', 'swfo_stis_elec_pixel_ratio_error']
+; options, 'swfo_stis_pixel_ratio_error', labflag=1, labels=['ion', 'elec'], colors='rb'
 
 tplot, ['swfo_stis_l1b_eta',$
         'swfo_stis_elec_Ch1_flux', 'swfo_stis_elec_Ch3_flux', 'swfo_stis_elec_hdr_flux',$
         'swfo_stis_ion_Ch1_flux', 'swfo_stis_ion_Ch3_flux', 'swfo_stis_ion_hdr_flux',$
-        'quality_bits', 'swfo_stis_pixel_ratio', 'swfo_stis_pixel_ratio_error']
+        'quality_bits', 'swfo_stis_pixel_ratio']
 
 ylim, 'swfo_stis_pixel_ratio', 0, 0.05
 
