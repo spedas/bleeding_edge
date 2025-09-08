@@ -23,8 +23,8 @@
 ; - swfo_stis_sci_l1b_crib.pro
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-30 12:14:43 -0700 (Sat, 30 Aug 2025) $
-; $LastChangedRevision: 33588 $
+; $LastChangedDate: 2025-09-02 12:12:04 -0700 (Tue, 02 Sep 2025) $
+; $LastChangedRevision: 33591 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -47,15 +47,25 @@ end
 ; Function to take the difference between recorded count rates
 ; and a line between the flux at the endpoints
 
-function swfo_stis_deviation_from_linfit, energy, count_rate
+function swfo_stis_deviation_from_linfit, energy, count_rate, finite=finite
 
     ; Take the logarithm of the energy and count rates:
     log_energy = alog10(energy)
     log_rate = alog10(count_rate)
 
+    ; subset to finite only
+    if keyword_set(finite) then begin
+      finite_index = where(finite(log_rate))
+      log_energy = log_energy[finite_index]
+      log_rate = log_rate[finite_index]
+    endif
+
     ; get the slope and y-intercept of the line between the endpoints:
     m = (log_rate[-1] - log_rate[0])/(log_energy[-1] - log_energy[0])
     b = log_rate[0] - m*log_energy[0]
+    ; print, m
+    ; print, b
+    ; stop
 
     ; calculate the expected line at each log(energy) point:
     fit = m * log_energy + b
@@ -255,10 +265,8 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     hdr_elec_flux = swfo_stis_hdr(elec_flux_big, elec_flux_small, $
       eta_smallpixel=eta1_elec, eta_largepixel=eta2_F)
 
-    hdr_ion_rate = swfo_stis_hdr(ion_rate_big, ion_rate_small, $
-      eta_smallpixel=eta1_ion, eta_largepixel=eta2_O)
-    hdr_elec_rate = swfo_stis_hdr(elec_rate_big, elec_rate_small, $
-      eta_smallpixel=eta1_elec, eta_largepixel=eta2_F)
+    hdr_ion_rate = hdr_ion_flux * str.geom_O3 * str.spec_O3_dnrg
+    hdr_elec_rate = hdr_elec_flux * str.geom_F3 * str.spec_F3_dnrg
 
     ; Quality flag determination:
     ; First, retrieve the quality flag from level 1a
@@ -321,12 +329,18 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     ;   affected bin  energy range: >0.1 for 50-1000 keV
 
     ; Don't eval if data not available in these areas
-    ions_in_range = (contam_min_electron_energy lt ion_energy[0] or $
-                     contam_min_electron_energy gt ion_energy[-1])
-    elecs_in_range = (contam_min_electron_energy lt elec_energy[0] or $
-                      contam_min_electron_energy gt elec_energy[-1])
+    ions_in_range = (contam_min_electron_energy ge ion_energy[0] and $
+                     contam_min_electron_energy le ion_energy[-1])
+    elecs_in_range = (contam_min_electron_energy ge elec_energy[0] and $
+                      contam_min_electron_energy le elec_energy[-1])
 
     qflag_econtam = 0
+
+    ratio = !values.f_nan
+    avg_deviation = !values.d_nan
+    ion_rate_at_en = !values.f_nan
+    elec_rate_at_en = !values.f_nan
+    ion_contam_inrange = (elecs_in_range and ions_in_range)
 
     if elecs_in_range and ions_in_range then begin
       ; get closest energy to ion, to see if enough
@@ -372,8 +386,13 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
           if n_elec_contam gt 2 then begin
             ; need at least two observations to run the below code,
             ; and need at least three to calculate a nonzero deviation
-            dev = swfo_stis_deviation_from_linfit(ion_energy[elec_contam_index], hdr_ion_rate[elec_contam_index])
+            ; - finite keyword: only activate for testing with Xray dataset
+            ; dev = swfo_stis_deviation_from_linfit(ion_energy[elec_contam_index],$
+            ;                                       hdr_ion_rate[elec_contam_index], /finite)
+            dev = swfo_stis_deviation_from_linfit(ion_energy[elec_contam_index],$
+                                                  hdr_ion_rate[elec_contam_index])
             avg_deviation = mean(dev, /nan)
+            ; stop
             if avg_deviation gt cal.contam_ion_max_deviation_power_law then qflag_econtam = 1
           endif
 
@@ -415,6 +434,11 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
       hdr_elec_flux:  hdr_elec_flux, $
       ion_pixel_ratio: ion_pixel_ratio, $
       elec_pixel_ratio: elec_pixel_ratio, $
+      ; contam_inrange: ion_contam_inrange, $
+      ; contam_elec_rate: elec_rate_at_en, $
+      ; contam_ion_rate: ion_rate_at_en, $
+      ; contam_elec_ion_ratio: ratio, $
+      ; contam_elec_ion_dev: avg_deviation, $
       lut_id: 0 }
 
     sci = create_struct(str,sci_ex)

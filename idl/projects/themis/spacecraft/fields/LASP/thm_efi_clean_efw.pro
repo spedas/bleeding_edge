@@ -388,10 +388,16 @@ FOR ib=0L, nbursts-1 DO BEGIN
   Eyf = [Eyf, fltarr(kernel_length/2)]
   Ezf = [Ezf, fltarr(kernel_length/2)]
 
-  ;-- Deconvolve transfer function
-  Exf = shift(blk_con(E12_resp, Exf, b_length=b_length),-kernel_length/2)
-  Eyf = shift(blk_con(E34_resp, Eyf, b_length=b_length),-kernel_length/2)
-  Ezf = shift(blk_con(E56_resp, Ezf, b_length=b_length),-kernel_length/2)
+  ;-- Deconvolve transfer function, replace too-short bursts with NaN, jmm, 2025-09-04
+  If(b_length Gt n_elements(e12_resp) And b_length Lt n_elements(exf)) Then Begin
+     Exf = shift(blk_con(E12_resp, Exf, b_length=b_length),-kernel_length/2)
+  Endif Else Exf[*] = !values.f_nan
+  If(b_length Gt n_elements(e34_resp) And b_length Lt n_elements(eyf)) Then Begin
+     Eyf = shift(blk_con(E34_resp, Eyf, b_length=b_length),-kernel_length/2)
+  Endif Else Eyf[*] = !values.f_nan
+  If(b_length Gt n_elements(e56_resp) And b_length Lt n_elements(ezf)) Then Begin
+     Ezf = shift(blk_con(E56_resp, Ezf, b_length=b_length),-kernel_length/2)
+  Endif Else Ezf[*] = !values.f_nan
 
   ;-- Remove the padding
   Exf = Exf[0:nt_burst-1]

@@ -25,7 +25,7 @@ store_data, 'swfo_stis_sci_translate', data={x: l0b.time_unix, y: l0b.sci_transl
 
 tplot, ['swfo_stis_elec_Ch1_flux', 'swfo_stis_elec_Ch3_flux', 'swfo_stis_elec_hdr_flux',$
         'swfo_stis_sci_translate', 'swfo_stis_detector_bits', 'swfo_stis_sci_resolution']
-stop
+; stop
 
 
 store_data, 'quality_bits', data={x: l1b.time_unix, y: l1b.quality_bits}
@@ -46,7 +46,28 @@ tplot, ['swfo_stis_l1b_eta', 'swfo_stis_elec_Ch1_flux',$
         'quality_bits']
 ; stop
 
-; store_data, 'swfo_stis_ion_elec_ratio', data={x: l1b.time_unix, y: l1b.ion_elec_ratio}
+; ; Test of contamination (electrons in ion) information:
+; store_data, 'contam_inrange',$
+;   data={x: l1b.time_unix, y: l1b.contam_inrange},$
+;   dlimits={yrange: [-0.1, 1.1]}
+; store_data, 'contam_elec_rate',$
+;   data={x: l1b.time_unix, y: l1b.contam_elec_rate},$
+;   dlimits={constant: cal.contam_min_electron_count_rate}
+; store_data, 'contam_ion_rate',$
+;   data={x: l1b.time_unix, y: l1b.contam_ion_rate},$
+;   dlimits={constant: cal.contam_min_ion_count_rate}
+; store_data, 'contam_elec_ion_ratio',$
+;   data={x: l1b.time_unix, y: l1b.contam_elec_ion_ratio},$
+;   dlimits={constant: cal.contam_min_ion_ratio, psym: 5, yrange: [0, 0.5]}
+; store_data, 'contam_elec_ion_dev',$
+;   data={x: l1b.time_unix, y: l1b.contam_elec_ion_dev},$
+;   dlimits={constant: cal.contam_ion_max_deviation_power_law, psym: 5}
+
+; tplot, ['swfo_stis_elec_hdr_flux', 'swfo_stis_ion_hdr_flux',$
+;         'contam_inrange', 'contam_elec_rate', 'contam_ion_rate',$
+;         'contam_elec_ion_ratio', 'contam_elec_ion_dev',$
+;         'quality_bits']
+; stop
 
 store_data, 'swfo_stis_ion_pixel_ratio', data={x: l1b.time_unix, y: l1b.ion_pixel_ratio} 
 store_data, 'swfo_stis_elec_pixel_ratio', data={x: l1b.time_unix, y: l1b.elec_pixel_ratio}

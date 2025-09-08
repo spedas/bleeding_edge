@@ -260,8 +260,8 @@ end
 ;          frequency responses), rather than proper time-dependent parameters.
 ;
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2025-05-13 14:49:32 -0700 (Tue, 13 May 2025) $
-; $LastChangedRevision: 33308 $
+; $LastChangedDate: 2025-09-04 12:01:24 -0700 (Thu, 04 Sep 2025) $
+; $LastChangedRevision: 33599 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_efi.pro $
 ;-
 pro thm_cal_efi, probe = probe, datatype = datatype, $
@@ -774,23 +774,31 @@ pro thm_cal_efi, probe = probe, datatype = datatype, $
 ;
 ; 1st chunk:
 ;
-                          samp_rate = 1./median(x_out[1:q[0]-1] - x_out[0:q[0]-2]) ; samp/s.
-                          wdii = where(ii lt q[0])
-                          wd = imap[wdii]
-                          result = thm_get_efi_edc_offset(float(d.y[wd, j]), samp_rate, n_spins, spin_period, $
-                                                          edge_truncate, window_truncated, $
-                                                          new_n_spins, min_n_spins = min_n_spins)
-                          if (where(finite(result)))[0] ne -1 then begin
-                            if keyword_set(window_truncated) then begin
-                              offset_estimation_window_truncated = 1b
-                              dprint, dlevel=4,' *** WARNING: smoothing window truncated to '+string(new_n_spins, format = '(i0)')+ $
-                                ' spins to fit data sub-interval.'
-                            endif
+                          if q[0] gt 1 then begin ;q[0] has to be greater than one, otherwise this will crash, jmm, 2025-09-04
+                             samp_rate = 1./median(x_out[1:q[0]-1] - x_out[0:q[0]-2]) ; samp/s.
+                             wdii = where(ii lt q[0])
+                             wd = imap[wdii]
+                             result = thm_get_efi_edc_offset(float(d.y[wd, j]), samp_rate, n_spins, spin_period, $
+                                                             edge_truncate, window_truncated, $
+                                                             new_n_spins, min_n_spins = min_n_spins)
+                             if (where(finite(result)))[0] ne -1 then begin
+                                if keyword_set(window_truncated) then begin
+                                   offset_estimation_window_truncated = 1b
+                                   dprint, dlevel=4,' *** WARNING: smoothing window truncated to '+string(new_n_spins, format = '(i0)')+ $
+                                           ' spins to fit data sub-interval.'
+                                endif
+                             endif else begin
+                                dprint, dlevel=4,' *** WARNING: Interval less than '+strtrim(min_n_spins, 2)+$
+                                        ' spins wide.  Interval filled with NaNs.'
+                             endelse
+                             d_smooth[wd, j] = temporary(result)
                           endif else begin
-                            dprint, dlevel=4,' *** WARNING: Interval less than '+strtrim(min_n_spins, 2)+$
-                              ' spins wide.  Interval filled with NaNs.'
+                             dprint, dlevel=4,' *** WARNING: Interval less than 2 data points.'+$
+                                     ' Interval filled with NaNs.'
+                             wdii = where(ii le q[0])
+                             wd = imap[wdii]
+                             d_smooth[wd, j] = !values.f_nan
                           endelse
-                          d_smooth[wd, j] = temporary(result)
 ;
 ; Nth chunk:
 ;
