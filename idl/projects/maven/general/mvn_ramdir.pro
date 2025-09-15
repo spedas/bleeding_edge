@@ -71,9 +71,14 @@
 ;       MSO:      Calculate ram vector in the MSO frame instead of the
 ;                 rotating IAU_MARS frame.  May be useful at high altitudes.
 ;
-;       ERROR:    Calculate the magnitude of the RAM pointing error (deg)
-;                 and store as a separate tplot variable.  This only works for
-;                 the APP and NGIMS frames.  The STATIC frame is reversed.
+;       ERROR:    Calculate the magnitude of the RAM pointing error (deg) in
+;                 one of the APP frames and store as a separate tplot variable.
+;                 This only works for the APP, NGIMS and STATIC frames, as well
+;                 as the reverse of those frames.  Note that the NGIMS frame is
+;                 slightly shifted relative to the APP frame, so the calculated 
+;                 error is slightly different.  If ERROR is set but no APP frame
+;                 is specified in FRAME, then MAVEN_APP is appended to the FRAME 
+;                 list.
 ;
 ;                 Using ephemeris predicts refreshed on a regular basis, the
 ;                 spacecraft can usually point the APP into the RAM direction
@@ -91,8 +96,8 @@
 ;       SUCCESS:  Returns 1 on normal operation, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-07-25 14:47:18 -0700 (Thu, 25 Jul 2024) $
-; $LastChangedRevision: 32761 $
+; $LastChangedDate: 2025-09-08 12:49:13 -0700 (Mon, 08 Sep 2025) $
+; $LastChangedRevision: 33605 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_ramdir.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -116,6 +121,16 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
     return
   endif else frame = frame[gndx]
 
+; Make sure at least one APP frame is included if ERROR is set
+
+  if (doerr) then begin
+    i = where((frame eq 'MAVEN_APP') or (frame eq 'MAVEN_NGIMS') or (frame eq 'MAVEN_STATIC'), count)
+    if (count eq 0) then begin
+      frame = [frame, 'MAVEN_APP']
+      print,"  Adding MAVEN_APP frame to calculate RAM error."
+    endif
+  endif
+
 ; The spacecraft CK is always needed.  Check to see if the APP CK is also needed.
 
   need_app_ck = max(strmatch(frame,'*STATIC*',/fold)) or $
@@ -130,7 +145,7 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
     tplot_options, get=topt
     trange = topt.trange_full
     if (max(trange) lt time_double('2013-11-18')) then begin
-      print,"Invalid time range or time array."
+      print,"  Invalid time range or time array."
       return
     endif
     npts = 2L
@@ -148,21 +163,21 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
   mk = spice_test('*', verbose=-1)
   indx = where(mk ne '', count)
   if (count eq 0) then begin
-    print,"You must initialize SPICE first."
+    print,"  You must initialize SPICE first."
     bail = 1
   endif else begin
     mvn_spice_stat, summary=sinfo, check=minmax(ut), /silent
     ok = sinfo.spk_check and sinfo.ck_sc_check
     if (need_app_ck) then ok = ok and sinfo.ck_app_check
     if (not ok) then begin
-      print,"Insufficient SPICE coverage for the requested time range."
-      print,"  -> Reinitialize SPICE to include your time range."
+      print,"  Insufficient SPICE coverage for the requested time range."
+      print,"    -> Reinitialize SPICE to include your time range."
       bail = 1
     endif
   endelse
 
   if (noguff) then begin
-    if (bail) then print,"  -> Keyword FORCE is set, so trying anyway."
+    if (bail) then print,"    -> Keyword FORCE is set, so trying anyway."
     bail = 0
   endif
 
@@ -262,25 +277,35 @@ pro mvn_ramdir, trange, dt=dt, pans=pans, frame=frame, mso=mso, polar=polar, res
         str_element, result, 'phi'+fnum, phi, /add
 
         if (doerr) then begin
-          dang = acos(cos(phi.y*!dtor)*cos(the.y*!dtor))*!radeg
-          store_data,'RAM_Error',data={x:phi.x, y:dang}
-          ylim,'RAM_Error',0,3,0
-          options,'RAM_Error','ytitle','RAM Error!cdeg'
-          options,'RAM_Error','psym',3
-          options,'RAM_Error','line_colors',5
-          options,'RAM_Error','colors',6
-          options,'RAM_Error','constant',[0.5,2]
-          options,'RAM_Error','const_color',[4,5]
-          options,'RAM_Error','const_line',[2,2]
+          appframe = 1
+          case (to_frame) of
+            'MAVEN_APP'    : phi0 = (sign gt 0.) ? 0. : 180.*!dtor
+            'MAVEN_NGIMS'  : phi0 = (sign gt 0.) ? 0. : 180.*!dtor
+            'MAVEN_STATIC' : phi0 = (sign lt 0.) ? 0. : 180.*!dtor
+            else : appframe = 0
+          endcase
+          if (appframe) then begin
+            dang = acos(cos(phi.y*!dtor - phi0)*cos(the.y*!dtor))*!radeg
+            store_data,'RAM_Error',data={x:phi.x, y:dang}
+            ylim,'RAM_Error',0,3,0
+            options,'RAM_Error','ytitle','RAM Error!cdeg'
+            options,'RAM_Error','psym',3
+            options,'RAM_Error','line_colors',5
+            options,'RAM_Error','colors',6
+            options,'RAM_Error','constant',[0.5,2]
+            options,'RAM_Error','const_color',[4,5]
+            options,'RAM_Error','const_line',[2,2]
+            doerr = 0  ; just calculate the error once
+          endif
         endif
       endif
     endif else begin
-      print,"Could not rotate to frame: ",to_frame
+      print,"  Could not rotate to frame: ",to_frame
     endelse
   endfor
 
   if (n_elements(pans) lt 2) then begin
-    print,"No valid ram directions."
+    print,"  No valid ram directions."
     return
   endif
 

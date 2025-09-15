@@ -33,8 +33,8 @@
 ;                 null string.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-07-28 12:30:14 -0700 (Mon, 28 Jul 2025) $
-; $LastChangedRevision: 33504 $
+; $LastChangedDate: 2025-09-10 13:21:57 -0700 (Wed, 10 Sep 2025) $
+; $LastChangedRevision: 33615 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_frame_name.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -46,10 +46,12 @@ function mvn_frame_name, frame, success=success, reset=reset, list=list
   if (keyword_set(reset) or (size(mvn_flist,/type) ne 7)) then begin
     mvn_flist = ['MARS','GEO','PHOBOS','DEIMOS','SPACECRAFT','APP','SEP1','SEP2',$
                  'STATIC','SWIA','SWEA','MAG1','MAG2','EUV','IUVS_LIMB','IUVS_NADIR',$
-                 'NGIMS','MSO','SSO','MARS_ENR','SUN_RTN','MME_2000']
+                 'NGIMS','MSO','SSO','ENR','SUN_RTN','MME_2000']
   endif
   flist = mvn_flist
   ffull = ['IAU_'+flist[0:3], 'MAVEN_'+flist[4:*]]
+  i = where(strcmp(ffull, 'MAVEN_ENR', 9, /fold), count)
+  if (count gt 0) then ffull[i] = 'MAVEN_MARS_ENR'
 
   nframe = n_elements(frame)
   if (keyword_set(list) or (nframe eq 0)) then begin
@@ -72,6 +74,11 @@ function mvn_frame_name, frame, success=success, reset=reset, list=list
 
   i = where(strcmp(ftest, 'IAU_', 4, /fold), count)
   if (count gt 0) then ftest[i] = strmid(ftest[i],4)
+
+; Strip off leading "MARS_" from ENR frame (removes ambiguity with IAU_MARS frame)
+
+  i = where(strcmp(ftest, 'MARS_', 5, /fold), count)
+  if (count gt 0) then ftest[i] = strmid(ftest[i],5)
 
 ; Case folded minimum matching for the remainder of the fragment
 
