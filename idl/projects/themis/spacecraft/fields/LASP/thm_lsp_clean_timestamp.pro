@@ -15,13 +15,16 @@
 ;
 ; KEYWORDS:
 ;     newname: (input, optional) A string as the name of the cleaned tplot data.
-;
+;     keep_all: If set, keep all data points, but with NaN values for
+;               bad times. This must be set in THM_EFI_CLEAN_EFW to
+;               avoid size mismatches. Bad timestamps can be removed
+;               later in THM_EFI_CLEAN_EFW.
 ; HISTORY:
 ;     2010-01-27: Created by Jianbao Tao, CU/LASP.
 ;
 ;+
 
-pro thm_lsp_clean_timestamp, tvar, newname=newname
+pro thm_lsp_clean_timestamp, tvar, newname=newname, keep_all = keep_all
 
 ; check tvar
 if n_elements(tvar) eq 0 then begin
@@ -91,15 +94,24 @@ print, 'THM_LSP_CLEAN_TIMESTAMP: ' +  $
 
 tarr = data.x
 tarr[ind] = !values.d_nan
-new_ind = where(finite(tarr))
-newt = tarr[new_ind]
-newy = data.y[new_ind, *]
-if success then begin
-   newv = data.v[new_ind, *]
-   store_data, newname, data={x:newt, y:newy, v:newv}, dlim=dlim
-endif else begin
-   store_data, newname, data={x:newt, y:newy}, dlim=dlim
-endelse
+If(keyword_set(keep_all)) Then Begin ;jmm, 2025-09-15
+   if success then begin
+      store_data, newname, data={x:tarr, y:data.y, v:data.v}, dlim=dlim
+   endif else begin
+      store_data, newname, data={x:tarr, y:data.y}, dlim=dlim
+   endelse
+Endif Else Begin
+   new_ind = where(finite(tarr))
+   newt = tarr[new_ind]
+   newy = data.y[new_ind, *]
+   if success then begin
+      if size(data.v, /n_dim) eq 2 then newv = data.v[new_ind, *] $
+      else newv = data.v
+      store_data, newname, data={x:newt, y:newy, v:newv}, dlim=dlim
+   endif else begin
+      store_data, newname, data={x:newt, y:newy}, dlim=dlim
+   endelse
+Endelse
 
 end
 

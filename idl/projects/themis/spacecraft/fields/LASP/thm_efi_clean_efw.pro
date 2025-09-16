@@ -158,7 +158,7 @@ ENDIF ELSE BEGIN
   Bdslname = 'th' + sc + '_fgh_dsl'
   get_data, Bdslname[0], data=Bdsl, dlim=blim
   IF size(/type,Bdsl) NE 8 then BEGIN
-    print, 'THM_EFI_CLEAN_EFW: Cannot get MAG data. Exiting...'
+    print, 'THM_EFI_CLEAN_EFW: Cannot get MAG FGH data. Exiting...'
     status = 1
     return
   ENDIF
@@ -431,8 +431,8 @@ FOR ib=0L, nbursts-1 DO BEGIN
   tsmooth2, 'Bclip', nsmpts, newname='Bclip'
 
   ; GO TO FAC COORDINATES (JIANBAO)
-  thm_lsp_clean_timestamp, 'Bclip'
-  thm_lsp_clean_timestamp, 'Eclip'
+  thm_lsp_clean_timestamp, 'Bclip', /keep_all
+  thm_lsp_clean_timestamp, 'Eclip', /keep_all
   thm_fac_matrix_make, 'Bclip', other_dim='zdsl', $
              newname='th'+sc+'_fgh_fac_mat'
   tvector_rotate, 'th'+sc+'_fgh_fac_mat', 'Eclip', $
@@ -440,11 +440,25 @@ FOR ib=0L, nbursts-1 DO BEGIN
 
   ; GET ECLIP AND SAVE
   get_data, 'Eclip', data = Eclip
+  Efac.x[bstart[ib]:bend[ib]] = Eclip.x 
   Efac.y[bstart[ib]:bend[ib],0]    = Eclip.y[*,0]
   Efac.y[bstart[ib]:bend[ib],1]    = Eclip.y[*,1]
   Efac.y[bstart[ib]:bend[ib],2]    = Eclip.y[*,2]
 ENDFOR
 ; ## END OF LOOP
+; Strip NaN time tags from Efac
+nan_time = where(~finite(Efac.x), nnan_time)
+If(nnan_time Gt 0) Then Begin
+   ok_time = where(finite(Efac.x), nok_time)
+   newt = Efac.x[ok_time]
+   newy = Efac.y[ok_time, *]
+   str_element, Efac, 'v', success = success
+   If(success) Then Begin
+      If(size(Efac.v, /n_dim) Eq 2) Then newv = Efac.v[ok_time, *] $
+      Else newv = Efac.v
+      store_data, newname, data={x:newt, y:newy, v:newv}, dlim=elim
+   Endif Else store_data, newname, data={x:newt, y:newy}, dlim=elim
+Endif
 
 ; STORE E DATA
 ; add BAND to data_att -JBT
