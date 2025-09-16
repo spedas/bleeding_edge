@@ -93,8 +93,8 @@ jobs:
           git config core.autocrlf false
           git config core.eol lf
           
-          echo "Git status after rsync (pre-normalization):"
-          git status --porcelain || true
+          echo "Git status after rsync (pre-normalization, filtering out generated html docs):"
+          git status --porcelain | grep -v \.html || true
           
           # Stage everything (adds/deletes), then normalize staged content per .gitattributes
           git add -A
