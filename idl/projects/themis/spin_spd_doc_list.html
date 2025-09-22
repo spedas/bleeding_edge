@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep 15 18:17:46 2025.<P>
+<STRONG>Last modified: </STRONG>Sat Sep 20 18:17:31 2025.<P>
  
 <HR>
  
@@ -37,8 +37,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPINMODEL_INTERP_T.PRO[1]">SPINMODEL_INTERP_T.PRO[1]</A>
 <br>Given a spin model and time (or array of times), calculate
 <LI><A HREF="#SPINMODEL_POST_PROCESS">SPINMODEL_POST_PROCESS</A>
-<LI><A HREF="#SPINMODEL_PYTHON_TEST.PRO">SPINMODEL_PYTHON_TEST.PRO</A>
-<br>Load several spin models and export them as CDFs for comparison with Python results
 <LI><A HREF="#SPINMODEL_RESET.PRO">SPINMODEL_RESET.PRO</A>
 <br>Free any data structures associated with the spin model for a
 <LI><A HREF="#SPINMODEL_TEST.PRO">SPINMODEL_TEST.PRO</A>
@@ -724,7 +722,7 @@ Change Date: 2007-10-08
 <A NAME="SPINMODEL_POST_PROCESS">
 <H2>SPINMODEL_POST_PROCESS</H2></A>
 <A HREF="#SPINMODEL_INTERP_T.PRO[2]">[Previous Routine]</A>
-<A HREF="#SPINMODEL_PYTHON_TEST.PRO">[Next Routine]</A>
+<A HREF="#SPINMODEL_RESET.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Function: spinmodel_post_process
@@ -753,52 +751,9 @@ Change Date: 2007-10-08
 <STRONG>(See <A href="spin/spinmodel_post_process.pro">projects/themis/spin/spinmodel_post_process.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="SPINMODEL_PYTHON_TEST.PRO">
-<H2>SPINMODEL_PYTHON_TEST.PRO</H2></A>
-<A HREF="#SPINMODEL_POST_PROCESS">[Previous Routine]</A>
-<A HREF="#SPINMODEL_RESET.PRO">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME:
-    SPINMODEL_PYTHON_TEST.PRO
-
- PURPOSE:
-   Load several spin models and export them as CDFs for comparison with Python results
-
- CATEGORY:
-   TDAS 
-
- CALLING SEQUENCE:
-   spinmodel_python_test
-
-  INPUTS:
-    probe:             One value from 'a b c d e'
-    trange:            Time range specified as a 2-element string array
-    correction_level:  An integer, 0 1 or 2, denoting the level of eclipse corrections to use
-    cdf_filename:      The name of the output CDF.   This file can be passed to the themis.state.spinmodel.validate_model routine
-                       to perform the python side of the test.
-  OUTPUTS:
-    A CDF file containing the probe, time range, and correction level used, a dump of the spinmodel attributes, and some interpolation 
-    test data to be reproduced in pyspedas.
-
-  KEYWORDS:
-    None.
-
-  PROCEDURE:
-    
-
-  EXAMPLE:
-     spinmodel_python_test, probe='a',trange=['2008-03-23','2008-04-23'],correction_level=2,cdf_filename='tha_30day_corr2.cdf'
-
-Written by: Jim Lewis (jwl@ssl.berkeley.edu)
-
-</PRE><P>
-<STRONG>(See <A href="spin/spinmodel_python_test.pro">projects/themis/spin/spinmodel_python_test.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="SPINMODEL_RESET.PRO">
 <H2>SPINMODEL_RESET.PRO</H2></A>
-<A HREF="#SPINMODEL_PYTHON_TEST.PRO">[Previous Routine]</A>
+<A HREF="#SPINMODEL_POST_PROCESS">[Previous Routine]</A>
 <A HREF="#SPINMODEL_TEST.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

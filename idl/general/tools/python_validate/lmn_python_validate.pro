@@ -10,10 +10,10 @@
 ;  to the results of the similar python function in pyspedas.
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2025-04-13 15:29:48 -0700 (Sun, 13 Apr 2025) $
-;$LastChangedRevision: 33259 $
-;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/lmn_transform/lmn_python_validate.pro $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-09-18 17:58:39 -0700 (Thu, 18 Sep 2025) $
+;$LastChangedRevision: 33629 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/lmn_python_validate.pro $
 ;-
 
 pro lmn_python_validate

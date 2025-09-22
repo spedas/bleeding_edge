@@ -1,5 +1,5 @@
 ;+
-; procedure: thm_part_moments
+; procedure: thm_part_moments_old
 ;
 ; Purpose: Calculates moments and spectra for themis particle distributions.
 ;

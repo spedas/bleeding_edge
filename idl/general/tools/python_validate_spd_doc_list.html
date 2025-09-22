@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep 15 18:17:46 2025.<P>
+<STRONG>Last modified: </STRONG>Sat Sep 20 18:17:31 2025.<P>
  
 <HR>
  
@@ -21,6 +21,12 @@ This page was created by the IDL library routine
 <H1>general/tools/python_validate</H1>
 <LI><A HREF="#AVG_DATA_PYTHON_VALIDATE">AVG_DATA_PYTHON_VALIDATE</A>
 <br>Generate test data for Python vs IDL validation tests for avg_data routine.
+<LI><A HREF="#FAC_MATRIX_MAKE_PYTHON_VALIDATE">FAC_MATRIX_MAKE_PYTHON_VALIDATE
+</A>
+<LI><A HREF="#LMN_PYTHON_VALIDATE">LMN_PYTHON_VALIDATE</A>
+<LI><A HREF="#OMNI_SOLARWIND_PYTHON_VALIDATE">OMNI_SOLARWIND_PYTHON_VALIDATE</A>
+<LI><A HREF="#SPINMODEL_PYTHON_TEST.PRO">SPINMODEL_PYTHON_TEST.PRO</A>
+<br>Load several spin models and export them as CDFs for comparison with Python results
 <br>
 </UL><P>
 <HR>
@@ -28,6 +34,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="AVG_DATA_PYTHON_VALIDATE">
 <H2>AVG_DATA_PYTHON_VALIDATE</H2></A>
+<A HREF="#FAC_MATRIX_MAKE_PYTHON_VALIDATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: avg_data_python_validate
@@ -48,5 +55,114 @@ PURPOSE:
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/avg_data_python_validate.pro $
 </PRE><P>
 <STRONG>(See <A href="python_validate/avg_data_python_validate.pro">general/tools/python_validate/avg_data_python_validate.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="FAC_MATRIX_MAKE_PYTHON_VALIDATE">
+<H2>FAC_MATRIX_MAKE_PYTHON_VALIDATE</H2></A>
+<A HREF="#AVG_DATA_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#LMN_PYTHON_VALIDATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure:
+  thm_crib_fac
+
+Purpose:
+  A crib on showing how to transform into field aligned coordinates DSL coordinates
+
+Notes:
+
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2025-09-18 17:58:39 -0700 (Thu, 18 Sep 2025) $
+ $LastChangedRevision: 33629 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/fac_matrix_make_python_validate.pro $
+</PRE><P>
+<STRONG>(See <A href="python_validate/fac_matrix_make_python_validate.pro">general/tools/python_validate/fac_matrix_make_python_validate.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="LMN_PYTHON_VALIDATE">
+<H2>LMN_PYTHON_VALIDATE</H2></A>
+<A HREF="#FAC_MATRIX_MAKE_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#OMNI_SOLARWIND_PYTHON_VALIDATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Procedure:
+  lmn_python_validate
+
+ Purpose:
+  Creates a savefile with tplot variables that contain lmn_matrix_make data.
+
+  The savefile can used to compare the results of IDL lmn_matrix_make.pro
+  to the results of the similar python function in pyspedas.
+
+
+$LastChangedBy: jwl $
+$LastChangedDate: 2025-09-18 17:58:39 -0700 (Thu, 18 Sep 2025) $
+$LastChangedRevision: 33629 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/lmn_python_validate.pro $
+</PRE><P>
+<STRONG>(See <A href="python_validate/lmn_python_validate.pro">general/tools/python_validate/lmn_python_validate.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="OMNI_SOLARWIND_PYTHON_VALIDATE">
+<H2>OMNI_SOLARWIND_PYTHON_VALIDATE</H2></A>
+<A HREF="#LMN_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#SPINMODEL_PYTHON_TEST.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Procedure:
+  omni_solarwind_python_validate
+
+ Purpose:
+  Create a savefile with OMNI solar wind variables.
+  The savefile can be loaded into Python using PySPEDAS to verify that the Python results match the IDL results.
+
+$LastChangedBy: jwl $
+$LastChangedDate: 2025-09-18 17:58:39 -0700 (Thu, 18 Sep 2025) $
+$LastChangedRevision: 33629 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/omni_solarwind_python_validate.pro $
+</PRE><P>
+<STRONG>(See <A href="python_validate/omni_solarwind_python_validate.pro">general/tools/python_validate/omni_solarwind_python_validate.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPINMODEL_PYTHON_TEST.PRO">
+<H2>SPINMODEL_PYTHON_TEST.PRO</H2></A>
+<A HREF="#OMNI_SOLARWIND_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+    SPINMODEL_PYTHON_TEST.PRO
+
+ PURPOSE:
+   Load several spin models and export them as CDFs for comparison with Python results
+
+ CATEGORY:
+   TDAS 
+
+ CALLING SEQUENCE:
+   spinmodel_python_test
+
+  INPUTS:
+    probe:             One value from 'a b c d e'
+    trange:            Time range specified as a 2-element string array
+    correction_level:  An integer, 0 1 or 2, denoting the level of eclipse corrections to use
+    cdf_filename:      The name of the output CDF.   This file can be passed to the themis.state.spinmodel.validate_model routine
+                       to perform the python side of the test.
+  OUTPUTS:
+    A CDF file containing the probe, time range, and correction level used, a dump of the spinmodel attributes, and some interpolation 
+    test data to be reproduced in pyspedas.
+
+  KEYWORDS:
+    None.
+
+  PROCEDURE:
+    
+
+  EXAMPLE:
+     spinmodel_python_test, probe='a',trange=['2008-03-23','2008-04-23'],correction_level=2,cdf_filename='tha_30day_corr2.cdf'
+
+Written by: Jim Lewis (jwl@ssl.berkeley.edu)
+
+</PRE><P>
+<STRONG>(See <A href="python_validate/spinmodel_python_test.pro">general/tools/python_validate/spinmodel_python_test.pro</A>)</STRONG><P>
 <HR>
  

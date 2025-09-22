@@ -6,10 +6,10 @@
 ;  Create a savefile with OMNI solar wind variables.
 ;  The savefile can be loaded into Python using PySPEDAS to verify that the Python results match the IDL results.
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2025-04-13 15:12:57 -0700 (Sun, 13 Apr 2025) $
-;$LastChangedRevision: 33257 $
-;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/omni/omni_solarwind_python_validate.pro $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-09-18 17:58:39 -0700 (Thu, 18 Sep 2025) $
+;$LastChangedRevision: 33629 $
+;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/omni_solarwind_python_validate.pro $
 ;-
 
 pro omni_solarwind_python_validate

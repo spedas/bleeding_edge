@@ -8,9 +8,9 @@
 ;Notes:
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-03-29 21:53:26 -0700 (Sat, 29 Mar 2025) $
-; $LastChangedRevision: 33211 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/special/fac/fac_matrix_make_python_validate.pro $
+; $LastChangedDate: 2025-09-18 17:58:39 -0700 (Thu, 18 Sep 2025) $
+; $LastChangedRevision: 33629 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/fac_matrix_make_python_validate.pro $
 ;-
 
 ;------------------------------------------------------------

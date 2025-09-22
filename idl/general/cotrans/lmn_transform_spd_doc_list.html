@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep 15 18:17:46 2025.<P>
+<STRONG>Last modified: </STRONG>Sat Sep 20 18:17:31 2025.<P>
  
 <HR>
  
@@ -24,7 +24,6 @@ This page was created by the IDL library routine
 <LI><A HREF="#GSM2LMN_WRAP">GSM2LMN_WRAP</A>
 <br>Wrapper transforms vector field from GSM to LMN (boundary-normal)
 <LI><A HREF="#LMN_MATRIX_MAKE">LMN_MATRIX_MAKE</A>
-<LI><A HREF="#LMN_PYTHON_VALIDATE">LMN_PYTHON_VALIDATE</A>
 <LI><A HREF="#LMN_TRANSFORM_CRIB">LMN_TRANSFORM_CRIB</A>
 <br>This code shows anatomy of the LMN transform, so essentially this is dissected gsm2lmn
 <br>
@@ -132,7 +131,7 @@ This page was created by the IDL library routine
 <A NAME="LMN_MATRIX_MAKE">
 <H2>LMN_MATRIX_MAKE</H2></A>
 <A HREF="#GSM2LMN_WRAP">[Previous Routine]</A>
-<A HREF="#LMN_PYTHON_VALIDATE">[Next Routine]</A>
+<A HREF="#LMN_TRANSFORM_CRIB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Procedure:
@@ -160,33 +159,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cot
 <STRONG>(See <A href="lmn_transform/lmn_matrix_make.pro">general/cotrans/lmn_transform/lmn_matrix_make.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="LMN_PYTHON_VALIDATE">
-<H2>LMN_PYTHON_VALIDATE</H2></A>
-<A HREF="#LMN_MATRIX_MAKE">[Previous Routine]</A>
-<A HREF="#LMN_TRANSFORM_CRIB">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- Procedure:
-  lmn_python_validate
-
- Purpose:
-  Creates a savefile with tplot variables that contain lmn_matrix_make data.
-
-  The savefile can used to compare the results of IDL lmn_matrix_make.pro
-  to the results of the similar python function in pyspedas.
-
-
-$LastChangedBy: nikos $
-$LastChangedDate: 2025-04-13 15:29:48 -0700 (Sun, 13 Apr 2025) $
-$LastChangedRevision: 33259 $
-$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/lmn_transform/lmn_python_validate.pro $
-</PRE><P>
-<STRONG>(See <A href="lmn_transform/lmn_python_validate.pro">general/cotrans/lmn_transform/lmn_python_validate.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="LMN_TRANSFORM_CRIB">
 <H2>LMN_TRANSFORM_CRIB</H2></A>
-<A HREF="#LMN_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#LMN_MATRIX_MAKE">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
