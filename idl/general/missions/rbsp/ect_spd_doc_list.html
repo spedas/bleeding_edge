@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep 20 18:17:31 2025.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 26 18:17:39 2025.<P>
  
 <HR>
  
@@ -23,7 +23,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#RBSP_ECT_INIT">RBSP_ECT_INIT</A>
 <LI><A HREF="#RBSP_LOAD_ECT_L3">RBSP_LOAD_ECT_L3</A>
 <LI><A HREF="#RBSP_LOAD_MAGEIS_L2">RBSP_LOAD_MAGEIS_L2</A>
-<LI><A HREF="#RBSP_READ_ECT_MAG_EPHEM[1]">RBSP_READ_ECT_MAG_EPHEM[1]</A>
+<LI><A HREF="#RBSP_READ_ECT_MAG_EPHEM">RBSP_READ_ECT_MAG_EPHEM</A>
 <br>
 </UL><P>
 <HR>
@@ -61,9 +61,9 @@ This page was created by the IDL library routine
   CREATED: Jan 2013, based on rbsp_efw_config
   AUTHOR: Kris Kersten, kris.kersten@gmail.com
 
- $LastChangedBy: aaronbreneman $
- $LastChangedDate: 2017-06-13 14:34:19 -0700 (Tue, 13 Jun 2017) $
- $LastChangedRevision: 23462 $
+ $LastChangedBy: dcarpenter $
+ $LastChangedDate: 2025-09-23 08:17:08 -0700 (Tue, 23 Sep 2025) $
+ $LastChangedRevision: 33651 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_ect_config.pro $
 
 </PRE><P>
@@ -131,9 +131,9 @@ KEYWORDS:
 HISTORY
  Forked from rbsp_efw_init, Jan 2013 - Kris Kersten, kris.kersten@gmail.com
 
-$LastChangedBy: aaronbreneman $
-$LastChangedDate: 2017-06-13 14:34:31 -0700 (Tue, 13 Jun 2017) $
-$LastChangedRevision: 23463 $
+$LastChangedBy: dcarpenter $
+$LastChangedDate: 2025-09-23 08:19:38 -0700 (Tue, 23 Sep 2025) $
+$LastChangedRevision: 33652 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_ect_init.pro $
 </PRE><P>
 <STRONG>(See <A href="ect/rbsp_ect_init.pro">general/missions/rbsp/ect/rbsp_ect_init.pro</A>)</STRONG><P>
@@ -159,20 +159,20 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
  OUTPUT: N/A
 
  KEYWORDS:
-	probe -&gt;  'a' or 'b'
+ probe -&gt;  'a' or 'b'
        type  -&gt;  'hope','mageis','rept'
        get_support_data -&gt; if not set then only the essentials are
        saved
 
  HISTORY:
-	Created Jan 2015, Aaron Breneman
+ Created Jan 2015, Aaron Breneman
 
  NOTES:
 
  VERSION:
-   $LastChangedBy: aaronbreneman $
-   $LastChangedDate: 2018-12-06 10:48:41 -0800 (Thu, 06 Dec 2018) $
-   $LastChangedRevision: 26267 $
+   $LastChangedBy: dcarpenter $
+   $LastChangedDate: 2025-09-23 11:56:33 -0700 (Tue, 23 Sep 2025) $
+   $LastChangedRevision: 33653 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_load_ect_l3.pro $
 
 </PRE><P>
@@ -182,7 +182,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="RBSP_LOAD_MAGEIS_L2">
 <H2>RBSP_LOAD_MAGEIS_L2</H2></A>
 <A HREF="#RBSP_LOAD_ECT_L3">[Previous Routine]</A>
-<A HREF="#RBSP_READ_ECT_MAG_EPHEM[1]">[Next Routine]</A>
+<A HREF="#RBSP_READ_ECT_MAG_EPHEM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: rbsp_load_mageis_l2
@@ -216,17 +216,17 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 
 
  VERSION:
-   $LastChangedBy: jimm $
-   $LastChangedDate: 2020-04-13 13:25:55 -0700 (Mon, 13 Apr 2020) $
-   $LastChangedRevision: 28568 $
+   $LastChangedBy: dcarpenter $
+   $LastChangedDate: 2025-09-23 12:18:05 -0700 (Tue, 23 Sep 2025) $
+   $LastChangedRevision: 33654 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_load_mageis_l2.pro $
 
 </PRE><P>
 <STRONG>(See <A href="ect/rbsp_load_mageis_l2.pro">general/missions/rbsp/ect/rbsp_load_mageis_l2.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_READ_ECT_MAG_EPHEM[1]">
-<H2>RBSP_READ_ECT_MAG_EPHEM[1]</H2></A>
+<A NAME="RBSP_READ_ECT_MAG_EPHEM">
+<H2>RBSP_READ_ECT_MAG_EPHEM</H2></A>
 <A HREF="#RBSP_LOAD_MAGEIS_L2">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -234,7 +234,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
  SYNTAX:
  PURPOSE: Read in RBSP ECT's official magnetic field model predicted quantities
  INPUT: sc -&gt; 'a' or 'b'
-		 date -&gt; '2014-01-01'
+		     date -&gt; '2014-01-01'
         type -&gt; defaults to OP77Q. Can also have &quot;TS04D&quot; (definitive)
         or &quot;T89Q&quot; for predicted.
  OUTPUT: tplot variables with prefix 'rbsp'+sc+'_ME_'

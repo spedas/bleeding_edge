@@ -139,6 +139,14 @@ fix_cos    = cos(fix_phs_sm)
 phs_zero    = phs(0) - ( phs(0) mod pi_over_2 ) + pi_over_2 + d_phs
 phs_end     = phs(npts-1) - ( phs(npts-1) mod pi_over_2 ) + d_phs
 n_phases    = long( (phs_end - phs_zero) * n_fitpts / period + 0.0001)
+
+IF n_phases le 0 then BEGIN
+    dprint, "STOPPED!"
+    dprint, "Negative phase values"
+    fail = 1
+    return
+ENDIF
+
 fix_phs     = dindgen(n_phases)*period/n_fitpts + phs_zero
 
 ; DETERMINE WHICH PHASE QUADRANT WE ARE IN

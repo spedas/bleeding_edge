@@ -27,35 +27,44 @@
 ;
 ;       SHADOW:    Choose which "shadow" to calculate:
 ;                     0 : optical shadow at surface (default)
-;                     1 : optical shadow at spacecraft altitude
-;                     2 : EUV shadow at spacecraft altitude
+;                     1 : optical shadow at electron exobase (170 km)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2017-03-01 14:56:42 -0800 (Wed, 01 Mar 2017) $
-; $LastChangedRevision: 22890 $
+; $LastChangedDate: 2025-09-22 12:41:13 -0700 (Mon, 22 Sep 2025) $
+; $LastChangedRevision: 33645 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_terminator.pro $
 ;
 ;CREATED BY:	David L. Mitchell
 ;-
 pro mvn_mars_terminator, time, result=result, shadow=shadow
 
-; Terminator is the plane defined by X = 0 in the MSO frame
+; Geodetic parameters for Mars from the IAU Report:
+;   Archinal et al., Celest Mech Dyn Astr 130, Article 22, 2018
+;     DOI 10.1007/s10569-017-9805-5
+;  These values are based on the MGS-MOLA Gridded Data Record, 
+;  which was published in 2003.
+;
+  R_equ = 3396.19D  ; +/- 0.1
+  R_pol = 3376.20D  ; N pole = 3373.19 +/- 0.1 ; S pole = 3379.21 +/- 0.1
+  R_vol = 3389.50D  ; +/- 0.2  (volumetric mean radius)
 
-  if keyword_set(shadow) then begin
-    R_m = 3389.9D
-    if (shadow gt 1) then R_m += 300D
-    get_data,'alt',data=alt
-    dt = min(abs(alt.x - time), i)
-    iref = (i > 3) < (n_elements(alt.x) - 4)
-    indx = lindgen(7) + iref - 3L
-    h = spline(alt.x[indx], alt.y[indx], time, /double)
-    sza = acos(R_m/(R_m + h)) + !dpi/2D
-    x = cos(sza)
-    s = sqrt(1D - x*x)
-  endif else begin
-    x = 0D
-    s = 1D
-  endelse
+; Terminator at the surface is the plane defined by X = 0 in the MSO frame
+
+  shadow = (n_elements(shadow) gt 0) ? fix(shadow[0]) < 1 : 0
+
+  case shadow of
+        1  : begin  ; optical shadow at electron exobase
+               R_m = R_vol
+               h = 170D
+               sza = acos(R_m/(R_m + h)) + !dpi/2D
+               x = cos(sza)
+               s = sqrt(1D - x*x)
+             end
+      else : begin  ; optical shadow at surface
+               x = 0D
+               s = 1D
+             end
+  endcase
 
   phi = dindgen(361)*!dtor
   t_mso = dblarr(3,361)
@@ -74,7 +83,7 @@ pro mvn_mars_terminator, time, result=result, shadow=shadow
   
   indx = where(t_lon lt 0., count)
   if (count gt 0L) then begin
-    t_lon[indx] = t_lon[indx] + 360.
+    t_lon[indx] += 360.
     indx = sort(t_lon)
     t_lon = t_lon[indx]
     t_lat = t_lat[indx]
@@ -87,8 +96,8 @@ pro mvn_mars_terminator, time, result=result, shadow=shadow
   s_lon = atan(s_geo[1], s_geo[0])*!radeg
   s_lat = asin(s_geo[2])*!radeg
   
-  if (s_lon lt 0.) then s_lon = s_lon + 360.
-  
+  if (s_lon lt 0.) then s_lon += 360.
+
   result = {time:t[0], tlon:t_lon, tlat:t_lat, slon:s_lon, slat:s_lat, frame:to_frame}
 
   return

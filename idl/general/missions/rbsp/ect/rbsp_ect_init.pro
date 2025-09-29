@@ -54,94 +54,87 @@
 ;HISTORY
 ; Forked from rbsp_efw_init, Jan 2013 - Kris Kersten, kris.kersten@gmail.com
 ;
-;$LastChangedBy: aaronbreneman $
-;$LastChangedDate: 2017-06-13 14:34:31 -0700 (Tue, 13 Jun 2017) $
-;$LastChangedRevision: 23463 $
+;$LastChangedBy: dcarpenter $
+;$LastChangedDate: 2025-09-23 08:19:38 -0700 (Tue, 23 Sep 2025) $
+;$LastChangedRevision: 33652 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_ect_init.pro $
 ;-
 
-pro rbsp_ect_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=remote_data_dir, $
-         no_color_setup=no_color_setup,no_download=no_download
+pro rbsp_ect_init, reset = reset, local_data_dir = local_data_dir, remote_data_dir = remote_data_dir, $
+  no_color_setup = no_color_setup, no_download = no_download
+  cdf_leap_second_init
 
-cdf_leap_second_init
+  defsysv, '!rbsp_ect', exists = exists
+  if not keyword_set(exists) then begin
+    defsysv, '!rbsp_ect', file_retrieve(/structure_format)
+  endif
 
-defsysv,'!rbsp_ect',exists=exists
-if not keyword_set(exists) then begin
-   defsysv,'!rbsp_ect', file_retrieve(/structure_format)
-endif
+  if keyword_set(reset) then !rbsp_ect.init = 0
 
-if keyword_set(reset) then !rbsp_ect.init=0
+  if !rbsp_ect.init ne 0 then return
 
-if !rbsp_ect.init ne 0 then return
+  !rbsp_ect = file_retrieve(/structure_format) ; force setting of all elements to default values.
+  !rbsp_ect.user_agent = ''
 
-!rbsp_ect = file_retrieve(/structure_format)    ; force setting of all elements to default values.
-!rbsp_ect.user_agent=''
+  rbsp_ect_config, no_color_setup = no_color_setup, no_download = no_download
 
-rbsp_ect_config,no_color_setup=no_color_setup,no_download=no_download
+  ; keywords on first call rbsp_ect_init (or /reset) override environment and
+  ; rbsp_ect_config
+  if keyword_set(local_data_dir) then begin
+    temp_string = strtrim(local_data_dir, 2)
+    ll = strmid(temp_string, strlen(temp_string) - 1, 1)
+    if (ll ne '/' and ll ne '\') then temp_string = temp_string + '/'
+    !rbsp_ect.local_data_dir = temporary(temp_string)
+  endif
 
+  if keyword_set(remote_data_dir) then begin
+    temp_string = strtrim(remote_data_dir, 2)
+    ll = strmid(temp_string, strlen(temp_string) - 1, 1)
+    if (ll ne '/' and ll ne '\') then temp_string = temp_string + '/'
+    !rbsp_ect.remote_data_dir = temporary(temp_string)
+  endif
 
-; keywords on first call rbsp_ect_init (or /reset) override environment and
-; rbsp_ect_config
-if keyword_set(local_data_dir) then begin
-  temp_string = strtrim(local_data_dir, 2)
-  ll = strmid(temp_string, strlen(temp_string)-1, 1)
-  If(ll Ne '/' And ll Ne '\') Then temp_string = temp_string+'/'
-  !rbsp_ect.local_data_dir = temporary(temp_string)
-endif
+  ; this probably won't be used for ECT, but may be useful is we set up a local repo
+  servertestfile = '.rbsp_ect_master' ; This file should only be found on the server. (Do not download this file!)
+  if file_test(!rbsp_ect.local_data_dir + servertestfile) then begin
+    !rbsp_ect.no_server = 1
+    ; !rbsp_ect.no_download = 1   ; This line is superfluous - it can be deleted.
+  endif
 
-if keyword_set(remote_data_dir) then begin
-  temp_string = strtrim(remote_data_dir, 2)
-  ll = strmid(temp_string, strlen(temp_string)-1, 1)
-  If(ll Ne '/' And ll Ne '\') Then temp_string = temp_string+'/'
-  !rbsp_ect.remote_data_dir = temporary(temp_string)
-endif
+  cdf_lib_info, version = v, subincrement = si, release = r, increment = i, copyright = c
+  cdf_version = string(format = '(i0,''.'',i0,''.'',i0,a)', v, r, i, si)
+  printdat, cdf_version
 
-; this probably won't be used for ECT, but may be useful is we set up a local repo
-servertestfile = '.rbsp_ect_master'     ;  This file should only be found on the server. (Do not download this file!)
-if file_test(!rbsp_ect.local_data_dir+servertestfile) then  begin
-   !rbsp_ect.no_server = 1
-;   !rbsp_ect.no_download = 1   ; This line is superfluous - it can be deleted.
-endif
+  cdf_version_readmin = '3.1.0' ; ***THIS MAY NEED TO CHANGE
+  cdf_version_writemin = '3.1.1'
 
+  if cdf_version lt cdf_version_readmin then begin
+    print, 'Your version of the CDF library (' + cdf_version + ') is unable to read RBSP ECT data files.'
+    print, 'Please go to the following url to learn how to patch your system:'
+    print, 'http://cdf.gsfc.nasa.gov/html/idl62_or_earlier_and_cdf3_problems.html'
+    message, 'You can have your data. You just can''t read it! Sorry!'
+  endif
 
-cdf_lib_info,version=v,subincrement=si,release=r,increment=i,copyright=c
-cdf_version = string(format="(i0,'.',i0,'.',i0,a)",v,r,i,si)
-printdat,cdf_version
+  !rbsp_ect.init = 1
 
-cdf_version_readmin = '3.1.0' ;***THIS MAY NEED TO CHANGE
-cdf_version_writemin = '3.1.1'
+  printdat, /values, !rbsp_ect, varname = '!rbsp_ect' ; ,/pgmtrace
 
-if cdf_version lt cdf_version_readmin then begin
-   print,'Your version of the CDF library ('+cdf_version+') is unable to read RBSP ECT data files.'
-   print,'Please go to the following url to learn how to patch your system:'
-   print,'http://cdf.gsfc.nasa.gov/html/idl62_or_earlier_and_cdf3_problems.html'
-   message,"You can have your data. You just can't read it! Sorry!"
-endif
+  if cdf_version lt cdf_version_writemin then begin
+    print, ptrace()
+    print, 'Your version of the CDF library (' + cdf_version + ') is unable to correctly write RBSP ECT CDF data files.'
+    print, 'If you ever need to create CDF files then go to the following URL to learn how to patch your system:'
+    print, 'http://cdf.gsfc.nasa.gov/html/idl62_or_earlier_and_cdf3_problems.html'
+  endif
 
-!rbsp_ect.init = 1
+  dt = -(time_double('2007-2-17/11:01') - systime(1)) / 3600 / 24 ; ***Needs update
+  days = floor(dt)
+  dt = (dt - days) * 24
+  hours = floor(dt)
+  dt = (dt - hours) * 60
+  mins = floor(dt)
+  dt = (dt - mins) * 60
+  secs = floor(dt)
 
-printdat,/values,!rbsp_ect,varname='!rbsp_ect'   ;,/pgmtrace
-
-if cdf_version lt cdf_version_writemin then begin
-   print,ptrace()
-   print,'Your version of the CDF library ('+cdf_version+') is unable to correctly write RBSP ECT CDF data files.'
-   print,'If you ever need to create CDF files then go to the following URL to learn how to patch your system:'
-   print,'http://cdf.gsfc.nasa.gov/html/idl62_or_earlier_and_cdf3_problems.html'
-endif
-
-
-dt = - (time_double('2007-2-17/11:01') - systime(1)) / 3600/24 ;***Needs update
-days = floor(dt)
-dt = (dt - days) * 24
-hours = floor(dt)
-dt = (dt - hours) * 60
-mins = floor(dt)
-dt = (dt - mins)  * 60
-secs = floor(dt)
-
-print,ptrace()
-print,days,hours,mins,secs,format= '("RBSP countdown:",i4," Days, ",i02," Hours, ",i02," Minutes, ",i02," Seconds since launch")'
-
-
-
+  print, ptrace()
+  print, days, hours, mins, secs, format = '("RBSP countdown:",i4," Days, ",i02," Hours, ",i02," Minutes, ",i02," Seconds since launch")'
 end

@@ -36,9 +36,9 @@
 ;SEE ALSO:    "GET_DATA", "TPLOT_NAMES",  "TPLOT", "OPTIONS"
 ;
 ;CREATED BY:    Davin Larson
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-11-01 10:10:49 -0700 (Fri, 01 Nov 2024) $
-; $LastChangedRevision: 32918 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-09-22 11:18:38 -0700 (Mon, 22 Sep 2025) $
+; $LastChangedRevision: 33642 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/store_data.pro $
 ;-
 pro store_data,name, time,ydata,values, $
@@ -365,6 +365,13 @@ pro store_data,name, time,ydata,values, $
   if n_elements(x) ne 0 and n_elements(y) ne 0 then begin
     dq.dtype = 1
     dq.trange = minmax(x)
+  endif
+  ; Test for mismatched X and Y array sizes.  First dimension of Y must match number of elements in X.
+  ; The variable will still be created, but the lack of a warning here was hiding other issues.
+  xcount=n_elements(x) ; assume 1-d
+  yval_count=size(y,/dimensions)
+  if xcount ne yval_count[0] then begin
+     dprint, dlevel=0,'Warning: mismatched x and y sizes for ' + name + ' : ' + string(xcount) + ',' + string(yval_count[0])
   endif
   str_element,dstr,'time',value=time0
   if size(/type,time0) eq 10 then time0=*time0

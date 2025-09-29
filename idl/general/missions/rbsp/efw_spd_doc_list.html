@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep 20 18:17:31 2025.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 26 18:17:39 2025.<P>
  
 <HR>
  
@@ -97,7 +97,6 @@ RBSP_INTERP_SPIN_PHASE (FUNCTION)</A>
 </A>
 <br>Calculate the transmittance of the search-coil magnetometer.
 <LI><A HREF="#RBSP_POYNTING_FLUX">RBSP_POYNTING_FLUX</A>
-<LI><A HREF="#RBSP_READ_ECT_MAG_EPHEM[2]">RBSP_READ_ECT_MAG_EPHEM[2]</A>
 <LI><A HREF="#RBSP_SPINFIT (PROCEDURE)">RBSP_SPINFIT (PROCEDURE)</A>
 <br>Derive spin-fit E-field from instantaneous E-field measurements. The
 <LI><A HREF="#RBSP_SPLIT_FBK">RBSP_SPLIT_FBK</A>
@@ -2271,7 +2270,7 @@ Notes:
 <A NAME="RBSP_POYNTING_FLUX">
 <H2>RBSP_POYNTING_FLUX</H2></A>
 <A HREF="#RBSP_MSC_RESPONSE (FUNCTION)[1]">[Previous Routine]</A>
-<A HREF="#RBSP_READ_ECT_MAG_EPHEM[2]">[Next Routine]</A>
+<A HREF="#RBSP_SPINFIT (PROCEDURE)">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
   PROCEDURE :  rbsp_poynting_flux
@@ -2343,35 +2342,9 @@ Notes:
 <STRONG>(See <A href="efw/rbsp_poynting_flux.pro">general/missions/rbsp/efw/rbsp_poynting_flux.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="RBSP_READ_ECT_MAG_EPHEM[2]">
-<H2>RBSP_READ_ECT_MAG_EPHEM[2]</H2></A>
-<A HREF="#RBSP_POYNTING_FLUX">[Previous Routine]</A>
-<A HREF="#RBSP_SPINFIT (PROCEDURE)">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
- NAME: rbsp_read_ect_mag_ephem
- SYNTAX:
- PURPOSE: Read in RBSP ECT's official magnetic field model predicted quantities
- INPUT: sc -&gt; 'a' or 'b'
-		 date -&gt; '2014-01-01'
-        type -&gt; defaults to OP77Q. Can also have &quot;TS04D&quot; (definitive)
-        or &quot;T89Q&quot; for predicted.
- OUTPUT: tplot variables with prefix 'rbsp'+sc+'_ME_'
-		  Will also return perigeetimes as keyword
- KEYWORDS:
- HISTORY: Written by Aaron W Breneman, UMN
- VERSION:
-   $LastChangedBy: $
-   $LastChangedDate: $
-   $LastChangedRevision: $
-   $URL: $
-</PRE><P>
-<STRONG>(See <A href="efw/rbsp_read_ect_mag_ephem.pro">general/missions/rbsp/efw/rbsp_read_ect_mag_ephem.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="RBSP_SPINFIT (PROCEDURE)">
 <H2>RBSP_SPINFIT (PROCEDURE)</H2></A>
-<A HREF="#RBSP_READ_ECT_MAG_EPHEM[2]">[Previous Routine]</A>
+<A HREF="#RBSP_POYNTING_FLUX">[Previous Routine]</A>
 <A HREF="#RBSP_SPLIT_FBK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep 20 18:17:31 2025.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 26 18:17:39 2025.<P>
  
 <HR>
  
@@ -172,8 +172,9 @@ KEYWORDS:
                    contour map without shading.
 
                    Use tagname COMPONENT to specify which component of the
-                   magnetic field to plot: 'BR' (radial), 'BT' (north), 
-                   'BP' (east), 'B' (magnitude).  Default: LLIM.COMPONENT='BR'.
+                   magnetic field to plot: 'BR' (radial), 'BN' (north), 
+                   'BE' (east), 'BH' (horizontal), or 'B' (magnitude).  
+                   Default: LLIM.COMPONENT='BR'.
 
        BAZEL:      If set to a 3xN element array of the magnetic field in
                    the local azimuth-elevation frame, plot a magnetic field
@@ -193,10 +194,8 @@ KEYWORDS:
 
        SHADOW:     If TERMINATOR is set, specifies which &quot;terminator&quot; to
                    plot.
-                      0 : Optical shadow boundary at surface.
-                      1 : Optical shadow boundary at s/c altitude.
-                      2 : EUV shadow boundary at s/c altitude.
-                      3 : EUV shadow at electron absorption altitude.
+                      0 : Optical shadow boundary at surface (default).
+                      1 : Optical shadow at electron exobase (170 km).
 
        SITES:      A 2 x N array of surface locations to plot.
 
@@ -205,8 +204,8 @@ KEYWORDS:
        SCOL:       Color for each of the sites.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2024-12-31 18:34:56 -0800 (Tue, 31 Dec 2024) $
- $LastChangedRevision: 33026 $
+ $LastChangedDate: 2025-09-22 12:45:24 -0700 (Mon, 22 Sep 2025) $
+ $LastChangedRevision: 33647 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 
 CREATED BY:	David L. Mitchell  04-02-03
@@ -754,6 +753,7 @@ KEYWORDS:
                    LLIM.COMPONENT = 'BR'  ; radial component (default)
                    LLIM.COMPONENT = 'BT'  ; north component
                    LLIM.COMPONENT = 'BP'  ; east component
+                   LLIM.COMPONENT = 'BH'  ; horizontal component
                    LLIM.COMPONENT = 'B'   ; magnitude
 
        NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsis
@@ -770,9 +770,7 @@ KEYWORDS:
                    using this keyword.  The following values are recognized:
                       0 : Do not plot any shadow boundary.  (default)
                       1 : Plot optical shadow boundary at surface.
-                      2 : Plot optical shadow boundary at s/c altitude.
-                      3 : Plot EUV shadow boundary at s/c altitude.
-                      4 : Plot EUV shadow at electron absorption altitude.
+                      2 : Plot optical shadow at electron exobase (170 km).
 
        NOERASE:  Don't erase previously plotted positions.  Can be used to build
                  up complex plots.
@@ -870,8 +868,8 @@ KEYWORDS:
                  easier to see the colors.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-05-25 09:52:41 -0700 (Sun, 25 May 2025) $
- $LastChangedRevision: 33336 $
+ $LastChangedDate: 2025-09-22 12:44:04 -0700 (Mon, 22 Sep 2025) $
+ $LastChangedRevision: 33646 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -950,10 +948,12 @@ KEYWORDS:
        IALT:     Ionopause altitude.  Highly variable, but nominally ~400 km.
                  For display only - not included in statistics.  Default is NaN.
 
-       SHADOW:   Choose shadow boundary definition:
-                    0 : optical shadow at spacecraft altitude
-                    1 : EUV shadow at spacecraft altitude (default)
-                    2 : EUV shadow at electron absorption altitude
+       SHADOW:   The shadow region is defined by the cylinder in the MSO frame
+                 where X &lt; 0 and sqrt(Y^2 + Z^2) &lt; R_shadow.
+
+                 Use this keyword to choose the Rsh:
+                    0 : optical shadow (R_shadow = Mars radius)
+                    1 : EUV shadow (R_shadow = Mars radius + 150 km)  &lt;- default
 
        SEGMENTS: Plot nominal altitudes for orbit segment boundaries as dotted
                  horizontal lines.  Closely spaced lines are transitions, during
@@ -1073,8 +1073,8 @@ KEYWORDS:
                  arbitrary set of ephemeris conditions.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-04-05 14:34:27 -0700 (Sat, 05 Apr 2025) $
- $LastChangedRevision: 33230 $
+ $LastChangedDate: 2025-09-22 12:33:28 -0700 (Mon, 22 Sep 2025) $
+ $LastChangedRevision: 33644 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 
 CREATED BY:	David L. Mitchell  10-28-11
@@ -1322,12 +1322,11 @@ KEYWORDS:
 
        SHADOW:    Choose which &quot;shadow&quot; to calculate:
                      0 : optical shadow at surface (default)
-                     1 : optical shadow at spacecraft altitude
-                     2 : EUV shadow at spacecraft altitude
+                     1 : optical shadow at electron exobase (170 km)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2017-03-01 14:56:42 -0800 (Wed, 01 Mar 2017) $
- $LastChangedRevision: 22890 $
+ $LastChangedDate: 2025-09-22 12:41:13 -0700 (Mon, 22 Sep 2025) $
+ $LastChangedRevision: 33645 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_mars_terminator.pro $
 
 CREATED BY:	David L. Mitchell

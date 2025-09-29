@@ -30,15 +30,15 @@
 ;
 ;
 ; VERSION:
-;   $LastChangedBy: jimm $
-;   $LastChangedDate: 2020-04-13 13:25:55 -0700 (Mon, 13 Apr 2020) $
-;   $LastChangedRevision: 28568 $
+;   $LastChangedBy: dcarpenter $
+;   $LastChangedDate: 2025-09-23 12:18:05 -0700 (Tue, 23 Sep 2025) $
+;   $LastChangedRevision: 33654 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_load_mageis_l2.pro $
 ;
 ;-
 
 
-pro rbsp_load_mageis_l2,probe=probe,get_mag_ephem=get_mag_ephem, $
+pro rbsp_load_mageis_l2,probe=probe,sector=sector,get_mag_ephem=get_mag_ephem, $
   get_support_data=get_support_data
 
   rbsp_ect_init
@@ -48,7 +48,9 @@ pro rbsp_load_mageis_l2,probe=probe,get_mag_ephem=get_mag_ephem, $
   if keyword_set(probe) then p_var=probe else p_var='*'
   vprobes = ['a','b']
   p_var = strfilter(vprobes, p_var ,delimiter=' ',/string)
-
+  
+  if ~keyword_set(sector) then sector='rel04'
+  
   level=2
   slevel=string(level,format='(I0)')
 
@@ -57,28 +59,31 @@ pro rbsp_load_mageis_l2,probe=probe,get_mag_ephem=get_mag_ephem, $
     rbspx = 'rbsp'+ p_var[p]
 
     tr = timerange()
-    date = time_string(tr[0],/date_only,tformat='YYYYMMDD')
-    yyyy = strmid(date,0,4)
-
+    
     ;!rbsp_ect.remote_data_dir = 'https://rbsp-ect.newmexicoconsortium.org/data_pub/'
-    prefix=rbspx+'_ect_mageis_L'+slevel+'_'
+    prefix=rbspx+'_ect_mageis_l'+slevel+'_'
 
 
     dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-
-
-    rp = !rbsp_ect.remote_data_dir + rbspx+'/mageis/level2/sectors/'+yyyy+'/'
-    rf = rbspx+'_rel0?_ect-mageis-L2_'+date+'_v*.cdf'
-    files = spd_download(remote_path=rp,remote_file=rf,$
-    local_path=!rbsp_ect.local_data_dir+'mageis/L2/',$
-    /last_version)
-
-
-
-
-    spd_cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-    tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
+    
+    ; declare path (up to but not including year directory)
+    rp = !rbsp_ect.remote_data_dir + rbspx + '/l2/ect/mageis/sectors/' + sector + '/'
+    ; declare file prefix
+    rf_pre = rbspx+'_' + sector + '_ect-mageis-l2_'
+    ; declare file suffix
+    rf_suf = '_v*.cdf'
+    ; call to file_dailynames to generate a list of pathnames to be downloaded
+    remote_names = file_dailynames(rp,rf_pre,rf_suf,trange=tr,yeardir='YYYY/')
+    ; call spd_download to fetch the data files from SPDF
+    file_loaded = spd_download(remote_file=remote_names, $
+      local_path=!rbsp_ect.local_data_dir+'mageis/l2/',$
+      /last_version)
+    ; call spd_cdf2tplot to load the CDF data as tplot variables
+    spd_cdf2tplot,file=file_loaded, $
+      prefix=prefix,suffix=suf,verbose=vb, $
+      tplotnames=tns,/convert_int1_to_int2,get_support_data=1, $
+      all=0,/tt2000, /varformat
+    
     ; format L2 TPLOT vars
     ;tags=['FEDO','FPDO','FPDU'] ; what is FPDU?
     tags=['FESA','FPSA']

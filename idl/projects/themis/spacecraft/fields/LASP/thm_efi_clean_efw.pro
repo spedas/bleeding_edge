@@ -424,9 +424,10 @@ FOR ib=0L, nbursts-1 DO BEGIN
      continue
   endif
 
+
   store_data, 'Bclip', data=Bclip, dlim=blim
   nsmpts = 11  ; smooth points
-  if n_elements(Bclip.x) le nsmpts then nsmpts = n_elements(data.x)/2
+  if n_elements(Bclip.x) le nsmpts then nsmpts = n_elements(Bclip.x)/2
   nsmpts >= 1
   tsmooth2, 'Bclip', nsmpts, newname='Bclip'
 
@@ -462,11 +463,25 @@ Endif
 
 ; STORE E DATA
 ; add BAND to data_att -JBT
+If(n_elements(flow) Eq 0) Then Begin
+   print, 'THM_EFI_CLEAN_EFW: No data processed. Exiting...'
+   status = 1
+   return
+Endif
+
+
 flow = floor((flow + 2.5)/5.) * 5.
+if abs(srate-1024.) lt 10 then bandmsg = '~' + string(flow, format='(I0)') + $
+         ' Hz -- ~0.4 kHz'
+if abs(srate-2048.) lt 10 then bandmsg = '~' + string(flow, format='(I0)') + $
+         ' Hz -- ~0.8 kHz'
+if abs(srate-4096.) lt 10 then bandmsg = '~' + string(flow, format='(I0)') + $
+         ' Hz -- ~1.6 kHz'
 if abs(srate-8192.) lt 10 then bandmsg = '~' + string(flow, format='(I0)') + $
          ' Hz -- ~3.3 kHz'
 if abs(srate-16384.) lt 10 then bandmsg = '~' + string(flow, format='(I0)') + $
          ' Hz -- ~6.6 kHz'
+
 data_att = {DATA_TYPE: elim.data_att.DATA_TYPE, $
             COORD_SYS: elim.data_att.COORD_SYS, $
             UNITS: elim.data_att.UNITS, $

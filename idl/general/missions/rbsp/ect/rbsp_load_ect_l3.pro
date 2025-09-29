@@ -13,20 +13,20 @@
 ; OUTPUT: N/A
 ;
 ; KEYWORDS:
-;	probe ->  'a' or 'b'
+; probe ->  'a' or 'b'
 ;       type  ->  'hope','mageis','rept'
 ;       get_support_data -> if not set then only the essentials are
 ;       saved
 ;
 ; HISTORY:
-;	Created Jan 2015, Aaron Breneman
+; Created Jan 2015, Aaron Breneman
 ;
 ; NOTES:
 ;
 ; VERSION:
-;   $LastChangedBy: aaronbreneman $
-;   $LastChangedDate: 2018-12-06 10:48:41 -0800 (Thu, 06 Dec 2018) $
-;   $LastChangedRevision: 26267 $
+;   $LastChangedBy: dcarpenter $
+;   $LastChangedDate: 2025-09-23 11:56:33 -0700 (Tue, 23 Sep 2025) $
+;   $LastChangedRevision: 33653 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/rbsp/ect/rbsp_load_ect_l3.pro $
 ;
 ;-
@@ -49,25 +49,31 @@ pro rbsp_load_ect_l3,probe,type,get_support_data=get_support_data
     rbspx = 'rbsp'+ p_var[p]
 
     tr = timerange()
-    date = time_string(tr[0],/date_only,tformat='YYYYMMDD')
-    yyyy = strmid(date,0,4)
-
+    ;date = time_string(tr[0],/date_only,tformat='YYYYMMDD')
+    ;yyyy = strmid(date,0,4)
+        
     if type eq 'mageis' then begin
-
-      prefix=rbspx+'_ect_mageis_L'+slevel+'_'
+      prefix=rbspx+'_ect_mageis_l'+slevel+'_'
       dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-
-      rp = !rbsp_ect.remote_data_dir + rbspx+'/mageis/level3/pitchangle/'+yyyy+'/'
-      rf = rbspx+'_rel04_ect-mageis-L3_'+date+'_v*.cdf'
-      files = spd_download(remote_path=rp,remote_file=rf,$
-      local_path=!rbsp_ect.local_data_dir+'mageis/L3/',$
-       /last_version)
-
-
-
-      cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-      tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
+      
+      ; declare path (up to but not including year directory)
+      rp = !rbsp_ect.remote_data_dir + rbspx + '/l3/ect/' + type + '/sectors/rel04/'
+      ; declare file prefix
+      rf_pre = rbspx+'_rel04_ect-' + type + '-l3_'
+      ; declare file suffix
+      rf_suf = '_v*.cdf'
+      ; call to file_dailynames to generate a list of pathnames to be downloaded
+      remote_names = file_dailynames(rp,rf_pre,rf_suf,trange=tr,yeardir='YYYY/')
+      ; call spd_download to fetch the data files from SPDF
+      file_loaded = spd_download(remote_file=remote_names, $
+        local_path=!rbsp_ect.local_data_dir+type+'/l3/',$
+        /last_version)
+      ; call spd_cdf2tplot to load the CDF data as tplot variables
+      spd_cdf2tplot,file=file_loaded, $
+        prefix=prefix,suffix=suf,verbose=vb, $
+        tplotnames=tns,/convert_int1_to_int2,get_support_data=1, $
+        all=0,/tt2000, /varformat
+            
       if ~keyword_set(get_support_data) then begin
         del = [rbspx+'_ect_mageis_L3_FEDU_Energy_DELTA_minus',$
         rbspx+'_ect_mageis_L3_FEDU_Energy_DELTA_plus',$
@@ -97,31 +103,45 @@ pro rbsp_load_ect_l3,probe,type,get_support_data=get_support_data
 
     if type eq 'hope' then begin
 
-      prefix=rbspx+'_ect_hope_L'+slevel+'_'
+      prefix=rbspx+'_ect_hope_'+slevel+'_'
       dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
-
-stop
-
-      rp = !rbsp_ect.remote_data_dir + rbspx+'/hope/level3/moments/'+yyyy+'/'
-      rf = rbspx+'_rel04_ect-hope-MOM-L3_'+date+'_v*.cdf'
-      files = spd_download(remote_path=rp,remote_file=rf,$
-      local_path=!rbsp_ect.local_data_dir+'hope/L3/',$
-       /last_version)
-
-      cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-      tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
-
-      rp = !rbsp_ect.remote_data_dir + rbspx+'/hope/level3/pitchangle/'+yyyy+'/'
-      rf = rbspx+'_rel04_ect-hope-PA-L3_'+date+'_v*.cdf'
-      files = spd_download(remote_path=rp,remote_file=rf,$
-      local_path=!rbsp_ect.local_data_dir+'hope/L3/',$
-       /last_version)
-
-
-      cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-      tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
+      
+      ; declare path (up to but not including year directory)
+      rp = !rbsp_ect.remote_data_dir + rbspx + '/l3/ect/' + type + '/moments/rel04/'
+      ; declare file prefix
+      rf_pre = rbspx+'_rel04_ect-' + type + '-mom-l3_'
+      ; declare file suffix
+      rf_suf = '_v*.cdf'
+      ; call to file_dailynames to generate a list of pathnames to be downloaded
+      remote_names = file_dailynames(rp,rf_pre,rf_suf,trange=tr,yeardir='YYYY/')
+      ; call spd_download to fetch the data files from SPDF
+      file_loaded = spd_download(remote_file=remote_names, $
+        local_path=!rbsp_ect.local_data_dir+type+'/l3/',$
+        /last_version)
+      ; call spd_cdf2tplot to load the CDF data as tplot variables
+      spd_cdf2tplot,file=file_loaded, $
+        prefix=prefix,suffix=suf,verbose=vb, $
+        tplotnames=tns,/convert_int1_to_int2,get_support_data=1, $
+        all=0,/tt2000, /varformat
+      
+      ; declare path (up to but not including year directory)
+      rp = !rbsp_ect.remote_data_dir + rbspx + '/l3/ect/' + type + '/pitchangle/rel04/'
+      ; declare file prefix
+      rf_pre = rbspx+'_rel04_ect-' + type + '-pa-l3_'
+      ; declare file suffix
+      rf_suf = '_v*.cdf'
+      ; call to file_dailynames to generate a list of pathnames to be downloaded
+      remote_names = file_dailynames(rp,rf_pre,rf_suf,trange=tr,yeardir='YYYY/')
+      ; call spd_download to fetch the data files from SPDF
+      file_loaded = spd_download(remote_file=remote_names, $
+        local_path=!rbsp_ect.local_data_dir+type+'/l3/',$
+        /last_version)
+      ; call spd_cdf2tplot to load the CDF data as tplot variables
+      spd_cdf2tplot,file=file_loaded, $
+        prefix=prefix,suffix=suf,verbose=vb, $
+        tplotnames=tns,/convert_int1_to_int2,get_support_data=1, $
+        all=0,/tt2000, /varformat
+            
       if ~keyword_set(get_support_data) then begin
         del = [rbspx+'_ect_hope_L3_B_Calc_Ele',$
         rbspx+'_ect_hope_L3_B_Calc_Ion',$
@@ -179,18 +199,24 @@ stop
       prefix=rbspx+'_ect_rept_L'+slevel+'_'
       dprint,dlevel=3,verbose=verbose,relpathnames,/phelp
 
-      rp = !rbsp_ect.remote_data_dir + rbspx+'/rept/level3/pitchangle/'+yyyy+'/'
-      rf = rbspx+'_rel03_ect-rept-sci-L3_'+date+'_v*.cdf'
-      files = spd_download(remote_path=rp,remote_file=rf,$
-      local_path=!rbsp_ect.local_data_dir+'rept/L3/',$
-       /last_version)
-
-      cdf2tplot,file=files,varformat=varformat,all=0,prefix=prefix,suffix=suf,verbose=vb, $
-      tplotnames=tns,/convert_int1_to_int2,get_support_data=1 ; load data into tplot variables
-
-
-
-
+      ; declare path (up to but not including year directory)
+      rp = !rbsp_ect.remote_data_dir + rbspx + '/l3/ect/' + type + '/sectors/rel03/'
+      ; declare file prefix
+      rf_pre = rbspx+'_rel03_ect-' + type + '-sci-l3_'
+      ; declare file suffix
+      rf_suf = '_v*.cdf'
+      ; call to file_dailynames to generate a list of pathnames to be downloaded
+      remote_names = file_dailynames(rp,rf_pre,rf_suf,trange=tr,yeardir='YYYY/')
+      ; call spd_download to fetch the data files from SPDF
+      file_loaded = spd_download(remote_file=remote_names, $
+        local_path=!rbsp_ect.local_data_dir+type+'/l3/',$
+        /last_version)
+      ; call spd_cdf2tplot to load the CDF data as tplot variables
+      spd_cdf2tplot,file=file_loaded, $
+        prefix=prefix,suffix=suf,verbose=vb, $
+        tplotnames=tns,/convert_int1_to_int2,get_support_data=1, $
+        all=0,/tt2000, /varformat
+            
       if ~keyword_set(get_support_data) then begin
 
         del = [rbspx+'_ect_rept_L3_FEDU_Unbinned_Alpha_DELTA',$

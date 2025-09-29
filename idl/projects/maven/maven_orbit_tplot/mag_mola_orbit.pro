@@ -56,8 +56,9 @@
 ;                   contour map without shading.
 ;
 ;                   Use tagname COMPONENT to specify which component of the
-;                   magnetic field to plot: 'BR' (radial), 'BT' (north), 
-;                   'BP' (east), 'B' (magnitude).  Default: LLIM.COMPONENT='BR'.
+;                   magnetic field to plot: 'BR' (radial), 'BN' (north), 
+;                   'BE' (east), 'BH' (horizontal), or 'B' (magnitude).  
+;                   Default: LLIM.COMPONENT='BR'.
 ;
 ;       BAZEL:      If set to a 3xN element array of the magnetic field in
 ;                   the local azimuth-elevation frame, plot a magnetic field
@@ -77,10 +78,8 @@
 ;
 ;       SHADOW:     If TERMINATOR is set, specifies which "terminator" to
 ;                   plot.
-;                      0 : Optical shadow boundary at surface.
-;                      1 : Optical shadow boundary at s/c altitude.
-;                      2 : EUV shadow boundary at s/c altitude.
-;                      3 : EUV shadow at electron absorption altitude.
+;                      0 : Optical shadow boundary at surface (default).
+;                      1 : Optical shadow at electron exobase (170 km).
 ;
 ;       SITES:      A 2 x N array of surface locations to plot.
 ;
@@ -89,8 +88,8 @@
 ;       SCOL:       Color for each of the sites.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-12-31 18:34:56 -0800 (Tue, 31 Dec 2024) $
-; $LastChangedRevision: 33026 $
+; $LastChangedDate: 2025-09-22 12:45:24 -0700 (Mon, 22 Sep 2025) $
+; $LastChangedRevision: 33647 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -121,10 +120,10 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
   dosym = ~keyword_set(nosym)
   if not keyword_set(noerase) then eflg = 1 else eflg = 0
   if keyword_set(ttime) then doterm = 1 else doterm = 0
-  if keyword_set(shadow) then sflg = shadow else sflg = 0
+  sflg = (n_elements(shadow) gt 0) ? fix(shadow[0]) < 1 : 0
   if (n_elements(bazel) eq 3L*n_elements(lon)) then doazel = 1 else doazel = 0
   cazel = keyword_set(cazel)
-  bscale = keyword_set(bscale) ? float(bscale[0]) : 1.
+  bscale = (n_elements(bscale) gt 0) ? float(bscale[0]) : 1.
   sz = size(sites)
   nsites = 0
   if ((sz[0] eq 1) and (sz[1] ge 2)) then nsites = 1
@@ -169,13 +168,18 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
                  z = bmod.br
                  k.gray = 142
                end
-        'BT' : begin
+        'BN' : begin
                  z = bmod.bt
                  k.gray = 123
                end
-        'BP' : begin
+        'BE' : begin
                  z = bmod.bp
                  k.gray = 125
+               end
+        'BH' : begin
+                 Bmag = sqrt(bmod.br^2. + bmod.bt^2. + bmod.bp^2.)
+                 z = sqrt(bmod.bt^2. + bmod.bp^2.)/Bmag
+                 k.gray = 180
                end
         'B'  : begin
                  z = sqrt(bmod.br^2. + bmod.bt^2. + bmod.bp^2.)
@@ -279,7 +283,9 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
   if (doterm) then begin
     mvn_mars_terminator, ttime, result=tdat, shadow=sflg
     oplot,tdat.tlon,tdat.tlat,color=1,psym=4,symsize=1
-    oplot,[tdat.slon],[tdat.slat],color=5,psym=8,symsize=3
+    slon = tdat.slon > min(k.xrange) < max(k.xrange)
+    slat = tdat.slat > min(k.yrange) < max(k.yrange)
+    oplot,[slon],[slat],color=5,psym=8,symsize=3
   endif
 
   if (dolab) then begin

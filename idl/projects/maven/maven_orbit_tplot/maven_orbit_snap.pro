@@ -80,6 +80,7 @@
 ;                   LLIM.COMPONENT = 'BR'  ; radial component (default)
 ;                   LLIM.COMPONENT = 'BT'  ; north component
 ;                   LLIM.COMPONENT = 'BP'  ; east component
+;                   LLIM.COMPONENT = 'BH'  ; horizontal component
 ;                   LLIM.COMPONENT = 'B'   ; magnitude
 ;
 ;       NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsis
@@ -96,9 +97,7 @@
 ;                   using this keyword.  The following values are recognized:
 ;                      0 : Do not plot any shadow boundary.  (default)
 ;                      1 : Plot optical shadow boundary at surface.
-;                      2 : Plot optical shadow boundary at s/c altitude.
-;                      3 : Plot EUV shadow boundary at s/c altitude.
-;                      4 : Plot EUV shadow at electron absorption altitude.
+;                      2 : Plot optical shadow at electron exobase (170 km).
 ;
 ;       NOERASE:  Don't erase previously plotted positions.  Can be used to build
 ;                 up complex plots.
@@ -196,8 +195,8 @@
 ;                 easier to see the colors.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-05-25 09:52:41 -0700 (Sun, 25 May 2025) $
-; $LastChangedRevision: 33336 $
+; $LastChangedDate: 2025-09-22 12:44:04 -0700 (Mon, 22 Sep 2025) $
+; $LastChangedRevision: 33646 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -220,7 +219,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
 
   if (size(windex,/type) eq 0) then win, config=0, /silent  ; win acts like window
 
-  R_m = 3389.9D  ; volumetric mean radius of Mars (km)
+  R_m = 3389.5D  ; volumetric mean radius of Mars (km)
 
   a = 1.0
   phi = findgen(49)*(2.*!pi/49)
@@ -292,7 +291,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
       print,"Run mvn_mag_tplot before using keyword BAZEL."
     endelse
   endif
-  if (size(terminator,/type) gt 0) then doterm = fix(round(terminator)) < 3 else doterm = 0
+  doterm = (n_elements(terminator) gt 0) ? fix(round(terminator[0])) < 2 : 0
   if keyword_set(wscale) then begin
     wscale = float(wscale[0])
   endif else begin
@@ -507,6 +506,12 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
   if (mflg gt 0) then begin                                          ; GEO Lat-Lon on MAG-MOLA map
     if (~noerase or reset) then mag_mola_orbit, -100., -100., big=mbig, dbr=dbr, lang=lang, llim=llim, $
                                                 rwin=Owin, /reset
+
+    case doterm of
+        1  : print,"Plotting optical shadow boundary at surface"
+        2  : print,"Plotting optical shadow boundary at electron exobase (170 km)"
+      else : ; do nothing
+    endcase
   endif
 
   if keyword_set(mhd) then begin                                     ; MHD simulation
@@ -1377,7 +1382,7 @@ pro maven_orbit_snap, prec=prec, mhd=mhd, hybrid=hybrid, latlon=latlon, xz=xz, m
           lat_i = !values.f_nan
       endif
       mag_mola_orbit, lon_i, lat_i, big=mbig, noerase=noerase, title=title, color=j, $
-                      terminator=ttime, psym=scsym, shadow=(doterm - 1), alt=sc_alt, $
+                      terminator=ttime, psym=scsym, shadow=(doterm-1), alt=sc_alt, $
                       sites=sites, slab=slab, scol=scol, dbr=dbr, lang=lang, llim=llim, $
                       bazel=bazel, cazel=cazel, bscale=bscale
     endif

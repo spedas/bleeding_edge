@@ -36,9 +36,9 @@
 ;                Jianbao Tao, CU/LASP
 ;
 ; VERSION:
-; $LastChangedBy: jianbao_tao $
-; $LastChangedDate: 2012-07-27 12:29:50 -0700 (Fri, 27 Jul 2012) $
-; $LastChangedRevision: 10753 $
+; $LastChangedBy: jimm $
+; $LastChangedDate: 2025-09-22 14:38:29 -0700 (Mon, 22 Sep 2025) $
+; $LastChangedRevision: 33649 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/LASP/thm_lsp_filter_highpass.pro $
 ;-
 
@@ -92,7 +92,7 @@ data = data - median(data) ; Remove offset
 ;flow = 0.0
 ;amp = 120.
 ;nterms = 100.
-;level = 6 ; decimating level
+level = 6 ; decimating level, why was this commented out, jmm, 2025-09-22 ?
 fhigh = 0.090
 flow = 0.0
 amp = 120.

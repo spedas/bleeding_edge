@@ -64,10 +64,12 @@
 ;       IALT:     Ionopause altitude.  Highly variable, but nominally ~400 km.
 ;                 For display only - not included in statistics.  Default is NaN.
 ;
-;       SHADOW:   Choose shadow boundary definition:
-;                    0 : optical shadow at spacecraft altitude
-;                    1 : EUV shadow at spacecraft altitude (default)
-;                    2 : EUV shadow at electron absorption altitude
+;       SHADOW:   The shadow region is defined by the cylinder in the MSO frame
+;                 where X < 0 and sqrt(Y^2 + Z^2) < R_shadow.
+
+;                 Use this keyword to choose the Rsh:
+;                    0 : optical shadow (R_shadow = Mars radius)
+;                    1 : EUV shadow (R_shadow = Mars radius + 150 km)  <- default
 ;
 ;       SEGMENTS: Plot nominal altitudes for orbit segment boundaries as dotted
 ;                 horizontal lines.  Closely spaced lines are transitions, during
@@ -187,8 +189,8 @@
 ;                 arbitrary set of ephemeris conditions.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-04-05 14:34:27 -0700 (Sat, 05 Apr 2025) $
-; $LastChangedRevision: 33230 $
+; $LastChangedDate: 2025-09-22 12:33:28 -0700 (Mon, 22 Sep 2025) $
+; $LastChangedRevision: 33644 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -684,11 +686,6 @@ pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=re
              print,"Using EUV shadow"
              shadow = 1D + (150D/R_m)
              stype = 'EUV'
-           end
-      2  : begin
-             print,"Using electron footpoint shadow"
-             shadow = 1D + (170D/R_m)
-             stype = 'EFP'
            end
     else : begin
              print,"Shadow option not recognized: ",sflg
