@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-02-21 16:59:13 -0800 (Fri, 21 Feb 2025) $
-; $LastChangedRevision: 33145 $
+; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
+; $LastChangedRevision: 33695 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/ccsds_reader__define.pro $
 
 
@@ -45,9 +45,18 @@ function ccsds_reader::header_struct,header
   strct.seqn  = (header[nsync+2] * 256u + header[nsync+3]) and 0x3FFF
   strct.psize = header[nsync+4] * 256u + header[nsync+5] + 1   ; size of payload  (6 bytes less than size of ccsds packet)
   
-  strct.frm_seqn = self.last_frm_seqn
-  strct.frm_seqid = self.frm_seqid
-  strct.replay   = self.replay
+  if self.source_dict.haskey('frame_headerstr') then begin
+    strct.frm_seqn = self.last_frm_seqn
+    strct.frm_seqid = self.source_dict.frame_headerstr.seqid
+    strct.replay    = self.source_dict.frame_headerstr.replay
+    
+  endif
+  
+  if 0 then begin
+    strct.frm_seqn = self.last_frm_seqn
+    strct.frm_seqid = self.frm_seqid
+    strct.replay   = self.replay    
+  endif
 
   if nsync eq 4 &&  header[0] eq 0x3b then begin
     strct.replay = 1
@@ -58,6 +67,9 @@ function ccsds_reader::header_struct,header
  ;   strct.apid = strct.apid or 0x8000         ; turn on highest order bit to segregate different apid
  ; endif
 
+  if strct.replay then begin    ; special case for SWFO   .....  comment out?
+    strct.apid = strct.apid or 0x400
+  endif
 
   return,strct
 

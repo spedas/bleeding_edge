@@ -33,7 +33,9 @@ function ccsds_frame_reader::header_struct,header
     return,!null   ; Not a valid packet
   endif
   
-  strct = {  time:!values.d_nan,index:0uL,SEQN:0UL, seqn_delta:0L, scid:0u, vcid:0b, seqid:0u, psize: 0u ,   sigfield:0b  , offset:0u, last4:[0b,0b,0b,0b], hashcode:0uL,replay:0b, valid:1b, gap:0b}
+  ftime = self.source_dict.frame_time
+  self.source_dict.frame_time = ftime + self.source_dict.frame_dtime
+  strct = {  time:ftime,index:0uL,SEQN:0UL, seqn_delta:0L, scid:0u, vcid:0b, seqid:0u, psize: 0u ,   sigfield:0b  , offset:0u, last4:[0b,0b,0b,0b], hashcode:0uL,replay:0b, valid:1b, gap:0b}
   
   strct.index = self.index++
 
@@ -52,13 +54,19 @@ function ccsds_frame_reader::header_struct,header
     ;strct.seqid = (strct.last4[-2] and 0b) *100u + strct.vcid
     strct.seqid =  strct.vcid
     strct.hashcode = header.hashcode()
-  endif
+  endif else begin
+    dprint,'Error'
+  endelse
   
   ;strct.hashcode = header.hashcode()
 
  ; if isa(sync) && header[0] eq 0x3b then begin    ; special case for SWFO
  ;   strct.apid = strct.apid or 0x8000         ; turn on highest order bit to segregate different apid
  ; endif
+ 
+  if strct.vcid eq 49 then begin
+    strct.replay =1
+  endif
 
 
   return,strct
@@ -99,11 +107,11 @@ pro ccsds_frame_reader::handle,frame    ; This routine handles a SINGLE ccsds fr
     cpkt_rdr.source_dict.headerstr = !null
     cpkt_rdr.source_dict.last_frm_seqn = 0
     cpkt_rdr.source_dict.dejavu_cntr = 0ul
-    cpkt_rdr.source_dict.dejavu_hashcodes = ulonarr(9000)    ; the size of this might need to be increased
+    cpkt_rdr.source_dict.dejavu_hashcodes = ulonarr(1000)    ; the size of this might need to be increased
   endif
   
   cpkt_rdr = self.handlers[seqid]
-    
+  cpkt_rdr.source_dict.frame_headerstr = frame_headerstr    
   frm_seqn = frame_headerstr.seqn
   
   last_frm_seqn = cpkt_rdr.source_dict.last_frm_seqn
@@ -170,7 +178,7 @@ pro ccsds_frame_reader::handle,frame    ; This routine handles a SINGLE ccsds fr
     endif else begin
       self.print_info,dlevel=3,frame_headerstr,'Skipping'
     endelse
-    frame_headerstr.time = cpkt_rdr.source_dict.pkt_time
+    ;frame_headerstr.time = cpkt_rdr.source_dict.pkt_time
     
   endelse
   

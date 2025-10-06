@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2023
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-07-03 13:46:25 -0700 (Thu, 03 Jul 2025) $
-; $LastChangedRevision: 33424 $
+; $LastChangedDate: 2025-10-02 15:51:03 -0700 (Thu, 02 Oct 2025) $
+; $LastChangedRevision: 33687 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -140,7 +140,7 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
     'aeb1_hk', 'aeb2_hk', $
     'mago_survey', 'magi_survey', $
     'dcb_analog_hk', 'dcb_memory', $
-    'dcb_ssr_telemetry', 'dcb_events', 'f1_100bps', 'dfb_hk']
+    'dcb_ssr_telemetry', 'dcb_events', 'f1_100bps', 'dfb_hk', 'f2_digital_hk']
 
   dummy = where(l1_types eq type, l1_type_flag)
 

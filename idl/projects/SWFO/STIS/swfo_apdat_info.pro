@@ -1,7 +1,7 @@
 ; +
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-11-03 23:43:14 -0800 (Sun, 03 Nov 2024) $
-; $LastChangedRevision: 32928 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2025-09-30 07:23:15 -0700 (Tue, 30 Sep 2025) $
+; $LastChangedRevision: 33676 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -95,19 +95,18 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
   if keyword_set(file_restore) then begin
     basename = file_basename(file_restore,'.sav')
     hashcode = basename.hashcode()
-    filetime = swfo_spc_met_to_unixtime(ulong(strmid(basename,0,10)))
     if all_info['file_hash_list'].haskey(hashcode) then begin
-      dprint,dlevel=1,'Skipping already loaded file '+file_info_string(file_restore)+time_string(filetime,tformat=' MET:YYYY-MM-DD/hh:mm:ss (DOY)'),verbose=verbose
+      dprint,dlevel=1,'Skipping already loaded file '+file_info_string(file_restore)
       return
     endif
-    dprint,dlevel=3,'Restoring '+file_info_string(file_restore)
+    dprint,dlevel=2,'Restoring '+file_info_string(file_restore)
     aps = swfo_apdat_info_restore(file_restore,verbose=verbose,parents=parents)
     apids = where(aps,/null)
     for i=0 , n_elements(apids)-1 do begin
       apid = apids[i]
       if obj_valid(all_apdat[apid]) then all_apdat[apid].append , aps[apid] else all_apdat[apid] = aps[apid]
     endfor
-    dprint,dlevel=2,'Restored  '+file_info_string(file_restore)+time_string(filetime,tformat=' MET:YYYY-MM-DD/hh:mm:ss (DOY)')
+    dprint,dlevel=3,'Restored  '+file_info_string(file_restore)
     spp_apdat_info,current_filename=file_restore
   endif
 

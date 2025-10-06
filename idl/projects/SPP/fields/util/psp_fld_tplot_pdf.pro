@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-07-24 16:40:58 -0700 (Thu, 24 Jul 2025) $
-; $LastChangedRevision: 33496 $
+; $LastChangedDate: 2025-09-29 22:44:36 -0700 (Mon, 29 Sep 2025) $
+; $LastChangedRevision: 33675 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_tplot_pdf.pro $
 ;-
 
@@ -99,7 +99,13 @@ pro psp_fld_tplot_pdf, filename, timestamp = timestamp, $
 
     psp_fld_tplot_ticksout, xmargin = xmargin, ymargin = ymargin, _extra = _extra
 
-    psp_fld_pclose
+    if n_elements(no_png) eq 0 then no_png = 1 ; default
+
+    if no_png then begin
+      psp_fld_pclose
+    endif else begin
+      psp_fld_pclose, /png
+    endelse
 
     psp_fld_popen, filename, _extra = _extra
 

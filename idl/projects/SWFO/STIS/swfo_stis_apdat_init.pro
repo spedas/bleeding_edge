@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-10-11 14:12:48 -0700 (Fri, 11 Oct 2024) $
-; $LastChangedRevision: 32885 $
+; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
+; $LastChangedRevision: 33695 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_apdat_init.pro $
 ;-
 
@@ -96,6 +96,12 @@ pro swfo_stis_apdat_init,reset=reset, save_flag=save_flag,swem=swem,rt_flag=rt_f
   ;swfo_apdat_info,'7c3'x,name='manip', routine='spp_swp_manip_decom'   ,tname='manip', ttags='*POS',save_flag=save_flag,rt_flag=rt_flag
   swfo_apdat_info,'7c4'x,name='swemulator', apid_obj='swfo_stis_swemulator_apdat'   ,tname='swemul_tns',ttags='*',save_flag=save_flag,rt_flag=rt_flag
 
+
+  aps = swfo_apdat('pb_*')
+  for i = 0,n_elements(aps)-1 do begin
+    aps[i].replay = 1
+    aps[i].prefix = 'pb_'
+  endfor
 
   if keyword_set(clear) then swfo_apdat_info,/clear
 

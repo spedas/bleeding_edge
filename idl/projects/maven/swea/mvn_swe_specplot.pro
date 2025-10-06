@@ -27,8 +27,8 @@
 ;       TAVG:         Time averaging when using ENERGY or ERATIO keywords.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-05-22 14:25:16 -0700 (Wed, 22 May 2024) $
-; $LastChangedRevision: 32628 $
+; $LastChangedDate: 2025-10-01 09:29:25 -0700 (Wed, 01 Oct 2025) $
+; $LastChangedRevision: 33683 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_specplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  2015-05-06
@@ -69,6 +69,9 @@ pro mvn_swe_specplot, trange=trange, orbit=orbit, units=units, energy=energy, ta
       x = spec.x
       y = spec.y
       v = spec.v
+
+      get_data,'swe_quality',data=qual,index=k
+      q = (k gt 0) ? qual.y : replicate(1B, n_elements(x))
       ok = 1
     endif else begin
       tsp += oneday
@@ -83,15 +86,24 @@ pro mvn_swe_specplot, trange=trange, orbit=orbit, units=units, energy=energy, ta
     tsp += oneday
     mvn_swe_load_l2, tsp, apid='a4', /nospice
     store_data,'swe_a4',/delete
+    store_data,'swe_quality',/delete
     mvn_swe_sumplot, /loadonly, eunits=units
     get_data,'swe_a4',data=spec,index=j
     if (j gt 0) then begin
-      x = [temporary(x), spec.x]
-      y = [temporary(y), spec.y]
+      append_array, x, spec.x, index=xndx
+      append_array, y, spec.y, index=yndx
+
+      get_data,'swe_quality',data=qual,index=k
+      qnew = (k gt 0) ? qual.y : replicate(1B, n_elements(spec.x))
+      append_array, q, qnew, index=qndx
     endif
   endwhile
-  
-  store_data,'swe_a4',data={x:x, y:y, v:v}
+  append_array, x, index=xndx
+  append_array, y, index=yndx
+  append_array, q, index=qndx
+
+  store_data,'swe_a4',data={x:x, y:y, v:v, q:q}
+  store_data,'swe_quality',data={x:x, y:q}
   
   if keyword_set(energy) then begin
     de = min(abs(energy[0] - v),i)
@@ -125,6 +137,7 @@ pro mvn_swe_specplot, trange=trange, orbit=orbit, units=units, energy=energy, ta
   store_data,'dC',/delete
   store_data,'dT',/delete
   store_data,'dC_lab',/delete
+  tlimit, [start_day, stop_day]
 
   return
 

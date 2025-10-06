@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-03-27 18:12:48 -0700 (Thu, 27 Mar 2025) $
-; $LastChangedRevision: 33207 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
+; $LastChangedRevision: 33695 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -172,15 +172,27 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
   makefile=0
 
   ;if source_dict.haskey('headerstr') && source_dict.headerstr.haskey('replay') && source_dict.headerstr.replay  then begin
-  if source_dict.haskey('replay')  && source_dict.replay  then begin
-    pb = 0x400
-    prefix='pb_'
+  if 1 then begin
+    if self.replay  then begin
+      pb = 0x400
+      prefix=self.prefix  ;'pb_'
+    endif else begin
+      pb = 0
+      prefix= self.prefix  ;''
+    endelse
+    
   endif else begin
-    pb = 0
-    prefix= ''
+    if source_dict.haskey('replay')  && source_dict.replay  then begin
+      pb = 0x400
+      prefix='pb_'
+    endif else begin
+      pb = 0
+      prefix= ''
+    endelse
+    
   endelse
 
-  tname = prefix + 'swfo_stis_'
+  tname = 'swfo_'+prefix+'stis_'
 
   sciobj = swfo_apdat(0x350 or pb)   ; stis_sci
   nseobj = swfo_apdat(0x351 or pb)   ; stis_nse
@@ -205,7 +217,7 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
     ;    endif else begin
     ;      l0b_format =     swfo_stis_sci_level_0b()
     ;    endelse
-    ddata = dynamicarray(name='Science_L0b')
+    ddata = dynamicarray(name=self.prefix+'Science_L0b')
     ;    ddata.dict.format = l0b_format
     self.level_0b = ddata
     ;   first_level_0b = 1
@@ -225,8 +237,8 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
 
 
   if  ~obj_valid(self.level_1a) then begin
-    dprint,'Creating Science level 1a'
-    self.level_1a = dynamicarray(name='Science_L1a')
+    dprint,'Creating Science level 1a for ',self.name
+    self.level_1a = dynamicarray(name=self.prefix + 'Science_L1a')
   endif
 
   L1a = swfo_stis_sci_level_1a(L0b)
@@ -235,8 +247,10 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
     size = self.level_1a.size
     self.level_1a.append, L1a
     if size eq 0 then begin
+      store_data,tname+'L1a',data = self.level_1a,tagnames = '*'
       store_data,tname+'L1a',data = self.level_1a,tagnames = 'SPEC_??',val_tag='_NRG'
-      options,tname+'L1a_SPEC_??',spec=1
+      options,tname+'L1a_SPEC_??',spec=1, zlog=1, ylog=1
+
     endif
     if makefile then begin
       self.ncdf_make_file,ddata=self.level_1a, trange=trange,type='L1A'
@@ -255,11 +269,15 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
 
 
   if isa(self.level_1b,'dynamicarray') then begin
-    size = self.level_1a.size
+    size = self.level_1b.size
     self.level_1b.append, L1b
     if size eq 0 then begin
-      store_data,tname+'L1b',data = self.level_1a,tagnames = 'SPEC_??',val_tag='_NRG'
-      options,tname+'L1b_SPEC_??',spec=1
+      store_data,tname+'L1b',data = self.level_1b,tagnames = '*'
+      store_data,tname+'L1b',data = self.level_1b,tagnames = '*_ion_flux',val_tag='ion_energy'
+      ; options,tname+'L1b_SPEC_??',spec=1
+      store_data,tname+'L1b',data = self.level_1b,tagnames = '*_elec_flux',val_tag='elec_energy'
+      ; options,tname+'L1b_*_FLUX',spec=1, zlog=1, ylog=1
+      ; stop
     endif
     if makefile then begin
       self.ncdf_make_file,ddata=self.level_1b, trange=trange,type='L1B'
@@ -294,11 +312,11 @@ pro swfo_stis_sci_apdat::create_tplot_vars,ttags=ttags
   if ~keyword_set(ttags) then ttags = self.ttags
   dyndata = self.data
   if isa(dyndata,'dynamicarray') && keyword_set(self.tname) then begin
-    store_data,self.tname,data=dyndata, tagnames=ttags, gap_tag='GAP',verbose = 0  ;self.verbose
+    store_data,self.tname,data=dyndata, tagnames=ttags, gap_tag='GAP',verbose = 1  ;self.verbose
   endif
 
   if isa(self.level_1a,'dynamicarray') then begin
-    store_data,'stis_l1a',data=self.level_1a,tagnames='SPEC_??',val_tag='_NRG',verbose=0
+    store_data,'stis_l1a',data=self.level_1a,tagnames='SPEC_??',val_tag='_NRG',verbose=1
     options,'stis_l1a_SPEC_??',spec=1,yrange=[5.,8000],/ylog,/zlog,/default
   endif
 

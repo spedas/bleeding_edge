@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-03-04 10:57:07 -0800 (Tue, 04 Mar 2025) $
-; $LastChangedRevision: 33161 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
+; $LastChangedRevision: 33695 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -79,12 +79,12 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     store_data,'swfo_SEQN_DELTAS',data='swfo_*_SEQN_DELTA',dlim={ylog:1}
     store_data,'swfo_DELAYTIMES',data='swfo_*_DELAYTIME'
     options,/def,'*_BITS *USER_0A',tplot_routine='bitplot',psyms=1
-    options,/def,'*nse_HISTOGRAM',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
+    options,/def,'*nse_HISTOGRAM *NOISE_HISTOGRAM',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
     options,/def,'*memdump_DATA',spec=1
     options,/def,'*sci_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
     options,/def,'*hkp?_ADC_*',constant=0.
     channels=['CH1','CH2','CH3','CH4','CH5','CH6']
-    options,/def,'*hkp?_*RATES* *nse_BASELINE *nse_SIGMA',colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1,constant=0
+    options,/def,'*hkp?_*RATES* *BASELINE *SIGMA *NOISE_TOTAL',colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1,constant=0
     options,/def,'*hkp?_*RATES*',constant=2.^(indgen(4)+16)
     options,/def,'*hkp?_NEGATIVE_PULSE_RATES',labels='total_neg',psym=-2,symsize=1
     options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
@@ -136,12 +136,19 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*IRU_BITS', negate='111111'b
     ylim,'*nse_SIGMA',.5,4,1
     ylim,'*nse_BASELINE',-3,1
+
+    ylim,'*NOISE_SIGMA',.5,4,1
+    ylim,'*NOISE_BASELINE',-3,1
+
     ylim,'*VALID_RATES',1,1,1
     ylim,'*REACTION_WHEEL_CURRENT_AMPS',0.05,3,1
     ylim,'*REACTION_WHEEL_BUS_CURRENT_AMPS',0.05,3,1
     ylim,'*REACTION_WHEEL_CURRENT_AMPS',0.0,.5,0
     ylim,'*REACTION_WHEEL_BUS_CURRENT_AMPS',0.0,.5,0
     options,'*WHEEL* *_nse_* *_hkp*_RATES *nse_SIGMA *nse_BASELINE',/reverse_order
+
+    options, '*L1b_*FLUX', yrange=[10, 6000],$
+      zrange=[1e-2, 1e3], spec=1, ylog=1, zlog=1
 
     options,'swfo_*',ystyle=3
     tplot_options,'wshow',0
