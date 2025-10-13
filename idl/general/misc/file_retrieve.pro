@@ -85,8 +85,8 @@
 ;                with the same # of elements as pathnames/newpathnames   -DO NOT USE this option!
 ;
 ;$LastChangedBy: davin-mac $
-;$LastChangedDate: 2019-02-13 17:49:40 -0800 (Wed, 13 Feb 2019) $
-;$LastChangedRevision: 26627 $
+;$LastChangedDate: 2025-10-07 15:45:48 -0700 (Tue, 07 Oct 2025) $
+;$LastChangedRevision: 33712 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_retrieve.pro $
 ;-
 
@@ -94,7 +94,7 @@
 ;  The following is a crude function to determine if the internet is available. 
 ; returns null string if no server can be reached
 function server_available,servers,verbose=verbose
-   if ~keyword_set(servers) then servers=['sprg.ssl.berkeley.edu','google.com','amazon.com','ssl.berkeley.edu']
+   if ~keyword_set(servers) then servers=['sprg.ssl.berkeley.edu']; ,'google.com','amazon.com','ssl.berkeley.edu']
    for i=0,n_elements(servers)-1 do begin
       server = servers[i]
       port = 80
@@ -146,15 +146,15 @@ function file_retrieve,pathnames, newpathnames, source=source, psource=psource, 
     verbose=verbose,progress=progress,progobj=progobj,links=links
     
 common file_retrieve_com, no_internet_until,wait_time
-if ~keyword_set(wait_time) then wait_time = 180
+if ~keyword_set(wait_time) then wait_time = 300
 if ~keyword_set(no_internet_until) then no_internet_until = systime(1)-1.
 
 
-dprint,dlevel=4,verbose=verbose,'Start; $Id: file_retrieve.pro 26627 2019-02-14 01:49:40Z davin-mac $'
+dprint,dlevel=4,verbose=verbose,'Start; $Id: file_retrieve.pro 33712 2025-10-07 22:45:48Z davin-mac $'
 if size(/type, local_data_dir)  ne 7 then local_data_dir = root_data_dir()
 
 if keyword_set(structure_format)  && structure_format eq 1 then begin    ; Old version maintained for legacy code   - don't use this any more.
-;   swver = strsplit('$Id: file_retrieve.pro 26627 2019-02-14 01:49:40Z davin-mac $',/extract)
+;   swver = strsplit('$Id: file_retrieve.pro 33712 2025-10-07 22:45:48Z davin-mac $',/extract)
 ;   user_agent =  strjoin(swver[1:3],' ')+' IDL'+!version.release + ' ' + !VERSION.OS + '/' + !VERSION.ARCH+ ' (' + (getenv('USER') ? getenv('USER') : getenv('USERNAME'))+')'
    if n_elements(user_agent) eq 0 then user_agent=''
    str= {   $
@@ -224,6 +224,7 @@ if keyword_set(trange) then begin
     dprint,dlevel=(num_pn gt 1) ? 2 : 3,verbose=verbose,strtrim(num_pn,2)+' Pathnames expanded from "'+pathnames[i]+'" using TRANGE from: '+strjoin( time_string(trange) ,'  to: ')
     fns = file_retrieve(pathnames_expanded,local_data_dir=local_data_dir,remote_data_dir=remote_data_dir, $
       use_wget=use_wget, nowait=nowait, $
+      master_file=master_file,  $
       min_age_limit=min_age_limit ,  valid_only=valid_only,   $
       file_mode = file_mode,  dir_mode = dir_mode,   $
       recurse_limit=recurse_limit, $

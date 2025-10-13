@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
-; $LastChangedRevision: 33695 $
+; $LastChangedDate: 2025-10-07 09:22:52 -0700 (Tue, 07 Oct 2025) $
+; $LastChangedRevision: 33709 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_apdat_init.pro $
 ;-
 
@@ -14,7 +14,7 @@ pro swfo_stis_apdat_init,reset=reset, save_flag=save_flag,swem=swem,rt_flag=rt_f
   ;   dprint,dlevel=3,/phelp ,rt_flag,save_flag
 
 
-  pb = 0x400   ; playback flag
+  pb = 0x800   ; playback flag
 
   ;; special case to accumulate statistics
   swfo_apdat_info, 0 ,name='Stats',apid_obj='swfo_gen_apdat_stats',tname='APIDS', ttags=ttags,save_flag=save_flag,rt_flag=rt_flag
@@ -101,6 +101,7 @@ pro swfo_stis_apdat_init,reset=reset, save_flag=save_flag,swem=swem,rt_flag=rt_f
   for i = 0,n_elements(aps)-1 do begin
     aps[i].replay = 1
     aps[i].prefix = 'pb_'
+    aps[i].replay_bit = pb
   endfor
 
   if keyword_set(clear) then swfo_apdat_info,/clear

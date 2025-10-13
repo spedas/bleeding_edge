@@ -1,7 +1,7 @@
 ;swfo_test
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
-; $LastChangedRevision: 33695 $
+; $LastChangedDate: 2025-10-13 02:44:07 -0700 (Mon, 13 Oct 2025) $
+; $LastChangedRevision: 33748 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_frame_read_crib.pro $
 
 
@@ -41,6 +41,21 @@ end
 
 
 
+run_proc = 1
+
+;stop
+
+
+if ~isa(rdr) then begin
+  swfo_stis_apdat_init,/save_flag
+  rdr = ccsds_frame_reader(mission='SWFO',/no_widget,verbose=verbose,run_proc=run_proc)
+  !p.charsize = 1.2
+endif
+
+
+
+
+
 if 1 || ~keyword_set(files) then begin
   trange = ['2024 9 18','2024 9 19']
   trange = '2024-9-18 / 20:45'
@@ -69,20 +84,11 @@ if 1 || ~keyword_set(files) then begin
   trange = ['2025 1 12 ','now']   ; ETE4 RFR
   trange = ['2025 1 16 16 ','2025 1 16 19']   ; ETE4 RFR
   trange = ['2025-10- 3 /11 ','2025 10 3 /14']   ; flight with replay
-  trange = ['2025 9 30 / 12',time_string(systime(1))]   ; + [-1,0] * 3600d  *5
-  ;trange = systime(1)   + [-1,0] * 3600d  *2   ; last few hours
-
-  run_proc = 1
-
-  ;stop
-
-
-  if ~isa(rdr) then begin
-    swfo_stis_apdat_init,/save_flag
-    rdr = ccsds_frame_reader(mission='SWFO',/no_widget,verbose=verbose,run_proc=run_proc)
-    !p.charsize = 1.2
-  endif
-
+  trange = ['2025-9 30 / 12','2025 10 1'  ]   ; first 12 hours
+  trange = ['2025-9 30 / 12','2025 9 30 18'  ]   ; first 6 hours
+  trange = ['2025 9 30 / 12',time_string(systime(1))]   ; Entire mission
+  trange = systime(1)   + [-1,0] * 3600d   * 24 *2  ; last few hours
+ ; trange = ['2025-10 10 / 10','2025 10 10 14'  ]   ; maneuver and bad frames
 
 
   no_download = 0    ;set to 1 to prevent download
@@ -248,15 +254,21 @@ endif
 
 
 if keyword_set(1) then begin
-  parent = dictionary()
-  rdr.parent_dict = parent
+  
+  parent = rdr.parent_dict
   rdr.verbose = 3
   dict = rdr.source_dict
+  if ~parent.haskey('filehashes') then parent.filehashes = orderedhash()
   dict.run_proc = run_proc
   ;cntr = dynamicarray('index_counter')
   for i = 0, n_elements(files)-1 do begin
     file = files[i]
-    parent.filename = file
+    basename = file_basename(file)
+    filehash = basename.hashcode()
+    if rdr.parent_dict.filehashes.haskey(filehash) then begin
+      dprint,dlevel=3, file_basename(file)+ ' Already processed'
+      continue
+    endif
     parent.num_duplicates = 0
     parent.max_displacement = 0
     ;    index
@@ -266,13 +278,17 @@ if keyword_set(1) then begin
       dict.file_nframes = n_elements(dat.size_of_frame)
       dict.frame_time = dict.file_timerange[0]
       dict.frame_dtime = (dict.file_timerange[1] - dict.file_timerange[0]) / dict.file_nframes
+      dict.file_hash = filehash
+      dict.file_name = file
       
       frames = struct_value(dat,frames_name,default = !null)
       index = rdr.getattr('index')
       ;    cntr.append, { index:index,   time: time_double( dat.
-      dprint,dlevel=1,string(index)+'   '+ file_basename(file)+ '  '+strtrim(n_elements(frames)/1024, 2)
+      dprint,dlevel=1,string(index)+'   '+ file_basename(file)+ '  '+strtrim(n_elements(frames)/1024, 2)+'   '+time_string(dict.frame_time)+'  '+strtrim(filehash,2)
       rdr.read , frames
       lastfile = file
+      rdr.parent_dict.filename = file      
+      rdr.parent_dict.filehashes[filehash] = file
 
     endif else begin
       dprint,'No such file: ',file

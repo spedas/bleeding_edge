@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2024-09-11 18:09:23 -0700 (Wed, 11 Sep 2024) $
-; $LastChangedRevision: 32823 $
+; $LastChangedDate: 2025-10-07 19:39:09 -0700 (Tue, 07 Oct 2025) $
+; $LastChangedRevision: 33716 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_110_apdat__define.pro $
 
 function swfo_sc_110_rw_temps,temps
@@ -28,6 +28,7 @@ function swfo_sc_110_apdat::decom,ccsds,source_dict=source_dict
     tod_day:                          swfo_data_select(ccsds_data,  6*8,16),$
     tod_millisec:                     swfo_data_select(ccsds_data,  8*8,32),$
     tod_microsec:                     swfo_data_select(ccsds_data, 12*8,16),$
+    integral_error_xyz_deg:57.29578e-4*swfo_data_select(ccsds_data, [40,42,44]*8,16,/signed),$
     reaction_wheel_xyz_torque_actual_nm: rwc*swfo_data_select(/signed,ccsds_data,[853,855,857]*8,16),$
     reaction_wheel_torque_command_nm:    rwc*swfo_data_select(/signed,ccsds_data,[859,861,863,865]*8,16),$
     reaction_wheel_model_rate_rpm:    .238724*swfo_data_select(/signed,ccsds_data,[867,869,871,873]*8,16),$
@@ -52,6 +53,7 @@ function swfo_sc_110_apdat::decom,ccsds,source_dict=source_dict
     reaction_wheel_3p3v_current_monitor_ma:    .2*swfo_data_select(ccsds_data,[927+indgen(4)*32]*8,16),$
     reaction_wheel_1p5v_current_monitor_ma:    .1*swfo_data_select(ccsds_data,[929+indgen(4)*32]*8,16),$
     iru_bits:                  swfo_data_select(ccsds_data,690*8+4, 8),$
+    modeled_spacecraft_to_sun_vxyz: 3.2e-5 * swfo_data_select(ccsds_data,[710,712,714]*8, 16),$
     gap:ccsds.gap }
 
   return,datastr

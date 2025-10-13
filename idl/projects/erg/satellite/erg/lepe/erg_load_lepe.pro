@@ -1,3 +1,25 @@
+;
+; Version 5 of the ERG LEPE CDFs uses all lower-case variable names.   Other code expects
+; previous convention, which had substrings FEDO, FEDU, Count_Rate, Count_Rate_BG.
+; 
+
+pro rename_lepe_v5_variables,tplotnames
+   for i = 0, n_elements(tplotnames)-1 do begin
+    var=tplotnames[i]
+    original=var
+    newname=var
+    strreplace,newname,'fedo','FEDO'
+    strreplace,newname,'fedu','FEDU'
+    strreplace,newname,'count_rate_bg','Count_Rate_BG'
+    strreplace,newname,'count_rate','Count_Rate'
+    if strcmp(original,newname) ne 1 then begin
+      print,'Renaming '+original+' to '+newname
+      tplot_rename,original,newname
+    endif
+   endfor
+ end
+
+
 ;+
 ; PRO erg_load_lepe
 ;
@@ -44,6 +66,7 @@
 ;   only_fedu: only FEDU is extrancted as tplot variables.
 ;   get_filever: Get data file version.
 ;   (PLEASE do not use this keyword if you want to do the "part_product" process.)
+;   version: CDF version string to use when downloading
 ;
 ;
 ; :Examples:
@@ -62,9 +85,9 @@
 ;   Tzu-Fang Chang, ERG Science Center (E-mail: jocelyn at isee.nagoya-u.ac.jp)
 ;   Chae-Woo Jun, ERG Science Center (E-mail: chae-woo at isee.nagoya-u.ac.jp)
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
-; $LastChangedRevision: 31399 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-10-06 22:09:04 -0700 (Mon, 06 Oct 2025) $
+; $LastChangedRevision: 33706 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/lepe/erg_load_lepe.pro $
 ;-
 pro erg_load_lepe, $
@@ -86,10 +109,17 @@ pro erg_load_lepe, $
   get_filever=get_filever,$
   only_fedu=only_fedu,$
   fine=fine,$
+  version=version
   _extra=_extra
 
   ;;Initialize the user environmental variables for ERG
   erg_init
+  
+  if n_elements(version) eq 0 then begin
+    last_version = 1
+  endif else begin
+    last_version = 0
+  endelse
 
   ;;check data level
   if ~keyword_set(level) then level = 'l2'
@@ -118,7 +148,11 @@ pro erg_load_lepe, $
     ;;Relative file path
     ;cdffn_prefix = 'erg_lepe_'+level+'_'+datatype+'_' ;
     cdffn_prefix = 'erg_lepe_l2_'+datatype+'_' ; for l2new
-    relfpathfmt = 'YYYY/MM/' + cdffn_prefix+'YYYYMMDD_v**_**.cdf'
+    if last_version eq 1 then begin
+       relfpathfmt = 'YYYY/MM/' + cdffn_prefix+'YYYYMMDD_v**_**.cdf'
+    endif else begin
+       relfpathfmt = 'YYYY/MM/' + cdffn_prefix+'YYYYMMDD_' + version + '.cdf' 
+    endelse     
 
     ;;Expand the wildcards for the designated time range
     relfpaths = file_dailynames(file_format=relfpathfmt, trange=trange, times=times)
@@ -129,9 +163,9 @@ pro erg_load_lepe, $
       datfiles = $
         spd_download( local_path=localdir $
         , remote_path=remotedir, remote_file=relfpaths $
-        , no_download=no_download, /last_version $
+        , no_download=no_download, last_version=last_version $
         , url_username=uname, url_password=passwd $
-        )
+        , version=version)
     endelse
     idx = where( file_test(datfiles), nfile )
     if nfile eq 0 then begin
@@ -143,15 +177,18 @@ pro erg_load_lepe, $
 
     ;;Read CDF files and generate tplot variables
     prefix = 'erg_lepe_' + level + '_' + datatype + '_'
-    cdf2tplot, file=datfiles, prefix=prefix, get_support_data=get_support_data, $
-      varformat=varformat, verbose=verbose
+    spd_cdf2tplot, file=datfiles, prefix=prefix, get_support_data=get_support_data, $
+      varformat=varformat, verbose=verbose, tplotnames=tplotnames
+      
+    ; Ensure variable names conform to version v04_01 conventions (version 5 has names that are all lower case)
+    rename_lepe_v5_variables,tplotnames
     
     ;;Options for tplot variables
     vns = ''
     if total(strcmp( datatype, '3dflux' )) then $
-      append_array, vns, prefix+['FEDU','Count_rate','BG_count']  ;;common to flux/count arrays
+      append_array, vns, prefix+['FEDU','Count_Rate','Count_Rate_BG']  ;;common to flux/count arrays
     if total(strcmp( datatype, '3dflux_finech' )) then $
-      append_array, vns, prefix+['FEDU','Count_rate','BG_count']  ;;common to flux/count arrays
+      append_array, vns, prefix+['FEDU','Count_Rate','Count_Rate_BG']  ;;common to flux/count arrays
     if total(strcmp( datatype, 'omniflux')) then $
       append_array, vns, prefix+'FEDO'  ;;Omni flux array
     options, vns, spec=1, ysubtitle='[eV]', ztickformat='pwr10tick', extend_y_edges=1, $
@@ -170,14 +207,23 @@ pro erg_load_lepe, $
       if vns[i] eq prefix+'FEDO' then begin
         time = ori_data.x[cor_ad] 
         flux = ori_data.y[cor_ad,*]
-        ene_ch = ori_data.v[cor_ad,*,*]
+        vdims=size(ori_data.v,/dimensions)
+        if n_elements(vdims) eq 3 then begin
+          ; Old CDF layout: v array has dimensions time, upper/lower, energy bin
+          ; Upper and lower values need to be averaged.
+           ene_ch = ori_data.v[cor_ad,*,*]
         
-        ene = total(ene_ch,2)/2
-        for n = 0, n_elements(time)-1 do begin
-          sort_idx=sort(ene[n,*])
-          flux[n,*]=flux[n,sort_idx]
-          ene[n,*]=ene[n,sort_idx]
-        endfor
+           ene = total(ene_ch,2)/2  ; This is where the upper/lower energy bin values are averaged
+           for n = 0, n_elements(time)-1 do begin
+             sort_idx=sort(ene[n,*])
+             flux[n,*]=flux[n,sort_idx]
+             ene[n,*]=ene[n,sort_idx]
+           endfor
+        endif else begin
+          ; New CDF layout: v array is not time-dependent, only 32 bins
+          ; No averaging, sorting, or time filtering is required
+          ene = ori_data.v
+        endelse
         
         store_data, vns[i], data={x:time, y:flux, v:ene }, dl=dl, lim=lim
         options, vns[i], ztitle='[/s-cm!U2!N-sr-eV]',ytitle='ERG!CLEP-e!CFEDO!CEnergy'
@@ -185,29 +231,94 @@ pro erg_load_lepe, $
         options, vns[i], ytitle='ERG!CLEP-e!C'+dl.cdf.vatt.fieldnam+'!CEnergy'
         zlim, vns[i], 1, 1e6, 1
         ylim, vns[i], 19, 21*1e+3, 1
-      endif else begin
-        ; FEDU
+      endif else if (vns[i] eq prefix+'FEDU') or (vns[i] eq prefix+'Count_Rate') then begin
+        ; FEDU, Count_Rate
         time = ori_data.x[cor_ad]
         flux = ori_data.y[cor_ad,*,*,*]
-        ene_ch = ori_data.v1[cor_ad,*,*]
-        ene = total(ene_ch,2)/2
-        if (keyword_set(sorting_ene_chn)) then begin
-          for n = 0, n_elements(data.x)-1 do begin
+        vdims=size(ori_data.v1,/dimensions)
+        if n_elements(vdims) eq 3 then begin
+          ; Old CDF layout: v array has dimensions time, upper/lower, energy bin
+          ; Upper and lower values need to be averaged.
+          ene_ch = ori_data.v1[cor_ad,*,*]
+
+          ene = total(ene_ch,2)/2  ; This is where the upper/lower energy bin values are averaged
+          ; I don't think it's necessary to sort the energy channels, but we'll leave this in place
+          for n = 0, n_elements(time)-1 do begin
             sort_idx=sort(ene[n,*])
-            data.y[n,*,*,*]=data.y[n,sort_idx,*,*]
+            flux[n,*]=flux[n,sort_idx]
             ene[n,*]=ene[n,sort_idx]
           endfor
-        endif
+          v1 = ene
+          v2 = ori_data.v2
+          v3 = indgen(16)
+        endif else begin
+          ; New CDF layout: 
+          ; Array axes have been permuted: 
+          ; v4: time, energy, channel, phase
+          ; v5: time, phase, energy, channel
+          ; v array is not time-dependent, only 32 bins
+          ; No averaging, sorting, or time filtering is required
+          flux_xp = transpose(flux,[0, 2, 3, 1])
+          flux = flux_xp
+          v1 = ori_data.v2
+          v2 = ori_data.v3
+          v3 = indgen(16)
 
-        store_data, vns[i], data={x:time, y:flux, v:ene, v2:ori_data.v2, $
-          v3:indgen(16) }, dl=dl, lim=lim
+        endelse
+        store_data, vns[i], data={x:time, y:flux, v:v1, v2:v2, $
+          v3:v3 }, dl=dl, lim=lim
         options, vns[i], ztitle='['+dl.cdf.vatt.units+']'
         options, vns[i], ytitle='ERG!CLEP-e!C'+dl.cdf.vatt.fieldnam+'!CEnergy'
         zlim, vns[i], 1, 1e6, 1
         ylim, vns[i], 19, 21*1e+3, 1
+
+      endif else if vns[i] eq prefix+'Count_Rate_BG' then begin
+        ; Count_Rate_BG
+        ; The data array has one less dimension than FEDU and Count_Rate (no channels)
+        time = ori_data.x[cor_ad]
+        flux = ori_data.y[cor_ad,*,*,*]
+        vdims=size(ori_data.v1,/dimensions)
+        if n_elements(vdims) eq 3 then begin
+          ; Old CDF layout: v array has dimensions time, upper/lower, energy bin
+          ; Upper and lower values need to be averaged.
+          ene_ch = ori_data.v1[cor_ad,*,*]
+
+          ene = total(ene_ch,2)/2  ; This is where the upper/lower energy bin values are averaged
+          ; I don't think it's necessary to sort the energy channels, but we'll leave this in place
+          for n = 0, n_elements(time)-1 do begin
+            sort_idx=sort(ene[n,*])
+            flux[n,*]=flux[n,sort_idx]
+            ene[n,*]=ene[n,sort_idx]
+          endfor
+          v1 = ene
+          v2 = ori_data.v2
+        endif else begin
+          ; New CDF layout:
+          ; Array axes have been permuted:
+          ; v4: time, energy, phase
+          ; v5: time, phase, energy
+          ; v array is not time-dependent, only 32 bins
+          ; No averaging, sorting, or time filtering is required
+          flux_xp = transpose(flux,[0, 2, 1])
+          flux = flux_xp
+          v1 = ori_data.v2
+          v2 = indgen(16)
+
+
+        endelse
+        store_data, vns[i], data={x:time, y:flux, v:v1, v2:v2}, dl=dl, lim=lim
+        options, vns[i], ztitle='['+dl.cdf.vatt.units+']'
+        options, vns[i], ytitle='ERG!CLEP-e!C'+dl.cdf.vatt.fieldnam+'!CEnergy'
+        zlim, vns[i], 1, 1e6, 1
+        ylim, vns[i], 19, 21*1e+3, 1
+
+      endif else begin
+        print, 'Unrecognized variable ' + vns[i]
+        ylim, vns[i], 1e+1, 3e+4, 1
+        zlim, vns[i], 0, 0, 1
       endelse
-      ylim, vns[i], 1e+1, 3e+4, 1
-      zlim, vns[i], 0, 0, 1
+
+
     endfor
     
     ;; Exit here unless the 3dflux variables are loaded.
@@ -256,7 +367,11 @@ pro erg_load_lepe, $
     ;;Relative file path
     ;cdffn_prefix = 'erg_lepe_'+level+'_'+datatype+'_' ;
     cdffn_prefix = 'erg_lepe_l3_'+datatype+'_' ; for l3 PAD
-    relfpathfmt = 'YYYY/MM/' + cdffn_prefix+'YYYYMMDD_v**_**.cdf'
+    if last_version then begin
+       relfpathfmt = 'YYYY/MM/' + cdffn_prefix+'YYYYMMDD_v**_**.cdf'
+    endif else begin
+      relfpathfmt = 'YYYY/MM/' + cdffn_prefix+'YYYYMMDD_'+version+'.cdf'      
+    endelse
 
     ;;Expand the wildcards for the designated time range
     relfpaths = file_dailynames(file_format=relfpathfmt, trange=trange, times=times)
@@ -267,8 +382,8 @@ pro erg_load_lepe, $
       datfiles = $
         spd_download( local_path=localdir $
         , remote_path=remotedir, remote_file=relfpaths $
-        , no_download=no_download, /last_version $
-        , url_username=uname, url_password=passwd $
+        , no_download=no_download, last_version=last_version $
+        , url_username=uname, url_password=passwd  $
         )
     endelse
     idx = where( file_test(datfiles), nfile )
@@ -281,8 +396,10 @@ pro erg_load_lepe, $
 
     ;;Read CDF files and generate tplot variables
     prefix = 'erg_lepe_' + level + '_' + datatype + '_'
-    cdf2tplot, file=datfiles, prefix=prefix, /get_support_data, $
-      varformat=varformat, verbose=verbose,varname = varname
+    spd_cdf2tplot, file=datfiles, prefix=prefix, $
+      varformat=varformat, verbose=verbose,varname = varname, tplotnames=tplotnames
+      
+    rename_lepe_v5_variables,tplotnames
     
     ;;Options for tplot variables
     vns = ''
@@ -295,7 +412,7 @@ pro erg_load_lepe, $
     endif else begin
       ;; drop invalid time intervals
       ;get_data, vns, data=data, dl=dl, lim=lim
-      get_data, vns, data=ori_data, dl=dl, lim=lim ; get data from tplot variable
+      get_data, vns[0], data=ori_data, dl=dl, lim=lim ; get data from tplot variable
       ;get_data, vns[1], data=ori_n_E;, dl=dl, lim=lim ; get data from tplot variable
       ;del_data,[vns[0],vns[1]];prefix+'*'
 
@@ -305,8 +422,16 @@ pro erg_load_lepe, $
       
       time = ori_data.x[cor_ad]
       flux = ori_data.y[cor_ad,*,*]
-      energy_channel = ori_data.v1[cor_ad,*,*]
-      energy_arr = total(energy_channel,2,/nan)/2
+      v1_dims = size(ori_data.v1,/dim)
+      if n_elements(v1_dims) eq 3 then begin
+        ; Version v04_01 has time-dependent energy bins with upper/lower values that need to be time-filtered and averaged
+        energy_channel = ori_data.v1[cor_ad,*,*]
+        energy_arr = total(energy_channel,2,/nan)/2  ; Average lower/upper energy bin boundaries
+      endif else begin
+        ; Version v05_01 has non-time-varying energy bin centers (32 element 1d array)
+        energy_arr = ori_data.v1
+      endelse
+        
       pa_arr = ori_data.v2;[5.625,16.875,28.125,39.375,50.625,61.875,73.125,84.375,95.625,106.875,118.125,129.375,140.625,151.875,163.125,174.375]
 
       ;    ; skip the lose cone mode (number of energy channel less than 5) for L3 data
@@ -316,26 +441,40 @@ pro erg_load_lepe, $
       ;      energy_channel[LC_ad,*,*] = !values.F_nan
       ;    endif
 
-      store_data,vns,data={x:time, y:flux, v1:energy_channel, v2:pa_arr}, dl=dl, lim=lim
-      options, vns, spec=1, ysubtitle='[eV]', ztickformat='pwr10tick', extend_y_edges=1, $
+      store_data,vns[0],data={x:time, y:flux, v1:energy_arr, v2:pa_arr}, dl=dl, lim=lim
+      options, vns[0], spec=1, ysubtitle='[eV]', ztickformat='pwr10tick', extend_y_edges=1, $
         datagap=17., zticklen=-0.4
-      zlim, vns, 1, 1e6, 1
-      ylim, vns, 19, 21*1e+3, 1
+      zlim, vns[0], 1, 1e6, 1
+      ylim, vns[0], 19, 21*1e+3, 1
       
       if ~keyword_set(only_fedu) then begin
         ; store L3 data into tplot variables. Default is pitch angle-time diagram. If set a keyword of 'et_diagram', then return energy-time diagrams for each pitch angle bin.
         if ~keyword_set(et_diagram) then begin
           dim = size(energy_arr,/dim)
-          n_chn = dim[1]
-          for j = 0, n_chn -1 do begin
-            vn = prefix+'enech_'+string(j+1, '(i02)')
-            store_data, vn, data={x:time, y:reform(flux[*,j,*]), v:pa_arr}, dl=dl, lim=lim
-            options, vn, ztitle='['+dl.cdf.vatt.units+']'
-            options, vn, ytitle='ERG LEP-e!C'+string(energy_arr[0,j],'(f9.2)')+' eV!CPitch angle', YSUBTITLE = '[deg]', yrange=[0,180],ytickinterval=30
-            ylim, vn, 0, 180, 0
-            zlim, vn, 1, 1e6, 1
-
-          endfor
+          if n_elements(dim) gt 1 then begin
+            ; time varying energies
+            n_chn = dim[1]
+            for j = 0, n_chn -1 do begin
+              vn = prefix+'enech_'+string(j+1, '(i02)')
+              store_data, vn, data={x:time, y:reform(flux[*,j,*]), v:pa_arr}, dl=dl, lim=lim
+              options, vn, ztitle='['+dl.cdf.vatt.units+']'
+              options, vn, ytitle='ERG LEP-e!C'+string(energy_arr[0,j],'(f9.2)')+' eV!CPitch angle', YSUBTITLE = '[deg]', yrange=[0,180],ytickinterval=30
+              ylim, vn, 0, 180, 0
+              zlim, vn, 1, 1e6, 1 
+            endfor
+          endif else begin
+            ; 1-d non-time-varying energies
+            n_chn = dim[0]
+            for j = 0, n_chn -1 do begin
+              vn = prefix+'enech_'+string(j+1, '(i02)')
+              store_data, vn, data={x:time, y:reform(flux[*,j,*]), v:pa_arr}, dl=dl, lim=lim
+              options, vn, ztitle='['+dl.cdf.vatt.units+']'
+              options, vn, ytitle='ERG LEP-e!C'+string(energy_arr[j],'(f9.2)')+' eV!CPitch angle', YSUBTITLE = '[deg]', yrange=[0,180],ytickinterval=30
+              ylim, vn, 0, 180, 0
+              zlim, vn, 1, 1e6, 1
+            endfor
+           
+          endelse
         endif else begin
           n_chn = n_elements(pa_arr)
           for j = 0, n_chn -1 do begin

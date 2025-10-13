@@ -31,9 +31,9 @@
 ;    Davin Larson - January 2023
 ;    proprietary - D. Larson UC Berkeley/SSL
 ;
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-03-04 10:57:07 -0800 (Tue, 04 Mar 2025) $
-; $LastChangedRevision: 33161 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-12 01:08:54 -0700 (Sun, 12 Oct 2025) $
+; $LastChangedRevision: 33737 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_stuff/socket_reader__define.pro $
 ;
 ;-
@@ -245,7 +245,7 @@ pro socket_reader::read,source
   ;dwait = 10.
 
   dict = self.source_dict
-  if dict.haskey('parent_dict') then parent_dict = dict.parent_dict
+  ;if dict.haskey('parent_dict') then parent_dict = dict.parent_dict
 
 
   ;  if isa(parent_dict,'dictionary') &&  parent_dict.haskey('headerstr') then begin
@@ -534,7 +534,14 @@ PRO socket_reader::SetProperty, _extra=ex
 END
 
 
-pro socket_reader::GetProperty,name=name,verbose=verbose,dyndata=dyndata,time_received=time_received,source_dict=source_dict
+pro socket_reader::GetProperty,name=name,verbose=verbose,dyndata=dyndata,time_received=time_received  $
+  ,struct =struct  $
+  ,source_dict=source_dict $
+  ,parent_dict=parent_dict
+  if arg_present(struct) then begin
+    struct = create_struct(name=typename(self))
+    struct_assign , self, struct
+  endif
   if arg_present(name) then name=self.name
   if arg_present(dyndata) then dyndata=self.dyndata
   if arg_present(verbose) then verbose=self.verbose
@@ -930,6 +937,8 @@ function socket_reader::init,name=name,title=title,ids=ids,host=host,port=port,f
   self.name  =name
 
   self.source_dict = dictionary()
+  self.parent_dict = dictionary()
+  
   if isa(verbose) then self.verbose = verbose else self.verbose = 2
 
   if not keyword_set(host) then host = ''

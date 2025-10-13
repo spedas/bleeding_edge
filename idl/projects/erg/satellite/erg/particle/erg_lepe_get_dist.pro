@@ -16,9 +16,9 @@
 ;History:
 ;  ver.0.0: The 1st experimental release
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2023-01-11 10:09:14 -0800 (Wed, 11 Jan 2023) $
-;$LastChangedRevision: 31399 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2025-10-09 10:09:10 -0700 (Thu, 09 Oct 2025) $
+;$LastChangedRevision: 33720 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/particle/erg_lepe_get_dist.pro $
 ;-
 function erg_lepe_get_dist $
@@ -213,7 +213,7 @@ function erg_lepe_get_dist $
     dprint, 'Cannot locate a data CDF file from which necessary information is extacted from!!'
     return, 0
   endif
-  cdfi = cdf_load_vars(cdffpath, varformat=['FEDU_Energy', 'FEDU_Angle_SGA'])
+  cdfi = cdf_load_vars(cdffpath, varformat=['FEDU_Energy', 'FEDU_Angle_SGA', 'fedu_angle_sga'])
   
   ;; Energy ch
   ;; Energy bin width from the data variable in a CDF file
@@ -256,7 +256,7 @@ function erg_lepe_get_dist $
 
   
   ;; azimuthal angle in spin direction
-  id = where( strcmp( cdfi.vars.name, 'FEDU_Angle_SGA' ) )
+  id = where( strcmp( cdfi.vars.name, 'FEDU_Angle_SGA' , /fold_case))
   angarr = *( cdfi.vars[id].dataptr )  ;;[elev/phi, (anode)] in SGA  (looking dir)
 
   ;; Flip the looking dirs to the flux dirs

@@ -5,8 +5,8 @@
 ; Written by Davin Larson
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-11-01 10:08:56 -0700 (Fri, 01 Nov 2024) $
-; $LastChangedRevision: 32915 $
+; $LastChangedDate: 2025-10-08 17:56:28 -0700 (Wed, 08 Oct 2025) $
+; $LastChangedRevision: 33718 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_spkt_handler.pro $
 ;
 ;-
@@ -24,10 +24,10 @@ pro swfo_ccsds_spkt_handler,dbuffer, source_dict = source_dict , wrap_ccsds=wrap
   playback = 0
   if isa(source_dict,'dictionary')  then begin
     if source_dict.haskey('headerstr') && source_dict.headerstr.replay then begin
-      playback = 0x400      
+      playback = 0x800      
     endif
 ;    if source_dict.headerstr.replay then begin
-;      playback = 0x400
+;      playback = 0x800
 ;    endif
     source_dict.pkt_time = ccsds.time
   endif

@@ -1,11 +1,11 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
-; $LastChangedRevision: 33695 $
+; $LastChangedDate: 2025-10-13 02:35:35 -0700 (Mon, 13 Oct 2025) $
+; $LastChangedRevision: 33743 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
 function swfo_stis_sci_apdat::decom,ccsds   ,source_dict=source_dict      ;,header,ptp_header=ptp_header,apdat=apdat
-  common swfo_stis_sci_com4, lastdat, last_str
+;  common swfo_stis_sci_com4, lastdat, last_str
   ccsds_data = swfo_ccsds_data(ccsds)
   str1=swfo_stis_ccsds_header_decom(ccsds)
   ;if str1.fpga_rev gt 209 then ccsds_data=ccsds_data[0:-3]
@@ -45,8 +45,8 @@ function swfo_stis_sci_apdat::decom,ccsds   ,source_dict=source_dict      ;,head
   endif
 
 
-  if n_elements(last_str) eq 0 || (abs(last_str.time-ccsds.time) gt 65) then lastdat = scidata
-  lastdat = scidata
+;  if n_elements(last_str) eq 0 || (abs(last_str.time-ccsds.time) gt 65) then lastdat = scidata
+;  lastdat = scidata
 
   ;  if duration eq 0 then duration = 1u   ; cluge to fix lack of proper output in early version FPGA
 
@@ -174,7 +174,7 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
   ;if source_dict.haskey('headerstr') && source_dict.headerstr.haskey('replay') && source_dict.headerstr.replay  then begin
   if 1 then begin
     if self.replay  then begin
-      pb = 0x400
+      pb = self.replay_bit
       prefix=self.prefix  ;'pb_'
     endif else begin
       pb = 0
@@ -183,7 +183,7 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
     
   endif else begin
     if source_dict.haskey('replay')  && source_dict.replay  then begin
-      pb = 0x400
+      pb = 0x800
       prefix='pb_'
     endif else begin
       pb = 0
@@ -197,13 +197,18 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
   sciobj = swfo_apdat(0x350 or pb)   ; stis_sci
   nseobj = swfo_apdat(0x351 or pb)   ; stis_nse
   hkpobj = swfo_apdat(0x35f or pb)   ; stis_hkp2
+  sc100obj = swfo_apdat(prefix+'sc_100')  ; apid 100
+  sc110obj = swfo_apdat(prefix+'sc_110')  ; apid 110
 
 
   sci_last = sciobj.last_data    ; this should be identical to struct_stis_sci
   nse_last = nseobj.last_data
   hkp_last = hkpobj.last_data
 
-  l0b = swfo_stis_sci_level_0b(sci_last,nse_last,hkp_last)
+  sc100_last = sc100obj.last_data
+  sc110_last = sc110obj.last_data
+
+  l0b = swfo_stis_sci_level_0b(sci_last,nse_last,hkp_last,sc100_dat=sc100_last, sc110_dat=sc110_last, playback=pb)
 
   if isa(l0b,/null) then begin
     dprint , 'Bad L0B'
@@ -212,15 +217,8 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
 
   if  ~obj_valid(self.level_0b) then begin
     dprint,'Creating Science level 0B for: '+self.name
-    ;    if 0 then begin
-    ;      l0b_format = self.get_ncdf_master_structure('sfwo_stis_l0b_MASTER.nc')
-    ;    endif else begin
-    ;      l0b_format =     swfo_stis_sci_level_0b()
-    ;    endelse
     ddata = dynamicarray(name=self.prefix+'Science_L0b')
-    ;    ddata.dict.format = l0b_format
     self.level_0b = ddata
-    ;   first_level_0b = 1
   endif
 
   if isa(self.level_0b,'dynamicarray') then begin
@@ -231,6 +229,31 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
       options,tname+'L0b_SCI_COUNTS',spec=1
     endif
   endif
+  
+  
+  ; experimental version of level 0b
+  
+  l0b_v2 = swfo_stis_sci_l0b(sci_dat=sci_last,nse_dat=nse_last,hkp_dat=hkp_last,sc100_dat=sc100_last, sc110_dat=sc110_last, playback=pb)
+
+
+
+  if  ~obj_valid(self.level_xx) then begin
+    dprint,'Creating Science level 0B for: '+self.name
+    ddata = dynamicarray(name=self.prefix+'Science_L0b_v2')
+    self.level_xx = ddata
+  endif
+
+  if isa(self.level_xx,'dynamicarray') then begin
+    size = self.level_xx.size
+    self.level_xx.append, l0b_v2
+    if size eq 0 then begin
+      store_data,tname+'L0x',data = self.level_xx,tagnames = '*'  , verbose=1 ;, time_tag = 'TIME_UNIX';,val_tag='_NRG'    ; warning don't use time_tag keyword
+      options,tname+'L0x_SCI_COUNTS',spec=1
+    endif
+  endif
+
+
+
 
 
   ;  return
@@ -241,7 +264,7 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
     self.level_1a = dynamicarray(name=self.prefix + 'Science_L1a')
   endif
 
-  L1a = swfo_stis_sci_level_1a(L0b)
+  L1a = swfo_stis_sci_level_1a(L0b_v2)
 
   if isa(self.level_1a,'dynamicarray') then begin
     size = self.level_1a.size
@@ -249,7 +272,11 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
     if size eq 0 then begin
       store_data,tname+'L1a',data = self.level_1a,tagnames = '*'
       store_data,tname+'L1a',data = self.level_1a,tagnames = 'SPEC_??',val_tag='_NRG'
+      store_data,tname+'L1a',data = self.level_1a,tagnames = 'SPEC_???',val_tag='_NRG'
+      store_data,tname+'L1a',data = self.level_1a,tagnames = 'SPEC_????',val_tag='_NRG'
       options,tname+'L1a_SPEC_??',spec=1, zlog=1, ylog=1
+      options,tname+'L1a_SPEC_???',spec=1, zlog=1, ylog=1
+      options,tname+'L1a_SPEC_????',spec=1, zlog=1, ylog=1
 
     endif
     if makefile then begin
@@ -334,7 +361,7 @@ PRO swfo_stis_sci_apdat__define
   void = {swfo_stis_sci_apdat, $
     inherits swfo_gen_apdat, $    ; superclass
     ;    inherits generic_apdat,  $
-    level_xx: obj_new(),  $       ; This will be a an ordered hash that contains all higher level data products
+    level_xx: obj_new(),  $       ; experimental: This will be a an ordered hash that contains all higher level data products
     level_0b: obj_new(),  $       ; Level 0B data is stored in the "data" variable of swfo_gen_apdat
     ;level_0b_all: obj_new(),  $       ; This will hold a dynamic array of structures that include data from 3 STIS apids  (Science + Noise + hkp2)
     level_1a: obj_new(),  $

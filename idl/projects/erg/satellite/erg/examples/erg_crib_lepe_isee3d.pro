@@ -12,7 +12,7 @@ pro erg_crib_lepe_isee3d, $
   timespan, trange
 
   if ~keyword_set(noload) then begin
-    erg_load_lepe, datatype='3dflux', varf='FEDU', /no_sort_enebin, /l2new
+    erg_load_lepe, datatype='3dflux'
     erg_load_mgf
     set_erg_var_label
   endif

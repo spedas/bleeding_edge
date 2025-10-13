@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
-; $LastChangedRevision: 33695 $
+; $LastChangedDate: 2025-10-12 01:11:31 -0700 (Sun, 12 Oct 2025) $
+; $LastChangedRevision: 33738 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/ccsds_reader__define.pro $
 
 
@@ -32,9 +32,10 @@ function ccsds_reader::header_struct,header
     apid:0u, $
     seqn:0u, $
     psize: 0u , $
-    frm_seqn:0ul ,$
-    frm_seqid: 0 , $
-    replay: 0b, $
+    frm_seqn:0ul ,$  ;  frame sequence number
+    frm_seqid: 0 , $ ;  frame sequence ID (same as virtual channel)
+    replay: 0b, $    ; set to one if from replay
+    file_hash: 0ul, $    ; hash of the original filename
     valid:0b, $
     gap:0b ,  $
  ;   sync:0b, $
@@ -49,6 +50,7 @@ function ccsds_reader::header_struct,header
     strct.frm_seqn = self.last_frm_seqn
     strct.frm_seqid = self.source_dict.frame_headerstr.seqid
     strct.replay    = self.source_dict.frame_headerstr.replay
+    strct.file_hash     = self.source_dict.frame_headerstr.file_hash
     
   endif
   
@@ -68,7 +70,7 @@ function ccsds_reader::header_struct,header
  ; endif
 
   if strct.replay then begin    ; special case for SWFO   .....  comment out?
-    strct.apid = strct.apid or 0x400
+    strct.apid = strct.apid or 0x800
   endif
 
   return,strct
@@ -90,7 +92,7 @@ pro ccsds_reader::handle,buffer
   endif
   
   if self.run_proc then begin
-    swfo_ccsds_spkt_handler,buffer[self.sync_size:*],source_dict=self.source_dict         ; Process the complete packet
+    swfo_ccsds_spkt_handler,buffer[self.sync_size:*],source_dict=self.source_dict         ; Process the complete packet   This is poorly written it should be more general
   endif
   
   if self.ccsds_output_lun ne 0 then BEGIN

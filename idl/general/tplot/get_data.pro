@@ -30,8 +30,8 @@
 ;MODIFICATION BY: 	Peter Schroeder
 ;LAST MODIFICATION:	@(#)get_data.pro	1.28 02/04/17
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2023-11-19 11:39:45 -0800 (Sun, 19 Nov 2023) $
-; $LastChangedRevision: 32251 $
+; $LastChangedDate: 2025-10-10 05:50:36 -0700 (Fri, 10 Oct 2025) $
+; $LastChangedRevision: 33730 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/get_data.pro $
 ;
 ;-
@@ -44,6 +44,7 @@ pro get_data,name, time, data, values, $
   index = index, $
   dtype = dtype, $
   null = null, $
+  reduced_trange = reduced_trange, $
   trange = trange
 
   @tplot_com.pro
@@ -74,32 +75,68 @@ pro get_data,name, time, data, values, $
 
   if index ne 0 then begin
     dq = data_quants[index]
-    if arg_present(data) or arg_present(time) or arg_present(values) or arg_present(data_str) then begin
+    if arg_present(data) || arg_present(time) || arg_present(values) || arg_present(data_str) then begin
       if dq.dtype eq 4 then begin    ; dynamicarray 
         dh = (*dq.dh)
-        datastr_array = dh.ddata.sample()
-        tags = tag_names(datastr_array)
-        vardef = dh.vardef
-        labels = vardef.keys()
-        data_str = {}
-        for i = 0,n_elements(labels)-1 do begin
-          label = labels[i]
-          tag_num =  (where(/null,tags eq strupcase(vardef[label])))
-          dprint,dlevel=4,label +' : ' + vardef[label],tag_num
-          if isa(tag_num) then begin
-            val = datastr_array.(tag_num)   ; there is a bug here if size of datastr_array eq 1
-            if 1 && n_elements(datastr_array) gt 1 then begin   ; put time at the beginning
-              ndim = size(/n_dimension,val)
-              p = shift(indgen(ndim),1)
-              val = transpose(val,p)
-            endif
-            if arg_present(trange)  && label eq 'X' then trange = minmax(val)
-            if arg_present(data_str) then data_str = create_struct(data_str,label,val)
-            if arg_present(time)   && label eq 'X'  then time = temporary(val)
-            if arg_present(data)   && label eq 'Y'  then data = temporary(val)
-            if arg_present(values) && label eq 'V'  then values = temporary(val)
-          endif else dprint,dlevel=2, 'Label '+label+' not found in '+dh.ddata.name 
-        endfor
+
+        newway = 1       
+        if newway then begin
+          vardef = dh.vardef
+          labels = vardef.keys()
+          data_str = dictionary('NAME',dq.name)  
+          ;data_str = {}
+          for i = 0,n_elements(labels)-1 do begin
+            label = labels[i]
+            ;tag_num =  (where(/null,tags eq strupcase(vardef[label])))
+            tag_num=0
+            
+            if isa(tag_num) then begin
+              ;val = datastr_array.(tag_num)   ; there is a bug here if size of datastr_array eq 1
+              val = dh.ddata.sample(varname = vardef[label],range=reduced_trange,tagname='time')   
+              if 1 && n_elements(val) gt 1 then begin   ; put time at the beginning
+                ndim = size(/n_dimension,val)
+                p = shift(indgen(ndim),1)
+                val = transpose(temporary(val),p)
+              endif
+              if arg_present(trange)  && label eq 'X' then trange = minmax(val)
+              if arg_present(data_str) then begin
+                 if  isa(data_str,'dictionary') then  data_str[label] = val $
+                 else  data_str = create_struct(data_str,label,val)
+              endif
+              if arg_present(time)   && label eq 'X'  then time = temporary(val)
+              if arg_present(data)   && label eq 'Y'  then data = temporary(val)
+              if arg_present(values) && label eq 'V'  then values = temporary(val)
+            endif else dprint,dlevel=2, 'Label '+label+' not found in '+dh.ddata.name
+          endfor
+          if isa(data_str,'dictionary') then data_str = data_str.tostruct()
+
+        endif else begin
+          datastr_array = dh.ddata.sample(range=reduced_trange,tagname='time')
+          tags = tag_names(datastr_array)
+          vardef = dh.vardef
+          labels = vardef.keys()
+          data_str = {}
+          for i = 0,n_elements(labels)-1 do begin
+            label = labels[i]
+            tag_num =  (where(/null,tags eq strupcase(vardef[label])))
+            dprint,dlevel=4,label +' : ' + vardef[label],tag_num
+            if isa(tag_num) then begin
+              val = datastr_array.(tag_num)   ; there is a bug here if size of datastr_array eq 1
+              if 1 && n_elements(datastr_array) gt 1 then begin   ; put time at the beginning
+                ndim = size(/n_dimension,val)
+                p = shift(indgen(ndim),1)
+                val = transpose(val,p)
+              endif
+              if arg_present(trange)  && label eq 'X' then trange = minmax(val)
+              if arg_present(data_str) then data_str = create_struct(data_str,label,val)
+              if arg_present(time)   && label eq 'X'  then time = temporary(val)
+              if arg_present(data)   && label eq 'Y'  then data = temporary(val)
+              if arg_present(values) && label eq 'V'  then values = temporary(val)
+            endif else dprint,dlevel=2, 'Label '+label+' not found in '+dh.ddata.name
+          endfor
+          
+        endelse
+        
         ptr_str = *dq.dh
       endif else if size(/type,*dq.dh) eq 8 then begin
         ; 	  		mytags = tag_names_r(*dq.dh)             Too goofy to be useful!!!   see similar line in store_data

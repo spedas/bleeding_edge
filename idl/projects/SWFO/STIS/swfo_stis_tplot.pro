@@ -1,11 +1,11 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
-; $LastChangedRevision: 33695 $
+; $LastChangedDate: 2025-10-13 02:41:19 -0700 (Mon, 13 Oct 2025) $
+; $LastChangedRevision: 33746 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
 
-pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,powerlim=powerlim
+pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,powerlim=powerlim, cal=cal
 
 
   if keyword_set(ionlim) then begin
@@ -67,7 +67,6 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
       ;tplot,'SWFO*L1*',/add
     endif
 
-    ylim,'stis_l1a_SPEC*',10,20000.,1
     duration=tnames('swfo_stis_*_DURATION')
     cmds_bad='swfo_stis_hkp1_CMDS_'+['IGNORED','INVALID','UNKNOWN']
     store_data,'swfo_stis_DURATION',data=duration,dlim={labels:duration.substring(10,13),labflag:-1,colors:'rgbk',psym:-1}
@@ -84,7 +83,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*sci_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
     options,/def,'*hkp?_ADC_*',constant=0.
     channels=['CH1','CH2','CH3','CH4','CH5','CH6']
-    options,/def,'*hkp?_*RATES* *BASELINE *SIGMA *NOISE_TOTAL',colors='bgrmcd',psym=-1,symsize=.5,labels=channels,labflag=-1,constant=0
+    options,/def,'*hkp?_*RATES* *BASELINE *SIGMA *NOISE_TOTAL',colors='bgrmcd',symsize=.5,labels=channels,labflag=-1,constant=0
     options,/def,'*hkp?_*RATES*',constant=2.^(indgen(4)+16)
     options,/def,'*hkp?_NEGATIVE_PULSE_RATES',labels='total_neg',psym=-2,symsize=1
     options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
@@ -95,7 +94,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*_RATE6',symsize=.2
     options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
-    options,/def,'*TOTAL6* *RATE6*',colors='bgrmcd',psym=-6,symsize=.5,labels=channels,labflag=-1
+    options,/def,'*TOTAL6* *RATE6*',colors='bgrmcd',symsize=.5,labels=channels,labflag=-1
     options,/def,'*_SCALED_RATE6*',constant=[.5,1]
     options,/def,'*hkp?_VALID_RATES_TOTAL',colors='b',psym=-1,symsize=.1,labels='HKP'
     options,/def,'*hkp?_SCIENCE_EVENTS',labels='EVENTS'
@@ -146,13 +145,23 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     ylim,'*REACTION_WHEEL_CURRENT_AMPS',0.0,.5,0
     ylim,'*REACTION_WHEEL_BUS_CURRENT_AMPS',0.0,.5,0
     options,'*WHEEL* *_nse_* *_hkp*_RATES *nse_SIGMA *nse_BASELINE',/reverse_order
+    ylim,'*_SPEC_??',5,10000.,1
+    options,'*_SPEC_??',spec=1,yrange=[.5,20000],/ylog,zrange=[1,1],/zlog
 
-    options, '*L1b_*FLUX', yrange=[10, 6000],$
+
+    if ~keyword_set(cal) then cal = swfo_stis_inst_response_calval()
+
+    options, '*QUALITY_BITS*', tplot_routine='bitplot', labels=cal.qflag_labels, psyms=1
+    ylim, '*QUALITY_BITS*', -1, 42
+
+    options, '*FLUX', yrange=[10, 6000],$
       zrange=[1e-2, 1e3], spec=1, ylog=1, zlog=1
 
     options,'swfo_*',ystyle=3
     tplot_options,'wshow',0
     tplot_options,'datagap',60
+    tplot_options,'min_value',-1e30
+    tplot_options,'max_value',1e30
   endif
 
   if ~keyword_set(name) then name = 'none'
@@ -189,6 +198,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     'DELAY':tplot,add=add,'*2*DELAYTIME'
     'WHEELS': tplot,add=add,'s*WHEEL_TORQUE s*WHEEL_SPEED_RPM s*WHEEL_CURRENT_AMPS s*WHEEL_BUS_CUR* s*IRU_BITS'
     'WHEELS1': tplot,add=add,'s*WHEEL_TOR_QUE s*WHEEL_SPEED_RPM s*WHEEL_BUS_CURRENT_AMPS s*IRU_BITS'
+    'DL5':  tplot,add=add,'*L1a_RATE6 *L1a_SPEC_?? *_SIGMA *L1a_NOISE_BASELINE'
     'WHEEL1':begin
       split_vec,'*WHEEL_SPEED_RPM *WHEEL_CURRENT_AMPS'
       tplot,add=add,'*WHEEL_*_0'

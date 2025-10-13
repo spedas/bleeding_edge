@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-03-04 10:57:07 -0800 (Tue, 04 Mar 2025) $
-; $LastChangedRevision: 33161 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-13 02:33:49 -0700 (Mon, 13 Oct 2025) $
+; $LastChangedRevision: 33742 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -272,37 +272,62 @@ end
 
 ; ::sample will extract a sample of data from a set of data based on a range of indices
 ; It is most useful if the stored data is an array of structures
-function DynamicArray::sample,nearest=nearest,range=range,tagname=tagname
+function DynamicArray::sample,nearest=nearest,range=range,tagname=tagname,varname=varname
   compile_opt IDL2
   vals = !null
+  if isa(varname,/string) then begin
+    var_num = where(/null,tag_names(*self.ptr_array) eq strupcase(varname) )
+  endif
   if isa(tagname,/string) then begin
     tag_num = where(/null,tag_names(*self.ptr_array) eq strupcase(tagname))
     if isa(tag_num) then begin
-      vals= ((*self.ptr_array).(tag_num))[0:self.size-1,*,*,*]
+      ;vals= ((*self.ptr_array).(tag_num))[0:self.size-1,*,*,*]
+      vals= (*self.ptr_array)[0:self.size-1,*,*,*].(tag_num)
       if keyword_set(nearest) then begin
-        w = interp(dindgen(self.size),vals,nearest,/last_value)
+        w = interp(dindgen(self.size),vals,nearest)
         ;printdat,w,vals[w],vals[w]-nearest
-        vals = (*self.ptr_array)[w,*,*,*]  
+        if isa(w) then begin
+          w = round(w)
+          if isa(var_num) then vals = (*self.ptr_array)[w,*,*,*].(var_num) $
+          else vals = (*self.ptr_array)[w,*,*,*]          
+        endif else vals = w
       endif else if isa(range) then begin
         w= where(/null,vals ge min(range[0]) and vals lt max(range[1]))
-        vals = (*self.ptr_array)[w,*,*,*]
+        if isa(varname) then begin
+          tag_num = where(/null,tag_names(*self.ptr_array) eq strupcase(varname))
+          vals = ((*self.ptr_array)[w,*,*,*]).(tag_num)
+        endif else begin
+          vals = (*self.ptr_array)[w,*,*,*]
+        endelse
       endif else begin
-        vals = (*self.ptr_array)[0:self.size-1,*,*,*]
+        if isa(varname) then begin
+          tag_num = where(/null,tag_names(*self.ptr_array) eq strupcase(varname))
+          vals = (*self.ptr_array)[0:self.size-1,*,*,*].(tag_num)
+        endif else begin
+          vals = (*self.ptr_array)[0:self.size-1,*,*,*]
+        endelse
       endelse
     endif
-  endif else vals = (*self.ptr_array)[0:self.size-1,*,*,*]
+  endif else begin
+    if isa(varname) then begin
+      tag_num = where(/null,tag_names(*self.ptr_array) eq strupcase(varname))
+      vals = ((*self.ptr_array)[0:self.size-1,*,*,*]).(tag_num)
+    endif else begin
+      vals = (*self.ptr_array)[0:self.size-1,*,*,*]      
+    endelse
+  endelse
   return,vals
 end
 
 
 
-pro DynamicArray::sort   , tagname    , uniq=uniq   ; Use with caution
+pro DynamicArray::sort   , timename    , uniq=uniq   ; Use with caution
   nsize = self.size
-  if isa(tagname,/string) && isa(*self.ptr_array,'struct') then begin
-    if strlowcase(tagname) ne 'time' then message,'Can only sort on time for now.'
+  if  isa(*self.ptr_array,'struct') then begin
+    if ~isa(timename,'string') then timename='TIME'
+    time_num = where(/null,tag_names(*self.ptr_array) eq strupcase(timename) )
 
-    ;v = ((*self.ptr_array)[0: self.size-1] ).time
-    v = (*self.ptr_array).time
+    v = (*self.ptr_array).(time_num)
     v = v[0:nsize-1]
 
   endif else begin
@@ -316,8 +341,48 @@ pro DynamicArray::sort   , tagname    , uniq=uniq   ; Use with caution
     self.size = nusize
     (*self.ptr_array)[0:nusize-1]  = (*self.ptr_array)[u]    
   endif
+end
 
 
+
+
+function DynamicArray::reduce_resolution   , res, timename=timename      ; Use with caution should be sorted
+  nsize = self.size
+  if  isa(*self.ptr_array,'struct') then begin
+    if ~isa(timename,'string') then timename='TIME'
+    time_num = where(/null,tag_names(*self.ptr_array) eq strupcase(timename) )
+    if ~isa(time_num) then return,time_num
+
+    t = (*self.ptr_array).(time_num)
+    t = t[0:nsize-1]
+    
+    bin =  floor((t-t[0])/res)
+    ubin = uniq(bin)
+    
+    nb = n_elements(ubin)
+    strct0 =  fill_nan( (*self.ptr_array)[0] )
+    tags = tag_names(strct0)
+    bit_tags = where(strmid(/reverse, tags,4) eq '_BITS', /null)
+    red_dat = replicate( strct0 ,nb)
+    for i=0l,nb-1 do begin
+      w = where(bin eq bin[ubin[i]],nw,/null)
+      strct_i =  (*self.ptr_array)[w] 
+      avgstr = average( strct_i ,/nan )
+      foreach bt, bit_tags do begin
+        avgstr.(bt) = 0
+        dat_bits = strct_i.(bt)
+        for k=0, nw-1 do  avgstr.(bt) =  avgstr.(bt)  or dat_bits[k]
+      endforeach
+      red_dat[i] = avgstr
+    endfor
+    
+
+  endif else begin
+    
+    v = (*self.ptr_array)[0: nsize-1]
+    return,'error'
+  endelse
+  return,red_dat
 end
 
 
@@ -328,6 +393,77 @@ pro DynamicArray::make_ncdf,filename=ncdf_filename,verbose=verbose,global_atts=g
   swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=global_atts,ncdf_template=ncdf_template
 
 end
+
+
+
+
+pro dynamicarray::ncdf_make_file,trange=trange0,resolution=resolution  ;,pathformat=pathformat,testdir=testdir,ret_filename=ret_filename,type=type
+
+  message,'Not completed'
+  if isa(trange) then begin
+    data = self.sample(range= trange0,tagname = 'time')
+    file_format = self.name+type+'_YYYY-MM-DD_hhmmss_'
+  endif else begin
+    data = self.array
+    file_format = self.name
+  endelse
+  
+  
+  if ~isa(ddata) then ddata=self.data
+  if ~isa(ddata,'dynamicarray') || ddata.size le 0  then begin
+    dprint,'No data available to make a NCDF file: ',self.name
+    return
+  endif
+
+  if keyword_set(trange0) then begin
+    trange = time_double(trange0)
+    data_array = ddata.sample(range=trange,tagname='time')
+  endif else begin
+    data_array = ddata.array
+    trange = minmax(data_array.time)
+    trange[0] = median(data_array.time)  ;  cluge to fix problem in which the time is out of bounds
+  endelse
+
+  if ~isa(resolution) then resolution = 3600d *24
+  if resolution gt 0 then begin
+    trange_int = [floor( trange[0] / resolution ) , ceil(trange[1] /resolution) ]
+    nfiles = trange_int[1] - trange_int[0]
+    for i=0 ,nfiles-1 do begin
+      tr = (trange_int[0] + [i,i+1]) *double(resolution )
+      data_array = ddata.sample(range=tr,tagname='time')
+      ncdf_format=self.ncdf_fileformat
+      filename=time_string(tr[0],tformat=ncdf_format)
+      filename=str_sub(filename,'$NAME$',self.name)
+      filename=str_sub(filename,'$TYPE$',type)
+      filename=str_sub(filename,'$RES$', strtrim(long(resolution),2)  )
+      filename=self.ncdf_directory + filename
+      swfo_ncdf_create,data_array,filename = filename,ncdf_template=self.ncdf_templatename
+
+    endfor
+
+
+    return
+  endif
+  if ~isa(filename) then begin
+    ncdf_format=self.ncdf_fileformat
+    filename=time_string(trange[0],tformat=ncdf_format)
+    filename=str_sub(filename,'$NAME$',self.name)
+    filename=str_sub(filename,'$TYPE$',type)
+    filename=str_sub(filename,'$RES$', strtrim(long(self.file_resolution),2)  )
+    filename=self.ncdf_directory + filename
+  endif
+
+
+
+
+  ;pathname = time_string(trange[0],tformat= pathformat )
+  ;filename = root_data_dir() + self.ncdf_testdir + pathname
+  swfo_ncdf_create,data_array,filename = filename,ncdf_template=self.ncdf_templatename
+  ;dprint,dlevel=1,'Created file: "'+filename+'"
+  ret_filename = filename
+
+end
+
 
 
 

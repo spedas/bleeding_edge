@@ -8,13 +8,13 @@ pro psp_fld_options, type = type, level = level
   psp_fld_sensor_colors = orderedhash()
 
   psp_fld_sensor_colors['V1'] = 72
-  psp_fld_sensor_colors['V2'] = 136
+  psp_fld_sensor_colors['V2'] = 120
   psp_fld_sensor_colors['V3'] = 104
   psp_fld_sensor_colors['V4'] = 88
   psp_fld_sensor_colors['V5'] = 0
 
   psp_fld_sensor_colors['V1LG'] = 72
-  psp_fld_sensor_colors['V2LG'] = 136
+  psp_fld_sensor_colors['V2LG'] = 120
   psp_fld_sensor_colors['V3LG'] = 104
   psp_fld_sensor_colors['V4LG'] = 88
   psp_fld_sensor_colors['V5LG'] = 0
@@ -35,12 +35,12 @@ pro psp_fld_options, type = type, level = level
 
   if type eq 'dcb_analog_hk' or type eq 'f2_digital_hk' then begin
     if tnames('spp_fld_dcb_analog_hk_LNPS1_P100V') ne '' then begin
-      options, 'spp_fld_dcb_analog_hk_LNPS1_?100V', 'colors', 2
+      options, 'spp_fld_dcb_analog_hk_LNPS1_?100V', 'colors', 24
       options, 'spp_fld_dcb_analog_hk_LNPS1_?100V', 'labels', 'LNPS1'
     endif
 
     if tnames('spp_fld_f2_digital_hk_lnps2_p100v') ne '' then begin
-      options, 'spp_fld_f2_digital_hk_lnps2_?100v', 'colors', 6
+      options, 'spp_fld_f2_digital_hk_lnps2_?100v', 'colors', 40
 
       options, 'spp_fld_f2_digital_hk_lnps2_?100v', 'labels', 'LNPS2'
     endif
@@ -60,6 +60,7 @@ pro psp_fld_options, type = type, level = level
       options, 'spp_fld_lnps_n100V', 'yrange', [-105, -80]
       options, 'spp_fld_lnps_?100V', 'ystyle', 1
       options, 'spp_fld_lnps_?100V', 'datagap', 3600d
+      options, 'spp_fld_lnps_?100V', 'color_table', psp_fld_sensor_color_table
     endif
   endif
 
@@ -251,23 +252,94 @@ pro psp_fld_options, type = type, level = level
   ; MARK: Level 2 AEB
 
   if type eq 'aeb' and level eq 2 then begin
-    store_data, 'psp_fld_l2_aeb_WHIP_CURR', $
-      data = [tnames('psp_fld_l2_aeb?_V?_WHIP_CURR'), $
-        'psp_fld_l2_aeb1_V5_SENSOR_CURR']
+    ; aeb_labels = ['V1', 'V2', 'V3', 'V4', 'V5']
 
-    aeb_labels = ['V1', 'V2', 'V3', 'V4', 'V5']
+    aeb_mvar_tnames = ['psp_fld_l2_aeb_WHIP_CURR', $
+      'psp_fld_l2_aeb_WHIP_VOLT', $
+      'psp_fld_l2_aeb_SHIELD_VOLT', $
+      'psp_fld_l2_aeb_STUB_VOLT', $
+      'psp_fld_l2_aeb_WHIP_CURR_DAC', $
+      'psp_fld_l2_aeb_WHIP_VOLT_DAC', $
+      'psp_fld_l2_aeb_SHIELD_VOLT_DAC', $
+      'psp_fld_l2_aeb_STUB_VOLT_DAC', $
+      'psp_fld_l2_aeb_TEMP', $
+      'psp_fld_l2_aeb_RBIAS']
 
-    options, 'psp_fld_l2_aeb_WHIP_CURR', 'labels', aeb_labels
+    foreach tname, aeb_mvar_tnames do begin
+      yrange = []
 
-    options, 'psp_fld_l2_aeb_WHIP_CURR', 'labflag', 1
-    options, 'psp_fld_l2_aeb_WHIP_CURR', 'colors', $
-      (psp_fld_sensor_colors[aeb_labels].values()).toArray()
-    options, 'psp_fld_l2_aeb_WHIP_CURR', 'line_colors', 9
+      case tname of
+        'psp_fld_l2_aeb_WHIP_CURR': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_WHIP_CURR')]
+          ytitle = 'AEB!CWHIP!CCURR'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_WHIP_CURR_DAC': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_WHIP_CURR_DAC')]
+          ytitle = 'AEB!CWHIP!CCURR!CDAC'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_WHIP_VOLT': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_WHIP_VOLT')]
+          ytitle = 'AEB!CWHIP!CVOLT'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_SHIELD_VOLT': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_SHIELD_VOLT')]
+          ytitle = 'AEB!CSHIELD!CVOLT'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_STUB_VOLT': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_STUB_VOLT')]
+          ytitle = 'AEB!CSTUB!CVOLT'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_WHIP_VOLT_DAC': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_WHIP_VOLT_DAC')]
+          ytitle = 'AEB!CWHIP!CVOLT!CDAC'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_SHIELD_VOLT_DAC': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_SHIELD_VOLT_DAC')]
+          ytitle = 'AEB!CSHIELD!CVOLT!CDAC'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_STUB_VOLT_DAC': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_STUB_VOLT_DAC')]
+          ytitle = 'AEB!CSTUB!CVOLT!CDAC'
+          aeb_labels = mvar_names.subString(16, 17)
+        end
+        'psp_fld_l2_aeb_TEMP': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_PA?_TEMP')]
+          ytitle = 'AEB!CPA!CTEMP'
+          aeb_labels = 'V' + mvar_names.subString(18, 18)
+        end
+        'psp_fld_l2_aeb_RBIAS': begin
+          mvar_names = [tnames('psp_fld_l2_aeb?_V?_RBIAS')]
+          ytitle = 'AEB!CRBIAS'
+          aeb_labels = mvar_names.subString(16, 17)
+          yrange = [-0.25, 2.25]
+        end
+        else: mvar_names = []
+      endcase
 
-    ; options, 'psp_fld_l2_aeb_WHIP_CURR', 'yrange', [-1, 0.25]
-    options, 'psp_fld_l2_aeb_WHIP_CURR', 'ystyle', 1
+      if n_elements(mvar_names) gt 0 then begin
+        store_data, tname, data = mvar_names
 
-    options, 'psp_fld_l2_aeb_WHIP_CURR', 'ytitle', 'AEB BIAS'
-    options, 'psp_fld_l2_aeb_WHIP_CURR', 'color_table', psp_fld_sensor_color_table
+        options, tname, 'labels', aeb_labels
+
+        options, tname, 'labflag', 1
+        options, tname, 'colors', $
+          (psp_fld_sensor_colors[aeb_labels].values()).toArray()
+        options, tname, 'line_colors', 9
+
+        ; options, 'psp_fld_l2_aeb_WHIP_CURR', 'yrange', [-1, 0.25]
+        if n_elements(yrange) eq 2 then options, tname, 'yrange', yrange
+        options, tname, 'ystyle', 1
+
+        options, tname, 'ytitle', ytitle
+        options, tname, 'color_table', psp_fld_sensor_color_table
+      endif
+    endforeach
   endif
 end
