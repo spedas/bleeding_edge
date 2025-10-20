@@ -17,10 +17,10 @@
 ;     printdat, alt_cal
 ; 
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-30 12:14:43 -0700 (Sat, 30 Aug 2025) $
-; $LastChangedRevision: 33588 $
+; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
+; $LastChangedRevision: 33771 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 33588 2025-08-30 19:14:43Z rjolitz $
+; $Id: swfo_stis_inst_response_calval.pro 33771 2025-10-19 01:55:35Z rjolitz $
 
 
 
@@ -104,7 +104,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ; scaling factor of the geometric factor.
     ; 0 for the lowest energy channel, 1 elsewhere:
     efficiency = replicate(1,48,14)  ; 48 x 14 array
-    efficiency[0, *] = 0
+    ; efficiency[0, *] = 0
     calval.efficiency = efficiency
 
     ; temperature coefficient:
@@ -273,7 +273,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 33588 2025-08-30 19:14:43Z rjolitz $'
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 33771 2025-10-19 01:55:35Z rjolitz $'
     swfo_stis_inst_response_calval_dict  = calval
     dprint,'Using Revision: '+calval.rev_date
   endif

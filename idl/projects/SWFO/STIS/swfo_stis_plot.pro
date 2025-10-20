@@ -3,9 +3,9 @@
 ; Run using:
 ; ctime,routine_name='swfo_stis_plot',/silent
 ;
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-07-01 14:19:06 -0700 (Tue, 01 Jul 2025) $
-; $LastChangedRevision: 33417 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $
+; $LastChangedRevision: 33760 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_plot.pro $
 ; $ID: $
 ;-
@@ -46,6 +46,8 @@ end
 pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fit=par    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
 
   common swfo_stis_plot_com, def_param
+  
+  ;return
   
   if isa(param,'dictionary') then def_param = param
 

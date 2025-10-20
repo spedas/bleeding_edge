@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-13 02:35:35 -0700 (Mon, 13 Oct 2025) $
-; $LastChangedRevision: 33743 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
+; $LastChangedRevision: 33771 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -205,10 +205,16 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
   nse_last = nseobj.last_data
   hkp_last = hkpobj.last_data
 
+ if ~isa(sci_last) || ~isa(nse_last) || ~isa(hkp_last) then begin
+   dprint,'bad sci/nse/hkp data'
+   return
+ endif
+
   sc100_last = sc100obj.last_data
   sc110_last = sc110obj.last_data
 
-  l0b = swfo_stis_sci_level_0b(sci_last,nse_last,hkp_last,sc100_dat=sc100_last, sc110_dat=sc110_last, playback=pb)
+  ; l0b = swfo_stis_sci_level_0b(sci_last,nse_last,hkp_last,sc100_dat=sc100_last, sc110_dat=sc110_last, playback=pb)
+  l0b = swfo_stis_sci_level_0b(sci_dat=sci_last,nse_dat=nse_last,hkp_dat=hkp_last,sc100_dat=sc100_last, sc110_dat=sc110_last, playback=pb)
 
   if isa(l0b,/null) then begin
     dprint , 'Bad L0B'
@@ -232,39 +238,28 @@ pro swfo_stis_sci_apdat::handler2,struct_stis_sci  ,source_dict=source_dict
   
   
   ; experimental version of level 0b
-  
-  l0b_v2 = swfo_stis_sci_l0b(sci_dat=sci_last,nse_dat=nse_last,hkp_dat=hkp_last,sc100_dat=sc100_last, sc110_dat=sc110_last, playback=pb)
-
-
-
-  if  ~obj_valid(self.level_xx) then begin
-    dprint,'Creating Science level 0B for: '+self.name
-    ddata = dynamicarray(name=self.prefix+'Science_L0b_v2')
-    self.level_xx = ddata
-  endif
-
-  if isa(self.level_xx,'dynamicarray') then begin
-    size = self.level_xx.size
-    self.level_xx.append, l0b_v2
-    if size eq 0 then begin
-      store_data,tname+'L0x',data = self.level_xx,tagnames = '*'  , verbose=1 ;, time_tag = 'TIME_UNIX';,val_tag='_NRG'    ; warning don't use time_tag keyword
-      options,tname+'L0x_SCI_COUNTS',spec=1
-    endif
-  endif
-
-
-
-
-
+  ; l0b_v2 = swfo_stis_sci_l0b(sci_dat=sci_last,nse_dat=nse_last,hkp_dat=hkp_last,sc100_dat=sc100_last, sc110_dat=sc110_last, playback=pb)
+  ; if  ~obj_valid(self.level_xx) then begin
+  ;   dprint,'Creating Science level 0B for: '+self.name
+  ;   ddata = dynamicarray(name=self.prefix+'Science_L0b_v2')
+  ;   self.level_xx = ddata
+  ; endif
+  ; if isa(self.level_xx,'dynamicarray') then begin
+  ;   size = self.level_xx.size
+  ;   self.level_xx.append, l0b_v2
+  ;   if size eq 0 then begin
+  ;     store_data,tname+'L0x',data = self.level_xx,tagnames = '*'  , verbose=1 ;, time_tag = 'TIME_UNIX';,val_tag='_NRG'    ; warning don't use time_tag keyword
+  ;     options,tname+'L0x_SCI_COUNTS',spec=1
+  ;   endif
+  ; endif
   ;  return
-
 
   if  ~obj_valid(self.level_1a) then begin
     dprint,'Creating Science level 1a for ',self.name
     self.level_1a = dynamicarray(name=self.prefix + 'Science_L1a')
   endif
 
-  L1a = swfo_stis_sci_level_1a(L0b_v2)
+  L1a = swfo_stis_sci_level_1a(l0b)
 
   if isa(self.level_1a,'dynamicarray') then begin
     size = self.level_1a.size

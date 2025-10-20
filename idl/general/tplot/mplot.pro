@@ -38,9 +38,9 @@
 ;
 ;CREATED BY:	Davin Larson
 ;FILE:  mplot.pro
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-05-25 12:05:21 -0700 (Sun, 25 May 2025) $
-; $LastChangedRevision: 33339 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-15 09:02:16 -0700 (Wed, 15 Oct 2025) $
+; $LastChangedRevision: 33758 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/mplot.pro $
 ;
 ;-
@@ -113,6 +113,7 @@ str_element,stuff,'axis',value=axis
 str_element,stuff,'reverse_order',rev_order
 str_element,stuff,'median_filter',median_filter
 str_element,stuff,'panel_label',panel_label
+str_element,stuff,'min_log',min_log
 
 extract_tags,plotstuff,stuff,/plot
 ;plotstuff = stuff
@@ -326,6 +327,7 @@ for n_=0,n_ind-1 do begin
     if n_linestyles ne 0 then linestyle = linestyles[n mod n_linestyles]
     xt = x[*,i]
     yt = y[*,n]
+    if keyword_set(min_log) && keyword_set(ytype ) then yt = yt > min_log
     if (keyword_set(median_filter) && median_filter lt n_elements(yt)) then yt = median(yt,median_filter)
     if (keyword_set(nsmooth) && (nsmooth lt n_elements(yt))) then yt = smooth(yt,nsmooth,edge_truncate=0)
     oplot,xt,yt,color=c,nsum=nsum,linest=linestyle,_EXTRA = oplotstuff

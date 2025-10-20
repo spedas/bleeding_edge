@@ -1,7 +1,7 @@
 ; +
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-09-30 07:23:15 -0700 (Tue, 30 Sep 2025) $
-; $LastChangedRevision: 33676 $
+; $LastChangedDate: 2025-10-14 18:20:42 -0700 (Tue, 14 Oct 2025) $
+; $LastChangedRevision: 33757 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -34,6 +34,7 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
   all = all, $
   info = info,  $
   finish=finish,$
+  average=average,range=range,binsize=binsize,$
   window_obj=window_obj, $
   tname=tname,$
   set_break=set_break, $
@@ -110,13 +111,6 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
     spp_apdat_info,current_filename=file_restore
   endif
 
-  if keyword_set(file_save) then begin
-    file_mkdir2,file_dirname(file_save)
-    dprint,dlevel=2,'Saving '+file_save
-    save,file=file_save,all_apdat,parents,verbose=verbose,compress=compress
-    dprint,dlevel=1,'Saved '+file_info_string(file_save)
-  endif
-
   valid_apdat = all_apdat[ where( obj_valid(all_apdat),nvalid ) ]
 
   if isa(apid_description,/string) then begin
@@ -171,6 +165,7 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
     if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(sort_flag) then apdat.sort
     if keyword_set(finish)    then apdat.finish
+    if keyword_set(average)    then apdat.average,range=range,binsize=binsize,tspan=tspan
     if keyword_set(make_cdf)  then apdat.cdf_create_file
     if keyword_set(make_ncdf) then begin
       if obj_hasmethod(apdat,'ncdf_make_file') then apdat.ncdf_make_file,trange=trange,resolution=file_resolution else dprint ,'No ncdf method for ',apdat.name
@@ -184,5 +179,12 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
   if n_elements(apdats) eq 1 then apdats = apdats[0]
   if arg_present(info)  then  info = all_info
 
-end
+  if keyword_set(file_save) then begin
+    file_mkdir2,file_dirname(file_save)
+    dprint,dlevel=2,'Saving '+file_save
+    save,file=file_save,all_apdat,parents,verbose=verbose,compress=compress
+    dprint,dlevel=1,'Saved '+file_info_string(file_save)
+  endif
 
+
+end

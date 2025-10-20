@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-09 12:26:56 -0700 (Thu, 09 Oct 2025) $
-; $LastChangedRevision: 33725 $
+; $LastChangedDate: 2025-10-14 18:20:42 -0700 (Tue, 14 Oct 2025) $
+; $LastChangedRevision: 33757 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_100_apdat__define.pro $
 
 
@@ -37,6 +37,7 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     body_frame_attitude_q1234:3.2e-5*swfo_data_select(ccsds_data,[86:92:2]*8,16,/signed),$
     body_frame_rate_xyz_deg_per_sec:4e-4*swfo_data_select(ccsds_data, [94,96,98]*8,16,/signed),$
     control_frame_sun_xyz:3.2e-5*swfo_data_select(ccsds_data,[101,103,105]*8,16,/signed),$
+    sun_sensor_raw_intensity_12_bit_adc:swfo_data_select(ccsds_data,[108:138:2]*8,16,/signed),$
     measured_sun_vector_xyz:3.2e-5*swfo_data_select(ccsds_data,[148,150,152]*8,16,/signed),$
     pbk_critical_vc:                  swfo_data_select(ccsds_data,154*8+2, 6),$
     fsw_transfer_frame_accept_counter:swfo_data_select(ccsds_data,155*8, 8),$
@@ -60,14 +61,14 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     tmon_235_enabled_armed_triggered: swfo_data_select(ccsds_data,366*8+5, 3),$
     tmon_236_enabled_armed_triggered: swfo_data_select(ccsds_data,367*8  , 3),$
     reaction_wheel_overspeed_fault_bits:swfo_data_select(ccsds_data,384*8  , 8),$
-    thruster_momentum_control_status:swfo_data_select(ccsds_data,245*8+7, 1),$
+    thruster_momentum_control_status:swfo_data_select(ccsds_data,385*8+7, 1),$
     sband_downlink_rate:              swfo_data_select(ccsds_data,405*8  ,32),$
-    total_system_momentum_xyz:1e-2*swfo_data_select(ccsds_data,[409,411,413]*8,16,/signed),$
+    total_system_momentum_xyz_nms:1e-2*swfo_data_select(ccsds_data,[409,411,413]*8,16,/signed),$
     thruster_1234_duration_seconds:1e-3*swfo_data_select(ccsds_data,[421:427:2]*8,16,/signed),$
     reaction_wheel_speed_rpm:    9.5493*double(swfo_data_select(ccsds_data,(429+indgen(4)*8)*8,64),0,4),$
     next_orbital_position_xyz_km:0.2380952380952*swfo_data_select(ccsds_data,[461,464,467]*8,24,/signed),$
     next_orbital_velocity_xyz_km_per_sec:1.12e-6*swfo_data_select(ccsds_data,[470,473,476]*8,24,/signed),$
-    propagated_rate_xyz_deg_per_sec:1.12e-6*swfo_data_select(ccsds_data,[479,481,483]*8,16,/signed),$
+    propagated_rate_xyz_deg_per_sec:4e-4*swfo_data_select(ccsds_data,[479,481,483]*8,16,/signed),$
     gap:ccsds.gap }
 
   return,datastr

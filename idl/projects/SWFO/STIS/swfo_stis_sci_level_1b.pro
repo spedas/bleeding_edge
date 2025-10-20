@@ -23,8 +23,8 @@
 ; - swfo_stis_sci_l1b_crib.pro
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-09-02 12:12:04 -0700 (Tue, 02 Sep 2025) $
-; $LastChangedRevision: 33591 $
+; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
+; $LastChangedRevision: 33771 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -400,7 +400,7 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
       endif
     endif
     q = q or ishft(qflag_econtam*1ull, cal.elec_contam_qflag_index)
-    str.quality_bits = q
+    ; str.quality_bits = q
 
 
     ; ion_energy = bins.energy
@@ -412,7 +412,11 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     ; w = where(bins.species eq 0,/null,nw)
     ; elec_energy= elec_energy[w]
 
-    sci_ex = {  $
+    sci = {  $
+      time:str.time, $
+      time_unix: str.time_unix, $
+      time_MET:  str.time_MET, $
+      time_GR:  str.time_GR, $
       integration_time : integration_time, $
       ; srate : srate , $
       ; crate : crate , $
@@ -439,9 +443,11 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
       ; contam_ion_rate: ion_rate_at_en, $
       ; contam_elec_ion_ratio: ratio, $
       ; contam_elec_ion_dev: avg_deviation, $
-      lut_id: 0 }
+      lut_id: 0, $
+      quality_bits: q}
 
-    sci = create_struct(str,sci_ex)
+
+    ; sci = create_struct(str,sci)
 
     if nd eq 1 then   return, sci
     if i  eq 0 then   output = replicate(sci,nd) else output[i] = sci

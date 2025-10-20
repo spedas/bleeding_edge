@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-13 02:41:19 -0700 (Mon, 13 Oct 2025) $
-; $LastChangedRevision: 33746 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2025-10-17 13:37:17 -0700 (Fri, 17 Oct 2025) $
+; $LastChangedRevision: 33770 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -88,7 +88,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*hkp?_NEGATIVE_PULSE_RATES',labels='total_neg',psym=-2,symsize=1
     options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
-    options,/def,'*sci_TOTAL14 *sci_RATE14',spec=1,zlog=1,no_interp=1
+    options,/def,'*TOTAL14 *RATE14',spec=1,zlog=1,no_interp=1
     options,/def,'*sci_SIGMA14',ylog=1
     ylim,/def,'*sci_RATE6',.1,5e6,1
     options,/def,'*_RATE6',symsize=.2
@@ -121,7 +121,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*swfo_sc_1?0_REACTION_WHEEL_*',colors='bgrk',labels=['1','2','3','4'],labflag=1,numbits=4,constant=0
     options,/def,'*swfo_sc_100_REACTION_WHEEL_OVERSPEED_FAULT_BITS',colors='krgb',labels=reverse(['O1','O2','O3','O4','F1','F2','F3','F4']),numbits=8
     options,/def,'*swfo_sc_110_REACTION_WHEEL_XYZ_TORQUE_ACTUAL_NM',labels=['X','Y','Z']
-    options,/def,'*swfo_sc_110_IRU_BITS',labels=reverse(['Misalignment Bypass','Memory Effect Error','X Health','Y Health','Z Health','X Valid','Y Valid','Z Valid']),colors='rgbrgbmc'
+    options,/def,'*IRU_BITS',labels=reverse(['Misalignment Bypass','Memory Effect Error','X Health','Y Health','Z Health','X Valid','Y Valid','Z Valid']),colors='rgbrgbmc'
     options,/def,'*swfo_sc_100_FSW_POWER_MANAGEMENT_BITS',colors='rgb',labels=reverse(['Battery OverTemp Enable','OverVoltage Enable','UnderVoltage Enable','Battery OverTemp Latched','Overvoltage Latched','UnderVoltage Latched']),numbits=6
     options,/def,'*swfo_sc_120_SUBSYSTEM_*',numbits=6,labels=reverse(['Gimbal Control Electronics','S-Band Transmitter','TWTA','X-Band Modulator','Star Tracker Electronics','IRU']),colors='rgbkmc',labflag=1
     options,/def,'*swfo_sc_120_????_POWER_BITS',numbits=5,labels=reverse(['Power','OC Trip','OC Enable','SH Power','SH OC Trip']),colors=[0,1,2,6]
@@ -133,10 +133,13 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*swfo_sc_160_FLASH_EDAC_COUNTS',colors='bgrk',labels=['1B Page Buffer','2B Page Buffer','1B Access','2B Access'],labflag=-1
     options,/def,'*AMPS',constant=0
     options,/def,'*IRU_BITS', negate='111111'b
+    options,/def,'*XYZ*',colors='bgr',labels=['X','Y','Z'],labflag=-1
+    options,/def,'*1234*',colors='bgrx',labels=['1','2','3','4'],labflag=-1
     ylim,'*nse_SIGMA',.5,4,1
     ylim,'*nse_BASELINE',-3,1
 
-    ylim,'*NOISE_SIGMA',.5,4,1
+    ylim,'*NOISE_SIGMA',.5,10,1
+    options,'*NOISE_SIGMA',constant=4
     ylim,'*NOISE_BASELINE',-3,1
 
     ylim,'*VALID_RATES',1,1,1
@@ -159,7 +162,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
 
     options,'swfo_*',ystyle=3
     tplot_options,'wshow',0
-    tplot_options,'datagap',60
+    ;tplot_options,'datagap',60
     tplot_options,'min_value',-1e30
     tplot_options,'max_value',1e30
   endif
@@ -198,7 +201,8 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     'DELAY':tplot,add=add,'*2*DELAYTIME'
     'WHEELS': tplot,add=add,'s*WHEEL_TORQUE s*WHEEL_SPEED_RPM s*WHEEL_CURRENT_AMPS s*WHEEL_BUS_CUR* s*IRU_BITS'
     'WHEELS1': tplot,add=add,'s*WHEEL_TOR_QUE s*WHEEL_SPEED_RPM s*WHEEL_BUS_CURRENT_AMPS s*IRU_BITS'
-    'DL5':  tplot,add=add,'*L1a_RATE6 *L1a_SPEC_?? *_SIGMA *L1a_NOISE_BASELINE'
+    'COM1':  tplot,add=add,'*L1a_RATE6 *L1a_SPEC_?? *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM'
+    'COM2':  tplot,add=add,'*L1a_RATE6 *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM'
     'WHEEL1':begin
       split_vec,'*WHEEL_SPEED_RPM *WHEEL_CURRENT_AMPS'
       tplot,add=add,'*WHEEL_*_0'

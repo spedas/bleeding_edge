@@ -1,18 +1,26 @@
 ;$LastChangedBy: rjolitz $
-;$LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
-;$LastChangedRevision: 33568 $
+;$LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
+;$LastChangedRevision: 33771 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_load.pro $
 
 pro swfo_stis_load,file_type=file_type,station=station,host=host, ncdf_resolution=ncdf_resolution , $
   trange=trange,opts=opts,make_ncdf=make_ncdf,make_ccsds=make_ccsds, debug=debug,run_proc=run_proc, $
-  offline=offline,no_exec=no_exec,reader_object=rdr,no_widget=no_widget
+  offline=offline,no_exec=no_exec,reader_object=rdr,no_widget=no_widget,lowres=lowres
   
 
   if keyword_set(debug) then stop
-  if n_elements(trange) eq 0 then trange=2.   ; default to last 2 hours
-  if ~keyword_set(file_type) then file_type = 'gsemsg'
-  if ~keyword_set(station) then station='S0'
+  if ~keyword_set(file_type) then file_type='aws'
+  if ~keyword_set(station) then station=''
+  if ~keyword_set(lowres) then lowres=0
+  if lowres eq 1 then lowres = '01min'
+  if lowres eq 2 then lowres = '30min'
+  if file_type eq 'aws' then begin
+    swfo_aws_nc2sav_makefile,/load,/daily,trange=trange,c2=station,res=lowres,/make_levels
+    swfo_stis_tplot, /setlim
+    return
+  endif
   if ~keyword_set(ncdf_resolution) then ncdf_resolution = 1800
+  if n_elements(trange) eq 0 then trange=2.   ; default to last 2 hours
   
   if ~isa(opts,'dictionary') then   opts=dictionary()
 

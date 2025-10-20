@@ -1,10 +1,10 @@
 ;+
 ;  generic_apdat
 ;  This basic object is the entry point for defining and obtaining all data for all apids
-; $LastChangedBy: ali $
-; $LastChangedDate: 2024-10-07 17:44:01 -0700 (Mon, 07 Oct 2024) $
-; $LastChangedRevision: 32880 $
-; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu:36867/repos/spdsoft/trunk/projects/SPP/COMMON/generic_apdat__define.pro $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $
+; $LastChangedRevision: 33760 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/generic_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
 
@@ -177,7 +177,7 @@ end
 
 
 function generic_apdat::ccsds_data,ccsds
-   return, *ccsds.pdata
+  return, *ccsds.pdata
 end
 
 function generic_apdat::decom,ccsds,source_dict=source_dict   ;header
@@ -238,7 +238,22 @@ pro generic_apdat::handler2,strct,source_dict=source_dict
   ;  This routine is a place holder for users. It should be overloaded and used to process higher level data.
 end
 
-
+pro generic_apdat::average,range=range,binsize=binsize,tspan=tspan
+  datarray = self.data.array
+  if keyword_set(datarray) then begin
+    t=datarray.time
+    mt=median([t])
+    if ~keyword_set(tspan) then tspan=1e8 ;3 years or so
+    w=where((t gt mt-tspan) and (t lt mt+tspan),/null,nw)
+    d=datarray[w]
+    dt=max(d.time)-min(d.time)
+    if nw gt dt/binsize then begin
+      s = average_hist(d,d.time,range=range,binsize=binsize,/nan,/median)
+      self.data.array = s
+      self.process_time = systime(1)
+    endif
+  endif
+end
 
 
 pro generic_apdat::sort
@@ -257,7 +272,7 @@ pro generic_apdat::create_tplot_vars,ttags=ttags
   if ~keyword_set(ttags) then ttags = self.ttags
   dyndata = self.data
   if isa(dyndata,'dynamicarray') && keyword_set(self.tname) then begin
-    store_data,self.tname,data=dyndata, tagnames=ttags, gap_tag='GAP',verbose = self.verbose
+    store_data,self.tname,data=dyndata, tagnames=ttags, gap_tag='GAP',verbose = self.verbose+1
   endif
 end
 
@@ -289,11 +304,11 @@ function generic_apdat::sw_version
   sw_hash['sw_time_stamp'] = time_string(this_file_date)
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
-  sw_hash['svn_changedby '] = '$LastChangedBy: ali $'
-  sw_hash['svn_changedate'] = '$LastChangedDate: 2024-10-07 17:44:01 -0700 (Mon, 07 Oct 2024) $'
-  sw_hash['svn_revision '] = '$LastChangedRevision: 32880 $'
+  sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 33760 $'
 
-  return,sw_hash
+    return,sw_hash
 end
 
 function generic_apdat::cdf_global_attributes
@@ -332,9 +347,9 @@ function generic_apdat::cdf_global_attributes
   ;  global_att['SW_TIME_STAMP'] =  time_string(systime(1))
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
-  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2024-10-07 17:44:01 -0700 (Mon, 07 Oct 2024) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 32880 $'
+  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 33760 $'
 
   return,global_att
 end
@@ -675,10 +690,10 @@ PRO generic_apdat__define
     user_dict:  obj_new(), $         ; user definable object  (typically a dictionary)
     window_obj: obj_new(), $         ; user definable object  (typically a plot window)
     ccsds_last: ptr_new(), $
-;    last_data_p:  ptr_new(),  $
-;    ccsds_array: obj_new(), $
-;    data: obj_new(), $
-;    window_obj: obj_new(), $
+    ;    last_data_p:  ptr_new(),  $
+    ;    ccsds_array: obj_new(), $
+    ;    data: obj_new(), $
+    ;    window_obj: obj_new(), $
     cdf_pathname:'', $
     cdf_linkname:'', $
     cdf_tagnames:'', $

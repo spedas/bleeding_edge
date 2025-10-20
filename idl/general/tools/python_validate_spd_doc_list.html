@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Oct 13 03:18:51 2025.<P>
+<STRONG>Last modified: </STRONG>Mon Oct 20 03:17:44 2025.<P>
  
 <HR>
  
@@ -27,6 +27,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#OMNI_SOLARWIND_PYTHON_VALIDATE">OMNI_SOLARWIND_PYTHON_VALIDATE</A>
 <LI><A HREF="#SPINMODEL_PYTHON_TEST.PRO">SPINMODEL_PYTHON_TEST.PRO</A>
 <br>Load several spin models and export them as CDFs for comparison with Python results
+<LI><A HREF="#WAV_DATA_VALIDATE">WAV_DATA_VALIDATE</A>
+<br>Generate test data for Python vs IDL validation tests for the wav_data routine.
 <br>
 </UL><P>
 <HR>
@@ -127,6 +129,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/too
 <A NAME="SPINMODEL_PYTHON_TEST.PRO">
 <H2>SPINMODEL_PYTHON_TEST.PRO</H2></A>
 <A HREF="#OMNI_SOLARWIND_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#WAV_DATA_VALIDATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -164,5 +167,36 @@ Written by: Jim Lewis (jwl@ssl.berkeley.edu)
 
 </PRE><P>
 <STRONG>(See <A href="python_validate/spinmodel_python_test.pro">general/tools/python_validate/spinmodel_python_test.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="WAV_DATA_VALIDATE">
+<H2>WAV_DATA_VALIDATE</H2></A>
+<A HREF="#SPINMODEL_PYTHON_TEST.PRO">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE: wav_data_validate
+
+PURPOSE:
+   Generate test data for Python vs IDL validation tests for the wav_data routine.
+
+
+   Creates the following savefiles:
+        wav_data_resample_test.tplot
+        sin_wav_wv_pol_perp.tplot
+        wav_data_cross_test.tplot
+        sin_wav_wv_pol_perp.tplot
+
+   These files should be uploaded into:
+     https://github.com/spedas/test_data/analysis_tools
+
+   The savefiles are used by pyspedas tests to confirm that IDL and python results are the same.
+
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2025-10-13 10:21:07 -0700 (Mon, 13 Oct 2025) $
+ $LastChangedRevision: 33753 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/python_validate/wav_data_validate.pro $
+</PRE><P>
+<STRONG>(See <A href="python_validate/wav_data_validate.pro">general/tools/python_validate/wav_data_validate.pro</A>)</STRONG><P>
 <HR>
  

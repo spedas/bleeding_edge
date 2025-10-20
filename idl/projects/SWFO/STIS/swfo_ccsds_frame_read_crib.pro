@@ -1,7 +1,7 @@
-;swfo_test
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-13 02:44:07 -0700 (Mon, 13 Oct 2025) $
-; $LastChangedRevision: 33748 $
+;swfo_ccsds_frame_read_crib
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
+; $LastChangedRevision: 33771 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_frame_read_crib.pro $
 
 
@@ -87,7 +87,8 @@ if 1 || ~keyword_set(files) then begin
   trange = ['2025-9 30 / 12','2025 10 1'  ]   ; first 12 hours
   trange = ['2025-9 30 / 12','2025 9 30 18'  ]   ; first 6 hours
   trange = ['2025 9 30 / 12',time_string(systime(1))]   ; Entire mission
-  trange = systime(1)   + [-1,0] * 3600d   * 24 *2  ; last few hours
+  trange = ['2025-10 17 / 15','2025-10 17 17:30'  ]
+  trange = systime(1)   + [-1,0] * 3600d   *1  ; last few hours
  ; trange = ['2025-10 10 / 10','2025 10 10 14'  ]   ; maneuver and bad frames
 
 

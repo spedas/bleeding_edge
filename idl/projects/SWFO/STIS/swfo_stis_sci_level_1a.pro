@@ -25,9 +25,9 @@
 ; Cribsheets that demonstrate Level 1a loading:
 ; - swfo_stis_sci_qflag_crib.pro: quality flag demo
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-13 02:43:15 -0700 (Mon, 13 Oct 2025) $
-; $LastChangedRevision: 33747 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2025-10-17 13:37:17 -0700 (Fri, 17 Oct 2025) $
+; $LastChangedRevision: 33770 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -89,6 +89,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     total14:  fltarr(14) , $
     total6:   fltarr(6) , $
     rate6:   fltarr(6) , $
+    rate14:  fltarr(14) , $
     geom_O1: nan48, rate_O1: nan48, SPEC_O1: nan48, spec_O1_nrg: nan48, spec_O1_dnrg: nan48, spec_O1_adc:  nan48, spec_O1_dadc:  nan48, $
     geom_O2: nan48, rate_O2: nan48, SPEC_O2: nan48, spec_O2_nrg: nan48, spec_O2_dnrg: nan48, spec_O2_adc:  nan48, spec_O2_dadc:  nan48, $
     geom_O3: nan48, rate_O3: nan48, SPEC_O3: nan48, spec_O3_nrg: nan48, spec_O3_dnrg: nan48, spec_O3_adc:  nan48, spec_O3_dadc:  nan48, $
@@ -104,6 +105,10 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     geom_F23: nan48, rate_F23: nan48, SPEC_F23: nan48, spec_F23_nrg: nan48, spec_F23_dnrg: nan48, spec_F23_adc:  nan48, spec_F23_dadc:  nan48, $
     geom_F123: nan48, rate_F123: nan48, SPEC_F123: nan48, spec_F123_nrg: nan48, spec_F123_dnrg: nan48, spec_F123_adc:  nan48, spec_F123_dadc:  nan48, $
     fpga_rev: 0b, $
+    model_sun_sc_angle_deg: !values.f_nan, $
+    measured_sun_sc_angle_deg: !values.f_nan, $
+    modeled_spacecraft_sun_vxyz_sc: replicate(!values.f_nan,3), $
+    sun_stis_angle_deg: !values.f_nan, $
     quality_bits: 0ULl, $
     sci_resolution: 0b, $
     sci_translate: 0u, $
@@ -230,7 +235,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     for j=0,5 do begin
       ; IMPORTANT: ignore end channel! susceptible to overflow:
       ; noise_stats[j] = swfo_stis_nse_find_peak(nse_histogram[0:8, j, i],noise_adc_bins[0:8])
-      noise_stats[j] = swfo_stis_nse_find_peak(nse_histogram_i[0:8, j],noise_adc_bins[0:8])
+      noise_stats[j] = swfo_stis_nse_find_peak(nse_histogram_i[0:9, j],noise_adc_bins[0:9])
     endfor
     ; stop
 
@@ -275,9 +280,18 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     ; Qflag: Bits at positional index 1-6 are 0 or 1
     ; for each channel (Ch 1-6). Set bit if any pulser on:
     pulser_bits = l0b.pulser_bits
-    if n_elements(pulser_bits) eq 3 then pulsers_enabled = pulser_bits[2] else pulsers_enabled = pulser_bits
-    pulser_flag = (pulsers_enabled and 0x3full)
-    q = q OR ishft(pulser_flag*1ull, cal.pulser_on_qflag_index[0])
+    if n_elements(pulser_bits) eq 3 then pulsers = pulser_bits[2] else pulsers = pulser_bits
+    ; pulser_flag = (pulsers and 0x3full)
+    ; q = q OR ishft(pulser_flag*1ull, cal.pulser_on_qflag_index[0])
+
+    ; new code, triggers if pulsers enabled AND pulser bit set:
+    pulser_enabled = (pulsers and 64ull) ne 0
+    q = q OR ishft(pulser_enabled and (pulsers and 1ull) ne 0, cal.pulser_on_qflag_index[0])
+    q = q OR ishft(pulser_enabled and (pulsers and 2ull) ne 0, cal.pulser_on_qflag_index[1])
+    q = q OR ishft(pulser_enabled and (pulsers and 4ull) ne 0, cal.pulser_on_qflag_index[2])
+    q = q OR ishft(pulser_enabled and (pulsers and 8ull) ne 0, cal.pulser_on_qflag_index[3])
+    q = q OR ishft(pulser_enabled and (pulsers and 16ull) ne 0, cal.pulser_on_qflag_index[4])
+    q = q OR ishft(pulser_enabled and (pulsers and 32ull) ne 0, cal.pulser_on_qflag_index[5])
     ; if q ne 0 then stop
 
     ; Bits at positional index 7-12 are 0 or 1 if high noise
@@ -316,6 +330,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     ; for channels 1-6:
     rate6 = total6/duration
     l1a.rate6 = rate6
+    l1a.rate14 = total14/duration
     rate_flag = rate6 gt cal.count_rate_threshold
     q = q or ishft(rate_flag[0]*1ull, cal.high_rate_qflag_index[0])
     q = q or ishft(rate_flag[1]*1ull, cal.high_rate_qflag_index[1])
@@ -397,21 +412,29 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
 
       ; ADMSUNVX[Y,Z] / measured_sun_vector_xyz is the measured sun vector in SC coordinates
       ; this is the only vector simulated in MR3
-      ; sun_sc = l0b.measured_sun_vector_xyz
+      meas_sun_vec_sc = l0b.measured_sun_vector_xyz
 
       ; ; ADSCSUNVX[Y,Z] / modeled_spacecraft_sun_vxyz is the modeled sun vector is in ECI coordinates
       model_sun_vec_eci = l0b.modeled_spacecraft_sun_vxyz
       ; ; this is the quaternion that converts from EGI to s/c coordinates
       quaternion = l0b.body_frame_attitude_q1234
       ; ; Put the modeled sun vector into s/c body coordinates:
-      sun_sc = quaternion_rotation(model_sun_vec_eci, quaternion, last_index=1)
+      model_sun_vec_sc = quaternion_rotation(model_sun_vec_eci, quaternion, last_index=1)
+      l1a.modeled_spacecraft_sun_vxyz_sc = model_sun_vec_sc
 
       ; Angle between X_sc and sun:
-      sun_sc_angle_deg = acos(sun_sc[0]) / !dtor
+      model_sun_sc_angle_deg = acos(model_sun_vec_sc[0]) / !dtor
+      l1a.model_sun_sc_angle_deg = model_sun_sc_angle_deg
+
+      measured_sun_sc_angle_deg = acos(meas_sun_vec_sc[0]) / !dtor
+      l1a.measured_sun_sc_angle_deg = measured_sun_sc_angle_deg
 
       ; Angle is ~15 deg when Earth pointing, 0 deg sun pointing
       ; - set flag if earth pointing?  +/-5 deg
-      offpointing_flag = (sun_sc_angle_deg gt cal.maximum_swfo_sun_offpointing_angle)
+      ; 10/17/25: currently using the measured, since the rotation
+      ;  into sc frame from ECI on the model_sun vector isn't returning
+      ;  a sensible number.
+      offpointing_flag = (measured_sun_sc_angle_deg gt cal.maximum_swfo_sun_offpointing_angle)
 
       q = q or ishft(offpointing_flag*1ull, cal.swfo_offpointing_qflag_index)
 
@@ -425,7 +448,9 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
       stis_fov = cal.stis_boresight_sc_unit_vector
 
       ; Likewise, calculate angle between STIS FOV center and sun:
+      sun_sc = meas_sun_vec_sc
       sun_stis_angle_deg = acos(stis_fov[0]*sun_sc[0] + stis_fov[2]*sun_sc[2]) / !dtor
+      l1a.sun_stis_angle_deg = sun_stis_angle_deg
 
       ; Sun in STIS FOV flag: angle subtended by fov 60 x 80 deg, angle of
       ; sun relative to center of boresight between 30-40

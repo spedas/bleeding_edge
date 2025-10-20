@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-13 02:33:49 -0700 (Mon, 13 Oct 2025) $
-; $LastChangedRevision: 33742 $
+; $LastChangedDate: 2025-10-15 09:15:00 -0700 (Wed, 15 Oct 2025) $
+; $LastChangedRevision: 33759 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -73,7 +73,7 @@ pro dynamicarray_example
 end
 
 
-FUNCTION DynamicArray::Init,array, _EXTRA=ex,tplot_tagnames=tplot_tagnames
+FUNCTION DynamicArray::Init,array, _EXTRA=ex,tplot_tagnames=tplot_tagnames,no_copy=no_copy
   COMPILE_OPT IDL2
   ; Call our superclass Initialization method.
   void = self->generic_object::Init(_extra=ex)
@@ -85,7 +85,7 @@ FUNCTION DynamicArray::Init,array, _EXTRA=ex,tplot_tagnames=tplot_tagnames
   ;self.size = dim[0]
   ;self.dlevel = 4
   IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
-  self.append,array
+  if keyword_set(no_copy) then self.append,temporary(array) else self.append,array
   dprint,verbose=verbose,dlevel=self.dlevel+2,'Created new '+typename(self)+ ': "'+self.name+'"'
   RETURN, 1
 END
