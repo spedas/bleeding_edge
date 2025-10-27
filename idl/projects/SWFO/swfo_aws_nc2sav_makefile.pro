@@ -1,6 +1,6 @@
-;$LastChangedBy: rjolitz $
-;$LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
-;$LastChangedRevision: 33771 $
+;$LastChangedBy: ali $
+;$LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
+;$LastChangedRevision: 33791 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_aws_nc2sav_makefile.pro $
 
 pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,daily=daily,force_make=force_make,$
@@ -40,7 +40,6 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
       dprint,'Making L0b'
       l0b = dynamicarray(swfo_stis_sci_level_0b(/getall),name='swfo_stis_L0b')
       store_data,l0b.name,data=l0b ,tagnames = '*'
-      store_data,l0b.name,data=l0b ,tagnames = '*_BITS',dlim ={ tplot_routine:'bitplot' }
       tname = 'swfo_stis_L1a'
       dprint,'Making L1: ',tname
       l1a = dynamicarray(swfo_stis_sci_level_1a(l0b.array),name=tname)

@@ -6,7 +6,7 @@ Pro fa_despun_e_load_type, type, trange = trange, orbit = orbit, $
 ;Keep track of software versioning here
   If(keyword_set(version)) Then Begin
      sw_vsn = version
-  Endif Else sw_vsn = 1
+  Endif Else sw_vsn = 2
   vxx = 'v'+string(sw_vsn, format='(i2.2)')
 ;Here we are loading one type
   type = strlowcase(strcompress(/remove_all, type[0]))

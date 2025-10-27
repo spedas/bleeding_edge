@@ -2,8 +2,8 @@
 ;  generic_apdat
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $
-; $LastChangedRevision: 33760 $
+; $LastChangedDate: 2025-10-24 18:02:38 -0700 (Fri, 24 Oct 2025) $
+; $LastChangedRevision: 33792 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/generic_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -256,7 +256,7 @@ pro generic_apdat::average,range=range,binsize=binsize,tspan=tspan
 end
 
 
-pro generic_apdat::sort
+pro generic_apdat::sort_old
   datarray = self.data.array
   if keyword_set(datarray) then begin
     s = sort(datarray.time)
@@ -264,6 +264,13 @@ pro generic_apdat::sort
     self.data.array = datarray
   endif
   self.process_time = systime(1)
+end
+
+pro generic_apdat::sort ,uniq=uniq
+
+  if isa(self.data,'dynamicarray')  then self.data.sort,uniq=uniq
+
+  ;self.process_time = systime(1)
 end
 
 
@@ -305,8 +312,8 @@ function generic_apdat::sw_version
   sw_hash['sw_runtime'] = time_string(systime(1))
   sw_hash['sw_runby'] = getenv('LOGNAME')
   sw_hash['svn_changedby '] = '$LastChangedBy: davin-mac $'
-    sw_hash['svn_changedate'] = '$LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $'
-    sw_hash['svn_revision '] = '$LastChangedRevision: 33760 $'
+    sw_hash['svn_changedate'] = '$LastChangedDate: 2025-10-24 18:02:38 -0700 (Fri, 24 Oct 2025) $'
+    sw_hash['svn_revision '] = '$LastChangedRevision: 33792 $'
 
     return,sw_hash
 end
@@ -348,8 +355,8 @@ function generic_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 33760 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2025-10-24 18:02:38 -0700 (Fri, 24 Oct 2025) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 33792 $'
 
   return,global_att
 end

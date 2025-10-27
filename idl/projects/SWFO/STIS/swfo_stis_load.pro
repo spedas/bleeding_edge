@@ -1,21 +1,22 @@
-;$LastChangedBy: rjolitz $
-;$LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
-;$LastChangedRevision: 33771 $
+;$LastChangedBy: ali $
+;$LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
+;$LastChangedRevision: 33791 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_load.pro $
 
-pro swfo_stis_load,file_type=file_type,station=station,host=host, ncdf_resolution=ncdf_resolution , $
-  trange=trange,opts=opts,make_ncdf=make_ncdf,make_ccsds=make_ccsds, debug=debug,run_proc=run_proc, $
-  offline=offline,no_exec=no_exec,reader_object=rdr,no_widget=no_widget,lowres=lowres
+pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution=ncdf_resolution, $
+  trange=trange,opts=opts,make_ncdf=make_ncdf,make_ccsds=make_ccsds,debug=debug,run_proc=run_proc, $
+  offline=offline,no_exec=no_exec,reader_object=rdr,no_widget=no_widget,lowres=lowres,daily=daily
   
 
   if keyword_set(debug) then stop
   if ~keyword_set(file_type) then file_type='aws'
   if ~keyword_set(station) then station=''
+  if n_elements(daily) eq 0 then daily=1
   if ~keyword_set(lowres) then lowres=0
   if lowres eq 1 then lowres = '01min'
   if lowres eq 2 then lowres = '30min'
   if file_type eq 'aws' then begin
-    swfo_aws_nc2sav_makefile,/load,/daily,trange=trange,c2=station,res=lowres,/make_levels
+    swfo_aws_nc2sav_makefile,/load,daily=daily,trange=trange,c2=station,res=lowres,/make_levels
     swfo_stis_tplot, /setlim
     return
   endif

@@ -60,6 +60,7 @@ function ccsds_frame_reader::header_struct,header
     ;strct.seqid = (strct.last4[-2] and 0b) *100u + strct.vcid
     strct.seqid =  strct.vcid
     strct.hashcode = header.hashcode()
+    strct.file_hash = self.source_dict.file_hash
   endif else begin
     dprint,'Error'
   endelse
@@ -70,7 +71,7 @@ function ccsds_frame_reader::header_struct,header
  ;   strct.apid = strct.apid or 0x8000         ; turn on highest order bit to segregate different apid
  ; endif
  
-  if strct.vcid eq 49 then begin
+  if strct.vcid eq 49 or strct.vcid eq 50 then begin
     strct.replay =1
   endif
 
@@ -81,7 +82,7 @@ end
 
 
 pro ccsds_frame_reader::print_info,hdr,txt,dlevel=dlevel
-  dprint,dlevel=dlevel,verbose=self.verbose,hdr.index,hdr.vcid,hdr.seqn,hdr.seqn_delta,hdr.sigfield,hdr.offset,hdr.last4[2],hdr.last4[3],' '+txt
+  dprint,dlevel=dlevel,verbose=self.verbose,hdr.index,hdr.vcid,hdr.seqn,hdr.seqn_delta,hdr.sigfield,hdr.offset,' '+txt
 
 end
 

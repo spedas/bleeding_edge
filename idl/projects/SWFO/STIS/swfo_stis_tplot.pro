@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-10-17 13:37:17 -0700 (Fri, 17 Oct 2025) $
-; $LastChangedRevision: 33770 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
+; $LastChangedRevision: 33791 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -118,10 +118,9 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*hkp?_TIMEOUTS_*US',colors='bgr',labels=['0x1D Event','0x1E Valid','0x1F Nopeak'],labflag=-1
     options,/def,'*NOISE_BITS',numbits=12,labels=reverse(['ENABLE','RES2','RES1','RES0','PERIOD7','PERIOD6','PERIOD5','PERIOD4','PERIOD3','PERIOD2','PERIOD1','PERIOD0']),colors=[0,1,2,6]
     options,/def,'*swfo_sc_120_INSTRUMENT_*',colors='bgrk',labels=['STIS','CCOR','MAG','SWiPS'],labflag=1,numbits=4
-    options,/def,'*swfo_sc_1?0_REACTION_WHEEL_*',colors='bgrk',labels=['1','2','3','4'],labflag=1,numbits=4,constant=0
+    options,/def,'*_REACTION_WHEEL_*',colors='bgrk',labels=['1','2','3','4'],labflag=1,numbits=4,constant=0
     options,/def,'*swfo_sc_100_REACTION_WHEEL_OVERSPEED_FAULT_BITS',colors='krgb',labels=reverse(['O1','O2','O3','O4','F1','F2','F3','F4']),numbits=8
-    options,/def,'*swfo_sc_110_REACTION_WHEEL_XYZ_TORQUE_ACTUAL_NM',labels=['X','Y','Z']
-    options,/def,'*IRU_BITS',labels=reverse(['Misalignment Bypass','Memory Effect Error','X Health','Y Health','Z Health','X Valid','Y Valid','Z Valid']),colors='rgbrgbmc'
+    options,/def,'*IRU_BITS',negate='111111'b,labels=reverse(['Misalignment Bypass','Memory Effect Error','X Health','Y Health','Z Health','X Valid','Y Valid','Z Valid']),colors='rgbrgbmc'
     options,/def,'*swfo_sc_100_FSW_POWER_MANAGEMENT_BITS',colors='rgb',labels=reverse(['Battery OverTemp Enable','OverVoltage Enable','UnderVoltage Enable','Battery OverTemp Latched','Overvoltage Latched','UnderVoltage Latched']),numbits=6
     options,/def,'*swfo_sc_120_SUBSYSTEM_*',numbits=6,labels=reverse(['Gimbal Control Electronics','S-Band Transmitter','TWTA','X-Band Modulator','Star Tracker Electronics','IRU']),colors='rgbkmc',labflag=1
     options,/def,'*swfo_sc_120_????_POWER_BITS',numbits=5,labels=reverse(['Power','OC Trip','OC Enable','SH Power','SH OC Trip']),colors=[0,1,2,6]
@@ -132,9 +131,10 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*swfo_sc_160_FLASH_SUCCESSFUL_BLOCK_COUNTS',colors='bgr',labels=['Read','Write','Erase'],labflag=-1
     options,/def,'*swfo_sc_160_FLASH_EDAC_COUNTS',colors='bgrk',labels=['1B Page Buffer','2B Page Buffer','1B Access','2B Access'],labflag=-1
     options,/def,'*AMPS',constant=0
-    options,/def,'*IRU_BITS', negate='111111'b
     options,/def,'*XYZ*',colors='bgr',labels=['X','Y','Z'],labflag=-1
-    options,/def,'*1234*',colors='bgrx',labels=['1','2','3','4'],labflag=-1
+    options,/def,'*1234*',colors='bgrk',labels=['1','2','3','4'],labflag=-1
+    options,/def,'*_123_*',colors='bgr',labels=['1','2','3'],labflag=-1
+    options,/def,'*STAR_COUNT',colors='bgr',labels=['ST','ST1','ST2'],labflag=-1
     ylim,'*nse_SIGMA',.5,4,1
     ylim,'*nse_BASELINE',-3,1
 

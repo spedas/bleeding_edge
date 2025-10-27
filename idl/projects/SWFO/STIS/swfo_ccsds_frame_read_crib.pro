@@ -1,7 +1,7 @@
 ;swfo_ccsds_frame_read_crib
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
-; $LastChangedRevision: 33771 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-24 18:02:38 -0700 (Fri, 24 Oct 2025) $
+; $LastChangedRevision: 33792 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_frame_read_crib.pro $
 
 
@@ -87,8 +87,7 @@ if 1 || ~keyword_set(files) then begin
   trange = ['2025-9 30 / 12','2025 10 1'  ]   ; first 12 hours
   trange = ['2025-9 30 / 12','2025 9 30 18'  ]   ; first 6 hours
   trange = ['2025 9 30 / 12',time_string(systime(1))]   ; Entire mission
-  trange = ['2025-10 17 / 15','2025-10 17 17:30'  ]
-  trange = systime(1)   + [-1,0] * 3600d   *1  ; last few hours
+  trange = systime(1)   + [-1,0] * 3600d   * 24 *2.5 ; last few hours
  ; trange = ['2025-10 10 / 10','2025 10 10 14'  ]   ; maneuver and bad frames
 
 
@@ -174,7 +173,12 @@ if 1 || ~keyword_set(files) then begin
       fileformat =  file_basename(str_sub(pathname,'*.nc',''))
       filerange = time_string(time_double(trange)+[0,3600],tformat=fileformat)
       if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
-      w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
+      if 0 then begin
+        w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)        
+      endif else begin
+        w = where(file_test(allfiles),nw,/null)      
+      endelse
+      
       files = allfiles[w]
       frames_name = 'swfo_frame_data'
     end
@@ -267,7 +271,7 @@ if keyword_set(1) then begin
     basename = file_basename(file)
     filehash = basename.hashcode()
     if rdr.parent_dict.filehashes.haskey(filehash) then begin
-      dprint,dlevel=3, file_basename(file)+ ' Already processed'
+      dprint,dlevel=2, file_basename(file)+ ' Already processed'
       continue
     endif
     parent.num_duplicates = 0

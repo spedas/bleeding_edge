@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-04 20:05:45 -0700 (Sat, 04 Oct 2025) $
-; $LastChangedRevision: 33695 $
+; $LastChangedDate: 2025-10-24 21:23:52 -0700 (Fri, 24 Oct 2025) $
+; $LastChangedRevision: 33794 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -82,6 +82,18 @@ pro swfo_stis_nse_apdat::handler2,strct,source_dict=source_dict
   ;printdat,strct
   da.append, strct_1
 end
+
+
+
+pro swfo_stis_nse_apdat::sort ,uniq=uniq
+
+  if isa(self.data,'dynamicarray') then self.data.sort,uniq=uniq
+  raw = (*self.data.ptr).raw
+  (*self.data.ptr).histogram = raw - shift(raw,0,1)
+  ;self.process_time = systime(1)
+end
+
+
 
 
 PRO swfo_stis_nse_apdat__define

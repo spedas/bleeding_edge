@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-14 18:20:42 -0700 (Tue, 14 Oct 2025) $
-; $LastChangedRevision: 33757 $
+; $LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
+; $LastChangedRevision: 33791 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_100_apdat__define.pro $
 
 
@@ -53,6 +53,7 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     battery_current_amps:             double(swfo_data_select(ccsds_data,246*8,64),0),$
     battery_temperature_c:            double(swfo_data_select(ccsds_data,254*8,64),0),$
     battery_voltage_v:                double(swfo_data_select(ccsds_data,262*8,64),0),$
+    tmon_bits:                        swfo_data_select(ccsds_data,[280:374:8]*8,64),$
     tmon_230_enabled_armed_triggered: swfo_data_select(ccsds_data,364*8+6, 3),$
     tmon_231_enabled_armed_triggered: swfo_data_select(ccsds_data,365*8+1, 3),$
     tmon_232_enabled_armed_triggered: swfo_data_select(ccsds_data,365*8+4, 3),$

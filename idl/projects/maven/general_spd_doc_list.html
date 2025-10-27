@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Oct 20 03:17:44 2025.<P>
+<STRONG>Last modified: </STRONG>Sat Oct 25 03:17:40 2025.<P>
  
 <HR>
  
@@ -35,6 +35,8 @@ MVN_FILE_SOURCE( [DEFAULT_SOURCE] )</A>
 <br>Calculates the altitude of the MAVEN spacecraft above the Martian
 <LI><A HREF="#MVN_GET_SCPOT">MVN_GET_SCPOT</A>
 <br>Given a time, returns the spacecraft potential.  Only works after
+<LI><A HREF="#MVN_GETORB">MVN_GETORB</A>
+<br>Wrapper for mvn_orbit_num that is quiet by default.
 <LI><A HREF="#MVN_LS">MVN_LS</A>
 <br>Calculates the Mars season (solar longitude and Mars year).
 <LI><A HREF="#MVN_MARS_YEAR">MVN_MARS_YEAR</A>
@@ -383,7 +385,7 @@ OUTPUT:
 <A NAME="MVN_FRAME_NAME">
 <H2>MVN_FRAME_NAME</H2></A>
 <A HREF="#MVN_FILE_SOURCE( [DEFAULT_SOURCE] )">[Previous Routine]</A>
-<A HREF="#MVN_GET_ALTITUDE">[Next Routine]</A>
+<A HREF="#MVN_GETORB">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 FUNCTION:   mvn_frame_name
@@ -429,9 +431,40 @@ CREATED BY:    David L. Mitchell
 <STRONG>(See <A href="general/mvn_frame_name.pro">projects/maven/general/mvn_frame_name.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_GETORB">
+<H2>MVN_GETORB</H2></A>
+<A HREF="#MVN_FRAME_NAME">[Previous Routine]</A>
+<A HREF="#MVN_GET_ALTITUDE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   mvn_getorb
+PURPOSE:
+  Wrapper for mvn_orbit_num that is quiet by default.
+  
+Typical CALLING SEQUENCE:
+  orbdata = mvn_getorb()
+
+KEYWORDS:
+  VERBOSE:        If set, then use default verbosity for mvn_orbit_num.
+                  This typically shows dozens of file download messages
+                  followed by a &quot;floating illegal operand&quot; error.
+
+                  If not set, then suppress all of the above.
+
+  REFRESH:        Refresh the orbit number database.
+
+Author: David Mitchell  - October, 2025
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2025-10-21 10:34:58 -0700 (Tue, 21 Oct 2025) $
+ $LastChangedRevision: 33781 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/mvn_getorb.pro $
+</PRE><P>
+<STRONG>(See <A href="general/mvn_getorb.pro">projects/maven/general/mvn_getorb.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_GET_ALTITUDE">
 <H2>MVN_GET_ALTITUDE</H2></A>
-<A HREF="#MVN_FRAME_NAME">[Previous Routine]</A>
+<A HREF="#MVN_GETORB">[Previous Routine]</A>
 <A HREF="#MVN_GET_SCPOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

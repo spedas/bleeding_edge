@@ -2,7 +2,7 @@ pro swfo_reaction_wheel_plot_output,tr,archive=archive
   if keyword_set(archive) then begin
     trs = 0
     append_array, trs, ['2025-10-01/20:37:40', '2025-10-01/21:30:00']   ; first occurance
-    append_array, trs, ['2025-10-02/23:29:30', '2025-10-03/04:28:10'] ;
+    append_array, trs, ['2025-10-02/23:29:30', '2025-10-03/04:28:10'] ;  IRU invalid;  no signature in stis
     append_array, trs,   ['2025-10-03/23:55:00', '2025-10-04/01:17:40']   ; extremely weak ; not clearly a reaction wheel resonance - Not detectable in science
     append_array, trs,  ['2025-10-04/08:04:40', '2025-10-04/10:52:20'] ; Medium event  ; invalid IRU
     append_array, trs, ['2025-10-04/17:30:30', '2025-10-04/18:12:40']   ; Med event - does not affect science -  Occurs just prior to type 3 electron event
@@ -21,6 +21,9 @@ pro swfo_reaction_wheel_plot_output,tr,archive=archive
     append_array, trs, ['2025-10-14/21:13:08',  '2025-10-14/22:03:10']   ;
     append_array, trs, ['2025-10-15/09:50:00','2025-10-15/12:16:00']  ;
     append_array, trs, ['2025-10-15/17:42:00','2025-10-15/19:29:20']
+    
+    append_array, trs, ['2025-10-20/21:57:00','2025-10-20/22:51:00']   ;
+    append_array, trs, ['2025-10-21/09:16:00','2025-10-21/09:27:00']   ;  Invalid IRU,  no signature in STIS
     
     trs = reform(trs,2,n_elements(trs)/2)
     timebar,trs

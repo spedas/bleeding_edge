@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-15 09:15:00 -0700 (Wed, 15 Oct 2025) $
-; $LastChangedRevision: 33759 $
+; $LastChangedDate: 2025-10-24 21:22:38 -0700 (Fri, 24 Oct 2025) $
+; $LastChangedRevision: 33793 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -323,6 +323,10 @@ end
 
 pro DynamicArray::sort   , timename    , uniq=uniq   ; Use with caution
   nsize = self.size
+  if nsize eq 0 then begin
+    dprint,dlevel=3,verbose=self.verbose,'No data to sort in ',self.name
+    return
+  endif
   if  isa(*self.ptr_array,'struct') then begin
     if ~isa(timename,'string') then timename='TIME'
     time_num = where(/null,tag_names(*self.ptr_array) eq strupcase(timename) )
@@ -339,7 +343,8 @@ pro DynamicArray::sort   , timename    , uniq=uniq   ; Use with caution
     u = uniq( ((*self.ptr_array)[0:nsize-1]).time )
     nusize = n_elements(u)
     self.size = nusize
-    (*self.ptr_array)[0:nusize-1]  = (*self.ptr_array)[u]    
+    (*self.ptr_array)[0:nusize-1]  = (*self.ptr_array)[u]   
+    dprint,dlevel = 2,verbose=self.verbose,'Old: ',nsize,' New: ',nusize,' diff: ',nsize-nusize , '  ',self.name
   endif
 end
 

@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-14 18:20:42 -0700 (Tue, 14 Oct 2025) $
-; $LastChangedRevision: 33757 $
+; $LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
+; $LastChangedRevision: 33791 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_110_apdat__define.pro $
 
 function swfo_sc_110_rw_temps,temps
@@ -43,8 +43,8 @@ function swfo_sc_110_apdat::decom,ccsds,source_dict=source_dict
     star_tracker_to_triad_error:57.29578e-4*swfo_data_select(ccsds_data, 386*8,16,/signed),$
     colatitude:57.29578e-4*swfo_data_select(ccsds_data, 388*8,16,/signed),$
     east_longitude:57.29578e-4*swfo_data_select(ccsds_data, 390*8,16,/signed),$
-    modeled_intertial_sun_vxyz:3.2e-5*swfo_data_select(ccsds_data, [392,394,396]*8,16,/signed),$
-    modeled_intertial_moon_vxyz:3.2e-5*swfo_data_select(ccsds_data, [398,400,402]*8,16,/signed),$
+    modeled_inertial_sun_vxyz:3.2e-5*swfo_data_select(ccsds_data, [392,394,396]*8,16,/signed),$
+    modeled_inertial_moon_vxyz:3.2e-5*swfo_data_select(ccsds_data, [398,400,402]*8,16,/signed),$
     rate_sensor_bias_123_deg_per_sec: 2e-6*swfo_data_select(ccsds_data,[657,659,661]*8, 16,/signed),$
     rate_sensor_attitude_q1234: 3.2e-5 * swfo_data_select(ccsds_data,[663:669:2]*8, 16,/signed),$
     iru_bits:                  swfo_data_select(ccsds_data,690*8+4, 8),$
