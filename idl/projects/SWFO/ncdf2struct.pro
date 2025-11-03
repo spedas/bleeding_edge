@@ -36,7 +36,14 @@ function ncdf2struct, ncdf_file
       dprint,'Unable to open ncdf file: ',ncdf_file
       return,!null
     endif
-    cdfid = ncdf_open(ncdf_file)
+    catch, error_stat
+    
+    if error_stat ne 0 then begin
+      catch,/cancel
+      return, !null
+    endif else begin
+      cdfid = ncdf_open(ncdf_file)      
+    endelse
 
     ;inquire ncdf-file --------------------------------------
 

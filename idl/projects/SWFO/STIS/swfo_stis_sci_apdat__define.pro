@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
-; $LastChangedRevision: 33771 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
+; $LastChangedRevision: 33797 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_apdat__define.pro $
 
 
@@ -13,8 +13,8 @@ function swfo_stis_sci_apdat::decom,ccsds   ,source_dict=source_dict      ;,head
   ;hkp = swfo_apdat('stis_hkp2')
   ;hkp_sample = hkp.last_data       ; retrieve last hkp packet
 
-  if debug(3) then begin
-    dprint,dlevel=2,'SST',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid,'  ', time_string(ccsds.time)
+  if debug(5) then begin
+    dprint,dlevel=4,'SST',ccsds.pkt_size, n_elements(ccsds_data), ccsds.apid,'  ', time_string(ccsds.time)
     hexprint,ccsds_data
     ;hexprint,swfo_data_select(ccsds_data,80,8)
   endif

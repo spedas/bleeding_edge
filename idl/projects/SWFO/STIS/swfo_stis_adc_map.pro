@@ -1,9 +1,9 @@
 ;+
 ;
 ;
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
-; $LastChangedRevision: 33568 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
+; $LastChangedRevision: 33797 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -63,9 +63,9 @@ end
 ; Test the function using :
 ; map = swfo_stis_adc_map(data_sample={ptcu_bits: [0, 0, 1, 0], detector_bits: [1, 0, 63], sci_resolution: 3, sci_translate: 16})
 ;
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-08-21 15:42:58 -0700 (Thu, 21 Aug 2025) $
-; $LastChangedRevision: 33568 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
+; $LastChangedRevision: 33797 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -112,7 +112,7 @@ function swfo_stis_adc_map, data_sample=data_sample, cal=cal
 
   adcmap.codes = codes
   
-  dprint,'Generating new ADC map: ',codes,dlevel=2
+  dprint,'Generating new ADC map: ',codes,dlevel=3
 
   ftoi_n = intarr(48,14)
   adc0_n = lonarr(48,14)
@@ -175,7 +175,7 @@ function swfo_stis_adc_map, data_sample=data_sample, cal=cal
 
   adc_n  = adc0_n + dadc_n/2.
 
- dprint, dlevel=2, 'First ten energies: ', (adc_n * conv_n)[0:10]
+ dprint, dlevel=3, 'First ten energies: ', (adc_n * conv_n)[0:10]
 
   adcmap.wh   = wh
   adcmap.ftoi = ftoi_n

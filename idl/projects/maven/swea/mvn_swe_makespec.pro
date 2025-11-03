@@ -29,8 +29,8 @@
 ;                 of hires data.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-19 14:46:22 -0700 (Thu, 19 Jun 2025) $
-; $LastChangedRevision: 33394 $
+; $LastChangedDate: 2025-10-31 13:59:29 -0700 (Fri, 31 Oct 2025) $
+; $LastChangedRevision: 33810 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -64,7 +64,10 @@ pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename, l
     mvn_swe_engy = replicate(swe_engy_struct, npts)
     mvn_swe_engy.apid = 'A4'XB
 
-    if (gotlut) then mvn_swe_engy.lut = lut else mvn_swe_getlut
+    if (~gotlut) then mvn_swe_getlut, result=lut
+    mvn_swe_engy.lut = lut
+    mvn_swe_calib, tabnum=lut[0]
+    swe_active_tabnum = lut[0]
 
     for i=0L,(npkt-1L) do begin
       delta_t = swe_dt[a4[i].period]*dindgen(16) + (1.95D/2D)  ; center time offset (sample mode)
@@ -79,8 +82,8 @@ pro mvn_swe_makespec, sum=sum, units=units, tplot=tplot, sflg=sflg, pan=ename, l
         tspec = a4[i].time + delta_t[j]
         dt = min(abs(tspec - swe_hsk.time),k)
 
-        if (mvn_swe_engy[j0+j].lut ne swe_active_tabnum) then begin
-          mvn_swe_calib, tabnum=mvn_swe_engy[j0+j].lut
+        if (lut[j0+j] ne swe_active_tabnum) then begin
+          mvn_swe_calib, tabnum=lut[j0+j]
           gf = total(swe_gf[*,*,0],2)/16.
           eff = total(swe_mcp_eff[*,*,0],2)/16.
         endif

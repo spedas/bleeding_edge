@@ -43,8 +43,60 @@
 ;  the first four (0-3) are recognized by flight software.  Sweep
 ;  tables are uploaded to the PFDPU and stored in non-volatile memory
 ;  (survives power cycle).  When SWEA is powered on, the PFDPU tranfers
-;  these four tables to the SWEA's volatile memory.  Currently, the
-;  four tables are:
+;  these four tables to the SWEA's volatile memory.
+;
+;  Once you set a method or SSCTL timing offset, it remains persistent
+;  for subsequent calls.
+;
+;  SWEA configuration changes:
+;
+;       i        t_swp[i]              configuration change
+;     --------------------------------------------------------------------
+;       0    2014-03-19/14:00:00    sweep tables 3 and 4 upload (cruise)
+;       1    2014-09-22/00:00:00    sweep tables 5 and 6 upload (MOI)
+;       2    2018-08-28/14:02:38    sweep table 8 upload (32-Hz,  50 eV)
+;       3    2018-11-09/17:57:56    sweep table 7 upload (32-Hz, 200 eV)
+;       4    2022-04-22/00:00:00    sweep table 9 upload (32-Hz, 125 eV)
+;     --------------------------------------------------------------------
+;
+;  2014-09-22 (t_swp[1]) to 2018-08-28 (t_swp[2]):
+;
+;       LUTNUM   TABNUM     Description
+;     -------------------------------------------------------------
+;         0         5       nominal ops: 3-4627.5 eV, V0 disabled
+;         1         6       nominal ops: 3-4652.5 eV, V0 enabled
+;         2         5       backup in case of checksum error
+;         3         6       backup in case of checksum error
+;     -------------------------------------------------------------
+;
+;  2018-08-28 (t_swp[2]) to 2018-11-09 (t_swp[3]):
+;    There are no longer backups in case of checksum errors.
+;    That capability is now disabled in flight software.
+;
+;       LUTNUM   TABNUM     Description
+;     -------------------------------------------------------------
+;         0         5       nominal ops: 3-4627.5 eV, V0 disabled
+;         1         6       nominal ops: 3-4652.5 eV, V0 enabled
+;         2                 unused
+;         3         8       hires at 50 eV
+;     -------------------------------------------------------------
+;
+;  2018-11-09 (t_swp[3]) to 2022-04-22 (t_swp[4]):
+;    First hires test observation: 2019-01-27
+;    Aerobraking begins 2019-02-12
+;
+;       LUTNUM   TABNUM     Description
+;     -------------------------------------------------------------
+;         0         5       nominal ops: 3-4627.5 eV, V0 disabled
+;         1         6       nominal ops: 3-4652.5 eV, V0 enabled
+;         2         7       hires at 200 eV
+;         3         8       hires at 50 eV
+;     -------------------------------------------------------------
+;
+;  After 2022-04-22 (t_swp[4]):
+;    Note that the V0 table is replaced with a hires table.
+;    Upstream/shock/sheath hires observations: 2020-04-30
+;    Crustal field observations: 2020-05-27 to 2020-06-01
 ;
 ;       LUTNUM   TABNUM     Description
 ;     -------------------------------------------------------------
@@ -54,7 +106,6 @@
 ;         3         8       hires at 50 eV
 ;     -------------------------------------------------------------
 ;
-;  Note that TABNUM 6 (3-4627.5 eV, V0 enabled) is no longer used.
 ;  Table numbers (TABNUM) are defined in ground software.  This routine
 ;  makes the connection between LUTNUM and TABNUM.
 ;
@@ -90,7 +141,7 @@
 ;       FLUX:     Use constant flux at all energy steps to determine if
 ;                 one of the high-cadence tables (7-9) is in use.  If so,
 ;                 then the nearest housekeeping SSCTL value uniquely 
-;                 identifies which table is in use.
+;                 identifies which table is in use.  Default.
 ;
 ;       RESULT:   Table number for each SPEC.
 ;
@@ -99,8 +150,8 @@
 ;       DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-08-05 16:50:06 -0700 (Tue, 05 Aug 2025) $
-; $LastChangedRevision: 33536 $
+; $LastChangedDate: 2025-10-31 13:57:54 -0700 (Fri, 31 Oct 2025) $
+; $LastChangedRevision: 33807 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 ;-
 pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux, diag=diag, tplot=tplot, $
@@ -112,12 +163,13 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
   if (size(dtl,/type) eq 0) then begin
     dtl = 0D
     vflg = 0
-    fflg = 0
+    fflg = 1  ; default method when hires tables are present
   endif
 
   if (n_elements(dt_lut) gt 0) then dtl = double(dt_lut[0])
-  if (n_elements(volt) gt 0) then vflg = keyword_set(volt)
   if (n_elements(flux) gt 0) then fflg = keyword_set(flux)
+  if (n_elements(volt) gt 0) then vflg = keyword_set(volt)
+  if (vflg) then fflg = 0  ; disable flux method when volt method is requested
 
   case n_elements(dv) of
      0   : dv_max = [0.7, 1.5, 2.0]
@@ -132,11 +184,6 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
      2   : vmean = [vmean, 32.50]
     else : vmean = vmean[0:2]
   endcase
-
-  if (abs(dtl) gt 0D) then begin
-    msg = strtrim(string(dtl, format='(f12.1)'),2)
-    print,"MVN_SWE_GETLUT%  Using SSCTL offset: ",msg," sec"
-  endif
 
 ; Make sure sufficient information is present
 
@@ -171,11 +218,28 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
 
 ; Use V0V to identify table 6.  This is reliable.
 
-  indx = where(lutnum eq 1, count)
+  indx = where((lutnum eq 1) and (swe_hsk.time lt t_swp[4]), count)
   if (count gt 0L) then begin
     indx = where(swe_hsk.v0v lt -0.1, count)
     if (count gt 0L) then tabnum[indx] = 6B  ; V0 enabled
   endif
+
+; Inspect housekeeping to see if there are any hires observations.
+; Default is to use the table provided by the nearest housekeeping 
+; packet, but this is not very reliable.  Two other methods are 
+; provided that can work much better in certain situations.
+
+  indx = where(((swe_hsk.time gt t_swp[2]) and ((lutnum ge 2) and (lutnum le 3))) or $
+               ((swe_hsk.time gt t_swp[4]) and ((lutnum ge 1) and (lutnum le 3))), count)
+
+  if (count eq 0L) then begin  ; disable hires methods: not needed
+    vflg = 0
+    fflg = 0
+    gotlut = 1
+  endif else begin
+    print,"MVN_SWE_GETLUT%  Hires tables detected in housekeeping."
+    gotlut = 0
+  endelse
 
 ; Use analyzer voltage to identify tables 7-9.  This method works
 ; in superthermal electron voids, but it can get confused when the 
@@ -184,7 +248,7 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
 ; the noise level on the housekeeping values is larger.
 
   if (vflg) then begin
-    print,"MVN_SWE_GETLUT%  Using analyzer voltage method."
+    print,"MVN_SWE_GETLUT%  Using analyzer voltage method for hires tables."
     indx = where(lutnum eq 2 or lutnum eq 3, count)
     if (count gt 0L) then begin
       indx = where(abs(swe_hsk.analv - 8.13) lt dv_max[0], count)
@@ -197,6 +261,7 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
       indx = where(abs(swe_hsk.analv - 20.2) lt dv_max[1], count)
       if (count gt 0L) then tabnum[indx] = 9B  ; hires @ 125 eV
     endif
+    gotlut = 1
   endif else begin
     indx = where(lutnum eq 1 and swe_hsk.time gt t_swp[4], count)
     if (count gt 0L) then tabnum[indx] = 9B  ; hires @ 125 eV
@@ -228,15 +293,28 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
 ; at all energies.  It can also get confused when there are real flux
 ; variations within the 2-second measurement interval (as in the sheath).
 
+; Maybe try 7 eV as an even lower energy???
+
   if (fflg) then begin
     mvn_swe_sweep, tab=5, result=swp
     hndx = where(swp.e gt 1400.)
     lndx = where((swp.e gt 30.) and (swp.e lt 100.))
-    print,"MVN_SWE_GETLUT%  Using constant flux method."
+    print,"MVN_SWE_GETLUT%  Using constant flux method for hires tables."
     cnts = reform(a4.data, 64L, 16L*n_elements(a4))
     loav = mean(cnts[lndx,*],dim=1,/nan)  ; low-energy average
     hiav = mean((cnts[hndx,*] > 1e-6),dim=1,/nan)  ; high-energy average
     i7_9 = where(((hiav/loav) gt 0.1) and (loav gt 10.), n7_9, comp=i1_5, ncomp=n1_5)
+    gotlut = 1
+  endif
+
+; Use housekeeping to identify tables 7-9.
+
+  if (~gotlut) then begin
+    print,"MVN_SWE_GETLUT%  Using housekeeping method for hires tables."
+    if (abs(dtl) gt 0D) then begin
+      msg = strtrim(string(dtl, format='(f12.1)'),2)
+      print,"MVN_SWE_GETLUT%  Using SSCTL timing offset: ",msg," sec"
+    endif
   endif
 
 ; Get SPEC timing (see mvn_swe_makespec)

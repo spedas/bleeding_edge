@@ -133,11 +133,11 @@
  ;       continue the download based on remote file modification time and file size. If the local version was current
  ;       then the connection would be closed
  ;
- ; $LastChangedBy: nikos $
- ; $LastChangedDate: 2020-04-15 11:56:17 -0700 (Wed, 15 Apr 2020) $
- ; $LastChangedRevision: 28584 $
+ ; $LastChangedBy: davin-mac $
+ ; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
+ ; $LastChangedRevision: 33797 $
  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_http_copy.pro $
- ; $Id: file_http_copy.pro 28584 2020-04-15 18:56:17Z nikos $
+ ; $Id: file_http_copy.pro 33797 2025-10-27 18:02:52Z davin-mac $
  ;-
  
  
@@ -542,7 +542,7 @@ end
    ;; sockets supported in unix & windows since V5.4, Macintosh since V5.6
    tstart = systime(1)
    
-   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 28584 2020-04-15 18:56:17Z nikos $
+   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 33797 2025-10-27 18:02:52Z davin-mac $
 
    if n_elements(strict_html) eq 0 then begin
       strict_html = 1      ;  set to 1 to be robust,  set to 0 to be much faster
@@ -550,7 +550,7 @@ end
    endif
 
    if keyword_set(user_agent) eq 0 then begin
-     swver = strsplit('$Id: file_http_copy.pro 28584 2020-04-15 18:56:17Z nikos $',/extract)
+     swver = strsplit('$Id: file_http_copy.pro 33797 2025-10-27 18:02:52Z davin-mac $',/extract)
      if !version.release ge '7' then begin
       login_info = get_login_info()
       user = login_info.user_name+'@'+login_info.machine_name
@@ -707,7 +707,7 @@ end
      
      
      if keyword_set(no_update) && lcl.exists then begin
-       dprint,dlevel=2,verbose=verbose,'Warning: Updates to existing file: "'+lcl.name+'" are not being checked!'
+       dprint,dlevel=3,verbose=verbose,'Warning: Updates to existing file: "'+lcl.name+'" are not being checked!'
 ;       url_info.localname = localname
 ;       url_info.exists = -1   ; remote file existence is not known!
        if keyword_set(get_links) then begin

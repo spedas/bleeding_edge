@@ -25,6 +25,19 @@ pro swfo_reaction_wheel_plot_output,tr,archive=archive
     append_array, trs, ['2025-10-20/21:57:00','2025-10-20/22:51:00']   ;
     append_array, trs, ['2025-10-21/09:16:00','2025-10-21/09:27:00']   ;  Invalid IRU,  no signature in STIS
     
+    
+    append_array, trs,       ['2025-10-20/21:56:30', '2025-10-20/22:50:10']  ; IRU valid    Channel 1 sigma= 8.55
+    append_array, trs,       ['2025-10-21/19:16:30', '2025-10-21/19:31:50']  ; IRU invalid   No signature  in stis   sigma <2
+    
+    
+    append_array, trs,       ['2025-10-22/15:02:30', '2025-10-22/16:49:00']  ; IRU Invalid    channel1 sigma=9.72
+    append_array, trs,       ['2025-10-22/21:34:30', '2025-10-22/22:42:30']  ; IRU valid      cn1 sigma= 2.93
+    append_array, trs,       ['2025-10-23/03:56:00', '2025-10-23/05:28:00']  ; IRU valid     ch1 sigma = 5.84
+    append_array, trs,       ['2025-10-23/06:53:49', '2025-10-23/06:54:09']  ; IRU invalid    (NO signature in STIS)   sigma <2
+    append_array, trs,       ['2025-10-23/11:53:30', '2025-10-23/14:39:30']  ; IRU invalid   ch1sigma = 12.46   ch2sigma= 5.24  ch5s=5.74  severe
+    append_array, trs,       ['2025-10-26/16:11:00', '2025-10-26/17:01:00']  ; IRU valid  sigma1= >3.9  sig2=2.24   sigm5=1.97
+    append_array, trs,       ['2025-10-27/00:14:46', '2025-10-27/00:15:54']  ; IRU valid  sigma1 =2.55
+    
     trs = reform(trs,2,n_elements(trs)/2)
     timebar,trs
     for i=0,dimen2(trs)-1  do    swfo_reaction_wheel_plot_output,trs[*,i]

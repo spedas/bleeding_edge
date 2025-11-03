@@ -50,21 +50,21 @@
 ;
 ;                   Otherwise, all changes are listed.
 ;
-;    TIMEBAR:       Returns a structure with three tags:
+;    RESULT:        Returns a structure with three tags:
 ;
 ;                     time : array of times for configuration changes
 ;                     text : brief descriptions of configuration changes
 ;                     type : types of configuration changes (see above)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-05-23 15:45:39 -0700 (Fri, 23 May 2025) $
-; $LastChangedRevision: 33326 $
+; $LastChangedDate: 2025-10-31 13:58:27 -0700 (Fri, 31 Oct 2025) $
+; $LastChangedRevision: 33808 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
 ;FILE: mvn_swe_config.pro
 ;-
-pro mvn_swe_config, list=list, timebar=tbar
+pro mvn_swe_config, list=list, result=tbar
 
   @mvn_swe_com
 

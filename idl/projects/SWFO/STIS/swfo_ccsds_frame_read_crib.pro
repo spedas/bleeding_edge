@@ -1,7 +1,7 @@
 ;swfo_ccsds_frame_read_crib
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-24 18:02:38 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33792 $
+; $LastChangedDate: 2025-10-27 15:44:24 -0700 (Mon, 27 Oct 2025) $
+; $LastChangedRevision: 33798 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_frame_read_crib.pro $
 
 
@@ -84,11 +84,17 @@ if 1 || ~keyword_set(files) then begin
   trange = ['2025 1 12 ','now']   ; ETE4 RFR
   trange = ['2025 1 16 16 ','2025 1 16 19']   ; ETE4 RFR
   trange = ['2025-10- 3 /11 ','2025 10 3 /14']   ; flight with replay
+  trange = ['2025 9 30 / 12',time_string(systime(1))]   ; Entire mission
   trange = ['2025-9 30 / 12','2025 10 1'  ]   ; first 12 hours
   trange = ['2025-9 30 / 12','2025 9 30 18'  ]   ; first 6 hours
-  trange = ['2025 9 30 / 12',time_string(systime(1))]   ; Entire mission
-  trange = systime(1)   + [-1,0] * 3600d   * 24 *2.5 ; last few hours
- ; trange = ['2025-10 10 / 10','2025 10 10 14'  ]   ; maneuver and bad frames
+  trange = ['2025-10 10 / 10','2025 10 10 14'  ]   ; maneuver and bad frames
+  trange =  ['2025 10 4 15','2025 10 4 16']   ; bad file time for CBU
+  trange = ['2025-10-15 /8 ','2025 10 15 /22 '  ]   ; RW test
+  trange = ['2025-10-23 / 14','2025 10 23 / 22'  ]   ; 2nd mag roll with safe hold and replay
+  trange = systime(1)   + [-1,0] * 3600d   * 4  ; last few hours
+  if rdr.source_dict.haskey('frame_time') then begin
+    trange[0] = rdr.source_dict.frame_time - 300
+  endif
 
 
   no_download = 0    ;set to 1 to prevent download
@@ -98,6 +104,7 @@ if 1 || ~keyword_set(files) then begin
   source = {$
     remote_data_dir:'http://sprg.ssl.berkeley.edu/data/', $
     master_file:'swfo/.master', $
+    min_age_limit :100,$
     no_update : no_update ,$
     no_download :no_download ,$
     resolution: 900L  }
@@ -169,16 +176,16 @@ if 1 || ~keyword_set(files) then begin
       ;pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/jan/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh*.nc'
       pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/MM/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh*.nc'
       source.resolution = 3600
-      allfiles = file_retrieve(pathname,_extra=source,trange=trange)  ; get All the files first
+      allfiles = file_retrieve(pathname,_extra=source,trange=trange,verbose=2)  ; get All the files first
       fileformat =  file_basename(str_sub(pathname,'*.nc',''))
       filerange = time_string(time_double(trange)+[0,3600],tformat=fileformat)
       if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
       if 0 then begin
-        w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)        
+        w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
       endif else begin
-        w = where(file_test(allfiles),nw,/null)      
+        w = where(file_test(allfiles),nw,/null)
       endelse
-      
+
       files = allfiles[w]
       frames_name = 'swfo_frame_data'
     end
@@ -259,7 +266,7 @@ endif
 
 
 if keyword_set(1) then begin
-  
+
   parent = rdr.parent_dict
   rdr.verbose = 3
   dict = rdr.source_dict
@@ -271,7 +278,7 @@ if keyword_set(1) then begin
     basename = file_basename(file)
     filehash = basename.hashcode()
     if rdr.parent_dict.filehashes.haskey(filehash) then begin
-      dprint,dlevel=2, file_basename(file)+ ' Already processed'
+      dprint,dlevel=3, file_basename(file)+ ' Already processed'
       continue
     endif
     parent.num_duplicates = 0
@@ -279,20 +286,24 @@ if keyword_set(1) then begin
     ;    index
     if file_test(file) then begin
       dat = ncdf2struct(file)
+      if ~isa(dat) then begin
+        dprint,'Bad file: '+file
+        continue
+      endif
       dict.file_timerange = time_double([dat.time_coverage_start,dat.time_coverage_end])
       dict.file_nframes = n_elements(dat.size_of_frame)
       dict.frame_time = dict.file_timerange[0]
       dict.frame_dtime = (dict.file_timerange[1] - dict.file_timerange[0]) / dict.file_nframes
       dict.file_hash = filehash
       dict.file_name = file
-      
+
       frames = struct_value(dat,frames_name,default = !null)
       index = rdr.getattr('index')
       ;    cntr.append, { index:index,   time: time_double( dat.
       dprint,dlevel=1,string(index)+'   '+ file_basename(file)+ '  '+strtrim(n_elements(frames)/1024, 2)+'   '+time_string(dict.frame_time)+'  '+strtrim(filehash,2)
       rdr.read , frames
       lastfile = file
-      rdr.parent_dict.filename = file      
+      rdr.parent_dict.filename = file
       rdr.parent_dict.filehashes[filehash] = file
 
     endif else begin
@@ -303,7 +314,7 @@ if keyword_set(1) then begin
   if isa(files) then begin
     ;swfo_apdat_info,/create
     ;tplot,'*STIS*TEMP*
-   ; wshow,0
+    ; wshow,0
     ;tplot ,verbose=0,trange=systime(1)+[-1,.05] *60*60*10
     ;timebar,systime(1)
   endif    else dprint,'No new files'
@@ -346,10 +357,42 @@ if 0 then begin
 endif
 
 ;swfo_apdat_info,/create_tplot_vars,/all;,/print  ;  ,verbose=0
-if ~isa(init) then begin
+if ~keyword_set(init) then begin
   ;swfo_stis_tplot,'cpt2',/set
+
+  swfo_apdat_info,/create
+  l1a_red_da = dynamicarray(name='L1a_red')
   
   init = 1
 endif
+
+if init && isa(files) then begin
+  dprint,'Merging Level 0A'
+  swfo_apdat_info,/merge,/sort,/uniq
+
+
+  if 1 then begin
+    dprint, 'Computing higher level products'
+    sci = swfo_apdat('stis_sci')
+    l0b_da = sci.getattr('level_0b')
+    l1a_da = sci.getattr('level_1a')
+    l1b_da = sci.getattr('level_1b')
+
+    l0b_da.array = swfo_stis_sci_level_0b(/getall)
+    l1a_da.array = swfo_stis_sci_level_1a( l0b_da.array )
+    l1b_da.array = swfo_stis_sci_level_1b( l1a_da.array )
+    if ~isa(l1a_red_da,'dynamicarray') then begin
+      l1a_red_da = dynamicarray(name = 'L1a_red')
+    endif
+
+    l1a_red_da.array = l1a_da.reduce_resolution(30)
+  endif
+  
+  
+endif
+
+
+
+
 
 end

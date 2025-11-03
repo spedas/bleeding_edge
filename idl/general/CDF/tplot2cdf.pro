@@ -14,6 +14,7 @@
 ;   COMPRESS_CDF: (int) Compress CDF file. See CDF_COMPRESSION
 ;   G_ATTRIBUTES: (struct) Global attributes of CDF file
 ;   TT2000: (flag) Indicates that time is in TT2000 format.
+;   USE_TPLOT_NAMES: (flag) Indicates that data and support variables should be named after the input tplot variable, not that variable's CDF attributes
 ;  
 ;  Additional keywords:    
 ;   INQ: (struct) Structure of CDF file parameters, see TPLOT2CDF_SAVE_VARS code
@@ -31,13 +32,14 @@
 ;  Alexander Drozdov
 ;  
 ;   
-; $LastChangedBy: haraday $
-; $LastChangedDate: 2024-03-26 01:20:29 -0700 (Tue, 26 Mar 2024) $
-; $LastChangedRevision: 32507 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-10-28 15:42:02 -0700 (Tue, 28 Oct 2025) $
+; $LastChangedRevision: 33805 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot2cdf.pro $
 ;-
 
-pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attributes=g_attributes_custom,tt2000=tt2000, default_cdf_structure=default_cdf_structure, compress_cdf=compress_cdf 
+pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attributes=g_attributes_custom,tt2000=tt2000, $
+  default_cdf_structure=default_cdf_structure, compress_cdf=compress_cdf, use_tplot_names=use_tplot_names
   
   compile_opt idl2
   FORWARD_FUNCTION cdf_default_inq_structure, cdf_default_g_attributes_structure  
@@ -49,6 +51,7 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
   endif
   
   if undefined(default_cdf_structure) then default_cdf_structure = 1b
+  if undefined(use_tplot_names) then use_tplot_names=0b
   
   if undefined(inq_structure) then inq_structure = cdf_default_inq_structure()
   g_attributes_structure = cdf_default_g_attributes_structure()
@@ -130,6 +133,11 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
     ; here we don't check existence of CDF structure, it must be defined before
     ; we also don't check existence of x field
     VAR = s.CDF.VARS
+    
+    ; If we're going to use the tplot name, it should be sanitized by changing hyphens to underscores.  Whitespace is actually allowed
+    ; in CDF variables, but we'll replace blanks too just to avoid confusion.
+    
+    sanitized_tplot_name = strjoin(strsplit(tname, ' -', /extract), '_')
 
     t = TAG_NAMES(s.CDF)
     
@@ -138,7 +146,12 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
       ;
       ; If user defined only one x variable in tplot we consider it as Epoch
       ; In this case CDF may contain only one field VARS wich is Epoch  
-      EpochName = 'Epoch'
+      if use_tplot_names then begin
+        EpochName = sanitized_tplot_name + '_Epoch'
+      endif else begin
+        EpochName = 'Epoch'
+      endelse
+      
       if s.CDF.VARS.DATATYPE eq EpochType then begin
         EpochVAR = s.CDF.VARS      
         ;if(undefined(y)) then begin 
@@ -206,8 +219,14 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
     ;   
     if ~undefined(v1) then v = TEMPORARY(v1) ; Use v1 isdead of v if we have v1         
     if array_contains(t,'DEPEND_1') then begin
-     SupportName1 = s.CDF.DEPEND_1.NAME
+      if use_tplot_names then begin
+        SupportName1 = sanitized_tplot_name + '_depend1'
+      endif else begin
+        SupportName1 = s.CDF.DEPEND_1.NAME
+      endelse
+
      SupportVAR = s.CDF.DEPEND_1
+     SupportVar.NAME = SupportName1
      SupportVAR.DATAPTR = ptr_new(v, /NO_COPY)
      
      InArray = 0
@@ -234,8 +253,14 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
     ; supporting data (2)
     ;    
     if array_contains(t,'DEPEND_2') then begin
-      SupportName2 = s.CDF.DEPEND_2.NAME
+      if use_tplot_names then begin
+        SupportName2 = sanitized_tplot_name + '_depend2'
+      endif else begin
+        SupportName2 = s.CDF.DEPEND_2.NAME
+      endelse
+
       SupportVAR = s.CDF.DEPEND_2
+      SupportVar.NAME = SupportName2
       SupportVAR.DATAPTR = ptr_new(v2, /NO_COPY)
 
       InArray = 0
@@ -261,8 +286,14 @@ pro tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attribu
     ; supporting data (3)
     ;
     if array_contains(t,'DEPEND_3') then begin
-      SupportName3 = s.CDF.DEPEND_3.NAME
+      if use_tplot_names then begin
+        SupportName3 = sanitized_tplot_name + '_depend3'
+      endif else begin
+        SupportName3 = s.CDF.DEPEND_3.NAME
+      endelse
+
       SupportVAR = s.CDF.DEPEND_3
+      SupportVar.NAME = SupportName3
       SupportVAR.DATAPTR = ptr_new(v3, /NO_COPY)
 
       InArray = 0

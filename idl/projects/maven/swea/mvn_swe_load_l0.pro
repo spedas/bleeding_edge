@@ -97,8 +97,8 @@
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-08-06 08:56:11 -0700 (Wed, 06 Aug 2025) $
-; $LastChangedRevision: 33540 $
+; $LastChangedDate: 2025-10-31 13:59:29 -0700 (Fri, 31 Oct 2025) $
+; $LastChangedRevision: 33810 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -364,11 +364,13 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 
   mvn_swe_calib
 
-; Determine sweep table for each measurement.  If HIRES is set,
-; this is done using the constant flux method for identifying 
-; the hires sweep tables.  Otherwise, only housekeeping is used.
+; Determine sweep table for each measurement.
+;   This routine will automatically detect the presence of high resolution
+;   sweep tables in housekeeping.  If they are detected, then by default
+;   the constant flux method is used to set the table numbers.  See the
+;   routine for other options.
 
-  mvn_swe_getlut, flux=dohires, result=tabnum
+  mvn_swe_getlut, result=tabnum
 
 ; Make energy spectra.  Use the table numbers from above.
 

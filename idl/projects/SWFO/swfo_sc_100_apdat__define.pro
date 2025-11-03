@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33791 $
+; $LastChangedDate: 2025-10-28 11:41:17 -0700 (Tue, 28 Oct 2025) $
+; $LastChangedRevision: 33800 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_100_apdat__define.pro $
 
 
@@ -25,7 +25,8 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     packet_definition_version_number: float(swfo_data_select(ccsds_data, 18*8,32),0),$
     adcs_state_0wait_1detumble_2acqsun_3point_4deltav_5earth:swfo_data_select(ccsds_data,22*8,3),$
     attitude_error_xyz_deg:57.29578e-4*swfo_data_select(ccsds_data, [23,25,27]*8,16,/signed),$
-    rate_error_xyz_deg_per_sec:4e-5*swfo_data_select(ccsds_data, [23,25,27]*8,16,/signed),$
+    rate_error_xyz_deg_per_sec:4e-5*swfo_data_select(ccsds_data, [29,31,33]*8,16,/signed),$
+    attitude_rate_error_bits:swfo_data_select(ccsds_data,35*8,4),$
     sun_point_status_0idle_1magpoint_2intrusion_3avoidance_4maneuver:swfo_data_select(ccsds_data,35*8+4,3),$
     sun_point_minimum_keepout_angle:  57.29578e-4*swfo_data_select(ccsds_data, 36*8,16,/signed),$
     control_torque_xyz:               3.2e-4*swfo_data_select(ccsds_data, [38,40,42]*8,16,/signed),$
@@ -33,10 +34,11 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     rt_critical_vc:                   swfo_data_select(ccsds_data, 69*8+2, 6),$
     star_tracker_attitude_q1234:3.2e-5*swfo_data_select(ccsds_data,[70:76:2]*8,16,/signed),$
     rt_non_critical_vc:               swfo_data_select(ccsds_data, 78*8+2, 6),$
-    star_tracker_rate_vector_xyz:1.146e-4*swfo_data_select(ccsds_data,[70:76:2]*8,16,/signed),$
+    star_tracker_rate_vector_xyz:1.146e-4*swfo_data_select(ccsds_data,[79:83:2]*8,16,/signed),$
     body_frame_attitude_q1234:3.2e-5*swfo_data_select(ccsds_data,[86:92:2]*8,16,/signed),$
     body_frame_rate_xyz_deg_per_sec:4e-4*swfo_data_select(ccsds_data, [94,96,98]*8,16,/signed),$
     control_frame_sun_xyz:3.2e-5*swfo_data_select(ccsds_data,[101,103,105]*8,16,/signed),$
+    solution_status_0bothstr_1onestr_12ronly_13bothst_14onest_15cssonly_16none:swfo_data_select(ccsds_data,107*8,5),$
     sun_sensor_raw_intensity_12_bit_adc:swfo_data_select(ccsds_data,[108:138:2]*8,16,/signed),$
     measured_sun_vector_xyz:3.2e-5*swfo_data_select(ccsds_data,[148,150,152]*8,16,/signed),$
     pbk_critical_vc:                  swfo_data_select(ccsds_data,154*8+2, 6),$

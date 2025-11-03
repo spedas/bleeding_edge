@@ -130,14 +130,11 @@
 ;                  array, the primary and secondary monitor indices, and
 ;                  the title bar width.
 ;
-;       SHOW:      Place a small window in each monitor for 5 sec to 
-;                  identify the monitor numbers and which are primary and
-;                  secondary.  In addition, place four small windows in the
-;                  corners of the primary monitor to identify the corner 
-;                  numbers (keyword CORNER).
-;
-;                  Set this keyword to a number N > 5 to display the small
-;                  windows for N seconds.
+;       SHOW:      Place a small window in each monitor to identify the 
+;                  monitor numbers and which are primary and secondary.
+;                  In addition, place four small windows in the corners
+;                  of the primary monitor to identify the corner numbers
+;                  (keyword CORNER).
 ;
 ;       LIST:      List the existing windows and their dimensions.
 ;
@@ -261,8 +258,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-02-03 13:32:18 -0800 (Mon, 03 Feb 2025) $
-; $LastChangedRevision: 33109 $
+; $LastChangedDate: 2025-10-31 14:08:13 -0700 (Fri, 31 Oct 2025) $
+; $LastChangedRevision: 33811 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/win.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -343,15 +340,16 @@ pro win, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full, $
 ; Output the current monitor configuration.
 
   blab = ~keyword_set(silent)
+  show = keyword_set(show) and (!d.name eq 'X')  ; only works in interactive mode
 
-  if (keyword_set(stat) or keyword_set(show)) then begin
+  if (keyword_set(stat) or show) then begin
     if (~windex) then begin
       if (blab) then print,"Win is disabled (acts like window).  Use 'win, /config' to enable."
       config = {enable:0}
       return
     endif
 
-    if keyword_set(show) then begin
+    if (show) then begin
       j = -1
       for i=0,maxmon do begin
         case i of
@@ -375,7 +373,8 @@ pro win, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full, $
       endfor
 
       j = j[1:*]
-      wait, fix(show[0]) > 5
+      msg = ''
+      read, msg, prompt='Press return or enter to continue ... '
       for i=0,(n_elements(j)-1) do wdelete, j[i]
     endif else begin
       if (blab) then print,"Monitor configuration:"

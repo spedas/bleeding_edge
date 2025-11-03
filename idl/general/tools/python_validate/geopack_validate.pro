@@ -88,6 +88,6 @@ varlist=['tha_state_pos_gsm','bt89_tilt','bt89','bt89_igrf',$
   'tst5re_2019_bts04',$
   'tst5re_2014_bts04' ]
   
-;tplot2cdf,filename=cdf_filename,tvars=cdf_varlist,/default_cdf_structure
+;tplot2cdf,filename=filename,tvars=varlist,/default_cdf_structure, /use_tplot_names
 tplot_save,varlist,filename=filename
 end

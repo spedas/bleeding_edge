@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Oct 25 03:17:40 2025.<P>
+<STRONG>Last modified: </STRONG>Sat Nov  1 18:17:06 2025.<P>
  
 <HR>
  
@@ -2002,8 +2002,8 @@ KEYWORDS:
        SILENT:       Shhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-05-23 15:45:10 -0700 (Fri, 23 May 2025) $
- $LastChangedRevision: 33325 $
+ $LastChangedDate: 2025-10-31 13:58:57 -0700 (Fri, 31 Oct 2025) $
+ $LastChangedRevision: 33809 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -2194,15 +2194,15 @@ KEYWORDS:
 
                    Otherwise, all changes are listed.
 
-    TIMEBAR:       Returns a structure with three tags:
+    RESULT:        Returns a structure with three tags:
 
                      time : array of times for configuration changes
                      text : brief descriptions of configuration changes
                      type : types of configuration changes (see above)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-05-23 15:45:39 -0700 (Fri, 23 May 2025) $
- $LastChangedRevision: 33326 $
+ $LastChangedDate: 2025-10-31 13:58:27 -0700 (Fri, 31 Oct 2025) $
+ $LastChangedRevision: 33808 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_config.pro $
 
 CREATED BY:    David L. Mitchell  03-29-13
@@ -3689,8 +3689,60 @@ PURPOSE:
   the first four (0-3) are recognized by flight software.  Sweep
   tables are uploaded to the PFDPU and stored in non-volatile memory
   (survives power cycle).  When SWEA is powered on, the PFDPU tranfers
-  these four tables to the SWEA's volatile memory.  Currently, the
-  four tables are:
+  these four tables to the SWEA's volatile memory.
+
+  Once you set a method or SSCTL timing offset, it remains persistent
+  for subsequent calls.
+
+  SWEA configuration changes:
+
+       i        t_swp[i]              configuration change
+     --------------------------------------------------------------------
+       0    2014-03-19/14:00:00    sweep tables 3 and 4 upload (cruise)
+       1    2014-09-22/00:00:00    sweep tables 5 and 6 upload (MOI)
+       2    2018-08-28/14:02:38    sweep table 8 upload (32-Hz,  50 eV)
+       3    2018-11-09/17:57:56    sweep table 7 upload (32-Hz, 200 eV)
+       4    2022-04-22/00:00:00    sweep table 9 upload (32-Hz, 125 eV)
+     --------------------------------------------------------------------
+
+  2014-09-22 (t_swp[1]) to 2018-08-28 (t_swp[2]):
+
+       LUTNUM   TABNUM     Description
+     -------------------------------------------------------------
+         0         5       nominal ops: 3-4627.5 eV, V0 disabled
+         1         6       nominal ops: 3-4652.5 eV, V0 enabled
+         2         5       backup in case of checksum error
+         3         6       backup in case of checksum error
+     -------------------------------------------------------------
+
+  2018-08-28 (t_swp[2]) to 2018-11-09 (t_swp[3]):
+    There are no longer backups in case of checksum errors.
+    That capability is now disabled in flight software.
+
+       LUTNUM   TABNUM     Description
+     -------------------------------------------------------------
+         0         5       nominal ops: 3-4627.5 eV, V0 disabled
+         1         6       nominal ops: 3-4652.5 eV, V0 enabled
+         2                 unused
+         3         8       hires at 50 eV
+     -------------------------------------------------------------
+
+  2018-11-09 (t_swp[3]) to 2022-04-22 (t_swp[4]):
+    First hires test observation: 2019-01-27
+    Aerobraking begins 2019-02-12
+
+       LUTNUM   TABNUM     Description
+     -------------------------------------------------------------
+         0         5       nominal ops: 3-4627.5 eV, V0 disabled
+         1         6       nominal ops: 3-4652.5 eV, V0 enabled
+         2         7       hires at 200 eV
+         3         8       hires at 50 eV
+     -------------------------------------------------------------
+
+  After 2022-04-22 (t_swp[4]):
+    Note that the V0 table is replaced with a hires table.
+    Upstream/shock/sheath hires observations: 2020-04-30
+    Crustal field observations: 2020-05-27 to 2020-06-01
 
        LUTNUM   TABNUM     Description
      -------------------------------------------------------------
@@ -3700,7 +3752,6 @@ PURPOSE:
          3         8       hires at 50 eV
      -------------------------------------------------------------
 
-  Note that TABNUM 6 (3-4627.5 eV, V0 enabled) is no longer used.
   Table numbers (TABNUM) are defined in ground software.  This routine
   makes the connection between LUTNUM and TABNUM.
 
@@ -3736,7 +3787,7 @@ KEYWORDS:
        FLUX:     Use constant flux at all energy steps to determine if
                  one of the high-cadence tables (7-9) is in use.  If so,
                  then the nearest housekeeping SSCTL value uniquely 
-                 identifies which table is in use.
+                 identifies which table is in use.  Default.
 
        RESULT:   Table number for each SPEC.
 
@@ -3745,8 +3796,8 @@ KEYWORDS:
        DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-08-05 16:50:06 -0700 (Tue, 05 Aug 2025) $
- $LastChangedRevision: 33536 $
+ $LastChangedDate: 2025-10-31 13:57:54 -0700 (Fri, 31 Oct 2025) $
+ $LastChangedRevision: 33807 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_getlut.pro">projects/maven/swea/mvn_swe_getlut.pro</A>)</STRONG><P>
@@ -4217,8 +4268,8 @@ KEYWORDS:
                       to a higher number to see more diagnostic messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-08-06 08:56:11 -0700 (Wed, 06 Aug 2025) $
- $LastChangedRevision: 33540 $
+ $LastChangedDate: 2025-10-31 13:59:29 -0700 (Fri, 31 Oct 2025) $
+ $LastChangedRevision: 33810 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -4792,8 +4843,8 @@ KEYWORDS:
                  of hires data.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-06-19 14:46:22 -0700 (Thu, 19 Jun 2025) $
- $LastChangedRevision: 33394 $
+ $LastChangedDate: 2025-10-31 13:59:29 -0700 (Fri, 31 Oct 2025) $
+ $LastChangedRevision: 33810 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makespec.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14

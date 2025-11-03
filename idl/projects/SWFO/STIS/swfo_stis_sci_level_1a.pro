@@ -25,9 +25,9 @@
 ; Cribsheets that demonstrate Level 1a loading:
 ; - swfo_stis_sci_qflag_crib.pro: quality flag demo
 ;
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-10-17 13:37:17 -0700 (Fri, 17 Oct 2025) $
-; $LastChangedRevision: 33770 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
+; $LastChangedRevision: 33797 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -178,8 +178,8 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
       ;                      1     2    3      4     5      6      7
       ;                     C1    C2   C12    C3    C13    C23   C123
       scale14 = scale6[  [ 0,3,  1,4,  1,4,   2,5,   2,5,   2,5,   2,5    ]                       ]   ; Note :  still need to work on coincident decimation
-      dprint,dlevel=3,'Decimation is on! ',scale6
-      dprint,dlevel=3, scale14
+      dprint,dlevel=4,'Decimation is on! ',scale6
+      dprint,dlevel=4, scale14
       for ch = 0,13 do begin
         d[*,ch]  *= scale14[ch]
       endfor

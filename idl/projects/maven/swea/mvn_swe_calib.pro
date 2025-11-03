@@ -93,8 +93,8 @@
 ;       SILENT:       Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-05-23 15:45:10 -0700 (Fri, 23 May 2025) $
-; $LastChangedRevision: 33325 $
+; $LastChangedDate: 2025-10-31 13:58:57 -0700 (Fri, 31 Oct 2025) $
+; $LastChangedRevision: 33809 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -155,7 +155,7 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
 
 ; Find the first valid LUT
 ;   chksum =   0B means SWEA has just powered on or is using
-;                 sweep table 7 or 8.
+;                 a high-resolution sweep table (7-9)
 ;   chksum = 255B means SWEA is loading tables
 
   ok = 0

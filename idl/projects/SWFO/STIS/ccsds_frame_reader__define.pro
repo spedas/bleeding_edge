@@ -153,7 +153,7 @@ pro ccsds_frame_reader::handle,frame    ; This routine handles a SINGLE ccsds fr
     self.print_info,dlevel=4,frame_headerstr,'  '
     if seqn_delta ne 1 then begin
       ;dprint,'Jump ahead by ' ,seqn_delta,frm_seqn,verbose = self.verbose,dlevel=2,'                    ', frame[-4:*]
-      self.print_info,dlevel=3,frame_headerstr,'Missing'
+      self.print_info,dlevel=3,frame_headerstr,'Missing '+strtrim(seqn_delta)
       frame_headerstr.gap = 1
       cpkt_rdr.source_dict.FIFO = !null
     endif

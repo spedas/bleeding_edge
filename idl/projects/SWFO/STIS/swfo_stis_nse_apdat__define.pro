@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-24 21:23:52 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33794 $
+; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
+; $LastChangedRevision: 33797 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -58,8 +58,8 @@ function swfo_stis_nse_apdat::decom,ccsds,source_dict=source_dict      ;,header,
 
   ; str=create_struct(str3,str5)
 
-  if debug(3) then begin
-    printdat,str
+  if debug(5) then begin
+    dprint,dlevel=5,str
     printdat,time_string(str.time,/local)
   endif
 
@@ -78,7 +78,7 @@ pro swfo_stis_nse_apdat::handler2,strct,source_dict=source_dict
     self.level_1a = dynamicarray(name=self.prefix+'Noise_L1a')
   endif
   da =   self.level_1a
-  strct_1 = swfo_stis_nse_level_1(strct)
+  strct_1 = swfo_stis_nse_level_1(strct)   ;this portio of code is no longer in use i think
   ;printdat,strct
   da.append, strct_1
 end
@@ -87,10 +87,16 @@ end
 
 pro swfo_stis_nse_apdat::sort ,uniq=uniq
 
-  if isa(self.data,'dynamicarray') then self.data.sort,uniq=uniq
-  raw = (*self.data.ptr).raw
-  (*self.data.ptr).histogram = raw - shift(raw,0,1)
-  ;self.process_time = systime(1)
+  if isa(self.data,'dynamicarray') then begin
+    self.data.sort,uniq=uniq
+    raw = (*self.data.ptr).raw
+    time = (*self.data.ptr).time
+    dtime = time - shift(time,1)
+    w = where(dtime lt 0 or dtime gt 290.,/null)
+    dtime[w] = !values.d_nan
+    (*self.data.ptr).histogram = (raw - shift(raw,0,1)) / ( replicate(1,60) # dtime )
+    ;self.process_time = systime(1)
+  endif
 end
 
 

@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33791 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
+; $LastChangedRevision: 33797 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -90,7 +90,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
     options,/def,'*TOTAL14 *RATE14',spec=1,zlog=1,no_interp=1
     options,/def,'*sci_SIGMA14',ylog=1
-    ylim,/def,'*sci_RATE6',.1,5e6,1
+    ylim,/def,'*_RATE6',.5,1e5,1
     options,/def,'*_RATE6',symsize=.2
     options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
@@ -138,9 +138,9 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     ylim,'*nse_SIGMA',.5,4,1
     ylim,'*nse_BASELINE',-3,1
 
-    ylim,'*NOISE_SIGMA',.5,10,1
+    ylim,'*NOISE_SIGMA',.5,20,1
     options,'*NOISE_SIGMA',constant=4
-    ylim,'*NOISE_BASELINE',-3,1
+    ylim,'*NOISE_BASELINE',0,0
 
     ylim,'*VALID_RATES',1,1,1
     ylim,'*REACTION_WHEEL_CURRENT_AMPS',0.05,3,1
@@ -203,6 +203,8 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     'WHEELS1': tplot,add=add,'s*WHEEL_TOR_QUE s*WHEEL_SPEED_RPM s*WHEEL_BUS_CURRENT_AMPS s*IRU_BITS'
     'COM1':  tplot,add=add,'*L1a_RATE6 *L1a_SPEC_?? *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM'
     'COM2':  tplot,add=add,'*L1a_RATE6 *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM'
+    'COM3':  tplot,add=add,   'swfo_stis_' +strsplit( '*L1a_RATE6 *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM',' ',/extract)
+    'SPEC':  tplot,add=add,   'swfo_stis_'+  '*SPEC_??'  ; +strsplit( '*L1a_RATE6 *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM',' ',/extract)
     'WHEEL1':begin
       split_vec,'*WHEEL_SPEED_RPM *WHEEL_CURRENT_AMPS'
       tplot,add=add,'*WHEEL_*_0'
