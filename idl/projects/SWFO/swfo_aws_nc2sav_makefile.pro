@@ -1,10 +1,10 @@
-;$LastChangedBy: ali $
-;$LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
-;$LastChangedRevision: 33791 $
+;$LastChangedBy: davin-mac $
+;$LastChangedDate: 2025-11-04 15:54:10 -0800 (Tue, 04 Nov 2025) $
+;$LastChangedRevision: 33822 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_aws_nc2sav_makefile.pro $
 
 pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,daily=daily,force_make=force_make,$
-  info=info,c2=c2,res=res,make_levels=make_levels,l0b=l0b,l1a=l1a,l1b=l1b
+  info=info,c2=c2,res=res,make_levels=make_levels,l0b=l0b,l1a=l1a,l1b=l1b,user_pass=user_pass
   trange = timerange(trange)
   root=root_data_dir()
   sav_path='swfo/data/sci/aws/.sav/'
@@ -13,7 +13,35 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
   if ~keyword_set(res) then res='' else res='_'+res
   filepath='preplt/SWFO-L1/l0/SWFO'+c2+'/YYYY/MM/YYYYMMDD/'
   filename='OR_SWFO'+c2+'-L0_SL1_sYYYYDOYhh*.nc'
-  source={remote_data_dir:'http://sprg.ssl.berkeley.edu/data/',master_file: 'swfo/.master'}
+  
+  source={remote_data_dir:'http://sprg.ssl.berkeley.edu/data/' $ 
+    ,master_file: 'swfo/.master'}
+    
+  no_update = 0
+  no_download = 0
+  
+  if ~keyword_set(user_pass) then begin
+    log_info = get_login_info()
+    salt = '_a0'
+    user_name = log_info.user_name+salt
+    user_pass = user_name+':'+log_info.machine_name  ; + !version.release
+    pass_word0 = string(format='(i06)', user_pass.hashcode() mod 1000000 )
+    dprint,'User_name: ',user_name
+    dprint,'password:  ',pass_word0
+    user_pass = user_name+ ':' + pass_word0
+    printdat,user_pass
+  endif
+
+  
+  
+  source = {$
+    remote_data_dir:'http://sprg.ssl.berkeley.edu/data/', $
+    master_file:'swfo/.master', $
+    min_age_limit :100,$
+    no_update : no_update ,$
+    no_download :no_download ,$
+    user_pass:  user_pass  }
+   
 
   if keyword_set(daily) then begin
     daysec=86400

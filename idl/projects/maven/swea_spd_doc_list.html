@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov  1 18:17:06 2025.<P>
+<STRONG>Last modified: </STRONG>Fri Nov  7 18:17:52 2025.<P>
  
 <HR>
  
@@ -107,6 +107,8 @@ This page was created by the IDL library routine
 <br>Calculates the SWEA electron suppression constant (Ke).  The correction is
 <LI><A HREF="#MVN_SWE_ETSPEC">MVN_SWE_ETSPEC</A>
 <br>Makes tplot variables with respect to the MAVEN SWEA
+<LI><A HREF="#MVN_SWE_FIXLUT">MVN_SWE_FIXLUT</A>
+<br>Make manual corrections to the LUT by selecting times on a tplot
 <LI><A HREF="#MVN_SWE_FLATFIELD">MVN_SWE_FLATFIELD</A>
 <br>Maintains the angular sensitivity calibration and provides a means to
 <LI><A HREF="#MVN_SWE_FLATFIELD_TEST">MVN_SWE_FLATFIELD_TEST</A>
@@ -3126,7 +3128,7 @@ FILE: mvn_swe_esuppress.pro
 <A NAME="MVN_SWE_ETSPEC">
 <H2>MVN_SWE_ETSPEC</H2></A>
 <A HREF="#MVN_SWE_ESUPPRESS">[Previous Routine]</A>
-<A HREF="#MVN_SWE_FLATFIELD">[Next Routine]</A>
+<A HREF="#MVN_SWE_FIXLUT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: 
@@ -3246,9 +3248,41 @@ MODIFICATION LOG:
 <STRONG>(See <A href="swea/mvn_swe_etspec.pro">projects/maven/swea/mvn_swe_etspec.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_FIXLUT">
+<H2>MVN_SWE_FIXLUT</H2></A>
+<A HREF="#MVN_SWE_ETSPEC">[Previous Routine]</A>
+<A HREF="#MVN_SWE_FLATFIELD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_fixlut
+PURPOSE:
+  Make manual corrections to the LUT by selecting times on a tplot
+  window with the mouse.
+
+USAGE:
+  mvn_swe_fixlut
+
+INPUTS:
+       newlut:   LUT value to assign each selected SPEC.
+
+KEYWORDS:
+       RESULT:   Table number for each SPEC.
+
+       APPLY:    Insert corrected LUT into SWEA data structures and
+                 remake tplot panels.  If not set, then just update
+                 the tplot variable TABNUM.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2025-11-05 13:24:51 -0800 (Wed, 05 Nov 2025) $
+ $LastChangedRevision: 33831 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_fixlut.pro $
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_fixlut.pro">projects/maven/swea/mvn_swe_fixlut.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_FLATFIELD">
 <H2>MVN_SWE_FLATFIELD</H2></A>
-<A HREF="#MVN_SWE_ETSPEC">[Previous Routine]</A>
+<A HREF="#MVN_SWE_FIXLUT">[Previous Routine]</A>
 <A HREF="#MVN_SWE_FLATFIELD_TEST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -3796,8 +3830,8 @@ KEYWORDS:
        DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-10-31 13:57:54 -0700 (Fri, 31 Oct 2025) $
- $LastChangedRevision: 33807 $
+ $LastChangedDate: 2025-11-05 13:23:25 -0800 (Wed, 05 Nov 2025) $
+ $LastChangedRevision: 33830 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_getlut.pro">projects/maven/swea/mvn_swe_getlut.pro</A>)</STRONG><P>

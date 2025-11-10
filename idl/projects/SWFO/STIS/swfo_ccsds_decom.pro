@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-10-27 01:24:49 -0700 (Sun, 27 Oct 2024) $
-; $LastChangedRevision: 32908 $
+; $LastChangedDate: 2025-11-05 11:25:58 -0800 (Wed, 05 Nov 2025) $
+; $LastChangedRevision: 33829 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_decom.pro $
 
 ;
@@ -16,7 +16,7 @@ function swfo_ccsds_decom_mettime,header,apid,day=day,millisec=millisec,microsec
   if apid lt '350'x then begin ;spacecraft packets
     day = ((header[6]*256UL+header[7]))
     millisec = ((header[8]*256UL+header[9])*256+header[10])*256+header[11]
-    microsec = header[12] *256u + header[13]    
+    microsec = header[12] *256u + header[13]
   endif else begin ;instrument packets
     if header[6] ne 0 then begin
       dprint,'Time out of range, header[6]= ',header[6],dwait=2.
@@ -46,7 +46,8 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
   d_nan = !values.d_nan
   f_nan = !values.f_nan
 
-  ccsds = { swfo_ccsds_format, $
+  ccsds = { $
+    ;    swfo_ccsds_format, $
     time:         d_nan,  $             ; unixtime
     MET:          d_nan,  $
     GRtime:       d_nan,  $
@@ -61,14 +62,19 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
     microsec:     0u,   $
     source_apid:  0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
     source_hash:  0UL,  $               ; hashcode() of source_name
-    compr_ratio:  0. , $
+    file_hash:    0UL,  $               ; hashcode() of file source
+    vcid:         0b,  $
+    vcid_seqn:    0ul,  $
+    replay:       0b,  $
+    ; compr_ratio:  0. , $
     aggregate:    0u,  $                ; number of data samples aggregated - determined from outer wrapper header
     time_delta :  d_nan, $
-    ptp_time:     d_nan,  $             ; unixtime from ptp packet
+    ;  ptp_time:     d_nan,  $             ; unixtime from ptp packet
     error :       0b, $
     version :     0b , $   ; this could be eliminated since it is useless
-    pdata:        ptr_new(),  $         ; pointer to full packet data including header
-    content_compressed:   0b, $
+    data:  bytarr(8192) , $     ; Largest size allowed for SWFO
+    ;  pdata:        ptr_new(),  $         ; pointer to full packet data including header
+    ;  content_compressed:   0b, $
     ;counter:      0ul,    $             ; packet counter as received - future use
     ;proc_time:    d_nan,  $             ; unixtime when it was processed
     ;source_name:  ''   ,  $             ; file name of source
@@ -100,12 +106,24 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
   ccsds.microsec = microsec
   ccsds.time = swfo_spc_met_to_unixtime(ccsds.MET)
 
-  if isa(source_dict) && source_dict.haskey('parent_dict') then begin
-    grtime = source_dict.parent_dict.headerstr.time
-    ;printdat,time_string(grtime)
-    ;printdat,ccsds
-    ccsds.grtime = GRtime
-    ccsds.delaytime = grtime- ccsds.time
+  if isa(source_dict) then begin
+    if  source_dict.haskey('frame_headerstr') then begin
+      frame_headerstr = source_dict.frame_headerstr
+      ccsds.vcid = frame_headerstr.vcid
+      ccsds.vcid_seqn = frame_headerstr.seqn
+      ccsds.replay = frame_headerstr.replay
+      ccsds.file_hash = frame_headerstr.file_hash
+      ccsds.grtime  = frame_headerstr.time
+      ccsds.delaytime = frame_headerstr.time - ccsds.time
+    endif
+    if  source_dict.haskey('parent_dict') then begin   ; old version - should not be needed
+      dprint,'old version',dlevel=2
+      grtime = source_dict.parent_dict.headerstr.time
+      ;printdat,time_string(grtime)
+      ;printdat,ccsds
+      ccsds.grtime = GRtime
+      ccsds.delaytime = grtime- ccsds.time
+    endif
   endif
 
   ccsds.pkt_size = header[2] + 7
@@ -128,7 +146,8 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
       dprint,'buffer and CCSDS size mismatch',dlevel=3
     endif
     pktbuffer = buffer[offset+0:offset+ccsds.pkt_size-1]
-    ccsds.pdata = ptr_new(pktbuffer,/no_copy)
+    ccsds.data[0:ccsds.pkt_size-1] = pktbuffer
+    ;    ccsds.pdata = ptr_new(pktbuffer,/no_copy)
   endelse
 
   ccsds.seqn_group =  ishft(header[1] ,-14)
@@ -161,7 +180,7 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
       endif else begin
         source_dict.ptp_header2 ={ ptp_time:systime(1), ptp_scid: 0, ptp_source:0, ptp_spare:0, ptp_path:0, ptp_size: 17 + ccsds.pkt_size }
       endelse
-      
+
     endif
 
   endif

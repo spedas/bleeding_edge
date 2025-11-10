@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
-; $LastChangedRevision: 33797 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2025-11-05 15:50:37 -0800 (Wed, 05 Nov 2025) $
+; $LastChangedRevision: 33832 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -77,7 +77,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     store_data,'swfo_stis_hkp2_RATES_ALL',data=tnames('*hkp2*RATES'),dlim={yrange:[1,7e5],ylog:1}
     store_data,'swfo_SEQN_DELTAS',data='swfo_*_SEQN_DELTA',dlim={ylog:1}
     store_data,'swfo_DELAYTIMES',data='swfo_*_DELAYTIME'
-    options,/def,'*_BITS *USER_0A',tplot_routine='bitplot',psyms=1
+    options,/def,'*_BITS',tplot_routine='bitplot',psyms=1
     options,/def,'*nse_HISTOGRAM *NOISE_HISTOGRAM',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
     options,/def,'*memdump_DATA',spec=1
     options,/def,'*sci_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
@@ -121,6 +121,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*_REACTION_WHEEL_*',colors='bgrk',labels=['1','2','3','4'],labflag=1,numbits=4,constant=0
     options,/def,'*swfo_sc_100_REACTION_WHEEL_OVERSPEED_FAULT_BITS',colors='krgb',labels=reverse(['O1','O2','O3','O4','F1','F2','F3','F4']),numbits=8
     options,/def,'*IRU_BITS',negate='111111'b,labels=reverse(['Misalignment Bypass','Memory Effect Error','X Health','Y Health','Z Health','X Valid','Y Valid','Z Valid']),colors='rgbrgbmc'
+    options,/def,'*ATTITUDE_RATE_ERROR_BITS',numbits=4,colors='bgrk',labels=reverse(['Attitude Error Detected','Rate Error Detected','Attitude Error Persistence Fault (latched)','Rate Error Persistence Fault (latched)'])
     options,/def,'*swfo_sc_100_FSW_POWER_MANAGEMENT_BITS',colors='rgb',labels=reverse(['Battery OverTemp Enable','OverVoltage Enable','UnderVoltage Enable','Battery OverTemp Latched','Overvoltage Latched','UnderVoltage Latched']),numbits=6
     options,/def,'*swfo_sc_120_SUBSYSTEM_*',numbits=6,labels=reverse(['Gimbal Control Electronics','S-Band Transmitter','TWTA','X-Band Modulator','Star Tracker Electronics','IRU']),colors='rgbkmc',labflag=1
     options,/def,'*swfo_sc_120_????_POWER_BITS',numbits=5,labels=reverse(['Power','OC Trip','OC Enable','SH Power','SH OC Trip']),colors=[0,1,2,6]

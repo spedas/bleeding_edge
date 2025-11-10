@@ -16,7 +16,7 @@
 ;         time_var: name of the time variable
 ;                   default is 'time'
 ;         time_offset: time offset in miliseconds
-;                   default is time_double('2000-01-01/12:00:00.000')
+;                   default is 0.0 ('1970-01-01/00:00:00.000')
 ;
 ; Notes:
 ;     This format is used by GOES 16 and 17 and reprocessed files for GOES 8-15.
@@ -26,8 +26,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2024-06-08 13:38:44 -0700 (Sat, 08 Jun 2024) $
-; $LastChangedRevision: 32690 $
+; $LastChangedDate: 2025-11-07 11:02:21 -0800 (Fri, 07 Nov 2025) $
+; $LastChangedRevision: 33840 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf2tplot.pro $
 ;-
 

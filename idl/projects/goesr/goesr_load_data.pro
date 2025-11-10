@@ -4,13 +4,15 @@
 ;
 ; Purpose:
 ;     Loads data from GOES-R satelites (GOES-16, GOES-17, GOES-18, GOES-19)
-;     or from reprocessed data from earlier satelites (GOES 8-15).
+;     or reprocessed data from earlier satelites (GOES 8-15): hires mag and xrs.
 ;
 ; Keywords:
 ;     trange:       Time range of interest
 ;     datatype:     Type of GOES-R data to be loaded. Valid data types are:
 ;                     'mag': Magnetometer (default: 1 min, 'hires': 0.1 sec)
+;                            For GOES 8-15, only hires is available.
 ;                     'xrs': EXIS X-Ray Sensor (default: 1 min, 'hires': 1 sec);
+;                            For GOES 8-15, both hires and 1 min avg are available.
 ;                     'mpsh': Magnetospheric Electrons and Protons, Medium and High Energy (MPSH)
 ;                             (default: 5 min, hires: 1 min)
 ;                     'sgps': Solar and Galactic Proton Sensors (SGPS)
@@ -28,11 +30,13 @@
 ;
 ; Notes:
 ;     NOAA Site:  https://www.ngdc.noaa.gov/stp/satellite/goes-r.html
-;     data:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/
+;     data GOES 16-19:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/ 
+;     reprocessed data GOES 8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
+; 
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2025-08-27 12:00:07 -0700 (Wed, 27 Aug 2025) $
-; $LastChangedRevision: 33581 $
+; $LastChangedDate: 2025-11-07 11:03:20 -0800 (Fri, 07 Nov 2025) $
+; $LastChangedRevision: 33841 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 ;-
 
@@ -275,12 +279,22 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
     sc = 'goes' + goesp
     sc0 = 'g' + goesp
     prefix = sc + '_'
+    
+    if goesp ge 16 then begin
+      ; For GOES 16-19
+      ; https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
+      remote_path = !goesr.remote_data_dir  
+    endif else begin
+      ; For GOES 8-15
+      remote_path = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/'
+    endelse
+    
 
     case datatype of
       'mag': begin
         ; Magnetometer
         if goesp ge 16 then begin
-          ; GOES 16, 17
+          ; GOES 16, 18, 19
           ; Lowres is 1 min. Hires is 0.1 second, large files (>180MB).
           res0='avg1m'
           if resolution eq 'hires' then begin
@@ -289,17 +303,12 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           lr = level + '-' + res0
           pathformat = sc + '/' + level + '/data/magn-' + lr + '/YYYY/MM/dn_magn-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc'
         endif else begin
-          ; GOES 8-15: only high resolution is available (Dec 2020)
-          if resolution eq 'hires' then begin
-            remote_path = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/'
+          ; GOES 8-15: only high resolution is available (Nov 2025)
+          
             res0 = 'hires'
             lr = level + '-' + res0
             pathformat = 'mag/' + sc + '/magn-'+ lr +'/YYYY/MM/dn_magn-' + lr + '_' + sc0 +'_dYYYYMMDD_v?_?_?.nc'
-          endif else begin
-            msg = 'For GOES 8-15 only high resolution MAG data exists. Use \hires keyword.'
-            dprint, dlevel=1, 'Error: ', msg
-            return
-          endelse
+          
         endelse
       end
       'xrs': begin
@@ -318,10 +327,8 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           ; Hires is 2-sec fluxes. Lowres is 1-min averages (default).
           if resolution eq 'hires' then begin
             res0='irrad'
-            time_offset = time_double('1970-01-01/00:00:00.000')
           endif else res0='avg1m'
           lr = level + '-' + res0 + '_'
-          remote_path = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/'
           if resolution eq 'hires' then begin
             pathformat = 'xrs/' + sc + '/gxrs-'+ lr +'science/YYYY/MM/sci_gxrs-' + lr + sc0 +'_dYYYYMMDD_v?-?-?.nc
           endif else begin

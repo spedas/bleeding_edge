@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov  1 18:17:06 2025.<P>
+<STRONG>Last modified: </STRONG>Fri Nov  7 18:17:52 2025.<P>
  
 <HR>
  
@@ -90,13 +90,15 @@ This page was created by the IDL library routine
 
  Purpose:
      Loads data from GOES-R satelites (GOES-16, GOES-17, GOES-18, GOES-19)
-     or from reprocessed data from earlier satelites (GOES 8-15).
+     or reprocessed data from earlier satelites (GOES 8-15): hires mag and xrs.
 
  Keywords:
      trange:       Time range of interest
      datatype:     Type of GOES-R data to be loaded. Valid data types are:
                      'mag': Magnetometer (default: 1 min, 'hires': 0.1 sec)
+                            For GOES 8-15, only hires is available.
                      'xrs': EXIS X-Ray Sensor (default: 1 min, 'hires': 1 sec);
+                            For GOES 8-15, both hires and 1 min avg are available.
                      'mpsh': Magnetospheric Electrons and Protons, Medium and High Energy (MPSH)
                              (default: 5 min, hires: 1 min)
                      'sgps': Solar and Galactic Proton Sensors (SGPS)
@@ -114,11 +116,13 @@ This page was created by the IDL library routine
 
  Notes:
      NOAA Site:  https://www.ngdc.noaa.gov/stp/satellite/goes-r.html
-     data:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/goes16/l2/data/
+     data GOES 16-19:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/ 
+     reprocessed data GOES 8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
+ 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2025-08-27 12:00:07 -0700 (Wed, 27 Aug 2025) $
- $LastChangedRevision: 33581 $
+ $LastChangedDate: 2025-11-07 11:03:20 -0800 (Fri, 07 Nov 2025) $
+ $LastChangedRevision: 33841 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 </PRE><P>
 <STRONG>(See <A href="goesr/goesr_load_data.pro">projects/goesr/goesr_load_data.pro</A>)</STRONG><P>

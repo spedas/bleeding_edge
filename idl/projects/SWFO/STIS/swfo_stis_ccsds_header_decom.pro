@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-03-23 18:07:39 -0700 (Sun, 23 Mar 2025) $
-; $LastChangedRevision: 33198 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-11-05 10:13:48 -0800 (Wed, 05 Nov 2025) $
+; $LastChangedRevision: 33828 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_ccsds_header_decom.pro $
 
 
@@ -17,6 +17,11 @@ function swfo_stis_ccsds_header_decom,ccsds
     seqn:ccsds.seqn,$
     seqn_delta:ccsds.seqn_delta,$
     packet_size:ccsds.pkt_size,$
+    vcid: ccsds.vcid, $
+    vcid_seqn: ccsds.vcid_seqn, $
+    file_hash: ccsds.file_hash, $
+    replay:    ccsds.replay , $
+
     tod_day:                swfo_data_select(ccsds_data,(6) *8,  24),$
     tod_millisec:           swfo_data_select(ccsds_data,(9) *8,  32),$
     tod_microsec:           swfo_data_select(ccsds_data,(13)*8,  16),$

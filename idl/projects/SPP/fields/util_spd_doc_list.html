@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov  1 18:17:06 2025.<P>
+<STRONG>Last modified: </STRONG>Fri Nov  7 18:17:52 2025.<P>
  
 <HR>
  
@@ -19,17 +19,25 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/SPP/fields/util</H1>
+<LI><A HREF="#PSP_FLD_IDENTIFY_ENCOUNTER">PSP_FLD_IDENTIFY_ENCOUNTER</A>
+<LI><A HREF="#PSP_FLD_MOST_RECENT_MDE">PSP_FLD_MOST_RECENT_MDE</A>
 <LI><A HREF="#PSP_FLD_PCLOSE">PSP_FLD_PCLOSE</A>
 <LI><A HREF="#PSP_FLD_POPEN">PSP_FLD_POPEN</A>
+<LI><A HREF="#PSP_FLD_READ_MDE_FILE">PSP_FLD_READ_MDE_FILE</A>
+<LI><A HREF="#PSP_FLD_TIMESPAN">PSP_FLD_TIMESPAN</A>
 <LI><A HREF="#PSP_FLD_TPLOT_ABC">PSP_FLD_TPLOT_ABC</A>
 <LI><A HREF="#PSP_FLD_TPLOT_PDF">PSP_FLD_TPLOT_PDF</A>
 <LI><A HREF="#PSP_FLD_TPLOT_TICKSOUT">PSP_FLD_TPLOT_TICKSOUT</A>
 <LI><A HREF="#READ_XML8">READ_XML8</A>
 <br>READ an XML document file into IDL (Interactive Data Language, ITT).
+<LI><A HREF="#SPP_FLD_IDENTIFY_ENCOUNTER">SPP_FLD_IDENTIFY_ENCOUNTER</A>
 <LI><A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">SPP_FLD_MAKE_OR_RETRIEVE_CDF</A>
+<LI><A HREF="#SPP_FLD_MOST_RECENT_MDE">SPP_FLD_MOST_RECENT_MDE</A>
+<LI><A HREF="#SPP_FLD_READ_MDE_FILE">SPP_FLD_READ_MDE_FILE</A>
 <LI><A HREF="#[1]">[1]</A>
 <LI><A HREF="#SPP_FLD_STATUSPLOT">SPP_FLD_STATUSPLOT</A>
 <br>Procedure used to display status bars on a TPLOT.
+<LI><A HREF="#SPP_FLD_TIMESPAN">SPP_FLD_TIMESPAN</A>
 <LI><A HREF="#STR_CLEAN">STR_CLEAN</A>
 <br>To remove all unprintable characters from the given string
 <LI><A HREF="#XML2IDL8">XML2IDL8</A>
@@ -39,8 +47,42 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="PSP_FLD_IDENTIFY_ENCOUNTER">
+<H2>PSP_FLD_IDENTIFY_ENCOUNTER</H2></A>
+<A HREF="#PSP_FLD_MOST_RECENT_MDE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Wrapper for spp_fld_identify_encounter.pro
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_identify_encounter.pro $
+</PRE><P>
+<STRONG>(See <A href="util/psp_fld_identify_encounter.pro">projects/SPP/fields/util/psp_fld_identify_encounter.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="PSP_FLD_MOST_RECENT_MDE">
+<H2>PSP_FLD_MOST_RECENT_MDE</H2></A>
+<A HREF="#PSP_FLD_IDENTIFY_ENCOUNTER">[Previous Routine]</A>
+<A HREF="#PSP_FLD_PCLOSE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Wrapper for spp_fld_most_recent_mde.pro
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_most_recent_mde.pro $
+</PRE><P>
+<STRONG>(See <A href="util/psp_fld_most_recent_mde.pro">projects/SPP/fields/util/psp_fld_most_recent_mde.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="PSP_FLD_PCLOSE">
 <H2>PSP_FLD_PCLOSE</H2></A>
+<A HREF="#PSP_FLD_MOST_RECENT_MDE">[Previous Routine]</A>
 <A HREF="#PSP_FLD_POPEN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -80,7 +122,7 @@ This page was created by the IDL library routine
 <A NAME="PSP_FLD_POPEN">
 <H2>PSP_FLD_POPEN</H2></A>
 <A HREF="#PSP_FLD_PCLOSE">[Previous Routine]</A>
-<A HREF="#PSP_FLD_TPLOT_ABC">[Next Routine]</A>
+<A HREF="#PSP_FLD_READ_MDE_FILE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  psp_fld_popen
@@ -114,9 +156,43 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="util/psp_fld_popen.pro">projects/SPP/fields/util/psp_fld_popen.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="PSP_FLD_READ_MDE_FILE">
+<H2>PSP_FLD_READ_MDE_FILE</H2></A>
+<A HREF="#PSP_FLD_POPEN">[Previous Routine]</A>
+<A HREF="#PSP_FLD_TIMESPAN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Wrapper for spp_fld_identify_encounter.pro
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_read_mde_file.pro $
+</PRE><P>
+<STRONG>(See <A href="util/psp_fld_read_mde_file.pro">projects/SPP/fields/util/psp_fld_read_mde_file.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="PSP_FLD_TIMESPAN">
+<H2>PSP_FLD_TIMESPAN</H2></A>
+<A HREF="#PSP_FLD_READ_MDE_FILE">[Previous Routine]</A>
+<A HREF="#PSP_FLD_TPLOT_ABC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Wrapper for spp_fld_timespan.pro
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_timespan.pro $
+</PRE><P>
+<STRONG>(See <A href="util/psp_fld_timespan.pro">projects/SPP/fields/util/psp_fld_timespan.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="PSP_FLD_TPLOT_ABC">
 <H2>PSP_FLD_TPLOT_ABC</H2></A>
-<A HREF="#PSP_FLD_POPEN">[Previous Routine]</A>
+<A HREF="#PSP_FLD_TIMESPAN">[Previous Routine]</A>
 <A HREF="#PSP_FLD_TPLOT_PDF">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -176,7 +252,7 @@ This page was created by the IDL library routine
 <A NAME="READ_XML8">
 <H2>READ_XML8</H2></A>
 <A HREF="#PSP_FLD_TPLOT_TICKSOUT">[Previous Routine]</A>
-<A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">[Next Routine]</A>
+<A HREF="#SPP_FLD_IDENTIFY_ENCOUNTER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -239,10 +315,30 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="util/read_xml8.pro">projects/SPP/fields/util/read_xml8.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_FLD_IDENTIFY_ENCOUNTER">
+<H2>SPP_FLD_IDENTIFY_ENCOUNTER</H2></A>
+<A HREF="#READ_XML8">[Previous Routine]</A>
+<A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ spp_fld_identify_encounter
+
+ short function to identify the encounter number given a time value
+ returns -1 if time is not in any encounter
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_identify_encounter.pro $
+</PRE><P>
+<STRONG>(See <A href="util/spp_fld_identify_encounter.pro">projects/SPP/fields/util/spp_fld_identify_encounter.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPP_FLD_MAKE_OR_RETRIEVE_CDF">
 <H2>SPP_FLD_MAKE_OR_RETRIEVE_CDF</H2></A>
-<A HREF="#READ_XML8">[Previous Routine]</A>
-<A HREF="#SPP_FLD_STATUSPLOT">[Next Routine]</A>
+<A HREF="#SPP_FLD_IDENTIFY_ENCOUNTER">[Previous Routine]</A>
+<A HREF="#SPP_FLD_MOST_RECENT_MDE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -260,10 +356,46 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="util/spp_fld_make_or_retrieve_cdf.pro">projects/SPP/fields/util/spp_fld_make_or_retrieve_cdf.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_FLD_MOST_RECENT_MDE">
+<H2>SPP_FLD_MOST_RECENT_MDE</H2></A>
+<A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">[Previous Routine]</A>
+<A HREF="#SPP_FLD_READ_MDE_FILE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ spp_fld_most_recent_mde
+
+ short functon to find the most recent MDE file available
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_most_recent_mde.pro $
+</PRE><P>
+<STRONG>(See <A href="util/spp_fld_most_recent_mde.pro">projects/SPP/fields/util/spp_fld_most_recent_mde.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPP_FLD_READ_MDE_FILE">
+<H2>SPP_FLD_READ_MDE_FILE</H2></A>
+<A HREF="#SPP_FLD_MOST_RECENT_MDE">[Previous Routine]</A>
+<A HREF="#SPP_FLD_STATUSPLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Load MDE file for PSP into an IDL hash
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_read_mde_file.pro $
+</PRE><P>
+<STRONG>(See <A href="util/spp_fld_read_mde_file.pro">projects/SPP/fields/util/spp_fld_read_mde_file.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPP_FLD_STATUSPLOT">
 <H2>SPP_FLD_STATUSPLOT</H2></A>
-<A HREF="#SPP_FLD_MAKE_OR_RETRIEVE_CDF">[Previous Routine]</A>
-<A HREF="#STR_CLEAN">[Next Routine]</A>
+<A HREF="#SPP_FLD_READ_MDE_FILE">[Previous Routine]</A>
+<A HREF="#SPP_FLD_TIMESPAN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -306,9 +438,52 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="util/spp_fld_statusplot.pro">projects/SPP/fields/util/spp_fld_statusplot.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPP_FLD_TIMESPAN">
+<H2>SPP_FLD_TIMESPAN</H2></A>
+<A HREF="#SPP_FLD_STATUSPLOT">[Previous Routine]</A>
+<A HREF="#STR_CLEAN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+ Timespan for Orbit 1:
+
+   spp_fld_timespan, 1
+
+ Timespan for Encounter 1:
+
+   spp_fld_timespan, 1, /encounter
+
+ Timespan for Perihelion 1 +/- 1 week:
+
+   spp_fld_timespan, 1, days = 7
+
+ Timespan for Perihelion 1 + 1 week (asymmetric):
+
+   spp_fld_timespan, 1, days = [0,7]
+
+ Timespan for Orbits 1 through 3 (note that days and encounter don't work
+ with this input type for the 'orbit' parameter:
+
+   spp_fld_timespan, [1,3]
+
+ Timespan for Venus flyby (note that here, the input parameter is the
+ Venus flyby number, not the orbit. The reference time is time of Venus
+ close approach, and days is time plus/minus closest approach. Default
+ is +/- 1 day):
+
+   spp_fld_timespan, 1, /venus
+
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
+ $LastChangedRevision: 33821 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_timespan.pro $
+</PRE><P>
+<STRONG>(See <A href="util/spp_fld_timespan.pro">projects/SPP/fields/util/spp_fld_timespan.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="STR_CLEAN">
 <H2>STR_CLEAN</H2></A>
-<A HREF="#SPP_FLD_STATUSPLOT">[Previous Routine]</A>
+<A HREF="#SPP_FLD_TIMESPAN">[Previous Routine]</A>
 <A HREF="#XML2IDL8">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

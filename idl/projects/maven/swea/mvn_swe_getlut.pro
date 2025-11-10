@@ -150,8 +150,8 @@
 ;       DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-10-31 13:57:54 -0700 (Fri, 31 Oct 2025) $
-; $LastChangedRevision: 33807 $
+; $LastChangedDate: 2025-11-05 13:23:25 -0800 (Wed, 05 Nov 2025) $
+; $LastChangedRevision: 33830 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 ;-
 pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux, diag=diag, tplot=tplot, $
@@ -167,19 +167,24 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
   endif
 
   if (n_elements(dt_lut) gt 0) then dtl = double(dt_lut[0])
-  if (n_elements(flux) gt 0) then fflg = keyword_set(flux)
-  if (n_elements(volt) gt 0) then vflg = keyword_set(volt)
-  if (vflg) then fflg = 0  ; disable flux method when volt method is requested
+  if (n_elements(volt) gt 0) then begin
+    vflg = keyword_set(volt)
+    if (vflg) then fflg = 0
+  endif
+  if (n_elements(flux) gt 0) then begin
+    fflg = keyword_set(flux)
+    if (fflg) then vflg = 0
+  endif
 
   case n_elements(dv) of
-     0   : dv_max = [0.7, 1.5, 2.0]
+     0   : dv_max = [0.7, 1.5, 2.0]  ; 50, 125, 200 eV
      1   : dv_max = [dv, 1.5, 2.0]
      2   : dv_max = [dv, 2.0]
     else : dv_max = dv[0:2]
   endcase
   dv_max = abs(dv_max)
   case n_elements(vmean) of
-     0   : vmean = [ 8.23, 20.52, 32.50]
+     0   : vmean = [ 8.23, 20.52, 32.50]  ; 50, 125, 200 eV
      1   : vmean = [vmean, 20.52, 32.50]
      2   : vmean = [vmean, 32.50]
     else : vmean = vmean[0:2]
@@ -202,6 +207,9 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
   nhsk = n_elements(swe_hsk)
   lutnum = swe_hsk.ssctl                         ; value from 0 to 3
 
+  dt_hsk = swe_hsk.time - shift(swe_hsk.time,1)
+  dt_hsk[0] = dt_hsk[1]
+
 ; Initialize with nominal sweep table (used almost all the time)
 
   tabnum = replicate(5B,nhsk)                    ; MOI and beyond
@@ -209,6 +217,39 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
   if (count gt 0L) then tabnum[indx] = 3B        ; Cruise phase
   indx = where(swe_hsk.time lt t_swp[0], count)
   if (count gt 0L) then tabnum[indx] = 1B        ; Initial turn-on
+
+; Get SPEC timing (see mvn_swe_makespec)
+
+  npkt = n_elements(a4)            ; number of SPEC packets
+  npts = 16L*npkt                  ; 16 spectra per packet
+  tspec = replicate(0D, npts)      ; center time for each SPEC
+  lspec = replicate(0B, npts)      ; tabnum for each SPEC
+
+  for i=0L,(npkt-1L) do begin
+    delta_t = swe_dt[a4[i].period]*dindgen(16) + (1.95D/2D)  ; center time offset (sample mode)
+    if (a4[i].smode) then delta_t += (2D^a4[i].period - 1D)  ; center time offset (sum mode)
+    j = i*16L
+    tspec[j:(j+15L)] = a4[i].time + delta_t
+  endfor
+
+  dt_mode = swe_dt[a4.period]*16D        ; nominal time interval between packets
+  dt_pkt = a4.time - shift(a4.time,1)    ; actual time interval between packets
+  dt_pkt[0] = dt_pkt[1]
+  dn_pkt = a4.npkt - shift(a4.npkt,1)    ; look for data gaps
+  dn_pkt[0] = 1B
+  j = where((abs(dt_pkt - dt_mode) gt 0.5D) and (dn_pkt eq 1B), count)
+  for i=0,(count-1) do begin
+    dt1 = dt_mode[(j[i] - 1L) > 0L]/16D  ; cadence before mode change
+    dt2 = dt_mode[j[i]]/16D              ; cadence after mode change
+    if (abs(dt1 - dt2) gt 0.5D) then begin
+      m = 16L*((j[i] - 1L) > 0L)
+      n = round((dt_pkt[j[i]] - 16D*dt2)/(dt1 - dt2)) + 1L
+      if ((n gt 0) and (n lt 16)) then begin
+        dt_fix = (dt2 - dt1)*(dindgen(16-n) + 1D)
+        tspec[(m+n):(m+15L)] += dt_fix
+      endif
+    endif
+  endfor
 
 ; Identify table load during turn-on, when active LUT is set to 7
 ; (Only tables 0-3 are recognized by the PFDPU.)
@@ -251,19 +292,19 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
     print,"MVN_SWE_GETLUT%  Using analyzer voltage method for hires tables."
     indx = where(lutnum eq 2 or lutnum eq 3, count)
     if (count gt 0L) then begin
-      indx = where(abs(swe_hsk.analv - 8.13) lt dv_max[0], count)
+      indx = where(abs(swe_hsk.analv - vmean[0]) lt dv_max[0], count)
       if (count gt 0L) then tabnum[indx] = 8B  ; hires @ 50 eV
-      indx = where(abs(swe_hsk.analv - 32.5) lt dv_max[1], count)
+      indx = where(abs(swe_hsk.analv - vmean[2]) lt dv_max[2], count)
       if (count gt 0L) then tabnum[indx] = 7B  ; hires @ 200 eV
     endif
-    indx = where(lutnum eq 1 and swe_hsk.time gt t_swp[4], count)
+    indx = where((lutnum eq 1) and (swe_hsk.time gt t_swp[4]), count)
     if (count gt 0L) then begin
-      indx = where(abs(swe_hsk.analv - 20.2) lt dv_max[1], count)
+      indx = where(abs(swe_hsk.analv - vmean[1]) lt dv_max[1], count)
       if (count gt 0L) then tabnum[indx] = 9B  ; hires @ 125 eV
     endif
     gotlut = 1
   endif else begin
-    indx = where(lutnum eq 1 and swe_hsk.time gt t_swp[4], count)
+    indx = where((lutnum eq 1) and (swe_hsk.time gt t_swp[4]), count)
     if (count gt 0L) then tabnum[indx] = 9B  ; hires @ 125 eV
     indx = where(lutnum eq 2, count)
     if (count gt 0L) then tabnum[indx] = 7B  ; hires @ 200 eV
@@ -271,39 +312,54 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
     if (count gt 0L) then tabnum[indx] = 8B  ; hires @ 50 eV
   endelse
 
-  if keyword_set(diag) then begin
-    store_data,'dv50',data={x:swe_hsk.time, y:abs(swe_hsk.analv - 8.13)}
+  if (vflg and keyword_set(diag)) then begin
+    store_data,'dv50',data={x:swe_hsk.time, y:abs(swe_hsk.analv - vmean[0])}
     options,'dv50','psym',10
     options,'dv50','constant',dv_max[0]
     ylim,'dv50',0,2.*dv_max[0]
 
-    store_data,'dv125',data={x:swe_hsk.time, y:abs(swe_hsk.analv - 20.2)}
+    store_data,'dv125',data={x:swe_hsk.time, y:abs(swe_hsk.analv - vmean[1])}
     options,'dv125','psym',10
-    options,'dv125','constant',dv_max[2]
-    ylim,'dv125',0,2.*dv_max[2]
+    options,'dv125','constant',dv_max[1]
+    ylim,'dv125',0,2.*dv_max[1]
 
-    store_data,'dv200',data={x:swe_hsk.time, y:abs(swe_hsk.analv - 32.5)}
+    store_data,'dv200',data={x:swe_hsk.time, y:abs(swe_hsk.analv - vmean[2])}
     options,'dv200','psym',10
-    options,'dv200','constant',dv_max[1]
-    ylim,'dv200',0,2.*dv_max[1]
+    options,'dv200','constant',dv_max[2]
+    ylim,'dv200',0,2.*dv_max[2]
   endif
 
-; Use flat spectral shape to identify tables 7-9.  This doesn't work in
-; superthermal electron voids, where the signal is close to background
-; at all energies.  It can also get confused when there are real flux
-; variations within the 2-second measurement interval (as in the sheath).
-
-; Maybe try 7 eV as an even lower energy???
+; Use flat spectral shape to identify tables 7-9.  To identify flat spectra,
+; compare the counts above 1400 eV to the counts below 20 eV.  (The low-energy
+; anomaly is irrelevant for this comparison.)  If the counts in both energy
+; ranges are above background and the ratio is above a certain threshold (to
+; allow for real flux variations) then a hires table is in use.  This will 
+; work unless there are large, rapid flux variations.  Also, if the counts 
+; below 20 eV are near background, then a hires table is being used inside a
+; suprathermal electron void.  (Note that these voids correspond to closed
+; crustal magnetic loops with both footpoints on the night hemisphere.  In this
+; case, there will be a residual electron population below 10 eV that is well
+; above background, while the >1400-eV signal is at background.)
 
   if (fflg) then begin
     mvn_swe_sweep, tab=5, result=swp
     hndx = where(swp.e gt 1400.)
-    lndx = where((swp.e gt 30.) and (swp.e lt 100.))
+    lndx = where(swp.e lt 20.)
     print,"MVN_SWE_GETLUT%  Using constant flux method for hires tables."
     cnts = reform(a4.data, 64L, 16L*n_elements(a4))
-    loav = mean(cnts[lndx,*],dim=1,/nan)  ; low-energy average
-    hiav = mean((cnts[hndx,*] > 1e-6),dim=1,/nan)  ; high-energy average
-    i7_9 = where(((hiav/loav) gt 0.1) and (loav gt 10.), n7_9, comp=i1_5, ncomp=n1_5)
+    loav = mean((cnts[lndx,*]),dim=1,/nan)  ; low-energy average
+    hiav = mean((cnts[hndx,*]),dim=1,/nan)  ; high-energy average
+    cratio = hiav/loav
+
+    hndx = where(((lutnum eq 1) and (swe_hsk.time gt t_swp[4])) or (lutnum eq 2) or (lutnum eq 3), count)
+    if (count gt 0L) then begin
+      indx = nn2(swe_hsk[hndx].time, tspec)
+      dt_v = abs(swe_hsk[hndx[indx]].time - tspec)
+      inrange = abs(swe_hsk[hndx[indx]].time - tspec) lt 1.25*min(dt_hsk)  ; hires data is near hires hsk
+    endif else inrange = 0
+
+    i7_9 = where((((cratio gt 0.1) and (hiav ge 0.5) and (loav ge 0.5)) or $
+                  (loav lt 1.0)) and inrange, n7_9, comp=i1_5, ncomp=n1_5)
     gotlut = 1
   endif
 
@@ -317,38 +373,43 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
     endif
   endif
 
-; Get SPEC timing (see mvn_swe_makespec)
+  if (fflg and keyword_set(diag)) then begin
+    store_data,'cratio',data={x:tspec, y:cratio}
+    options,'cratio','psym',4
+    options,'cratio','symsize',1.0
+    options,'cratio','constant',[0.1, 1.0]
+    options,'cratio','line_colors',5
+    options,'cratio','const_color',[6,4]
+    ylim,'cratio',0.01,100.,1
 
-  npkt = n_elements(a4)            ; number of SPEC packets
-  npts = 16L*npkt                  ; 16 spectra per packet
-  tspec = replicate(0D, npts)      ; center time for each SPEC
-  lspec = replicate(0B, npts)      ; tabnum for each SPEC
+    store_data,'loav',data={x:tspec, y:loav}
+    ylim,'loav',0.1,1e5,1
+    options,'loav','psym',4
 
-  for i=0L,(npkt-1L) do begin
-    delta_t = swe_dt[a4[i].period]*dindgen(16) + (1.95D/2D)  ; center time offset (sample mode)
-    if (a4[i].smode) then delta_t += (2D^a4[i].period - 1D)  ; center time offset (sum mode)
-    j = i*16L
-    tspec[j:(j+15L)] = a4[i].time + delta_t
-  endfor
+    store_data,'hiav',data={x:tspec, y:hiav}
+    ylim,'hiav',0.1,1e5,1
+    options,'hiav','psym',4
 
-  dt_mode = swe_dt[a4.period]*16D        ; nominal time interval between packets
-  dt_pkt = a4.time - shift(a4.time,1)    ; actual time interval between packets
-  dt_pkt[0] = dt_pkt[1]
-  dn_pkt = a4.npkt - shift(a4.npkt,1)    ; look for data gaps
-  dn_pkt[0] = 1B
-  j = where((abs(dt_pkt - dt_mode) gt 0.5D) and (dn_pkt eq 1B), count)
-  for i=0,(count-1) do begin
-    dt1 = dt_mode[(j[i] - 1L) > 0L]/16D  ; cadence before mode change
-    dt2 = dt_mode[j[i]]/16D              ; cadence after mode change
-    if (abs(dt1 - dt2) gt 0.5D) then begin
-      m = 16L*((j[i] - 1L) > 0L)
-      n = round((dt_pkt[j[i]] - 16D*dt2)/(dt1 - dt2)) + 1L
-      if ((n gt 0) and (n lt 16)) then begin
-        dt_fix = (dt2 - dt1)*(dindgen(16-n) + 1D)
-        tspec[(m+n):(m+15L)] += dt_fix
-      endif
-    endif
-  endfor
+    options,['loav','hiav'],'constant',[0.5,1.0]
+    options,['loav','hiav'],'line_colors',5
+    options,['loav','hiav'],'const_color',[6,4]
+
+    store_data,'valid',data={x:tspec, y:inrange}
+    ylim,'valid',-0.5,1.5,0
+    options,'valid','psym',10
+    options,'valid','panel_size',0.5
+
+    store_data,'dt_v',data={x:tspec, y:dt_v}
+    options,'dt_v','psym',4
+
+    store_data,'dt_hsk',data={x:swe_hsk.time, y:dt_hsk}
+    options,'dt_hsk','psym',4
+    options,'dt_hsk','ytitle','dT (28)'
+    store_data,'dt_hires',data={x:swe_hsk[hndx].time, y:dt_hsk[hndx]}
+    options,'dt_hires','psym',4
+    options,'dt_hires','colors',6
+    store_data,'dt_all',data=['dt_hsk','dt_hires']
+  endif
 
 ; Insert LUT information into data structures
 

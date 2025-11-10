@@ -2,8 +2,8 @@
 ;  swfo_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-07 09:22:52 -0700 (Tue, 07 Oct 2025) $
-; $LastChangedRevision: 33709 $
+; $LastChangedDate: 2025-11-05 10:13:48 -0800 (Wed, 05 Nov 2025) $
+; $LastChangedRevision: 33828 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -33,6 +33,32 @@ FUNCTION swfo_gen_apdat::Init_old,apid,name,_EXTRA=ex,verbose=verbose
   IF (ISA(ex)) THEN self->SetProperty, _EXTRA=ex
   RETURN, 1
 END
+
+
+
+function swfo_gen_apdat::decom,ccsds,source_dict=source_dict   ;header
+
+  strct = ccsds
+  strct = { $
+    time: ccsds.time , $
+    pkt_size: ccsds.pkt_size,  $
+    apid: ccsds.apid, $
+    vcid: ccsds.vcid, $
+    vcid_seqn: ccsds.seqn, $
+    file_hash: ccsds.file_hash, $
+    replay:    ccsds.replay , $
+    gap: ccsds.gap }
+    
+    
+  ;strct.pdata = ptr_new() ;not sure why this line was here. we want to keep the data pointer in case we need it later.
+  ;ap = self.struct()
+  if self.routine then  strct = call_function(self.routine,ccsds,source_dict=source_dict)   ;, ptp_header=header ,apdat = ap)
+  ;dprint,dlevel=self.dlevel+3,phelp=2,strct
+
+  return,strct
+end
+
+
 
 
 
@@ -67,8 +93,8 @@ function swfo_gen_apdat::cdf_global_attributes
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
   ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2025-10-07 09:22:52 -0700 (Tue, 07 Oct 2025) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 33709 $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2025-11-05 10:13:48 -0800 (Wed, 05 Nov 2025) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 33828 $'
 
   return,global_att
 end

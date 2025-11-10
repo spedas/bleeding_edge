@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-01 13:49:44 -0700 (Sat, 01 Nov 2025) $
-; $LastChangedRevision: 33817 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2025-11-07 12:23:27 -0800 (Fri, 07 Nov 2025) $
+; $LastChangedRevision: 33842 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_2.pro $
 
 
@@ -32,16 +32,20 @@ function swfo_stis_sci_level_2,strcts,ace_config = ace
     sci_ex.ion_flux_L2 = fill
     for i=0 ,n_ion-1 do begin
       w = where(str.ion_energy gt ace.ion_ranges[i] and str.ion_energy lt ace.ion_ranges[i+1],/null,nw)
-      sci_ex.ion_flux_L2[i] = total(str.hdr_ion_flux[w]) / nw   ; computes average
-      sci_ex.ion_energy_L2[i] = total(str.ion_energy[w]) / nw
+      if isa(w) then begin
+        sci_ex.ion_flux_L2[i] = total(str.hdr_ion_flux[w]) / nw   ; computes average
+        sci_ex.ion_energy_L2[i] = total(str.ion_energy[w]) / nw
+      endif
     endfor
 
     if 1 then begin   ;  electron not ready yet
       sci_ex.elec_flux_L2 = fill
       for i=0 ,n_elec-1 do begin
         w = where(str.elec_energy gt ace.elec_ranges[i] and str.elec_energy lt ace.elec_ranges[i+1],/null,nw)
-        sci_ex.elec_flux_L2[i] = total(str.hdr_elec_flux[w]) / nw
-        sci_ex.elec_energy_L2[i] = total(str.elec_energy[w]) / nw
+        if isa(w) then begin
+          sci_ex.elec_flux_L2[i] = total(str.hdr_elec_flux[w]) / nw
+          sci_ex.elec_energy_L2[i] = total(str.elec_energy[w]) / nw
+        endif
       endfor
 
     endif

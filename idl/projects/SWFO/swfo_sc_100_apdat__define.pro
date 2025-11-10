@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-28 11:41:17 -0700 (Tue, 28 Oct 2025) $
-; $LastChangedRevision: 33800 $
+; $LastChangedDate: 2025-11-05 15:50:37 -0800 (Wed, 05 Nov 2025) $
+; $LastChangedRevision: 33832 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_100_apdat__define.pro $
 
 
@@ -18,6 +18,10 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     seqn:ccsds.seqn,$
     seqn_delta:ccsds.seqn_delta,$
     packet_size:ccsds.pkt_size,$
+    vcid: ccsds.vcid, $
+    vcid_seqn: ccsds.vcid_seqn, $
+    file_hash: ccsds.file_hash, $
+    replay:    ccsds.replay , $
     tod_day:                          swfo_data_select(ccsds_data,  6*8,16),$
     tod_millisec:                     swfo_data_select(ccsds_data,  8*8,32),$
     tod_microsec:                     swfo_data_select(ccsds_data, 12*8,16),$
@@ -41,6 +45,7 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     solution_status_0bothstr_1onestr_12ronly_13bothst_14onest_15cssonly_16none:swfo_data_select(ccsds_data,107*8,5),$
     sun_sensor_raw_intensity_12_bit_adc:swfo_data_select(ccsds_data,[108:138:2]*8,16,/signed),$
     measured_sun_vector_xyz:3.2e-5*swfo_data_select(ccsds_data,[148,150,152]*8,16,/signed),$
+    measured_sun_vector_status_0good_1coarse_2bad:swfo_data_select(ccsds_data,154*8, 2),$
     pbk_critical_vc:                  swfo_data_select(ccsds_data,154*8+2, 6),$
     fsw_transfer_frame_accept_counter:swfo_data_select(ccsds_data,155*8, 8),$
     fsw_transfer_frame_reject_counter:swfo_data_select(ccsds_data,156*8, 8),$
