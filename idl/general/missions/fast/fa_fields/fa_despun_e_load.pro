@@ -1,7 +1,7 @@
 ;Helper function to load one data type at a time
 Pro fa_despun_e_load_type, type, trange = trange, orbit = orbit, $
                            no_time_clip = no_time_clip, version = version, $
-                           force = force, _extra = _extra
+                           _extra = _extra
 
 ;Keep track of software versioning here
   If(keyword_set(version)) Then Begin
@@ -44,7 +44,7 @@ Pro fa_despun_e_load_type, type, trange = trange, orbit = orbit, $
      Return
   Endif
 ;Check time range
-  If(~keyword_set(files) and ~keyword_set(no_time_clip)) Then Begin
+  If(~keyword_set(no_time_clip)) Then Begin
      time_clip, tnames(tvars), tr0[0], tr0[1], /replace
   Endif
 ;Add labels for 3D fields
@@ -82,7 +82,8 @@ End
 ;NAME:
 ; fa_despun_e_load
 ;PURPOSE:
-; Loads FAST ESA L2 data for a given file(s), or time_range, or orbit range
+; Loads FAST EFI Despun Electric field L2 data for a given time_range,
+; or orbit range
 ;CALLING SEQUENCE:
 ; fa_despun_e_load, trange=trange, type=type, datatype=datatype, orbit=orbit
 ;INPUT:
@@ -107,7 +108,7 @@ End
 ; $URL: $
 ;-
 Pro fa_despun_e_load, datatype = datatype, type = type, $
-                      files = files, trange = trange, orbit = orbit, $
+                      trange = trange, orbit = orbit, $
                       no_time_clip = no_time_clip, _extra = _extra
 
 ;fa_init, initializes a system variable
@@ -117,11 +118,12 @@ Pro fa_despun_e_load, datatype = datatype, type = type, $
   If(keyword_set(datatype)) Then Begin
      type = datatype
   Endif Else Begin
-     If(~keyword_set(type)) Then type='esv' ;only 'esv' for now
+     If(~keyword_set(type)) Then type='esv'
   Endelse
 ;call for different types, 
   For j = 0, n_elements(type)-1 Do fa_despun_e_load_type, type[j], $
-     trange = trange, orbit = orbit, no_time_clip = no_time_clip, _extra = _extra
+     trange = trange, orbit = orbit, no_time_clip = no_time_clip, $
+     _extra = _extra
 
   Return
 End
