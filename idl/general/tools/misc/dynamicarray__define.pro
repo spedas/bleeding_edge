@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-24 21:22:38 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33793 $
+; $LastChangedDate: 2025-11-22 09:53:59 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33865 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -255,7 +255,7 @@ end
 pro DynamicArray::trim    ; Truncate ptr_array to its proper value
   compile_opt IDL2
   if 1 then begin
-    *self.ptr_array = (*self.ptr_array)[0:self.size-1,*]
+    if self.size gt 0 then     *self.ptr_array = (*self.ptr_array)[0:self.size-1,*]
   endif else begin
     ind = self.size
     append_array,*self.ptr_array,index= ind
@@ -400,55 +400,51 @@ pro DynamicArray::make_ncdf,filename=ncdf_filename,verbose=verbose,global_atts=g
 end
 
 
+function dynamicarray::file_format, resolution=resolution,name=name
+
+  case resolution of
+    3600d:     tformat = 'swfo/data/test/NCDF/$NAME$/HR/YYYY/MM/DD/$NAME$_YYYY-MM-DD_hh.nc'
+    3600*24d:  tformat = 'swfo/data/test/NCDF/$NAME$/DAY/YYYY/MM/$NAME$_YYYY-MM-DD.nc'
+  endcase
+
+  return,tformat
+end
 
 
-pro dynamicarray::ncdf_make_file,trange=trange0,resolution=resolution  ;,pathformat=pathformat,testdir=testdir,ret_filename=ret_filename,type=type
+pro dynamicarray::ncdf_make_file,trange=trange,resolution=resolution ,append=append ;,pathformat=pathformat,testdir=testdir,ret_filename=ret_filename,type=type
 
-  message,'Not completed'
-  if isa(trange) then begin
-    data = self.sample(range= trange0,tagname = 'time')
-    file_format = self.name+type+'_YYYY-MM-DD_hhmmss_'
-  endif else begin
-    data = self.array
-    file_format = self.name
-  endelse
+  message,'In testing',/cont
+
+  if ~keyword_set(resolution) then resolution = 3600d*24
   
+  tformat = self.file_format(resolution=resolution)
+
+  ncdf_directory = './'
+  ncdf_directory = root_data_dir()
   
-  if ~isa(ddata) then ddata=self.data
-  if ~isa(ddata,'dynamicarray') || ddata.size le 0  then begin
-    dprint,'No data available to make a NCDF file: ',self.name
-    return
-  endif
-
-  if keyword_set(trange0) then begin
-    trange = time_double(trange0)
-    data_array = ddata.sample(range=trange,tagname='time')
-  endif else begin
-    data_array = ddata.array
-    trange = minmax(data_array.time)
-    trange[0] = median(data_array.time)  ;  cluge to fix problem in which the time is out of bounds
-  endelse
-
-  if ~isa(resolution) then resolution = 3600d *24
   if resolution gt 0 then begin
+    if n_elements(trange) ne 2 then trange = minmax(self.sample(varname='time') )
     trange_int = [floor( trange[0] / resolution ) , ceil(trange[1] /resolution) ]
     nfiles = trange_int[1] - trange_int[0]
     for i=0 ,nfiles-1 do begin
       tr = (trange_int[0] + [i,i+1]) *double(resolution )
-      data_array = ddata.sample(range=tr,tagname='time')
-      ncdf_format=self.ncdf_fileformat
+      data_array = self.sample(range=tr,tagname='time')
+      if ~isa(data_array) then continue
+      ncdf_format= tformat
       filename=time_string(tr[0],tformat=ncdf_format)
       filename=str_sub(filename,'$NAME$',self.name)
       filename=str_sub(filename,'$TYPE$',type)
       filename=str_sub(filename,'$RES$', strtrim(long(resolution),2)  )
-      filename=self.ncdf_directory + filename
-      swfo_ncdf_create,data_array,filename = filename,ncdf_template=self.ncdf_templatename
+      filename=ncdf_directory + filename
+      swfo_ncdf_create,data_array,filename = filename ,append=append
 
     endfor
 
 
     return
   endif
+  
+  
   if ~isa(filename) then begin
     ncdf_format=self.ncdf_fileformat
     filename=time_string(trange[0],tformat=ncdf_format)
@@ -459,8 +455,6 @@ pro dynamicarray::ncdf_make_file,trange=trange0,resolution=resolution  ;,pathfor
   endif
 
 
-
-
   ;pathname = time_string(trange[0],tformat= pathformat )
   ;filename = root_data_dir() + self.ncdf_testdir + pathname
   swfo_ncdf_create,data_array,filename = filename,ncdf_template=self.ncdf_templatename
@@ -468,6 +462,14 @@ pro dynamicarray::ncdf_make_file,trange=trange0,resolution=resolution  ;,pathfor
   ret_filename = filename
 
 end
+
+
+function dynamicarray::read_ncdf
+
+  return,0
+  
+end
+
 
 
 

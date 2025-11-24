@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2025-11-05 15:50:37 -0800 (Wed, 05 Nov 2025) $
-; $LastChangedRevision: 33832 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -202,7 +202,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     'DELAY':tplot,add=add,'*2*DELAYTIME'
     'WHEELS': tplot,add=add,'s*WHEEL_TORQUE s*WHEEL_SPEED_RPM s*WHEEL_CURRENT_AMPS s*WHEEL_BUS_CUR* s*IRU_BITS'
     'WHEELS1': tplot,add=add,'s*WHEEL_TOR_QUE s*WHEEL_SPEED_RPM s*WHEEL_BUS_CURRENT_AMPS s*IRU_BITS'
-    'COM1':  tplot,add=add,'*L1a_RATE6 *L1a_SPEC_?? *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM'
+    'COM1':  tplot,add=add,'swfo_stis_' +strsplit('*L1a_RATE6 *L1a_SPEC_?? *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM',/extract)
     'COM2':  tplot,add=add,'*L1a_RATE6 *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM'
     'COM3':  tplot,add=add,   'swfo_stis_' +strsplit( '*L1a_RATE6 *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM',' ',/extract)
     'SPEC':  tplot,add=add,   'swfo_stis_'+  '*SPEC_??'  ; +strsplit( '*L1a_RATE6 *L1a*_SIGMA *L1a_NOISE_BASELINE *L0b_IRU_BITS *L0b_*WHEEL_SPEED_RPM',' ',/extract)
@@ -222,6 +222,8 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
         split_vec,'*WHEEL_SPEED_RPM *WHEEL_CURRENT_AMPS'
         tplot,add=add,'*WHEEL_*_3'
       end
+      'RWTEST': tplot,add=add, 'swfo_stis_nse_NOISE_RES swfo_stis_nse_HISTOGRAM swfo_stis_L1a_NOISE_SIGMA swfo_stis_L1a_NOISE_BASELINE swfo_stis_hkp2_DAC_VALUES swfo_stis_L1a_SPEC_O1 swfo_sc_110_IRU_BITS'
+      
     else: dprint,'Unknown code: '+strtrim(name,2)
   endcase
 

@@ -1,35 +1,80 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-07-07 17:11:41 -0700 (Mon, 07 Jul 2025) $
-; $LastChangedRevision: 33434 $
+; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_read.pro $
 ; $ID: $
 
 
-function swfo_ncdf_read,filenames=filenames,def_values=def_values,verbose=verbose,num_recs=num_recs,force_recdim=force_recdim,recdimname=recdimname
+function swfo_ncdf_read,tformat=tformat,resolution=resolution,name=name,root_dir=root_dir,  $
+  dynarray=dynarray, $
+  trange=trange,  $
+  filenames=filenames,def_values=def_values,verbose=verbose,num_recs=num_recs,force_recdim=force_recdim,recdimname=recdimname
 
-  dat = !null
-  nfiles = n_elements(filenames)
-  if nfiles gt 1 then begin
-    dat_all = dynamicarray()
-    for i=0,nfiles-1 do begin
-      filename = filenames[i]
-      dat_i = swfo_ncdf_read(filename=filename,def_values=def_values,force_recdim=force_recdim)
-      dat_all.append,dat_i
-    endfor
-    return,dat_all.array
+
+
+  if isa(trange) then begin
+
+    if ~isa(dynarray,'dynamicarray') then dynarray = dynamicarray(name=name)
+    name = dynarray.name
+
+    if ~isa(name,'string') then name = 'test'
+
+    if ~isa(resolution) then resolution = 3600d*24
+
+    if ~isa(tformat,'string') then begin
+      case resolution of
+        3600d:   tformat = 'NCDF/$NAME$/HR/YYYY/MM/DD/$NAME$_YYYY-MM-DD_hh.nc'
+        3600*24d:  tformat = 'NCDF/$NAME$/DAY/YYYY/MM/$NAME$_YYYY-MM-DD.nc'
+      endcase
+    endif
+    
+    if ~dynarray.dict.haskey('filehashes') then dynarray.dict.filehashes = orderedhash()
+
+    trange_int = [floor( trange[0] / resolution ) , ceil(trange[1] /resolution) ]
+    nfiles = trange_int[1] - trange_int[0]
+    times = (trange_int[0] + lindgen(nfiles)) * resolution
+    filenames = time_string(times,tformat = tformat)
+
+    filenames=str_sub(filenames,'$NAME$',name)
+
+    if ~keyword_set(root_dir) then root_dir = root_data_dir()
+
+    filenames = root_dir+filenames
+
   endif
+
+
+    dat = !null
+    nfiles = n_elements(filenames)
+    if isa(dynarray) then begin
+      ;  dat_all = dynamicarray(name=name)
+      for i=0,nfiles-1 do begin
+        filename = filenames[i]
+        filehash = filename.hashcode()
+        if dynarray.dict.filehashes.haskey(filehash) then begin
+          dprint,'file: "'+filename+'" already loaded'
+          continue
+        endif
+        dat_i = swfo_ncdf_read(filename=filename,def_values=def_values,force_recdim=force_recdim)
+        if isa(dat_i) then dynarray.dict.filehashes[filehash] = filename
+        dynarray.append,dat_i
+      endfor
+      return,dynarray
+    endif
+  ;  return,dynarray
+
 
   filename = filenames[0]
   dprint,dlevel=2,verbose=verbose,'Reading: '+file_info_string(filename)
   if ~file_test(filename) then begin
-    dprint,'Skipping ',filename,verbose=verbose,dlevel=1
+    dprint,'Skipping ',filename,verbose=verbose,dlevel=3
     return,!null
   endif
   id =  ncdf_open(filename)  ;,/netcdf4_format
 
   inq= ncdf_inquire(id)
-  
-  
+
+
   ;printdat,inq
   if inq.ndims eq 0 then begin
     ncdf_close,id
@@ -44,7 +89,7 @@ function swfo_ncdf_read,filenames=filenames,def_values=def_values,verbose=verbos
     dim_names[did] = name
     dprint,dlevel=3,verbose=verbose,did,"  ",name,dimsize
   endfor
-  
+
   if ~isa(recdimname,/string) then recdimname = 'dim_time'
   w = where(dim_names eq recdimname,/null)
   if isa(w) then inq.recdim = w[0]
@@ -121,6 +166,11 @@ function swfo_ncdf_read,filenames=filenames,def_values=def_values,verbose=verbos
   endfor
 
   ncdf_close,id
+  ;  if isa(dynarray,'dynamicarray' then begin
+  ;    dynarray.append,dat
+  ;  endif else begin
   return,dat
+
+  ; endelse
 end
 

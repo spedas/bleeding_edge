@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-12 01:11:31 -0700 (Sun, 12 Oct 2025) $
-; $LastChangedRevision: 33738 $
+; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/ccsds_reader__define.pro $
 
 
@@ -33,8 +33,9 @@ function ccsds_reader::header_struct,header
     seqn:0u, $
     psize: 0u , $
     frm_seqn:0ul ,$  ;  frame sequence number
-    frm_seqid: 0 , $ ;  frame sequence ID (same as virtual channel)
+    frm_vcid: 0 , $ ;  frame sequence ID (same as virtual channel)
     replay: 0b, $    ; set to one if from replay
+    station: 0b, $   ; defines the station
     file_hash: 0ul, $    ; hash of the original filename
     valid:0b, $
     gap:0b ,  $
@@ -48,7 +49,8 @@ function ccsds_reader::header_struct,header
   
   if self.source_dict.haskey('frame_headerstr') then begin
     strct.frm_seqn = self.last_frm_seqn
-    strct.frm_seqid = self.source_dict.frame_headerstr.seqid
+    strct.frm_vcid = self.source_dict.frame_headerstr.vcid
+    strct.station = self.source_dict.frame_headerstr.station
     strct.replay    = self.source_dict.frame_headerstr.replay
     strct.file_hash     = self.source_dict.frame_headerstr.file_hash
     

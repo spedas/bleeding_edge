@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-05-21 12:27:38 -0700 (Tue, 21 May 2024) $
-; $LastChangedRevision: 32621 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2025-11-22 20:05:31 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33866 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_170_apdat__define.pro $
 
 
@@ -18,9 +18,14 @@ function swfo_sc_170_apdat::decom,ccsds,source_dict=source_dict
     seqn:ccsds.seqn,$
     seqn_delta:ccsds.seqn_delta,$
     packet_size:ccsds.pkt_size,$
-    tod_day:                          swfo_data_select(ccsds_data,6  *8  ,16),$
-    tod_millisec:                     swfo_data_select(ccsds_data,8  *8  ,32),$
-    tod_microsec:                     swfo_data_select(ccsds_data,12 *8  ,16),$
+    vcid: ccsds.vcid, $
+    vcid_seqn: ccsds.vcid_seqn, $
+    file_hash: ccsds.file_hash, $
+    replay:    ccsds.replay , $
+    station:    ccsds.station  , $
+    tod_day:      ccsds.day,  $   ;                    swfo_data_select(ccsds_data,  6*8,16),$
+    tod_millisec: ccsds.millisec,  $   ;                    swfo_data_select(ccsds_data,  8*8,32),$
+    tod_microsec:  ccsds.microsec,  $   ;                   swfo_data_select(ccsds_data, 12*8,16),$
     stis_automessaging_enabled:       swfo_data_select(ccsds_data,28 *8+3, 1),$
     stis_communications_enabled:      swfo_data_select(ccsds_data,28 *8+4, 1),$
     stis_tod_enabled:                 swfo_data_select(ccsds_data,28 *8+5, 1),$

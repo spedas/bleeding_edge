@@ -1,11 +1,11 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-11-03 23:43:14 -0800 (Sun, 03 Nov 2024) $
-; $LastChangedRevision: 32928 $
+; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_create.pro $
 ; $ID: $
 
 
-pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=global_atts,ncdf_template=ncdf_template
+pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=global_atts,ncdf_template=ncdf_template,append=append
 
   if keyword_set(global_atts) then begin
     gkeys = global_atts.keys()
@@ -28,10 +28,36 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
     file_copy,ncdf_template,ncdf_filename
 
   endif else begin
+    
+    if keyword_set(append) then begin
+      if file_test(ncdf_filename) then begin
+        dat_old = swfo_ncdf_read(filenames = ncdf_filename)
+        
+        if array_equal(dat_old.time,dat.time) then begin
+          dprint,dlevel=2,'No new : "'+ncdf_filename+'"  Skipping append'
+          return
+        endif
+        if n_tags(/length,dat) ne n_tags(/length,dat_old) then begin
+          dprint,'New format for ncdf_filename'
+        endif
+        dat_new = replicate(dat[0],n_elements(dat_old))
+        struct_assign,dat_old,dat_new,/verbose
+;        if array_equal(dat_new.time,dat.time) && n_tags(/length,dat_old then begin
+;          dprint,dlevel=2,'No new data for file: '+ncdf_filename+'  Skipping append'
+;          return
+;        endif
+        dat = [dat_new,dat]
+        s= sort(dat.time)
+        dat = dat[s]
+        u= uniq(dat.time)
+        dat = dat[u]
+      endif
+    endif
     id =  ncdf_create(ncdf_filename,/clobber,/netcdf4_format)  ;,/netcdf4_format
 
     tid = ncdf_dimdef(id, 'DIM_TIME', /unlimited)
     types = hash()
+    
     types[1] = 'byte'
     types[2] = 'short'
     types[3] = 'long'

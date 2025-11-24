@@ -10,12 +10,30 @@
 
 
 
-pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,typecase=typecase,user_pass=user_pass
+pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,station=station,user_pass=user_pass,merge=merge,hlevel=hlevel
 
   common swfo_ccsds_frame_read_common, reader
-  t0 = systime(1)
+  t0 = systime(1)  
 
+
+  if ~isa(reader,'CCSDS_FRAME_READER') then begin
+    swfo_stis_apdat_init,/save_flag
+    reader = ccsds_frame_reader(mission='SWFO',/no_widget,verbose=verbose,run_proc=run_proc)
+    reader.parent_dict.init = 0
+  endif
+  
+  
+  if isa(user_pass) then reader.parent_dict.user_pass = user_pass
+  
+
+  if reader.parent_dict.haskey('user_pass') then user_pass = reader.parent_dict.user_pass  
+  
+  
   if ~keyword_set(user_pass) then begin
+    user_pass = getenv('SWFO_USER_PASS')
+  endif
+
+  if ~keyword_set(user_pass) then begin 
     log_info = get_login_info()
     salt = '_a0'
     user_name = log_info.user_name+salt
@@ -25,18 +43,16 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,typecase=type
     dprint,'password:  ',pass_word0
     user_pass = user_name+ ':' + pass_word0
     printdat,user_pass
-  endif
+  endif 
 
-  if ~isa(reader,'CCSDS_FRAME_READER') then begin
-    swfo_stis_apdat_init,/save_flag
-    reader = ccsds_frame_reader(mission='SWFO',/no_widget,verbose=verbose,run_proc=run_proc)
-    reader.parent_dict.init = 0
-    reader.parent_dict.user_pass = user_pass
-  endif
+
+
 
   rdr=reader
 
   if ~isa(user_pass) then user_pass = rdr.parent_dict.user_pass
+  if ~isa(merge) then merge=1
+  if ~isa(hlevel) then hlevel=1 
 
 
   if ~isa(no_download) then no_download = 0    ;set to 1 to prevent download
@@ -65,49 +81,41 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,typecase=type
   endif
 
 
-  if ~isa(typecase,'string') then  typecase = 'WCD'
+  if ~isa(station,'string') then  station = 'WCD'
 
-  case typecase of
+  case station of
     'WCD': begin
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/MM/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh*.nc'
+      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/MM/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
+      rdr.source_dict.station = 1
       source.resolution = 3600
-      allfiles = file_retrieve(pathname,_extra=source,trange=trange,verbose=2)  ; get All the files first
-      fileformat =  file_basename(str_sub(pathname,'*.nc',''))
-      filerange = time_string(time_double(trange)+[0,3600],tformat=fileformat)
+      allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
+      fileformat =  file_basename(pathname+'mm')
+      filerange = time_string(time_double(trange)+[0,600],tformat=fileformat)
       ;      if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
-      if 0 then begin
+      if 1 then begin
         w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
+        files = allfiles[w]
       endif else begin
         w = where(file_test(allfiles),nw,/null)
+        files = allfiles
       endelse
-
-      files = allfiles[w]
       frames_name = 'swfo_frame_data'
     end
     'CBU': begin
-      pathname = 'swfo/aws/L0/SWFOCBU/YYYY/MM/DD/OR_SWFOCBU-L0_SL1_s*.nc'
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOCBU/YYYY/MM/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh*.nc'
+      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOCBU/YYYY/MM/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh'
+      rdr.source_dict.station = 2
       source.resolution = 3600
-      allfiles = file_retrieve(pathname,_extra=source,trange=trange,verbose=2)  ; get All the files first
-      fileformat =  file_basename(str_sub(pathname,'*.nc',''))
-      filerange = time_string(time_double(trange)+[0,3600],tformat=fileformat)
+      allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
+      fileformat =  file_basename(pathname+'mm')
+      filerange = time_string(time_double(trange)+[0,600],tformat=fileformat)
       ;      if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
-      if 0 then begin
+      if 1 then begin
         w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
+        files = allfiles[w]
       endif else begin
         w = where(file_test(allfiles),nw,/null)
+        files = allfiles
       endelse
-
-
-
-
-;      source.resolution = 3600
- ;     allfiles = file_retrieve(pathname,_extra=source,trange=trange)  ; get All the files first
-      ;      fileformat =  file_basename(str_sub(pathname,'*.nc',''))
-      ;      filerange = time_string(time_double(trange)+[0,3600],tformat=fileformat)
-      ;      if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
-      ;      w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
-      files = allfiles  ;[w]
       frames_name = 'swfo_frame_data'
     end
 
@@ -266,11 +274,11 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,typecase=type
 
       products = parent.products
 
-      if 1 then begin
+      if keyword_set(merge)  then begin
         dprint,'Merging Level 0A'
         swfo_apdat_info,/merge,/sort,/uniq           ; This will merge all L0A data, sort and eliminate duplicates
 
-        if 1 then begin
+        if keyword_set(hlevel) then begin
           dprint, 'Computing higher level products'
 
           if products.haskey('l0b_da') then products.l0b_da.array = swfo_stis_sci_level_0b(/getall)

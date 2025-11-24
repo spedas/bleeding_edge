@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33791 $
+; $LastChangedDate: 2025-11-22 20:05:31 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33866 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_130_apdat__define.pro $
 
 function swfo_sc_130_apm_thermal_conversion,t
@@ -84,9 +84,14 @@ function swfo_sc_130_apdat::decom,ccsds,source_dict=source_dict
     seqn:ccsds.seqn,$
     seqn_delta:ccsds.seqn_delta,$
     packet_size:ccsds.pkt_size,$
-    tod_day:                          swfo_data_select(ccsds_data,6  *8  ,16),$
-    tod_millisec:                     swfo_data_select(ccsds_data,8  *8  ,32),$
-    tod_microsec:                     swfo_data_select(ccsds_data,12 *8  ,16),$
+    vcid: ccsds.vcid, $
+    vcid_seqn: ccsds.vcid_seqn, $
+    file_hash: ccsds.file_hash, $
+    replay:    ccsds.replay , $
+    station:    ccsds.station  , $
+    tod_day:      ccsds.day,  $   ;                    swfo_data_select(ccsds_data,  6*8,16),$
+    tod_millisec: ccsds.millisec,  $   ;                    swfo_data_select(ccsds_data,  8*8,32),$
+    tod_microsec:  ccsds.microsec,  $   ;                   swfo_data_select(ccsds_data, 12*8,16),$
     stis_interface_temp:              swfo_sc_130_pcm_external_thermistor_sense(swfo_data_select(ccsds_data,436,12)),$
     stis_temps:                       swfo_sc_130_apm_thermal_conversion(swfo_data_select(ccsds_data,[700,736],12)),$
     pcm_prt_2kohm_temps:              swfo_sc_130_pcm_external_prt_sense_2kohm(swfo_data_select(ccsds_data,23*8+indgen(6)*12,12)),$

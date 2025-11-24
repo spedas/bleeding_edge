@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2025-11-05 15:50:37 -0800 (Wed, 05 Nov 2025) $
-; $LastChangedRevision: 33832 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_100_apdat__define.pro $
 
 
@@ -22,9 +22,10 @@ function swfo_sc_100_apdat::decom,ccsds,source_dict=source_dict
     vcid_seqn: ccsds.vcid_seqn, $
     file_hash: ccsds.file_hash, $
     replay:    ccsds.replay , $
-    tod_day:                          swfo_data_select(ccsds_data,  6*8,16),$
-    tod_millisec:                     swfo_data_select(ccsds_data,  8*8,32),$
-    tod_microsec:                     swfo_data_select(ccsds_data, 12*8,16),$
+    station:    ccsds.station  , $
+    tod_day:      ccsds.day,  $   ;                    swfo_data_select(ccsds_data,  6*8,16),$
+    tod_millisec: ccsds.millisec,  $   ;                    swfo_data_select(ccsds_data,  8*8,32),$
+    tod_microsec:  ccsds.microsec,  $   ;                   swfo_data_select(ccsds_data, 12*8,16),$
     flight_software_version_number:   swfo_data_select(ccsds_data, 14*8,32,/signed),$
     packet_definition_version_number: float(swfo_data_select(ccsds_data, 18*8,32),0),$
     adcs_state_0wait_1detumble_2acqsun_3point_4deltav_5earth:swfo_data_select(ccsds_data,22*8,3),$

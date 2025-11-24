@@ -35,11 +35,12 @@ function ccsds_frame_reader::header_struct,header
   
   ftime = self.source_dict.frame_time
   self.source_dict.frame_time = ftime + self.source_dict.frame_dtime
-  strct = {  time:ftime,index:0uL,SEQN:0UL, seqn_delta:0L, scid:0u, vcid:0b, seqid:0u $
+  strct = {  time:ftime,index:0uL,SEQN:0UL, seqn_delta:0L, scid:0u, vcid:0b $
     , psize: 0u ,   sigfield:0b  , offset:0u, last4:[0b,0b,0b,0b]  $
     , hashcode:0uL   $
     , file_hash: 0ul   $   ; hash of the filename
     , replay:0b  $
+    , station:0b  $
     , rept: 0u,  disp: 0u,  oerror:0u $
     , valid:1b, gap:0b}
   
@@ -57,10 +58,10 @@ function ccsds_frame_reader::header_struct,header
   
   if n_elements(header) eq self.frame_size then begin
     strct.last4 = header[-4:-1]
-    ;strct.seqid = (strct.last4[-2] and 0b) *100u + strct.vcid
-    strct.seqid =  strct.vcid
+    ;strct.seqid =  strct.vcid
     strct.hashcode = header.hashcode()
     strct.file_hash = self.source_dict.file_hash
+    strct.station    = self.source_dict.station
   endif else begin
     dprint,'Error'
   endelse
@@ -102,14 +103,15 @@ pro ccsds_frame_reader::handle,frame    ; This routine handles a SINGLE ccsds fr
 ;  frame_headerstr.index = self.index++
   
   ;seqid = frame_headerstr.vcid + 100u * (frame[-2] and 6)
-  seqid = frame_headerstr.seqid
+ ; seqid = frame_headerstr.seqid      ; redundant - same as vcid
+  vcid = frame_headerstr.vcid      ; redundant - same as vcid
   
-  if ~self.handlers.haskey(seqid) then begin
-    self.print_info,dlevel=2,frame_headerstr,'New VCid: '+strtrim(seqid,2)
-    name = self.mission+'_pkt_seqid_'+strtrim(seqid,2)
+  if ~self.handlers.haskey(vcid) then begin
+    self.print_info,dlevel=2,frame_headerstr,'New VCid: '+strtrim(vcid,2)
+    name = self.mission+'_pkt_vcid_'+strtrim(vcid,2)
     if isa(self.source_dict,'dictionary') && self.source_dict.haskey('run_proc')  then run_proc = self.source_dict.run_proc
-    self.handlers[seqid] = ccsds_reader(mission=self.mission,/no_widget,sync_pattern=!null,/save_data,name=name,run_proc=run_proc)
-    cpkt_rdr = self.handlers[seqid]
+    self.handlers[vcid] = ccsds_reader(mission=self.mission,/no_widget,sync_pattern=!null,/save_data,name=name,run_proc=run_proc)
+    cpkt_rdr = self.handlers[vcid]
     cpkt_rdr.source_dict.fifo = !null
     cpkt_rdr.source_dict.headerstr = !null
     cpkt_rdr.source_dict.last_frm_seqn = 0
@@ -117,7 +119,7 @@ pro ccsds_frame_reader::handle,frame    ; This routine handles a SINGLE ccsds fr
     cpkt_rdr.source_dict.dejavu_hashcodes = ulonarr(1000)    ; the size of this might need to be increased
   endif
   
-  cpkt_rdr = self.handlers[seqid]
+  cpkt_rdr = self.handlers[vcid]
   cpkt_rdr.source_dict.frame_headerstr = frame_headerstr    
   frm_seqn = frame_headerstr.seqn
   
@@ -130,7 +132,7 @@ pro ccsds_frame_reader::handle,frame    ; This routine handles a SINGLE ccsds fr
   dict = cpkt_rdr.source_dict  
   ncodes = n_elements(dict.dejavu_hashcodes)
   w_hcode = where(hcode eq dict.dejavu_hashcodes,/null,nw)
-  ;dprint,dlevel=4,verbose=self.verbose,'Frame: ',frm_seqn, seqid, hcode,'  ',  isa(w_hcode) ?  w_hcode[0] : long( -1) , '     ', frame[-4:*]
+  ;dprint,dlevel=4,verbose=self.verbose,'Frame: ',frm_seqn, vcid, hcode,'  ',  isa(w_hcode) ?  w_hcode[0] : long( -1) , '     ', frame[-4:*]
   frame_headerstr.rept = nw
   ;frame_headerstr.missing = 0
   

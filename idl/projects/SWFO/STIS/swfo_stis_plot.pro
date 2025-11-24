@@ -4,8 +4,8 @@
 ; ctime,routine_name='swfo_stis_plot',/silent
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-15 09:15:31 -0700 (Wed, 15 Oct 2025) $
-; $LastChangedRevision: 33760 $
+; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_plot.pro $
 ; $ID: $
 ;-
@@ -140,7 +140,7 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
   
   ymin = min( struct_value(param.lim,'yrange',default=0.))
   
-  names='SPEC_' + ['O1','O2','O3','F1','F2','F3']
+  names='SPEC_' + ['O1','O2','O3','F1','F2','F3']  ;,'O23']
   nans = replicate(!values.f_nan,48)
   format = {name:'',color:0,linestye:0,psym:-4,linethick:2,geomfactor:1.,x:nans,y:nans,dx:nans,dy:nans,xunits:'',yunits:'',lim:obj_new()}
   channels = replicate(format,n_elements(names))

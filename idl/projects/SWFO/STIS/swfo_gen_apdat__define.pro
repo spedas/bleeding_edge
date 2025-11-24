@@ -1,9 +1,9 @@
 ;+
 ;  swfo_GEN_APDAT
 ;  This basic object is the entry point for defining and obtaining all data for all apids
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-05 10:13:48 -0800 (Wed, 05 Nov 2025) $
-; $LastChangedRevision: 33828 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2025-11-22 20:05:31 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33866 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_gen_apdat__define.pro $
 ;-
 ;COMPILE_OPT IDL2
@@ -40,13 +40,23 @@ function swfo_gen_apdat::decom,ccsds,source_dict=source_dict   ;header
 
   strct = ccsds
   strct = { $
-    time: ccsds.time , $
-    pkt_size: ccsds.pkt_size,  $
-    apid: ccsds.apid, $
+    time:ccsds.time,  $
+    time_delta:ccsds.time_delta, $
+    met:ccsds.met,   $
+    grtime: ccsds.grtime,  $
+    delaytime: ccsds.delaytime, $
+    apid:ccsds.apid,  $
+    seqn:ccsds.seqn,$
+    seqn_delta:ccsds.seqn_delta,$
+    packet_size:ccsds.pkt_size,$
     vcid: ccsds.vcid, $
-    vcid_seqn: ccsds.seqn, $
+    vcid_seqn: ccsds.vcid_seqn, $
     file_hash: ccsds.file_hash, $
     replay:    ccsds.replay , $
+    station:    ccsds.station  , $
+    tod_day:      ccsds.day,  $   ;                    swfo_data_select(ccsds_data,  6*8,16),$
+    tod_millisec: ccsds.millisec,  $   ;                    swfo_data_select(ccsds_data,  8*8,32),$
+    tod_microsec:  ccsds.microsec,  $   ;                   swfo_data_select(ccsds_data, 12*8,16),$
     gap: ccsds.gap }
     
     
@@ -92,9 +102,9 @@ function swfo_gen_apdat::cdf_global_attributes
   ;  global_att['SW_TIME_STAMP'] =  time_string(systime(1))
   ;  global_att['SW_RUNTIME'] =  time_string(systime(1))
   ;  global_att['SW_RUNBY'] =
-  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: davin-mac $'
-  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2025-11-05 10:13:48 -0800 (Wed, 05 Nov 2025) $'
-  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 33828 $'
+  ;  global_att['SVN_CHANGEDBY'] = '$LastChangedBy: ali $'
+  ;  global_att['SVN_CHANGEDATE'] = '$LastChangedDate: 2025-11-22 20:05:31 -0800 (Sat, 22 Nov 2025) $'
+  ;  global_att['SVN_REVISION'] = '$LastChangedRevision: 33866 $'
 
   return,global_att
 end

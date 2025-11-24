@@ -1,8 +1,8 @@
 ; buffer should contain bytes for a single ccsds packet, header is
 ; contained in first 3 words (6 bytes)
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-05 11:25:58 -0800 (Wed, 05 Nov 2025) $
-; $LastChangedRevision: 33829 $
+; $LastChangedDate: 2025-11-22 07:47:26 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33861 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_decom.pro $
 
 ;
@@ -63,11 +63,12 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
     source_apid:  0u   ,  $             ; an indicator of where this packet came from:  0: unknown, apid of wrapper_packet: 0x348 - 0x34f
     source_hash:  0UL,  $               ; hashcode() of source_name
     file_hash:    0UL,  $               ; hashcode() of file source
-    vcid:         0b,  $
     vcid_seqn:    0ul,  $
+    vcid:         0b,  $
     replay:       0b,  $
+    station:       0b,  $                ; source of stream  (WCD :1   ; CBU:2)
     ; compr_ratio:  0. , $
-    aggregate:    0u,  $                ; number of data samples aggregated - determined from outer wrapper header
+   ; aggregate:    0u,  $                ; number of data samples aggregated - determined from outer wrapper header
     time_delta :  d_nan, $
     ;  ptp_time:     d_nan,  $             ; unixtime from ptp packet
     error :       0b, $
@@ -95,7 +96,7 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
   ccsds.version = byte(ishft(header[0],-11) )    ; Corrected - but includes 2 extra bits
   ccsds.apid = header[0] and '7FF'x
 
-  if n_elements(subsec) eq 0 then subsec= ccsds.apid ge '350'x
+  ;if n_elements(subsec) eq 0 then subsec= ccsds.apid ge '350'x
 
   apid = ccsds.apid
 
@@ -109,14 +110,15 @@ function swfo_ccsds_decom,buffer,source_dict=source_dict,wrap_ccsds=wrap_ccsds,o
   if isa(source_dict) then begin
     if  source_dict.haskey('frame_headerstr') then begin
       frame_headerstr = source_dict.frame_headerstr
-      ccsds.vcid = frame_headerstr.vcid
+      ccsds.vcid =      frame_headerstr.vcid
       ccsds.vcid_seqn = frame_headerstr.seqn
-      ccsds.replay = frame_headerstr.replay
+      ccsds.replay =    frame_headerstr.replay
       ccsds.file_hash = frame_headerstr.file_hash
-      ccsds.grtime  = frame_headerstr.time
+      ccsds.station =   frame_headerstr.station
+      ccsds.grtime  =   frame_headerstr.time
       ccsds.delaytime = frame_headerstr.time - ccsds.time
     endif
-    if  source_dict.haskey('parent_dict') then begin   ; old version - should not be needed
+    if 0 && source_dict.haskey('parent_dict') then begin   ; old version - should not be needed
       dprint,'old version',dlevel=2
       grtime = source_dict.parent_dict.headerstr.time
       ;printdat,time_string(grtime)

@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-04 19:19:31 -0800 (Tue, 04 Nov 2025) $
-; $LastChangedRevision: 33823 $
+; $LastChangedDate: 2025-11-22 07:45:58 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33859 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_apdat_init.pro $
 ;-
 
@@ -76,7 +76,7 @@ pro swfo_stis_apdat_init,reset=reset, save_flag=save_flag,swem=swem,rt_flag=rt_f
   swfo_apdat_info,'35E'x or pb,name='pb_stis_hkp1',apid_obj='swfo_stis_hkp_apdat',    tname='pb_swfo_stis_hkp1',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
   swfo_apdat_info,'35F'x or pb,name='pb_stis_hkp2',apid_obj='swfo_stis_hkp_apdat',    tname='pb_swfo_stis_hkp2',   ttags='*',save_flag=save_flag,rt_flag=rt_flag
 
-  if 0 then begin
+  if 1 then begin
     swfo_apdat_info,1253,name='mag8',apid_obj ='swfo_mag_sci_apdat',tname='swfo_mag8_sci',save_flag=save_flag,ttags='*',rt_flag=rt_flag
     swfo_apdat_info,1253 or pb,name='pb_mag8',apid_obj ='swfo_mag_sci_apdat',tname='pb_swfo_mag8_sci',save_flag=save_flag,ttags='*',rt_flag=rt_flag
 

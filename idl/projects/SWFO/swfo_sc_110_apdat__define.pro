@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-10-24 16:16:24 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33791 $
+; $LastChangedDate: 2025-11-22 20:05:31 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33866 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_sc_110_apdat__define.pro $
 
 function swfo_sc_110_rw_temps,temps
@@ -25,9 +25,14 @@ function swfo_sc_110_apdat::decom,ccsds,source_dict=source_dict
     seqn:ccsds.seqn,$
     seqn_delta:ccsds.seqn_delta,$
     packet_size:ccsds.pkt_size,$
-    tod_day:                          swfo_data_select(ccsds_data,  6*8,16),$
-    tod_millisec:                     swfo_data_select(ccsds_data,  8*8,32),$
-    tod_microsec:                     swfo_data_select(ccsds_data, 12*8,16),$
+    vcid: ccsds.vcid, $
+    vcid_seqn: ccsds.vcid_seqn, $
+    file_hash: ccsds.file_hash, $
+    replay:    ccsds.replay , $
+    station:    ccsds.station  , $
+    tod_day:      ccsds.day,  $   ;                    swfo_data_select(ccsds_data,  6*8,16),$
+    tod_millisec: ccsds.millisec,  $   ;                    swfo_data_select(ccsds_data,  8*8,32),$
+    tod_microsec:  ccsds.microsec,  $   ;                   swfo_data_select(ccsds_data, 12*8,16),$
     desired_rates_xyz: 2e-4 * swfo_data_select(ccsds_data,[28,30,32]*8, 16,/signed),$
     desired_control_frame_sun_xyz: 3.2e-5 * swfo_data_select(ccsds_data,[34,36,38]*8, 16,/signed),$
     integral_error_xyz:57.29578e-6*swfo_data_select(ccsds_data, [40,42,44]*8,16,/signed),$

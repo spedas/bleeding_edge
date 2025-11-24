@@ -72,15 +72,16 @@
 ;
 ;       PREV_L0B_DAT: placeholder for previous level 0b
 ;
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
-; $LastChangedRevision: 33771 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
+; $LastChangedRevision: 33864 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_0b.pro $
 
 
 function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
   sci_dat=sci_dat,nse_dat=nse_dat,hkp_dat=hkp_dat,$
   sc100_dat=sc100_dat,sc110_dat=sc110_dat,$
+  datahash=datahash, $
   playback=playback,blank=blank
 
 
@@ -301,9 +302,7 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
 
     if ~isa(sci_dat) then sci_dat = sci_obj.data.array
 
-    output = replicate(output,n_elements(sci_dat))
-
-    
+    output = replicate(output,n_elements(sci_dat))    
     ; It is important that the data should have been sorted by this time
     sci_time  = sci_obj.data.array.time
 
@@ -314,6 +313,34 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     sc110_dat = sc110_obj.data.sample(nearest=sci_time,tagname='time')
 
   endif
+
+
+  if keyword_set(datahash) then begin
+
+    sci_da = datahash['stis_sci'] 
+    nse_da = datahash['stis_nse']
+    hkp_da = datahash['stis_hkp2']
+    sc100_da = datahash['sc_100']
+    sc110_da = datahash['sc_110']
+
+    sci_dat = sci_da.array
+
+    output = replicate(output,n_elements(sci_dat))
+
+    ; It is important that the data should have been sorted by this time
+    sci_time  = sci_dat.time
+
+    ; Get packet samples nearest to sci_time
+    nse_dat   = nse_da.sample(nearest=sci_time,tagname='time')
+    hkp_dat   = hkp_da.sample(nearest=sci_time,tagname='time')
+    sc100_dat = sc100_da.sample(nearest=sci_time,tagname='time')
+    sc110_dat = sc110_da.sample(nearest=sci_time,tagname='time')
+
+  endif
+
+
+
+
 
   nd= n_elements(output)
 
@@ -331,7 +358,7 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     output.sci_nbins  = sci_dat.nbins
     output.sci_counts= sci_dat.counts
 
-    output.quality_bits  = keyword_set( playback )  ; sci.playback    ; fix this!
+    output.quality_bits  = sci_dat.replay  
 
     output.sci_time_delta = sci_dat.time_delta
     output.sci_delaytime = sci_dat.delaytime
@@ -354,12 +381,12 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     output.sci_seqn_delta = sci_dat.seqn_delta
     output.sci_packet_size = sci_dat.packet_size
     output.sci_time_res = sci_dat.time_res
-    output.decimation_factor_bits = sci_dat.decimation_factor_bits
-    output.pulser_bits = sci_dat.pulser_bits
-    output.detector_bits = sci_dat.detector_bits
-    output.aaee_bits = sci_dat.aaee_bits
-    output.noise_bits = sci_dat.noise_bits
-    output.duration = sci_dat.duration
+   ; output.decimation_factor_bits = sci_dat.decimation_factor_bits
+    ;output.pulser_bits = sci_dat.pulser_bits
+  ;  output.detector_bits = sci_dat.detector_bits
+   ; output.aaee_bits = sci_dat.aaee_bits
+   ; output.noise_bits = sci_dat.noise_bits
+   ; output.duration = sci_dat.duration
     output.sci_gap = sci_dat.gap
     
     ;output.sci_nonlut_mode = sci_dat.sci_nonlut_mode
