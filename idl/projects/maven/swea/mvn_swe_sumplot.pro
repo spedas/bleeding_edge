@@ -67,9 +67,9 @@
 ;
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-; $LastChangedRevision: 33563 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2025-11-26 13:47:20 -0800 (Wed, 26 Nov 2025) $
+; $LastChangedRevision: 33881 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -1103,16 +1103,16 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
 
   if keyword_set(lut) then begin
     store_data,'TABNUM',data={x:mvn_swe_engy.time, y:mvn_swe_engy.lut}
-    ylim,'TABNUM',4.5,8.5,0
+    ylim,'TABNUM',4.5,9.5,0
     options,'TABNUM','panel_size',0.5
     options,'TABNUM','ytitle','SWE LUT'
     options,'TABNUM','yminor',1
     options,'TABNUM','psym',10
     options,'TABNUM','colors',[4]
-    options,'TABNUM','constant',[5,7,8]
+    options,'TABNUM','constant',[5,7,8,9]
     pans = [pans, 'TABNUM']
   endif
-  
+
   if keyword_set(SIFCTL) then begin
     sifctl = transpose(swe_hsk.sifctl)
     store_data,'SIFCTL',data={x:swe_hsk.time, y:sifctl, v:indgen(16)}

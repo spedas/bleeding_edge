@@ -63,6 +63,12 @@
 ;                              Chksum = '00'X
 ;                              LUT = 3
 ;
+;                       9 : Xmax = 5.5, Erange = [125.,125.], V0scale = 0.
+;                           Hires 32-Hz at 125 eV
+;                             -59 < Elev < +61 ; E = 125
+;                              Chksum = '00'X
+;                              LUT = 1
+;
 ;                     Passed to mvn_swe_sweep.pro.
 ;
 ;       CHKSUM:       Specify the sweep table by its checksum.  See above.
@@ -93,8 +99,8 @@
 ;       SILENT:       Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-10-31 13:58:57 -0700 (Fri, 31 Oct 2025) $
-; $LastChangedRevision: 33809 $
+; $LastChangedDate: 2025-11-26 13:48:18 -0800 (Wed, 26 Nov 2025) $
+; $LastChangedRevision: 33883 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_calib.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-13
@@ -162,7 +168,7 @@ pro mvn_swe_calib, tabnum=tabnum, chksum=chksum, setcal=setcal, default=default,
 
   if (not ok) then begin
     if keyword_set(tabnum) then begin
-      if ((tabnum ge 0) and (tabnum le 8)) then begin
+      if ((tabnum ge 0) and (tabnum le 9)) then begin
         swe_active_tabnum = tabnum
         if (size(swe_hsk,/type) ne 8) then begin
           tplot_options, get=topt

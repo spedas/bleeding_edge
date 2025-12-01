@@ -4,14 +4,18 @@
 ;  Given a checksum, determines the corresponding table number.  Only returns
 ;  table numbers >= 3.
 ;
-;  Eight tables are defined.  Tables 1-4 are obsolete.  Tables 5 and 6 
+;  Nine tables are defined.  Tables 1-4 are obsolete.  Tables 5 and 6 
 ;  correspond to tables as loaded into flight software during commissioning 
-;  in October 2014.  Table 8 will be loaded into flight software as part of 
-;  an EEPROM update in late August 2018.  Table 7 will be loaded via CDI 
-;  commands, since there is no contiguous block of PFDPU memory large enough 
-;  to hold the table.
+;  in October 2014.  Tables 7 and 8 (hires at 200 and 50 eV) were loaded in
+;  2018.  Table 9 was loaded on 2022-04-22, overwriting table 6.
 ;
-;  Tables 7 and 8 both have a checksum of zero.  Use energy to resolve.
+;  Table 5 and the three hires tables (7, 8, 9) are stored in non-volatile
+;  memory in the PFDPU.  After a power cycle, the 4 tables are automatically
+;  loaded into SWEA memory by the PFDPU, so there's no need to upload the
+;  tables from the ground unless one of them becomes corrupted.
+;
+;  Tables 7, 8 and 9 all have a checksum of zero.  See mvn_swe_getlut for
+;  the methods used to detect and distinguish these tables.
 ;
 ;        1 : Xmax = 6., Vrange = [0.75, 750.], V0scale = 1., /old_def
 ;            primary table for ATLO and Inner Cruise (first turnon)
@@ -48,18 +52,25 @@
 ;               Chksum = '82'X
 ;               GSEOS svn rev 8482
 ;            loaded into SWEA LUT 1 (via FSW)
+;            overwritten on 2022-04-22 (see table 9 below)
 ;
 ;        7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
 ;            Hires 32-Hz at 200 eV
 ;              -59 < Elev < +61 ; E = 200
 ;               Chksum = '00'X
-;            loaded into SWEA LUT 2 (via CDI)
+;            loaded into SWEA LUT 2 (via FSW) on 2018-11-09
 ;
 ;        8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
 ;            Hires 32-Hz at 50 eV
 ;              -59 < Elev < +61 ; E = 50
 ;               Chksum = '00'X
-;            loaded into SWEA LUT 3 (via FSW)
+;            loaded into SWEA LUT 3 (via FSW) on 2018-08-28
+;
+;        9 : Xmax = 5.5, Erange = [125.,125.], V0scale = 0.
+;            Hires 32-Hz at 125 eV
+;              -59 < Elev < +61 ; E = 125
+;               Chksum = '00'X
+;            loaded into SWEA LUT 1 (via FSW) on 2022-04-22
 ;
 ;USAGE:
 ;  tabnum = mvn_swe_tabnum(i)
@@ -71,8 +82,8 @@
 ;       INVERSE:      Given a table number, return its checksum.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2019-03-15 12:38:10 -0700 (Fri, 15 Mar 2019) $
-; $LastChangedRevision: 26808 $
+; $LastChangedDate: 2025-11-27 16:04:38 -0800 (Thu, 27 Nov 2025) $
+; $LastChangedRevision: 33884 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2014-01-03
@@ -88,9 +99,10 @@ function mvn_swe_tabnum, i, inverse=inverse
       6 : chksum = '82'XB
       7 : chksum = '00'XB
       8 : chksum = '00'XB
+      9 : chksum = '00'XB
       else   : begin
                  print,'Tabnum ',i,' not recognized.',format='(a,i2.2,a)'
-                 chksum = 0B
+                 chksum = 'FF'XB
                end
     endcase
 
@@ -102,7 +114,10 @@ function mvn_swe_tabnum, i, inverse=inverse
     'DE'XB : tabnum = 4
     'CC'XB : tabnum = 5
     '82'XB : tabnum = 6
-    '00'XB : tabnum = 7  ; ambiguous: could be table 7 or 8
+    '00'XB : begin
+               print,'Checksum ',i,' is ambiguous.  Could be table 7, 8 or 9.',format='(a,Z2.2,a)'
+               tabnum = 7
+             end
     else   : begin
                print,'Checksum ',i,' not recognized.',format='(a,Z2.2,a)'
                tabnum = 0
@@ -110,5 +125,4 @@ function mvn_swe_tabnum, i, inverse=inverse
   endcase
 
   return, tabnum
-
 end

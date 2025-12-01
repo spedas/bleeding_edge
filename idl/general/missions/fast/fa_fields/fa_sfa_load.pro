@@ -1,11 +1,11 @@
 ;+
 ;NAME:
-; fa_dsp_load
+; fa_sfa_load
 ;PURPOSE:
-; Loads FAST EFI DSP (Digital Signal Processor) L2 data for a given
+; Loads FAST EFI SFA (Swept Frequency Analyzer) L2 data for a given
 ; time range, or orbit range
 ;CALLING SEQUENCE:
-; fa_dsp_load, trange=trange, orbit=orbit
+; fa_sfa_load, trange=trange, orbit=orbit
 ;INPUT:
 ; All via keyword, if none are set, then the output of timerange() is
 ; used for the time range, which may prompt for a time interval
@@ -18,7 +18,7 @@
 ;                trange is only used for file selection. Note that
 ;                setting no_time_clip will always generate a reload of data
 ;OUTPUT:
-; tplot variables, 'fa_dspadc_mag3ac', and similar
+; tplot variables, 'fa_sfaave_mag3ac', and similar
 ;HISTORY:
 ; Hacked from EFI L2 load, 2024-11-12, jmm
 ; $LastChangedBy: $
@@ -26,7 +26,7 @@
 ; $LastChangedRevision: $
 ; $URL: $
 ;-
-Pro fa_dsp_load, trange = trange, orbit = orbit, $
+Pro fa_sfa_load, trange = trange, orbit = orbit, $
                  no_time_clip = no_time_clip, $
                  version = version, _extra = _extra
 
@@ -38,7 +38,7 @@ Pro fa_dsp_load, trange = trange, orbit = orbit, $
   Endif Else sw_vsn = 1
   vxx = 'v'+string(sw_vsn, format='(i2.2)')
 ;Here we are loading one type
-  type = 'dsp'
+  type = 'sfa'
   If(keyword_set(orbit)) Then Begin
      start_orbit = long(min(orbit))
      end_orbit = long(max(orbit))

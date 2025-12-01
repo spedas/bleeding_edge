@@ -27,7 +27,8 @@
 ;     mvn_sta_l3_density_quality_flag.
 ;
 ;Set coltab as a float/integer to the desired color table, so that tplot variable labels can be colored correctly. If not set, the default
-;     value of 43 is used, via loadct2, 43. Note: in the latest version this keyword no longer works.
+;     value of 43 is used, via loadct2, 43. Note: in the latest version this keyword no longer works and is no
+;     longer needed.
 ;
 ;Set /qualc if you are using Mike Chaffins qualcolors colortable software. This supercedes the coltab keyword. If qualc is not set, 
 ;     then the keyword coltab is used instead, which defaults to 43 if not set. Note: this routine used to run loadct2, if qualc was not set. This
@@ -38,10 +39,19 @@
 ;               @'qualcolors'
 ;               !p.background = qualcolors.white
 ;               !p.color = qualcolors.black 
+;     NOTE: This method of accessing the qualcolors tables has been disabled (DLM: 2025-11-21).  This routine 
+;           now uses line_colors.pro, which makes no changes to the user's color table and works for both dark 
+;           and light backgrounds.
 ; 
 ;If you set /leavecolors, the routine will not set any colors and will ignore the coltab and qualc keywords. Use this if you do not 
 ;     want this routine loading a new colortable. You can fix the tplot colors outside of this routine using 
 ;         options, 'tplotname', colors=[1,2,3,4,5]
+;     NOTE: This keyword is obsolete and has no effect (DLM: 2025-11-21).  Use keyword LINE_CLRS instead.
+;
+;Set line_clrs to any of the 12 preset line color schemes (see line_colors.pro).  Default is scheme 5, which is 
+;     the primary and secondary colors, with orange replacing yellow for better contrast on a white background:
+;         [black, magenta, blue, cyan, green, orange, red, white]
+;     In addition to the presets, custom line color schemes can be defined (see line_colors.pro).
 ;
 ;Set filesloaded to a variable that will contain the filenames of the tplot files loaded. This output will be in string format. Files are appended in the order loaded,
 ;     so science, ancillary and flag filenames, if /anc and /flag are set. 
@@ -141,16 +151,26 @@
 ;2021-11:11: KGH added workaround to fix problem with anc keyword -- recreate 'problem' tplot variables at the end of this code rather than storing them in the anc files. 
 ;2022-06-27: CMF: added filesloaded keyword to output list of filenames loaded.
 ;2024-02-28: CMF: removed the default behavior to use loadct2 command. The user must run this themselves beforehand now. The keyword coltab now no longer works as a result.
+;2025-11-21: DLM: replaced qualcolors code with line_colors, which is compatible with tplot.  Line color definitions 
+;                 are local to each tplot variable, and the user's line colors and color table are not altered.
+;                 Disabled keywords: coltab, qualc, and leavecolors.
 ;-
 ;
 
 
-pro mvn_sta_l3_load, den=den, temp=temp, success=success, append=append, margin=margin, anc=anc, flag=flag, coltab=coltab, qualc=qualc, $
-                        leavecolors=leavecolors, filesloaded=filesloaded
+pro mvn_sta_l3_load, den=den, temp=temp, success=success, append=append, margin=margin, anc=anc, flag=flag, $
+                     coltab=coltab, qualc=qualc, leavecolors=leavecolors, filesloaded=filesloaded, $
+                     line_clrs=line_clrs
 
 proname = 'mvn_sta_l3_load'
 sl = path_sep()
 success = 0  ;default if routine bails
+
+; Warn about obsolete keywords
+
+if (size(coltab,/type) ne 0) then print, 'Keyword COLTAB is obsolete and has no effect.'
+if (size(qualc,/type) ne 0) then print, 'Keyword QUALC is obsolete and has no effect.'
+if (size(leavecolors,/type) ne 0) then print, 'Keyword LEAVECOLORS is obsolete and has no effect.'
 
 ;2021-10-12: CMF and KGH: anc keyword needs a bit of debugging when loading multiple files using tplot-restore append function.
 ;Disable for now, and reactive when fixed
@@ -163,8 +183,8 @@ success = 0  ;default if routine bails
 ;  anc=1
 ;endif
 
-if keyword_set(den) then den=1 else den=0
-if keyword_set(temp) then temp=1 else temp=0
+den = keyword_set(den)
+temp = keyword_set(temp)
 if den+temp eq 0 then begin
     den=1
     temp=1  ;default
@@ -181,12 +201,28 @@ endif else passwd = getenv('MAVENPFP_USER_PASS')
 
 ;/disks/data/maven/data/sci/sta/l3/  density  temperature
 
-;The default for this routine is to use get_colors(); if this doesn't work, use this backup array of color indices:
-colsbestguess = create_struct('black'      ,     0   , $  
-                              'magenta'    ,     20  , $
-                              'blue'       ,     50  , $
-                              'red'        ,     250 , $
-                              'green'      ,     170)
+;Choose line colors for the plot (see line_colors.pro).  You can choose from 
+;among 12 pre-defined line color schemes, or you can define a custom scheme.
+;Default is preset scheme 5.
+
+line_clrs = keyword_set(line_clrs) ? fix(line_clrs) : 5
+
+;The following structure definition corresponds to line color preset 5:
+
+cols = create_struct('black'   , 0   , $
+                     'magenta' , 1   , $
+                     'blue'    , 2   , $
+                     'cyan'    , 3   , $
+                     'green'   , 4   , $
+                     'orange'  , 5   , $
+                     'red'     , 6   , $
+                     'white'   , 255    )
+
+pcolor = (!p.background eq 0) ? cols.white : cols.black  ; white or black line depending on user's background color
+
+;          H+        He++         O+         O2+       CO2+
+cols5 = [pcolor, cols.magenta, cols.blue, cols.red, cols.green]  ; 5 colors for density
+cols3 = cols5[2:4]  ; heavy ion method
 
 ;Get timerange from timespan:
 get_timespan, tr
@@ -317,71 +353,36 @@ endfor  ;tt
 if keyword_set(margin) then tplot_options, 'xmargin', [16,8]
 
 ;Fix colors for density here:
-if not keyword_set(leavecolors) then begin  ;only fix colors if requested
-    ;Setup color table if needed:
-    if keyword_set(qualc) then begin
-        @'qualcolors'
-        cols = qualcolors  ;copy colortable variable
-        cols5 = [cols.black, cols.purple, cols.blue, cols.red, cols.green] ;5 colors for density
-        cols3 = [cols.blue, cols.red, cols.green]  ;heavy ion method
-    endif else begin
-        ;Not qualcolors:
-        if keyword_set(coltab) then ct = coltab else ct = 43 ;default if coltab not set
-        ;loadct2, ct  ;as of 2024-02-28, CMF disabled this - users must set it themselves.
-        cols = get_colors()  ;get list of table colors   
-        if size(cols,/type) ne 8 then cols=colsbestguess
-        cols5 = [cols.black, cols.magenta, cols.blue, cols.red, cols.green]   ;note, 43 doesn't have purple - use magenta instead. 
-        cols3 = [cols.blue, cols.red, cols.green]
-    endelse
         
-    if keyword_set(den) then begin
-        dvars = ['mvn_sta_l3_density', 'mvn_sta_l3_density_abs_uncertainty', 'mvn_sta_l3_density_perc_uncertainty', $
-                    'mvn_sta_l3_density_quality_flag']
-        ndv = n_elements(dvars)       
-        for dv = 0l, ndv-1l do options, dvars, colors=cols5  ;change colors
-        options, 'mvn_sta_l3_density_heavy_method', colors=cols3
+if keyword_set(den) then begin
+  dvars = ['mvn_sta_l3_density', 'mvn_sta_l3_density_abs_uncertainty', 'mvn_sta_l3_density_perc_uncertainty', $
+           'mvn_sta_l3_density_quality_flag']
+  options, dvars, 'line_colors', line_clrs
+  options, dvars, 'colors', cols5
+  options, 'mvn_sta_l3_density_heavy_method', 'line_colors', line_clrs
+  options, 'mvn_sta_l3_density_heavy_method', 'colors', cols3
         
-        ;Fix attenuator + state mode colors:
-        options, 'mvn_sta_c6_att_mode', colors=[cols.black, cols.red]
-    endif  ;den
+;Fix attenuator + state mode colors:
+  options, 'mvn_sta_c6_att_mode', 'line_colors', line_clrs
+  options, 'mvn_sta_c6_att_mode', 'colors', [pcolor, cols.red]
+endif  ;den
     
-    if keyword_set(temp) then begin
-      options,'mvn_sta_l3_sta_att_mode',colors=[cols.black,cols.red]  
-    endif
-    
-endif  ;leavecolors
+if keyword_set(temp) then begin
+  options, 'mvn_sta_l3_sta_att_mode', 'line_colors', line_clrs
+  options, 'mvn_sta_l3_sta_att_mode', 'colors', [pcolor, cols.red]  
+endif
 
 
 ;;; added by KGH 11/9/21
 ;; now recreate the array-of-strings tplot variables
 if keyword_set(anc) and keyword_set(temp) then begin
-  
-  ;; load the colors if they weren't loaded already
-  if keyword_set(leave_colors) then begin
-    if keyword_set(qualcolors) then begin
-      @'qualcolors'
-      cols = qualcolors  ;copy colortable variable
-      str_element, cols, 'cyan', cols.pink, /add ; this is terrible but I needed a field called cyan -- I can't add a new qualcolor, so I'll just make it pink. 
-      endif else begin
-       ;Not qualcolors:
-        if keyword_set(coltab) then ct = coltab else ct = 43 ;default if coltab not set
-        ;loadct2, ct  ;CMF disabled on 2024-02-28
-        cols = get_colors() 
-        if size(cols,/type) ne 8 then cols=colsbestguess
-        str_element, cols, 'orange', 200, /add ; best guess       
-      endelse     
-  endif else begin
-    if keyword_set(qualcolors) then str_element, cols, 'cyan', cols.pink, /add else str_element, cols, 'orange', 200, /add
-  endelse
   badvars =  ['mvn_sta_temp_lpwcorr', 'tpar_w_corr', 'ana_dth_fwhm_compare', 'tperp_w_corr', 'modeatt']
 
   store_data,'mvn_sta_temp_lpwcorr', data=['mvn_sta_c6_o2+_tparu','mvn_sta_c6_o2+_temp_nolpw']
   ylim,'mvn_sta_temp_lpwcorr',0.01,10,1
-  options,'mvn_sta_temp_lpwcorr',colors=[cols.black,cols.cyan]
 
   store_data, 'tpar_w_corr', data=['mvn_sta_c6_o2+_tparu', $
     'mvn_sta_c6_o2+_temp', 'mvn_sta_c6_o2+_temp_ac' ]
-  options, 'tpar_w_corr', 'colors', [cols.blue, cols.cyan, cols.orange]
   options, 'tpar_w_corr', 'labels', ['Uncorrected', $
     'Corrected', 'Analyzer']
   options, 'tpar_w_corr', 'labflag', -1
@@ -392,14 +393,19 @@ if keyword_set(anc) and keyword_set(temp) then begin
 
   store_data, 'tperp_w_corr', data=['mvn_sta_c8_tperpu', $
     'mvn_sta_c8_temp', 'mvn_sta_c8_o2+_temp_ac' ]
-  options, 'tperp_w_corr', 'colors', [cols.blue, cols.cyan, cols.orange]
   options, 'tperp_w_corr', 'labels', ['Uncorrected', $
     'Corrected', 'Analyzer']
   options, 'tperp_w_corr', 'labflag', -1
   ylim, 'tperp_w_corr', 0.001, 10, 1
 
   store_data, 'modeatt', data=['mvn_sta_c6_mode', 'mvn_sta_c6_att']
-  options,'modeatt','colors',[cols.black,cols.red]
+  
+  options, ['mvn_sta_temp_lpwcorr','tpar_w_corr','tperp_w_corr','modeatt'], 'line_colors', line_clrs
+  options, 'mvn_sta_temp_lpwcorr', 'colors', [pcolor, cols.cyan]
+  options, 'tpar_w_corr', 'colors', [cols.blue, cols.cyan, cols.orange]
+  options, 'tperp_w_corr', 'colors', [cols.blue, cols.cyan, cols.orange]
+  options, 'modeatt', 'colors', [pcolor, cols.red]
+
 endif ;anc & temp
 
 success=1 

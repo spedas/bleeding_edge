@@ -24,8 +24,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2025-11-18 12:42:00 -0800 (Tue, 18 Nov 2025) $
-; $LastChangedRevision: 33850 $
+; $LastChangedDate: 2025-11-24 11:16:03 -0800 (Mon, 24 Nov 2025) $
+; $LastChangedRevision: 33871 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_load.pro $
 ;
 ;-
@@ -47,12 +47,17 @@ PRO esc_spice_load, trange=itime, verbose=verbose, blue=blue, gold=gold, resolut
   ENDIF 
 
   IF is_struct(info) THEN BEGIN
-     w = WHERE(info.type EQ 'SPK' and ( (info.obj_name EQ 'ESCAPADE_BLUE') OR (info.obj_name EQ 'ESCAPADE_GOLD') ), nw)
-     IF nw GT 0 THEN tcov = minmax(time_double(info[w].trange))
+     ;w = WHERE(info.type EQ 'SPK' and ( (info.obj_name EQ 'ESCAPADE_BLUE') OR (info.obj_name EQ 'ESCAPADE_GOLD') ), nw)
+     w = WHERE(info.type EQ 'SPK' and info.obj_name EQ 'ESCAPADE_BLUE', nw)
+     v = WHERE(info.type EQ 'SPK' and info.obj_name EQ 'ESCAPADE_GOLD', nv)
+     IF nw GT 0 THEN tcov_b = minmax(time_double(info[w].trange))
+     IF nv GT 0 THEN tcov_g = minmax(time_double(info[v].trange))
+     IF tcov_b[0] GE tcov_g[0] THEN append_array, tcov, tcov_b[0] ELSE append_array, tcov, tcov_g[0]
+     IF tcov_b[1] LE tcov_g[1] THEN append_array, tcov, tcov_b[1] ELSE append_array, tcov, tcov_g[1]
      IF tr[0] LT tcov[0] THEN tr[0] = time_double(time_string(tcov[0], prec=-1)) + 120.d0
      IF tr[1] GT tcov[1] THEN tr[1] = time_double(time_string(tcov[1], prec=-1)) - 120.d0
   ENDIF 
-
+  
   IF undefined(res) THEN dt = 60.d0 ELSE dt = DOUBLE(res)
   time = dgen(range=tr, resolution=dt)
 

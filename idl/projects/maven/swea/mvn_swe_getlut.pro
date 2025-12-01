@@ -23,16 +23,17 @@
 ;    shift SSCTL times by a constant amount to align with the data.
 ;
 ;  Method 2: Use analyzer voltage readback in housekeeping to identify
-;    tables 7-9.  This works well much of the time, but can get
-;    confused when the sweep in normal operation is sampled near one
-;    of the high-cadence energies.
+;    tables 7-9.  This also requires high-cadence housekeeping.  This
+;    works well much of the time, but can get confused when the sweep
+;    in normal operation is sampled near one of the high-cadence energies.
 ;
 ;  Method 3: Use a constant count rate at all energy steps to detect
 ;    one of the high-cadence tables.  This assumes that the signal
-;    changes slowly during the 2-second measurement cycle.  This is 
-;    used in conjunction with Method 1 to correct SSCTL timing errors.
-;    This is the least effective method, because during interesting 
-;    times, the signal can change significantly within a measurement 
+;    changes slowly during the 2-second measurement cycle.  This does
+;    *not* require high-cadence housekeeping.  It is used in conjunction
+;    with Method 1 to determine the timing of table changes between
+;    housekeeping values.  The main limitation of this method
+;    is that the signal can change significantly within a measurement 
 ;    cycle.  It also fails within superthermal electron voids, where 
 ;    the flux at all energy channels is near background.
 ;
@@ -150,8 +151,8 @@
 ;       DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-11-05 13:23:25 -0800 (Wed, 05 Nov 2025) $
-; $LastChangedRevision: 33830 $
+; $LastChangedDate: 2025-11-26 13:47:51 -0800 (Wed, 26 Nov 2025) $
+; $LastChangedRevision: 33882 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 ;-
 pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux, diag=diag, tplot=tplot, $
@@ -404,11 +405,13 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
 
     store_data,'dt_hsk',data={x:swe_hsk.time, y:dt_hsk}
     options,'dt_hsk','psym',4
-    options,'dt_hsk','ytitle','dT (28)'
+    options,'dt_hsk','ytitle','HSK dT (sec)'
     store_data,'dt_hires',data={x:swe_hsk[hndx].time, y:dt_hsk[hndx]}
     options,'dt_hires','psym',4
     options,'dt_hires','colors',6
     store_data,'dt_all',data=['dt_hsk','dt_hires']
+    options,'dt_all','labels',['NORMAL','HIRES']
+    options,'dt_all','labflag',1
   endif
 
 ; Insert LUT information into data structures

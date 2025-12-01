@@ -272,7 +272,15 @@ de_e = double(de_e)
 
 e_inf = (e + charge * pot) > 0.   ; Energy at infinity
 
-weight = 0. > ((e + charge * pot)/de+.5) < 1.   ;??????
+;weight is a function that will decrease the integrand for electrons
+;and positive potential below a certain energy level, a gradual
+;cutoff below the pot value. This will mitigate the effect of
+;photoelectrons that may show up below the value of spacecraft
+;potential. 
+;Ions should be unaffected unless the potential is negative.
+;jmm, 2025-11-24
+
+weight = 0. > ((e + charge * pot)/de+.5) < 1.
 ;weight = 0 > ((e + charge * pot)/de+.5)
 ;
 ;idx = where(~finite(weight),c)
@@ -296,11 +304,13 @@ if arg_present(dmom) then begin
   dmom.sc_current = sqrt(total(data_dv*data_dv1)) ;uncertainty, jmm, 12-apr-2011
 endif
 
-;Density calculation:
+;Density calculation: See section 3.2 of
+;Lavarud, B. and Larson, D. E., JGR space physics, vol. 121, issue 9
+;Sep 2016 for dweight term
 dweight = sqrt(e_inf)/e
 pardens = sqrt(mass/2.)* 1e-5 * data_dv * dweight
 mom.density = total(pardens)   ; 1/cm^3
-
+if(charge Lt 0) then stop
 if arg_present(dmom) then begin
   pardens1 = sqrt(mass/2.)* 1e-5 * data_dv1 * dweight
   dmom.density = sqrt(total(pardens*pardens1)) ;uncertainty, jmm, 12-apr-2011

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Nov 23 18:16:54 2025.<P>
+<STRONG>Last modified: </STRONG>Thu Nov 27 18:16:58 2025.<P>
  
 <HR>
  
@@ -25,6 +25,8 @@ This page was created by the IDL library routine
 <br>Loads FAST EFI DSP (Digital Signal Processor) L2 data for a given
 <LI><A HREF="#FA_LOAD_MAG_HR_DCB">FA_LOAD_MAG_HR_DCB</A>
 <br>Loads FAST high rate dc magnetic field(DCB) data using SPDF web services.
+<LI><A HREF="#FA_SFA_LOAD">FA_SFA_LOAD</A>
+<br>Loads FAST EFI SFA (Swept Frequency Analyzer) L2 data for a given
 <br>
 </UL><P>
 <HR>
@@ -91,7 +93,7 @@ KEYWORDS:
                 trange is only used for file selection. Note that
                 setting no_time_clip will always generate a reload of data
 OUTPUT:
- tplot variables, 'dspadc_mag3ac', and similar
+ tplot variables, 'fa_dspadc_mag3ac', and similar
 HISTORY:
  Hacked from EFI L2 load, 2024-11-12, jmm
  $LastChangedBy: $
@@ -105,6 +107,7 @@ HISTORY:
 <A NAME="FA_LOAD_MAG_HR_DCB">
 <H2>FA_LOAD_MAG_HR_DCB</H2></A>
 <A HREF="#FA_DSP_LOAD">[Previous Routine]</A>
+<A HREF="#FA_SFA_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -132,5 +135,40 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 
 </PRE><P>
 <STRONG>(See <A href="fa_fields/fa_load_mag_hr_dcb.pro">general/missions/fast/fa_fields/fa_load_mag_hr_dcb.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="FA_SFA_LOAD">
+<H2>FA_SFA_LOAD</H2></A>
+<A HREF="#FA_LOAD_MAG_HR_DCB">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ fa_sfa_load
+PURPOSE:
+ Loads FAST EFI SFA (Swept Frequency Analyzer) L2 data for a given
+ time range, or orbit range
+CALLING SEQUENCE:
+ fa_sfa_load, trange=trange, orbit=orbit
+INPUT:
+ All via keyword, if none are set, then the output of timerange() is
+ used for the time range, which may prompt for a time interval
+KEYWORDS:
+ trange = read in the data from this time range, note that if both
+          files and time range are set, orbits take precedence in
+          finding files.
+ orbit = if set, load the given orbit(s) 
+ no_time_clip = if set do not clip the data to the time range. The
+                trange is only used for file selection. Note that
+                setting no_time_clip will always generate a reload of data
+OUTPUT:
+ tplot variables, 'fa_sfaave_mag3ac', and similar
+HISTORY:
+ Hacked from EFI L2 load, 2024-11-12, jmm
+ $LastChangedBy: $
+ $LastChangedDate: $
+ $LastChangedRevision: $
+ $URL: $
+</PRE><P>
+<STRONG>(See <A href="fa_fields/fa_sfa_load.pro">general/missions/fast/fa_fields/fa_sfa_load.pro</A>)</STRONG><P>
 <HR>
  
