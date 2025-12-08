@@ -5,13 +5,13 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
     if make eq 2 then begin
       if ~keyword_set(trange) then trange = time_double(['2025 9 24','now'])
       res = 3600d  *24  ; 1 day
-      days = floor(trange/res)
-      ndays = trange[1] - trange[0] +1
+      days = floor(time_double(trange)/res)
+      ndays = days[1] - days[0] +1
       ;types = ['sc_100','sc_110','stis_hkp2','stis_sci','stis_nse','mag8','mag64']
 
-      for day= days[0],ndays do begin
+      for day= days[0],days[1]+1 do begin
         tr= (day +[0,1]) *res 
-        swfo_ccsds_frame_read,trange=tr,merge=0,reader=rdr,user_pass='davin:port'
+        swfo_ccsds_frame_read,trange=tr,merge=0,reader=rdr,user_pass=getenv('SWFO_USER_PASS')  
         dh=!null
         
         swfo_load,/make,datahash=dh,types=types,resolution=res,file_hashes=rdr.dyndata

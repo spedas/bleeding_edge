@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2025-11-22 20:05:31 -0800 (Sat, 22 Nov 2025) $
-; $LastChangedRevision: 33866 $
+; $LastChangedDate: 2025-12-02 12:57:16 -0800 (Tue, 02 Dec 2025) $
+; $LastChangedRevision: 33888 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/mag/swfo_mag_sci_apdat__define.pro $
 
 
@@ -61,7 +61,7 @@ function swfo_mag_sci_apdat::decom,ccsds,source_dict=source_dict
     endif
     
     if 1 then begin
-      ndat = (datastr.pkt_size - 20)  < mdsize
+      ndat = (datastr.packet_size - 20)  < mdsize
       datastr.raw_data[0:ndat-1] = ccsds.data[20:ndat+20-1]
       return,datastr      
     endif else begin

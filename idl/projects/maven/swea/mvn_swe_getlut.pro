@@ -148,11 +148,12 @@
 ;
 ;       TPLOT:    Make a tplot variable of LUT vs time.
 ;
-;       DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
+;       DIAG:     Make diagnostic plots to evaluate and tune FLUX or VOLT
+;                 method.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-11-26 13:47:51 -0800 (Wed, 26 Nov 2025) $
-; $LastChangedRevision: 33882 $
+; $LastChangedDate: 2025-12-02 13:39:15 -0800 (Tue, 02 Dec 2025) $
+; $LastChangedRevision: 33891 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 ;-
 pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux, diag=diag, tplot=tplot, $
@@ -381,15 +382,18 @@ pro mvn_swe_getlut, dt_lut=dt_lut, volt=volt, vmean=vmean, dv_max=dv, flux=flux,
     options,'cratio','constant',[0.1, 1.0]
     options,'cratio','line_colors',5
     options,'cratio','const_color',[6,4]
+    options,'cratio','ytitle','Count Rate Ratio!c(High E / Low E)'
     ylim,'cratio',0.01,100.,1
 
     store_data,'loav',data={x:tspec, y:loav}
     ylim,'loav',0.1,1e5,1
     options,'loav','psym',4
+    options,'loav','ytitle','Count Rate!c(< 20 eV)'
 
     store_data,'hiav',data={x:tspec, y:hiav}
     ylim,'hiav',0.1,1e5,1
     options,'hiav','psym',4
+    options,'hiav','ytitle','Count Rate!c(> 1400 eV)'
 
     options,['loav','hiav'],'constant',[0.5,1.0]
     options,['loav','hiav'],'line_colors',5

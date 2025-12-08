@@ -90,15 +90,15 @@
 ;
 ;       REALTIME:      Use realtime file naming convention: YYYYMMDD_HHMMSS_*_l0.dat
 ;
-;       HIRES:         Search for high time resolution sweep tables (7-9) using 
-;                      the constant flux method.
+;       HIRES:         Create diagnostic tplot panels for the constant flux method
+;                      of identifying the sweep table in use.
 ;
 ;       VERBOSE:       Level of diagnostic message suppression.  Default = 0.  Set
 ;                      to a higher number to see more diagnostic messages.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-10-31 13:59:29 -0700 (Fri, 31 Oct 2025) $
-; $LastChangedRevision: 33810 $
+; $LastChangedDate: 2025-12-02 13:39:15 -0800 (Tue, 02 Dec 2025) $
+; $LastChangedRevision: 33891 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 ;
 ;CREATED BY:    David L. Mitchell  04-25-13
@@ -367,10 +367,15 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 ; Determine sweep table for each measurement.
 ;   This routine will automatically detect the presence of high resolution
 ;   sweep tables in housekeeping.  If they are detected, then by default
-;   the constant flux method is used to set the table numbers.  See the
-;   routine for other options.
+;   the constant flux method is used to set the table numbers.  (See the
+;   routine for other options.)  The routine is not guaranteed to correctly
+;   identify every hires table; however, there are typically no more than a 
+;   handful of misidentifications per day.  Use mvn_swe_fixlut to manually 
+;   correct any errors.
+;
+;   If there are no hires tables, the routine is trivial (tabnum[*] = 5).
 
-  mvn_swe_getlut, result=tabnum
+  mvn_swe_getlut, result=tabnum, diag=keyword_set(hires)
 
 ; Make energy spectra.  Use the table numbers from above.
 
@@ -393,7 +398,7 @@ pro mvn_swe_load_l0, trange, filename=filename, latest=latest, maxbytes=maxbytes
 
 ; Create a summary plot
 
-  if keyword_set(sumplot) then mvn_swe_sumplot
+  if keyword_set(sumplot) then mvn_swe_sumplot, lut=keyword_set(hires)
 
   return
 

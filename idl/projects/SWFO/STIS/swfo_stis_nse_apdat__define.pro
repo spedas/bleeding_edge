@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
-; $LastChangedRevision: 33797 $
+; $LastChangedDate: 2025-12-02 16:17:18 -0800 (Tue, 02 Dec 2025) $
+; $LastChangedRevision: 33893 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_nse_apdat__define.pro $
 
 
@@ -73,14 +73,17 @@ end
 pro swfo_stis_nse_apdat::handler2,strct,source_dict=source_dict
 
   ;printdat,self
-  if ~obj_valid(self.level_1a) then begin
+  if  0 &&  ~obj_valid(self.level_1a) then begin
     dprint,'Creating Level_1a for ',self.name
     self.level_1a = dynamicarray(name=self.prefix+'Noise_L1a')
   endif
-  da =   self.level_1a
-  strct_1 = swfo_stis_nse_level_1(strct)   ;this portio of code is no longer in use i think
-  ;printdat,strct
-  da.append, strct_1
+  
+  if isa(self.level_1a,'dynamicarray') then begin
+    da =   self.level_1a
+    strct_1 = swfo_stis_nse_level_1(strct)   ;this portio of code is no longer in use i think
+    ;printdat,strct
+    da.append, strct_1    
+  endif
 end
 
 

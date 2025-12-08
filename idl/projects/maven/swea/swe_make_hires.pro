@@ -5,70 +5,56 @@
 ;  creates hires PAD and SPEC data, and makes tplot variables with merged hires
 ;  and normal resolution data.  SWEA and tplot save files are created.
 ;
+;  You must run swe_load_hires before running this program.
+;
 ;USAGE:
-;  swe_make_hires, date
+;  swe_make_hires
 ;
 ;INPUTS:
-;       date:      Date to process, in any format accepted by time_double().
-;                  Only the date (YYYY-MM-DD) is used; HH:MM:SS are ignored.
+;       none
 ;
 ;KEYWORDS:
-;       TPLOT:     If set, create a time series plot of the data.
+;       TPLOT:     Make a time series plot of the result.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-23 10:37:01 -0700 (Mon, 23 Jun 2025) $
-; $LastChangedRevision: 33409 $
+; $LastChangedDate: 2025-12-04 14:59:15 -0800 (Thu, 04 Dec 2025) $
+; $LastChangedRevision: 33902 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_make_hires.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;FILE: swe_make_hires.pro
 ;-
-pro swe_make_hires, date, tplot=tplot
+pro swe_make_hires, tplot=tplot
 
-; Generate filenames based on date
+; Get the date from tplot and generate a filename for the save file
 
-  if (size(date,/type) eq 0) then begin
-    print,"You must supply a date."
+  get_data, 'swe_a4', data=dat, index=i
+  if (i eq 0) then begin
+    print,"No SWEA data found in tplot.  You must run swe_load_hires first."
     return
   endif
 
-  t0 = systime(/utc,/sec)
-
-  date = time_string(time_double(date), prec=-3)
-
+  day = round(time_double(min(dat.x))/86400D, /L64)  ; round start time to nearest day
+  date = time_string(day*86400LL, prec=-3)
   yyyymmdd = strmid(date,0,4) + strmid(date,5,2) + strmid(date,8,2)
   path = root_data_dir() + 'maven/data/sci/swe/l3/hires/'
   fname = path + 'swe_hires_' + yyyymmdd
 
-; Load 32-Hz MAG data
+; Get the table numbers from tplot
 
-  timespan, date
-  mvn_mag_load, 'L2_FULL', sclk=sclk  ; get kernel used to produce MAG data
-  get_data,'mvn_B_full',alim=lim
-  maglev = strupcase(lim.level)
-  mvn_swe_spice_init, sclk=sclk       ; same kernel used to produce MAG data
-  maven_orbit_tplot, /load
-  eph = maven_orbit_eph()
-  mvn_mag_geom, var='mvn_B_full'
-  mvn_mag_tplot, 'mvn_B_full_maven_mso'
-  options,'mvn_mag_l1_bamp','ytitle','|B| (nT)!c' + maglev
-  options,'mvn_mag_l1_bamp','ysubtitle',''
-  options,'mvn_B_full_maven_mso','ytitle','B (nT)!c' + maglev + ' MSO'
-  options,'mvn_B_full_maven_mso','ysubtitle',''
-
-; Load SWEA data
-
-  mvn_swe_load_l0
-  mvn_swe_getlut, /flux, /tplot
-  get_data, 'TABNUM', data=tab  ; table number vs time
-  indx = where(tab.y gt 6, count)
-  if (count eq 0L) then begin
-    print,"No hires data.  Nothing to do."
+  get_data, 'TABNUM', data=tab, index=i
+  if (i eq 0) then begin
+    print,"Tplot variable 'TABNUM' not found.  You must run swe_load_hires first."
     return
   endif
-  mvn_swe_makespec, lut=tab.y
-  mvn_swe_sumplot, /lut, /loadonly
-  mvn_scpot, /loadonly
+
+  indx = where(tab.y gt 6, count)
+  if (count eq 0) then begin
+    print,"No hires data found!"
+    return
+  endif else print,"Number of hires spectra: " + strtrim(string(count),2)
+
+  t0 = systime(/utc,/sec)
   mvn_attitude_bar
 
 ; Load SWIA data and estimate error bars
@@ -152,7 +138,7 @@ pro swe_make_hires, date, tplot=tplot
     yrange = minmax(dat.y[indx])
     ymin = 10.^floor(alog10(yrange[0]))
     ymax = 10.^ceil(alog10(yrange[1]))
-    ylim,'flux_50',ymin,ymax,1
+    ylim,'flux_125',ymin,ymax,1
     units = 'EFLUX'
     options,'flux_125','ytitle',units + '!c125 eV'
     options,'flux_125','datagap',1D
@@ -227,6 +213,10 @@ pro swe_make_hires, date, tplot=tplot
 
     pans = ['mvn_swics_en_eflux','mvn_mag_l1_bamp','mvn_B_full_maven_mso','mvn_sun_bar',$
            'mvn_att_bar','swe_a3_bar',padpans,'TABNUM','swe_a4']
+    tplot_options,'var_label',['alt','sza','lat']
+    options,'alt','ytitle','ALT'
+    options,'sza','ytitle','SZA'
+    options,'lat','ytitle','LAT'
     tplot, pans
   endif
 

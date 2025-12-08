@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
-; $LastChangedRevision: 33864 $
+; $LastChangedDate: 2025-12-04 09:33:00 -0800 (Thu, 04 Dec 2025) $
+; $LastChangedRevision: 33900 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_create.pro $
 ; $ID: $
 
@@ -10,10 +10,10 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
   if keyword_set(global_atts) then begin
     gkeys = global_atts.keys()
   endif
-  
+
   if ~isa(ncdf_filename,/string) then ncdf_filename = 'temp'
-  
-  
+
+
 
   if ~isa(dat,'struct') then begin
     dprint,dlevel=1,verbose=verbose,'No data structure provided to save into file: '+ncdf_filename
@@ -28,12 +28,12 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
     file_copy,ncdf_template,ncdf_filename
 
   endif else begin
-    
+
     if keyword_set(append) then begin
       if file_test(ncdf_filename) then begin
         dat_old = swfo_ncdf_read(filenames = ncdf_filename)
-        
-        if array_equal(dat_old.time,dat.time) then begin
+
+        if ~isa(dat_old) || array_equal( dat_old.time,dat.time) then begin
           dprint,dlevel=2,'No new : "'+ncdf_filename+'"  Skipping append'
           return
         endif
@@ -42,10 +42,10 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
         endif
         dat_new = replicate(dat[0],n_elements(dat_old))
         struct_assign,dat_old,dat_new,/verbose
-;        if array_equal(dat_new.time,dat.time) && n_tags(/length,dat_old then begin
-;          dprint,dlevel=2,'No new data for file: '+ncdf_filename+'  Skipping append'
-;          return
-;        endif
+        ;        if array_equal(dat_new.time,dat.time) && n_tags(/length,dat_old then begin
+        ;          dprint,dlevel=2,'No new data for file: '+ncdf_filename+'  Skipping append'
+        ;          return
+        ;        endif
         dat = [dat_new,dat]
         s= sort(dat.time)
         dat = dat[s]
@@ -57,7 +57,7 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
 
     tid = ncdf_dimdef(id, 'DIM_TIME', /unlimited)
     types = hash()
-    
+
     types[1] = 'byte'
     types[2] = 'short'
     types[3] = 'long'
@@ -75,27 +75,42 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
       types[15] = 'int64'
     endif
 
+    n_structs = n_elements(dat)
     for i=0,n_elements(tags)-1 do begin
       dd = size(/struct,dat0.(i) )
       if ~types.haskey(dd.type) then begin
-        dprint,dlevel=3,'skipping ',dd.type_name
+        dprint,dlevel=3,'skipping ',tags[i]+'  '+dd.type_name
         continue
       endif
       type_struct=create_struct(types[dd.type],1)
-      if dd.n_dimensions eq  0 then begin   ; scalers
-        vid = ncdf_vardef(id,tags[i],tid,_extra=type_struct)
-        dprint,dlevel=3,tags[i],'  ',dd.type_name,dd.type,'   ',types[dd.type],vid
-      endif else begin   ; vectors
-        if dd.n_dimensions gt 1 then message,'Not allowed yet!'
-        dimname = 'DIM_' + tags[i]   ;+strtrim(dd.n_elements,2)
-        did = ncdf_dimdef(id, dimname, dd.n_elements)
-        vid = ncdf_vardef(id,tags[i],[did,tid],_extra= type_struct)
-        dprint,dlevel=3,tags[i],'  ',dd.type_name,dd.type,'   ',types[dd.type],vid,did
-      endelse
-    endfor
+      case dd.n_dimensions of
+;        0: begin
+;          dprint,'scaler structure not tested yet'
+;          dd.dimensions[0]=1
+;          dd.n_dimensions = 1
+;          dimids = tid
+;        end
+        0: begin
+          dimids = tid
+          chunk = n_structs
+        end
+        1: begin
+          dimname = 'DIM_' + tags[i]
+          did = ncdf_dimdef(id, dimname, dd.dimensions[0])
+          dimids = [did,tid]
+          chunk = [dd.dimensions[0], n_structs]
+        end
+        else:  message, 'Not allowed yet!'
+      endcase
+      ;chunk = dd.dimensions[0:dd.n_dimensions-1]
+      vid = ncdf_vardef(id,tags[i],dimids,_extra= type_struct,chunk_dimen = chunk)
+      dprint,dlevel=3,tags[i],'  ',dd.type_name,dd.type,'   ',types[dd.type],dimids,chunk
 
-    ncdf_control,id,/endef
+    endfor
     
+    ncdf_control,id,/endef
+    dprint,dlevel=3,'Done with ncdf define for ',ncdf_filename
+
   endelse
 
   for i=0,n_elements(tags)-1 do begin
@@ -105,10 +120,13 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
       continue
     endif
     dati = dat.(i)
-    ; if size(/n_dimen,dd) eq 2 then dd = transpose(dd)
+    ;if size(/n_dimen,dati) eq 2 then dati = transpose(dati)
     ncdf_varput,id,tags[i],dati
+    dprint,dlevel=3,tags[i],size(dati)
   endfor
+  dprint,dlevel=3,'Done with varput(s)'
   ncdf_close,id
+
 
   dprint,dlevel=2,verbose=verbose,'Created file: '+file_info_string(ncdf_filename)
 

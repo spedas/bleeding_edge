@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Nov 27 18:16:58 2025.<P>
+<STRONG>Last modified: </STRONG>Thu Dec  4 18:16:57 2025.<P>
  
 <HR>
  
@@ -285,6 +285,8 @@ This page was created by the IDL library routine
 <br>Loads MAG data from one of two sources:
 <LI><A HREF="#SWE_HSK_SNAP">SWE_HSK_SNAP</A>
 <br>Plots housekeeping snapshots for times selected with the cursor in a tplot
+<LI><A HREF="#SWE_LOAD_HIRES">SWE_LOAD_HIRES</A>
+<br>Special purpose loading routine for hires SWEA and MAG data.
 <LI><A HREF="#SWE_LOWE_CLUSTER">SWE_LOWE_CLUSTER</A>
 <br>Sporadic low-energy anomaly cluster analysis.
 <LI><A HREF="#SWE_MAKE_HIRES">SWE_MAKE_HIRES</A>
@@ -301,6 +303,8 @@ This page was created by the IDL library routine
 <br>Disassembles A2 packets and sorts data in time sequence.
 <LI><A HREF="#SWE_PLOT_FHSK">SWE_PLOT_FHSK</A>
 <br>Makes tplot variables for SWEA fast housekeeping data (A6).
+<LI><A HREF="#SWE_RESTORE_HIRES">SWE_RESTORE_HIRES</A>
+<br>Restores SWEA hires data from save files.
 <LI><A HREF="#SWE_ROTATE">SWE_ROTATE</A>
 <br>Rotates SWEA 3D or PAD look directions into any valid SPICE frame.
 <LI><A HREF="#SWE_SHAPE_PAR_PAD_L2_3PA">SWE_SHAPE_PAR_PAD_L2_3PA</A>
@@ -3834,11 +3838,12 @@ KEYWORDS:
 
        TPLOT:    Make a tplot variable of LUT vs time.
 
-       DIAG:     Make diagnostic plots to evaluate and tune VOLT method.
+       DIAG:     Make diagnostic plots to evaluate and tune FLUX or VOLT
+                 method.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-11-26 13:47:51 -0800 (Wed, 26 Nov 2025) $
- $LastChangedRevision: 33882 $
+ $LastChangedDate: 2025-12-02 13:39:15 -0800 (Tue, 02 Dec 2025) $
+ $LastChangedRevision: 33891 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_getlut.pro $
 </PRE><P>
 <STRONG>(See <A href="swea/mvn_swe_getlut.pro">projects/maven/swea/mvn_swe_getlut.pro</A>)</STRONG><P>
@@ -4302,15 +4307,15 @@ KEYWORDS:
 
        REALTIME:      Use realtime file naming convention: YYYYMMDD_HHMMSS_*_l0.dat
 
-       HIRES:         Search for high time resolution sweep tables (7-9) using 
-                      the constant flux method.
+       HIRES:         Create diagnostic tplot panels for the constant flux method
+                      of identifying the sweep table in use.
 
        VERBOSE:       Level of diagnostic message suppression.  Default = 0.  Set
                       to a higher number to see more diagnostic messages.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-10-31 13:59:29 -0700 (Fri, 31 Oct 2025) $
- $LastChangedRevision: 33810 $
+ $LastChangedDate: 2025-12-02 13:39:15 -0800 (Tue, 02 Dec 2025) $
+ $LastChangedRevision: 33891 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l0.pro $
 
 CREATED BY:    David L. Mitchell  04-25-13
@@ -7436,33 +7441,33 @@ PURPOSE:
               -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4630
                Chksum = 'CC'X
                GSEOS svn rev 8481
-            loaded into SWEA LUT 0 (via FSW)
+            loaded into SWEA LUT 0
 
         6 : Xmax = 5.5, Vrange = [2./Ka, 750.], V0scale = 1.
             alternate table for Transition and Science
               -59 &lt; Elev &lt; +61 ; 3 &lt; E &lt; 4650
                Chksum = '82'X
                GSEOS svn rev 8482
-            loaded into SWEA LUT 1 (via FSW)
+            loaded into SWEA LUT 1
             overwritten on 2022-04-22 (see table 9 below)
 
         7 : Xmax = 5.5, Erange = [200.,200.], V0scale = 0.
             Hires 32-Hz at 200 eV
               -59 &lt; Elev &lt; +61 ; E = 200
                Chksum = '00'X
-            loaded into SWEA LUT 2 (via FSW) on 2018-11-09
+            loaded into SWEA LUT 2 on 2018-11-09
 
         8 : Xmax = 5.5, Erange = [50.,50.], V0scale = 0.
             Hires 32-Hz at 50 eV
               -59 &lt; Elev &lt; +61 ; E = 50
                Chksum = '00'X
-            loaded into SWEA LUT 3 (via FSW) on 2018-08-28
+            loaded into SWEA LUT 3 on 2018-08-28
 
         9 : Xmax = 5.5, Erange = [125.,125.], V0scale = 0.
             Hires 32-Hz at 125 eV
               -59 &lt; Elev &lt; +61 ; E = 125
                Chksum = '00'X
-            loaded into SWEA LUT 1 (via FSW) on 2022-04-22
+            loaded into SWEA LUT 1 on 2022-04-22
 
 USAGE:
   tabnum = mvn_swe_tabnum(i)
@@ -7474,8 +7479,8 @@ KEYWORDS:
        INVERSE:      Given a table number, return its checksum.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-11-27 16:04:38 -0800 (Thu, 27 Nov 2025) $
- $LastChangedRevision: 33884 $
+ $LastChangedDate: 2025-12-02 13:39:15 -0800 (Tue, 02 Dec 2025) $
+ $LastChangedRevision: 33891 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_tabnum.pro $
 
 CREATED BY:	David L. Mitchell  2014-01-03
@@ -8640,7 +8645,7 @@ CREATED BY:    David L. Mitchell  03/18/14
 <A NAME="SWE_HSK_SNAP">
 <H2>SWE_HSK_SNAP</H2></A>
 <A HREF="#SWE_GETMAG_QL">[Previous Routine]</A>
-<A HREF="#SWE_LOWE_CLUSTER">[Next Routine]</A>
+<A HREF="#SWE_LOAD_HIRES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   swe_hsk_snap
@@ -8665,9 +8670,52 @@ CREATED BY:    David L. Mitchell  07-25-12
 <STRONG>(See <A href="swea/swe_hsk_snap.pro">projects/maven/swea/swe_hsk_snap.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_LOAD_HIRES">
+<H2>SWE_LOAD_HIRES</H2></A>
+<A HREF="#SWE_HSK_SNAP">[Previous Routine]</A>
+<A HREF="#SWE_LOWE_CLUSTER">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   swe_load_hires
+PURPOSE:
+  Special purpose loading routine for hires SWEA and MAG data.
+
+  First loads 32-Hz MAG data and determines the SCLK kernel version used to 
+  produce the data.  Next, SPICE is initialized using the same SCLK kernel, 
+  even if it's not the latest.  This ensures that MAG and SWEA data are 
+  synchronized to the millisecond level.  Next, SWEA data are loaded and 
+  inspected for hires data (tables 7, 8 and 9).  If hires data are found,
+  the flux method is used to determine the table number for each SPEC data 
+  product (see mvn_swe_getlut).  A summary plot is made with diagnostics
+  for the flux method, and the program exits.  At this point, the user should
+  inspect and correct any table assignment errors (see mvn_swe_fixlut).
+
+  The next step is performed by a separate routine: swe_make_hires.
+
+USAGE:
+  swe_load_hires, date
+
+INPUTS:
+       date:      Date to process, in any format accepted by time_double().
+                  Only the date (YYYY-MM-DD) is used; HH:MM:SS are ignored.
+
+KEYWORDS:
+       none
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2025-12-02 13:37:37 -0800 (Tue, 02 Dec 2025) $
+ $LastChangedRevision: 33889 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_load_hires.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: swe_load_hires.pro
+</PRE><P>
+<STRONG>(See <A href="swea/swe_load_hires.pro">projects/maven/swea/swe_load_hires.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_LOWE_CLUSTER">
 <H2>SWE_LOWE_CLUSTER</H2></A>
-<A HREF="#SWE_HSK_SNAP">[Previous Routine]</A>
+<A HREF="#SWE_LOAD_HIRES">[Previous Routine]</A>
 <A HREF="#SWE_MAKE_HIRES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -8765,19 +8813,20 @@ PURPOSE:
   creates hires PAD and SPEC data, and makes tplot variables with merged hires
   and normal resolution data.  SWEA and tplot save files are created.
 
+  You must run swe_load_hires before running this program.
+
 USAGE:
-  swe_make_hires, date
+  swe_make_hires
 
 INPUTS:
-       date:      Date to process, in any format accepted by time_double().
-                  Only the date (YYYY-MM-DD) is used; HH:MM:SS are ignored.
+       none
 
 KEYWORDS:
-       TPLOT:     If set, create a time series plot of the data.
+       TPLOT:     Make a time series plot of the result.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-06-23 10:37:01 -0700 (Mon, 23 Jun 2025) $
- $LastChangedRevision: 33409 $
+ $LastChangedDate: 2025-12-04 14:59:15 -0800 (Thu, 04 Dec 2025) $
+ $LastChangedRevision: 33902 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_make_hires.pro $
 
 CREATED BY:    David L. Mitchell
@@ -9146,7 +9195,7 @@ FILE: swe_pad_timing.pro
 <A NAME="SWE_PLOT_FHSK">
 <H2>SWE_PLOT_FHSK</H2></A>
 <A HREF="#SWE_PAD_TIMING">[Previous Routine]</A>
-<A HREF="#SWE_ROTATE">[Next Routine]</A>
+<A HREF="#SWE_RESTORE_HIRES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   swe_plot_fhsk
@@ -9207,9 +9256,40 @@ CREATED BY:    David L. Mitchell  2017-01-15
 <STRONG>(See <A href="swea/swe_plot_fhsk.pro">projects/maven/swea/swe_plot_fhsk.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SWE_RESTORE_HIRES">
+<H2>SWE_RESTORE_HIRES</H2></A>
+<A HREF="#SWE_PLOT_FHSK">[Previous Routine]</A>
+<A HREF="#SWE_ROTATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   swe_restore_hires
+PURPOSE:
+  Restores SWEA hires data from save files.
+
+USAGE:
+  swe_restore_hires
+
+INPUTS:
+       date:      Date to restore, in any format accepted by time_double().
+                  Only the date (YYYY-MM-DD) is used; HH:MM:SS are ignored.
+
+KEYWORDS:
+       TPLOT:     Make a time series plot of the result.  Default = 1 (yes).
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2025-12-04 14:59:15 -0800 (Thu, 04 Dec 2025) $
+ $LastChangedRevision: 33902 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_restore_hires.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: swe_restore_hires.pro
+</PRE><P>
+<STRONG>(See <A href="swea/swe_restore_hires.pro">projects/maven/swea/swe_restore_hires.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SWE_ROTATE">
 <H2>SWE_ROTATE</H2></A>
-<A HREF="#SWE_PLOT_FHSK">[Previous Routine]</A>
+<A HREF="#SWE_RESTORE_HIRES">[Previous Routine]</A>
 <A HREF="#SWE_SHAPE_PAR_PAD_L2_3PA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

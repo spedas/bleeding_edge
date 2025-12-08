@@ -1,7 +1,7 @@
 ; +
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-24 18:02:38 -0700 (Fri, 24 Oct 2025) $
-; $LastChangedRevision: 33792 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2025-12-02 19:44:44 -0800 (Tue, 02 Dec 2025) $
+; $LastChangedRevision: 33894 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_apdat_info.pro $
 ; $ID: $
 ; This is the master routine that changes or accesses the ccsds data structures for each type of packet that is received
@@ -133,17 +133,6 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
     apids = apid_description
   endif else  apids = where(all_apdat,/null)
 
-
-;  if keyword_set(merge_pb) then begin
-     ;apids = where( all_apdat.replay ne 0)
-
-
- ; endif
-
-
-
-  ;printdat,apids
-
   default_apid_obj_name =  'swfo_gen_apdat'
 
   for i=0,n_elements(apids)-1 do begin
@@ -175,11 +164,11 @@ pro swfo_apdat_info,apid_description,name=name,verbose=verbose,$
     if n_elements(cdf_pathname) ne 0 then apdat.cdf_pathname= cdf_pathname
     if n_elements(cdf_linkname) ne 0 then apdat.cdf_linkname= cdf_linkname
     if n_elements(output_lun) ne 0 then apdat.output_lun = output_lun
-    if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(merge_flag) then begin
-      replay_apdat = swfo_apdat('pb_'+apdat.name)     
-      if isa(replay_apdat)  then apdat.data.append,  replay_apdat.array
+      replay_apdat = swfo_apdat('pb_'+apdat.name)
+      if isa(replay_apdat)  then apdat.append,  replay_apdat
     endif
+    if ~keyword_set(all)  &&  (apdat.npkts eq 0) then continue
     if keyword_set(sort_flag) then apdat.sort, uniq=uniq_flag
     if keyword_set(finish)    then apdat.finish
     if keyword_set(average)    then apdat.average,range=range,binsize=binsize,tspan=tspan
