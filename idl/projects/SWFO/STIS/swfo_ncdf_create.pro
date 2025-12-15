@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-12-04 09:33:00 -0800 (Thu, 04 Dec 2025) $
-; $LastChangedRevision: 33900 $
+; $LastChangedDate: 2025-12-10 09:47:58 -0800 (Wed, 10 Dec 2025) $
+; $LastChangedRevision: 33913 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_create.pro $
 ; $ID: $
 
@@ -31,8 +31,8 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
 
     if keyword_set(append) then begin
       if file_test(ncdf_filename) then begin
-        dat_old = swfo_ncdf_read(filenames = ncdf_filename)
-
+        dat_da = swfo_ncdf_read(filenames = ncdf_filename)
+        dat_old =dat_da.array
         if ~isa(dat_old) || array_equal( dat_old.time,dat.time) then begin
           dprint,dlevel=2,'No new : "'+ncdf_filename+'"  Skipping append'
           return

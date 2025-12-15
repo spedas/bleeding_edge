@@ -10,9 +10,9 @@
 ;           with modifications by A. Kellerman
 ;   
 ;  
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2018-11-16 12:46:28 -0800 (Fri, 16 Nov 2018) $
-; $LastChangedRevision: 26139 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2025-12-08 11:39:01 -0800 (Mon, 08 Dec 2025) $
+; $LastChangedRevision: 33904 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/goes_lib.pro $
 ;-
 
@@ -303,7 +303,7 @@ pro goes_part_omni_flux, particle_tvar
         return
     endif
     frac_total_sa = 18.*!pi*(1-cos(15*!dtor))/(4*!pi) ;for all 9 telescopes, sr
-    omni_flux = total(particle_data.Y, 2, /double)/frac_total_sa
+    omni_flux = total(particle_data.Y, 2, /double,/NAN)/frac_total_sa
     store_data, particle_tvar+'_omni', data={x: particle_data.X, y: omni_flux}, dlimits=particle_dlimits
 end
 ; Procedure:

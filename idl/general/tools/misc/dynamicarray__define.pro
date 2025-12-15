@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-22 09:53:59 -0800 (Sat, 22 Nov 2025) $
-; $LastChangedRevision: 33865 $
+; $LastChangedDate: 2025-12-10 09:47:58 -0800 (Wed, 10 Dec 2025) $
+; $LastChangedRevision: 33913 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -399,25 +399,25 @@ pro DynamicArray::make_ncdf,filename=ncdf_filename,verbose=verbose,global_atts=g
 
 end
 
+;
+;function dynamicarray::file_format, resolution=resolution,name=name
+;
+;  case resolution of
+;    3600d:     tformat = 'swfo/data/test/NCDF/$NAME$/HR/YYYY/MM/DD/$NAME$_YYYY-MM-DD_hh.nc'
+;    3600*24d:  tformat = 'swfo/data/test/NCDF/$NAME$/DAY/YYYY/MM/$NAME$_YYYY-MM-DD.nc'
+;  endcase
+;
+;  return,tformat
+;end
 
-function dynamicarray::file_format, resolution=resolution,name=name
 
-  case resolution of
-    3600d:     tformat = 'swfo/data/test/NCDF/$NAME$/HR/YYYY/MM/DD/$NAME$_YYYY-MM-DD_hh.nc'
-    3600*24d:  tformat = 'swfo/data/test/NCDF/$NAME$/DAY/YYYY/MM/$NAME$_YYYY-MM-DD.nc'
-  endcase
-
-  return,tformat
-end
-
-
-pro dynamicarray::ncdf_make_file,trange=trange,resolution=resolution ,append=append ;,pathformat=pathformat,testdir=testdir,ret_filename=ret_filename,type=type
+pro dynamicarray::ncdf_make_file,trange=trange,resolution=resolution ,append=append ,pathformat=pathformat ;,testdir=testdir,ret_filename=ret_filename,type=type
 
   message,'In testing',/cont
 
   if ~keyword_set(resolution) then resolution = 3600d*24
   
-  tformat = self.file_format(resolution=resolution)
+  tformat = pathformat
 
   ncdf_directory = './'
   ncdf_directory = root_data_dir()
@@ -433,8 +433,8 @@ pro dynamicarray::ncdf_make_file,trange=trange,resolution=resolution ,append=app
       ncdf_format= tformat
       filename=time_string(tr[0],tformat=ncdf_format)
       filename=str_sub(filename,'$NAME$',self.name)
-      filename=str_sub(filename,'$TYPE$',type)
-      filename=str_sub(filename,'$RES$', strtrim(long(resolution),2)  )
+ ;     filename=str_sub(filename,'$TYPE$',self.name)
+ ;     filename=str_sub(filename,'$RES$', strtrim(long(resolution),2)  )
       filename=ncdf_directory + filename
       swfo_ncdf_create,data_array,filename = filename ,append=append
 
