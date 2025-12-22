@@ -142,19 +142,21 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
   endif
   datahash['stis_l1b'] = l1b_da
 
+  if 0 then begin
+    dprint,'mag stuff'
+    magda = datahash['mag8']
+    mag = magda.array
+    ddb = mag.raw_data
 
-  dprint,'mag stuff'
-  magda = datahash['mag8']
-  mag = magda.array
-  ddb = mag.raw_data
-  
-  nd = n_elements(mag)
-  
-  for i=0,5 do    mag.mag_data[i,*] = ishft( fix( ddb[i*9,*] * 256 + ddb[i*9+1,*] ), 1) / 2 
-  ;for i=0,5 do    mag.mag_data[i] =  fix(ddb[[1,0]+i*9,*]  ,0,nd)
-  mag.mag_data *= ( [1,1,1,-1,1,-1] # replicate(1,nd) )
-  magda.array = mag
-  store_data,'mag8',data=magda,tagnam='*'
+    nd = n_elements(mag)
+
+    for i=0,5 do    mag.mag_data[i,*] = ishft( fix( ddb[i*9,*] * 256 + ddb[i*9+1,*] ), 1) / 2
+    ;for i=0,5 do    mag.mag_data[i] =  fix(ddb[[1,0]+i*9,*]  ,0,nd)
+    mag.mag_data *= ( [1,1,1,-1,1,-1] # replicate(1,nd) )
+    magda.array = mag
+    store_data,'mag8',data=magda,tagnam='*'
+    
+  endif
   
   dprint,'Done'
   ;stop

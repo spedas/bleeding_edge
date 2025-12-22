@@ -23,16 +23,11 @@
 ; KEYWORD PARAMETERS:
 ;    probe              spacecraft name: 'a', 'b', 'c', 'd' or 'e'. Default is 'a'.
 ;    datatype_esa       ESA datatype: 'peef', 'peer', 'peem' or 'peeb'. Default is 'peef'.
-;    datatype_efi       EFI datatype: 'vaf', 'vap' or 'vaw'. If
-;                       omitted, spin-resolution 'PXXM' scpot is used.
-;                       Otherwise, use scpot data stored in the EFI packet
-;                       instead of 'datatype_esa', while the thermal
-;                       velocity data are given by 'datatype_esa' and
-;                       interpolated. The time resolution is higher.
-;    suffix             If set, then this suffix is appended to the
-;                       output variables
+;    datatype_efi       EFI datatype: 'vaf', 'vap' or 'vaw'. If omitted, spin-resolution scpot is used.
+;                       Use scpot data stored in the EFI packet instead of 'datatype_esa', while the thermal velocity data are given by 'datatype_esa' and interpolated. The time resolution is higher.
+;
 ; OUTPUTS:
-;    'th'+probe+'_'+datatype_efi+'_density' Electron density in cm-3
+;    'th'+probe+'_'+datatype_esa+'_density' Electron density in cm-3
 ;    'th'+probe+'_*_density_comparison' Densities from ESA, scpot and Sheeley et al. model
 ;
 ; RESTRICTIONS:
@@ -50,211 +45,238 @@
 ;
 
 function sigmoid,x,height,xshift,stiffness
-  return,height/(1.+exp(-stiffness*(x-xshift)))
+return,height/(1.+exp(-stiffness*(x-xshift)))
 end
 
 
-pro thm_scpot_density,probe=probe,datatype_esa=datatype_esa,datatype_efi=datatype_efi,noload=noload,$
-                      merge=merge,noplot=noplot,scpot_esa=scpot_esa,scpot_in=scpot_in,$
-                      vthermal_in=vthermal_in,suffix=suffix
+pro thm_scpot_density,probe=probe,datatype_esa=datatype_esa,datatype_efi=datatype_efi,noload=noload,merge=merge,noplot=noplot,scpot_esa=scpot_esa,trange=t,scpot_offset=scpot_offset,vthermal_constant=vthermal_constant,scpot_density_coefficients_med=scpot_density_coefficients_med
 
-  compile_opt idl2
+if not (keyword_set(probe)) then probe='a'
+if not (keyword_set(datatype_esa)) then datatype_esa='peef'
+if (keyword_set(datatype_efi)) then datatype_efi_init=datatype_efi
 
-  if not (keyword_set(probe)) then probe='a'
-  if not (keyword_set(datatype_esa)) then datatype_esa='peef'
-  if (keyword_set(datatype_efi)) then datatype_efi_init=datatype_efi
+if not keyword_set(t) then get_timespan,t
 
-  get_timespan,t
+probe_init=probe
+for loop_probe=0L,n_elements(probe_init)-1 do begin
+
+probe=probe_init[loop_probe]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;SM position
-  if not(keyword_set(noload)) then thm_load_state, probe = probe, datatype='pos',coord = 'sm'
+if not(keyword_set(noload)) then thm_load_state, probe = probe, datatype='pos',coord = 'sm',trange=t
+time_clip,'th'+probe+'_state_pos',t[0],t[1],newname='th'+probe+'_state_pos'
 
-  get_data,strjoin('th'+probe+'_state_pos'),data=tmp
-  store_data, 'th'+probe+'_R', data={x:tmp.x, y:sqrt(tmp.y[*,0]^2+tmp.y[*,1]^2+tmp.y[*,2]^2)/6371.},dlim={colors:[0],labels:['R'],ysubtitle:'[km]',labflag:1,constant:0,ytitle:'th'+probe+'_R'}
-  MLT=atan(tmp.y[*,1]/tmp.y[*,0])*180/!pi/15.+12
-  if(n_elements(where(tmp.y[*,0] lt 0)) gt 1) then MLT[where(tmp.y[*,0] lt 0)]=(atan(tmp.y[where(tmp.y[*,0] lt 0),1]/tmp.y[where(tmp.y[*,0] lt 0),0])+!pi)*180/!pi/15.+12
-  if(n_elements(where(MLT[*] gt 24)) gt 1) then MLT[where(MLT[*] ge 24)]=MLT[where(MLT[*] ge 24)]-24
-  store_data, 'th'+probe+'_MLT', data={x:tmp.x, y:MLT},dlim={colors:[0],labels:['R'],ysubtitle:'[km]',labflag:1,constant:0,ytitle:'th'+probe+'_MLT'}
-  MLAT=atan(tmp.y[*,2]/sqrt(tmp.y[*,0]^2+tmp.y[*,1]^2))*180/!pi
-  store_data, 'th'+probe+'_MLAT', data={x:tmp.x, y:MLAT},dlim={colors:[0],labels:['MLAT'],ysubtitle:'[deg]',labflag:1,constant:0,ytitle:'th'+probe+'_MLAT'}
+get_data,strjoin('th'+probe+'_state_pos'),data=tmp
+store_data, 'th'+probe+'_R', data={x:tmp.x, y:sqrt(tmp.y[*,0]^2+tmp.y[*,1]^2+tmp.y[*,2]^2)/6371.},dlim={colors:[0],labels:['R'],ysubtitle:'[km]',labflag:1,constant:0,ytitle:'th'+probe+'_R'}
+MLT=atan(tmp.y[*,1]/tmp.y[*,0])*180/!pi/15.+12
+if(n_elements(where(tmp.y[*,0] lt 0)) gt 1) then MLT(where(tmp.y[*,0] lt 0))=(atan(tmp.y[where(tmp.y[*,0] lt 0),1]/tmp.y[where(tmp.y[*,0] lt 0),0])+!pi)*180/!pi/15.+12
+if(n_elements(where(MLT[*] gt 24)) gt 1) then MLT(where(MLT[*] ge 24))=MLT(where(MLT[*] ge 24))-24
+store_data, 'th'+probe+'_MLT', data={x:tmp.x, y:MLT},dlim={colors:[0],labels:['R'],ysubtitle:'[km]',labflag:1,constant:0,ytitle:'th'+probe+'_MLT'}
+MLAT=atan(tmp.y[*,2]/sqrt(tmp.y[*,0]^2+tmp.y[*,1]^2))*180/!pi
+store_data, 'th'+probe+'_MLAT', data={x:tmp.x, y:MLAT},dlim={colors:[0],labels:['MLAT'],ysubtitle:'[deg]',labflag:1,constant:0,ytitle:'th'+probe+'_MLAT'}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;load data
-  if(datatype_esa eq 'peef' or datatype_esa eq 'peer' or datatype_esa eq 'peeb' or datatype_esa eq 'peem') then begin
-     if not(keyword_set(noload)) then begin
+if(datatype_esa eq 'peef' or datatype_esa eq 'peer' or datatype_esa eq 'peeb' or datatype_esa eq 'peem') then begin
+  if not(keyword_set(noload)) then begin
     ;load esa
-        thm_load_esa, probe = probe, level = 2, datatype = [datatype_esa+'_density',datatype_esa+'_vthermal',datatype_esa+'_en_eflux',datatype_esa+'_sc_pot'],trange=t
-        thm_load_esa, probe = probe, level = 2, datatype = ['peer_sc_pot'],trange=t
+    thm_load_esa, probe = probe, level = 2, datatype = [datatype_esa+'_density',datatype_esa+'_vthermal',datatype_esa+'_en_eflux',datatype_esa+'_sc_pot'],trange=t
+    thm_load_esa, probe = probe, level = 2, datatype = ['peer_sc_pot'],trange=t
     ;load esa+efi
     ;thm_load_esa_pkt,probe=probe,datatype=datatype_esa,trange=t
-        if not keyword_set(scpot_esa) then thm_pxxm_pot_to_scpot,probe=probe,datatype_efi=datatype_efi,merge=merge,trange=t
-     endif
+    if not keyword_set(scpot_esa) then thm_pxxm_pot_to_scpot,probe=probe,datatype_efi=datatype_efi,merge=merge,trange=t
   endif
+endif
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;load data
-  if not(keyword_set(datatype_efi_init)) then begin
+if not(keyword_set(datatype_efi_init)) then begin
   ;Vsc
-     if keyword_set(scpot_in) then scpot_var = scpot_in $
-     else if keyword_set(scpot_esa) then scpot_var = 'th'+probe+'_'+datatype_esa+'_sc_pot' $
-     else scpot_var = 'th'+probe+'_pxxm_scpot'
-     get_data, scpot_var, data=Vdata, index=index
-     if(index eq 0) then begin
-        print,'NO scpot data'
-        return
-     endif
+  if not keyword_set(scpot_esa) then get_data,'th'+probe+'_pxxm_scpot',data=Vdata,index=index
+  if     keyword_set(scpot_esa) then get_data,'th'+probe+'_'+datatype_esa+'_sc_pot',data=Vdata,index=index
+  if(index eq 0) then begin
+    print,'NO scpot data'
+    return
+  endif
+
   ;scpot
-     if not keyword_set(scpot_esa) and not keyword_set(scpot_in) then begin
-        tinterpol_mxn,'th'+probe+'_peer_sc_pot','th'+probe+'_pxxm_scpot', newname='th'+probe+'_peer_sc_pot_int'
-        get_data,'th'+probe+'_peer_sc_pot_int',data=Vdata_peer
-        scpot_offset=median(Vdata.y-Vdata_peer.y)
-        Vdata.y=Vdata.y-scpot_offset
-     endif
-     Vdata.y[*]=-Vdata.y[*]
-     store_data,'th'+probe+'_pxxm_-scpot',data=Vdata
+  if not keyword_set(scpot_esa) then begin
+    get_data,'th'+probe+'_peer_sc_pot',index=index
+    if index eq 0 then return
+    tinterpol_mxn,'th'+probe+'_peer_sc_pot','th'+probe+'_pxxm_scpot', newname='th'+probe+'_peer_sc_pot_int'
+    get_data,'th'+probe+'_peer_sc_pot_int',data=Vdata_peer
+    scpot_offset2=median(Vdata.y-Vdata_peer.y)
+    ;Vdata.y=Vdata.y-scpot_offset2
+  endif
+  if keyword_set(scpot_offset) then Vdata.y=Vdata.y-scpot_offset
+  Vdata.y(*)=-Vdata.y(*)
+  store_data,'th'+probe+'_pxxm_-scpot',data=Vdata
   ;Ne
-     tinterpol_mxn,'th'+probe+'_'+datatype_esa+'_density','th'+probe+'_pxxm_-scpot', newname='th'+probe+'_'+datatype_esa+'_density_int'
-     get_data,'th'+probe+'_'+datatype_esa+'_density_int',data=Nedata,index=index
-     if(index eq 0) then begin
-        print,'th'+probe+'_'+datatype_esa+'_density_int'
-        return
-     endif
+  tinterpol_mxn,'th'+probe+'_'+datatype_esa+'_density','th'+probe+'_pxxm_-scpot', newname='th'+probe+'_'+datatype_esa+'_density_int'
+  get_data,'th'+probe+'_'+datatype_esa+'_density_int',data=Nedata,index=index
+  if(index eq 0) then begin
+  print,'th'+probe+'_'+datatype_esa+'_density_int'
+  return
+  endif
   ;Vth
-     if keyword_set(vthermal_in) then vthermal_var = vthermal_in $
-     else vthermal_var = 'th'+probe+'_'+datatype_esa+'_vthermal'
-     tinterpol_mxn,vthermal_var,'th'+probe+'_pxxm_-scpot', newname='th'+probe+'_'+datatype_esa+'_vthermal_int'
-     get_data,'th'+probe+'_'+datatype_esa+'_vthermal_int',data=Vthdata,index=index
-     if(index eq 0) then begin
-        print,'th'+probe+'_'+datatype_esa+'_vthermal_int'
-        return
-     endif
+  tinterpol_mxn,'th'+probe+'_'+datatype_esa+'_vthermal','th'+probe+'_pxxm_-scpot', newname='th'+probe+'_'+datatype_esa+'_vthermal_int'
+  get_data,'th'+probe+'_'+datatype_esa+'_vthermal_int',data=Vthdata,index=index
+  if(index eq 0) then begin
+  print,'th'+probe+'_'+datatype_esa+'_vthermal_int'
+  return
+  endif
   ;R,MLT
-     tinterpol_mxn,'th'+probe+'_R','th'+probe+'_pxxm_-scpot', newname='th'+probe+'_R_int'
-     tinterpol_mxn,'th'+probe+'_MLT','th'+probe+'_pxxm_-scpot', newname='th'+probe+'_MLT_int'
-     get_data,'th'+probe+'_R_int',data=R,index=index1
-     get_data,'th'+probe+'_MLT_int',data=MLT,index=index2
-     if(index1 eq 0 or index2 eq 0) then begin
-        print,'th'+probe+'_R_int',index1,index2
-        return
-     endif
+  tinterpol_mxn,'th'+probe+'_R','th'+probe+'_pxxm_-scpot', newname='th'+probe+'_R_int'
+  tinterpol_mxn,'th'+probe+'_MLT','th'+probe+'_pxxm_-scpot', newname='th'+probe+'_MLT_int'
+  get_data,'th'+probe+'_R_int',data=R,index=index1
+  get_data,'th'+probe+'_MLT_int',data=MLT,index=index2
+  if(index1 eq 0 or index2 eq 0) then begin
+  print,'th'+probe+'_R_int',index1,index2
+  return
+  endif
   ;;;;;;;;;;;;;;;;;;;;;;;
   endif else begin
   ;Vsc
-     if keyword_set(scpot_in) then scpot_var = scpot_in $
-     else scpot_var = 'th'+probe+'_esa_pot'
-     get_data,scpot_var,data=Vdata,index=index
-     if(index eq 0) then begin
-        print,scpot_var
-        return
-     endif
-     Vdata.y[*]=-Vdata.y[*]
-     store_data,'th'+probe+'_esa_-pot',data=Vdata
+  get_data,'th'+probe+'_esa_pot',data=Vdata,index=index
+  if(index eq 0) then begin
+  print,'th'+probe+'_esa_pot'
+  return
+  endif
+  Vdata.y(*)=-Vdata.y(*)
+  store_data,'th'+probe+'_esa_-pot',data=Vdata
   ;Ne
-     tinterpol_mxn,'th'+probe+'_'+datatype_esa+'_density' ,'th'+probe+'_esa_pot', newname='th'+probe+'_'+datatype_esa+'_density_int'
-     get_data,'th'+probe+'_'+datatype_esa+'_density_int',data=Nedata,index=index
-     if(index eq 0) then begin
-        print,'th'+probe+'_'+datatype_esa+'_density_int'
-        return
-     endif
+  tinterpol_mxn,'th'+probe+'_'+datatype_esa+'_density' ,'th'+probe+'_esa_pot', newname='th'+probe+'_'+datatype_esa+'_density_int'
+  get_data,'th'+probe+'_'+datatype_esa+'_density_int',data=Nedata,index=index
+  if(index eq 0) then begin
+  print,'th'+probe+'_'+datatype_esa+'_density_int'
+  return
+  endif
   ;Vth
-     if keyword_set(vthermal_in) then vthermal_var = vthermal_in $
-     else vthermal_var = 'th'+probe+'_'+datatype_esa+'_vthermal' 
-     tinterpol_mxn,vthermal_var,'th'+probe+'_esa_-pot', newname='th'+probe+'_'+datatype_esa+'_vthermal_int'
-     get_data,'th'+probe+'_'+datatype_esa+'_vthermal_int',data=Vthdata,index=index
-     if(index eq 0) then begin
-        print,'th'+probe+'_'+datatype_esa+'_vthermal_int'
-        return
-     endif
-                                ;R,MLT
-     tinterpol_mxn,'th'+probe+'_R','th'+probe+'_esa_-pot', newname='th'+probe+'_R_int'
-     tinterpol_mxn,'th'+probe+'_MLT','th'+probe+'_esa_-pot', newname='th'+probe+'_MLT_int'
-     get_data,'th'+probe+'_R_int',data=R,index=index1
-     get_data,'th'+probe+'_MLT_int',data=MLT,index=index2
-     if(index1 eq 0 or index2 eq 0) then begin
-        print,'th'+probe+'_R_int',index1,index2
-        return
-     endif
-  endelse
+  tinterpol_mxn,'th'+probe+'_'+datatype_esa+'_vthermal','th'+probe+'_esa_pot', newname='th'+probe+'_'+datatype_esa+'_vthermal_int'
+  get_data,'th'+probe+'_'+datatype_esa+'_vthermal_int',data=Vthdata,index=index
+  if(index eq 0) then begin
+  print,'th'+probe+'_'+datatype_esa+'_vthermal_int'
+  return
+  endif
+  ;R,MLT
+  tinterpol_mxn,'th'+probe+'_R','th'+probe+'_esa_pot', newname='th'+probe+'_R_int'
+  tinterpol_mxn,'th'+probe+'_MLT','th'+probe+'_esa_pot', newname='th'+probe+'_MLT_int'
+  get_data,'th'+probe+'_R_int',data=R,index=index1
+  get_data,'th'+probe+'_MLT_int',data=MLT,index=index2
+  if(index1 eq 0 or index2 eq 0) then begin
+  print,'th'+probe+'_R_int',index1,index2
+  return
+  endif
+endelse
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Vth correction
-  Vthdata.y=Vthdata.y*(1-(-1/(1+exp(-1*(R.y-6)))+1))+1.0*10^2*(-1/(1+exp(-1*(R.y-6)))+1)
+Vthdata.y=Vthdata.y*(1-(-1/(1+exp(-1*(R.y-6)))+1))+1.0*10^2*(-1/(1+exp(-1*(R.y-6)))+1)
+if keyword_set(vthermal_constant) then Vthdata.y[*]=vthermal_constant
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;load coefficients
-  fpath = file_dirname(routine_filepath('thm_scpot_density'), /mark)+'thm_scpot_density_coefficients/'
-  fname = file_search(fpath+'th'+probe+'_scpot_density_coefficients.sav')
-  if fname eq '' then begin     ; original paths
-     fname=file_search('./save/th'+probe+'_scpot_density_coefficients.sav')
-     if fname eq '' then fname=file_search('th'+probe+'_scpot_density_coefficients.sav')
-     if fname eq '' then begin
-        print,'th'+probe+'_scpot_density_coefficients.sav is missing'
-        return
-     endif
-  endif
-  restore,filename=fname
-  psp0=interpol(float(scpot_density_coefficients[*,1]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
-  psp1=interpol(float(scpot_density_coefficients[*,2]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
-  psp2=interpol(float(scpot_density_coefficients[*,3]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
-  p10=interpol(float(scpot_density_coefficients[*,7]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
-  p11=interpol(float(scpot_density_coefficients[*,8]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
-  p20=interpol(float(scpot_density_coefficients[*,12]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
-  p21=interpol(float(scpot_density_coefficients[*,13]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+fpath = file_dirname(routine_filepath('thm_scpot_density'), /mark)+'thm_scpot_density_coefficients/'
+fname = file_search(fpath+'th'+probe+'_scpot_density_coefficients.sav')
+if fname eq '' then begin       ; original paths
+   fname=file_search('./save/th'+probe+'_scpot_density_coefficients.sav')
+   if fname eq '' then fname=file_search('th'+probe+'_scpot_density_coefficients.sav')
+   if fname eq '' then begin
+      print,'th'+probe+'_scpot_density_coefficients.sav is missing'
+      return
+   endif
+endif
+restore,filename=fname
+psp0=interpol(float(scpot_density_coefficients[*,1]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+psp1=interpol(float(scpot_density_coefficients[*,2]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+psp2=interpol(float(scpot_density_coefficients[*,3]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+psp3=interpol(float(scpot_density_coefficients[*,5]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+p10=interpol(float(scpot_density_coefficients[*,7]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+p11=interpol(float(scpot_density_coefficients[*,8]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+p20=interpol(float(scpot_density_coefficients[*,12]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
+p21=interpol(float(scpot_density_coefficients[*,13]),time_double(scpot_density_coefficients[*,0]),Vdata.x)
 
-  psp=fltarr(n_elements(psp0),6)
-  p1=fltarr(n_elements(psp0),5)
-  p2=fltarr(n_elements(psp0),5)
-  psp[*,0:2]=[[psp0],[psp1],[psp2]]
-  psp[*,3]=scpot_density_coefficients[0,4]
-  psp[*,4]=scpot_density_coefficients[0,5]
-  psp[*,5]=scpot_density_coefficients[0,6]
-  p1[*,0:1]=[[p10],[p11]]
-  p1[*,2]=scpot_density_coefficients[0,9]
-  p1[*,3]=scpot_density_coefficients[0,10]
-  p1[*,4]=scpot_density_coefficients[0,11]
-  p2[*,0:1]=[[p20],[p21]]
-  p2[*,2]=scpot_density_coefficients[0,14]
-  p2[*,3]=scpot_density_coefficients[0,15]
-  p2[*,4]=scpot_density_coefficients[0,16]
+if Vdata.x[0] ge max(time_double(scpot_density_coefficients[*,0])) then begin
+  psp0[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,1])
+  psp1[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,2])
+  psp2[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,3])
+  psp3[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,5])
+  p10[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,7])
+  p11[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,8])
+  p20[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,12])
+  p21[*]=float(scpot_density_coefficients[n_elements(scpot_density_coefficients[*,0])-1,13])
+endif
+
+if keyword_set(scpot_density_coefficients_med) then begin
+  psp0[*]=median(scpot_density_coefficients[*,1])
+  psp1[*]=median(scpot_density_coefficients[*,2])
+  psp2[*]=median(scpot_density_coefficients[*,3])
+  psp3[*]=median(scpot_density_coefficients[*,5])
+  p10[*]=median(scpot_density_coefficients[*,7])
+  p11[*]=median(scpot_density_coefficients[*,8])
+  p20[*]=median(scpot_density_coefficients[*,12])
+  p21[*]=median(scpot_density_coefficients[*,13])
+endif
+
+
+psp=fltarr(n_elements(psp0),6)
+p1=fltarr(n_elements(psp0),5)
+p2=fltarr(n_elements(psp0),5)
+psp[*,0:2]=[[psp0],[psp1],[psp2]]
+psp[*,3]=scpot_density_coefficients[0,4]
+psp[*,4]=psp3
+psp[*,5]=scpot_density_coefficients[0,6]
+p1[*,0:1]=[[p10],[p11]]
+p1[*,2]=scpot_density_coefficients[0,9]
+p1[*,3]=scpot_density_coefficients[0,10]
+p1[*,4]=scpot_density_coefficients[0,11]
+p2[*,0:1]=[[p20],[p21]]
+p2[*,2]=scpot_density_coefficients[0,14]
+p2[*,3]=scpot_density_coefficients[0,15]
+p2[*,4]=scpot_density_coefficients[0,16]
 ;print,median(psp0),median(psp1),median(psp2),median(p10),median(p11),median(p20),median(p21)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;scpot-density conversion
-  Ne_scpot=10^(psp[*,0]*exp(-(vdata.y+1.0)^2/psp[*,1])+psp[*,2])*sigmoid(vdata.y,psp[*,3],psp[*,4],psp[*,5])+(10^(p1[*,0]+(vdata.y/p1[*,1]))*sigmoid(vdata.y,p1[*,2],p1[*,3],p1[*,4])+10^(p2[*,0]+(vdata.y/p2[*,1]))*(-sigmoid(vdata.y,p2[*,2],p2[*,3],p2[*,4])+1))/vthdata.y
+;Ne_scpot=10^(psp[*,0]*exp(-(vdata.y+psp[3])^2/psp[*,1])+psp[*,2])*sigmoid(vdata.y,psp[*,3],psp[*,4],psp[*,5])+(10^(p1[*,0]+(vdata.y/p1[*,1]))*sigmoid(vdata.y,p1[*,2],p1[*,3],p1[*,4])+10^(p2[*,0]+(vdata.y/p2[*,1]))*(-sigmoid(vdata.y,p2[*,2],p2[*,3],p2[*,4])+1))/vthdata.y
+Ne_scpot=10^(psp[*,0]*exp(-(vdata.y+psp[4])^2/psp[*,1])+psp[*,2])*sigmoid(vdata.y,psp[*,3],psp[*,4]-1,psp[*,5]) + (10^(p1[*,0]+(vdata.y/p1[*,1]))*sigmoid(vdata.y,p1[*,2],p1[*,3],p1[*,4])+10^(p2[*,0]+(vdata.y/p2[*,1]))*(-sigmoid(vdata.y,p2[*,2],p2[*,3],p2[*,4])+1))/vthdata.y
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  options,'th'+probe+'_'+datatype_esa+'_sc_pot',colors=2
-  store_data,'th'+probe+'_'+datatype_esa+'_en_eflux_pot',data=['th'+probe+'_'+datatype_esa+'_en_eflux','th'+probe+'_pxxm_scpot','th'+probe+'_'+datatype_esa+'_sc_pot']
-  ylim,'th'+probe+'_'+datatype_esa+'_en_eflux_pot',5e0,2.3e4,style=1
+options,'th'+probe+'_'+datatype_esa+'_sc_pot',colors=2
+store_data,'th'+probe+'_'+datatype_esa+'_en_eflux_pot',data=['th'+probe+'_'+datatype_esa+'_en_eflux','th'+probe+'_pxxm_scpot','th'+probe+'_'+datatype_esa+'_sc_pot']
+ylim,'th'+probe+'_'+datatype_esa+'_en_eflux_pot',5e0,2.3e4,style=1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;plasmasphere model (just for comparison) [Sheeley et al.]
-  Ne_Sheeley_PSph=1390*(3/R.y)^4.8
-  Ne_Sheeley_PSsh=124*(3/R.y)^4.0+36*(3/R.y)^3.5*cos((MLT.y-(7.7*(3/R.y)^2+12))*!pi/12)
-  Ne_Sheeley_PSph[where(R.y[*] lt 2 or R.y[*] gt 7)]='NaN'
-  Ne_Sheeley_PSsh[where(R.y[*] lt 2 or R.y[*] gt 7)]='NaN'
+Ne_Sheeley_PSph=1390*(3/R.y)^4.8
+Ne_Sheeley_PSsh=124*(3/R.y)^4.0+36*(3/R.y)^3.5*cos((MLT.y-(7.7*(3/R.y)^2+12))*!pi/12)
+Ne_Sheeley_PSph(where(R.y(*) lt 2 or R.y(*) gt 7))='NaN'
+Ne_Sheeley_PSsh(where(R.y(*) lt 2 or R.y(*) gt 7))='NaN'
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;store data
-  if keyword_set(suffix) then sfx = suffix[0] else sfx = ''
-  if not(keyword_set(datatype_efi_init)) then begin
-     store_data,'th'+probe+'_pxxm_density'+sfx,data={x:Vdata.x,y:[Ne_scpot]},dlim={colors:[0],labels:['Ne_scpot'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
-     store_data,'th'+probe+'_'+datatype_esa+'_density_Sheeley'+sfx,data={x:Vdata.x,y:[Ne_Sheeley_PSph]},dlim={colors:[0],labels:['Ne_Sheeley_PSph'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
-     store_data,'th'+probe+'_'+datatype_esa+'_density_comparison'+sfx,data={x:Vdata.x,y:[[Nedata.y],[Ne_scpot],[Ne_Sheeley_PSph]]},dlim={colors:[0,2,6],labels:['Ne_peer','Ne_scpot','Ne_Sheeley_PSph'],ysubtitle:'[cm-3]',labflag:-1,constant:0,ylog:1}
+if not(keyword_set(datatype_efi_init)) then begin
+store_data,'th'+probe+'_pxxm_density',data={x:Vdata.x,y:[Ne_scpot]},dlim={colors:[0],labels:['Ne_scpot'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
+store_data,'th'+probe+'_'+datatype_esa+'_density_Sheeley',data={x:Vdata.x,y:[Ne_Sheeley_PSph]},dlim={colors:[0],labels:['Ne_Sheeley_PSph'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
+store_data,'th'+probe+'_'+datatype_esa+'_density_comparison',data={x:Vdata.x,y:[[Nedata.y],[Ne_scpot],[Ne_Sheeley_PSph],[Ne_Sheeley_PSsh]]},dlim={colors:[0,2,6,0],labels:['Ne_peer','Ne_scpot','Ne_Sheeley_PSph','Ne_Sheeley_PSsh'],ysubtitle:'[cm-3]',labflag:-1,constant:0,ylog:1}
 ;options,'th'+probe+'_'+datatype_esa+'_density_comparison';,ytickformat='logticks_exp'
 ;tplot,['th'+probe+'_pxxm_-scpot','th'+probe+'_'+datatype_esa+'_density','th'+probe+'_vthermal2','th'+probe+'_'+datatype_esa+'_density_comparison','th'+probe+'_'+datatype_esa+'_en_eflux_pot'],var_label=['th'+probe+'_R']
-     tplot,['th'+probe+'_pxxm_density'+sfx,'th'+probe+'_'+datatype_esa+'_density_comparison'+sfx,'th'+probe+'_'+datatype_esa+'_en_eflux_pot'],var_label=['th'+probe+'_R']
+tplot,['th'+probe+'_pxxm_-scpot','th'+probe+'_pxxm_density','th'+probe+'_'+datatype_esa+'_density_comparison','th'+probe+'_'+datatype_esa+'_en_eflux_pot'],var_label=['th'+probe+'_R']
 
 ;;;;;;;;;;;;;;;;;;;;;;;
-  endif else begin
-     store_data,'th'+probe+'_'+datatype_efi_init+'_density'+sfx,data={x:Vdata.x,y:[Ne_scpot]},dlim={colors:[0],labels:['Ne_scpot'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
-     store_data,'th'+probe+'_'+datatype_efi_init+'_density_Sheeley'+sfx,data={x:Vdata.x,y:[Ne_Sheeley_PSph]},dlim={colors:[0],labels:['Ne_Sheeley_PSph'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
+endif else begin
+store_data,'th'+probe+'_'+datatype_efi_init+'_density',data={x:Vdata.x,y:[Ne_scpot]},dlim={colors:[0],labels:['Ne_scpot'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
+store_data,'th'+probe+'_'+datatype_efi_init+'_density_Sheeley',data={x:Vdata.x,y:[Ne_Sheeley_PSph]},dlim={colors:[0],labels:['Ne_Sheeley_PSph'],ysubtitle:'[cm-3]',labflag:1,constant:0,ylog:1}
 
-     store_data,'th'+probe+'_'+datatype_efi_init+'_density_comparison'+sfx,data={x:Vdata.x,y:[[Nedata.y],[Ne_scpot],[Ne_Sheeley_PSph]]},dlim={colors:[0,2,6],labels:['Ne_'+datatype_esa,'Ne_scpot','Ne_Sheeley_PSph'],ysubtitle:'[cm-3]',labflag:-1,constant:0,ylog:1}
-     options,'th'+probe+'_'+datatype_efi_init+'_density_comparison' ;,ytickformat='logticks_exp'
+store_data,'th'+probe+'_'+datatype_efi_init+'_density_comparison',data={x:Vdata.x,y:[[Nedata.y],[Ne_scpot],[Ne_Sheeley_PSph],[Ne_Sheeley_PSsh]]},dlim={colors:[0,2,6,6],labels:['Ne_'+datatype_esa,'Ne_scpot','Ne_Sheeley_PSph','Ne_Sheeley_PSsh'],ysubtitle:'[cm-3]',labflag:-1,constant:0,ylog:1}
+options,'th'+probe+'_'+datatype_efi_init+'_density_comparison';,ytickformat='logticks_exp'
 ;tplot,['th'+probe+'_esa_pot','th'+probe+'_'+datatype_esa+'_density','th'+probe+'_vthermal2','th'+probe+'_'+datatype_efi_init+'_density_comparison','th'+probe+'_'+datatype_esa+'_en_eflux_pot']
-     if not keyword_set(noplot) then tplot,['th'+probe+'_'+datatype_efi_init+'_density'+sfx,'th'+probe+'_'+datatype_efi_init+'_density_comparison'+sfx,'th'+probe+'_'+datatype_esa+'_en_eflux_pot']
-  endelse
+if not keyword_set(noplot) then tplot,['th'+probe+'_'+datatype_efi_init+'_density','th'+probe+'_'+datatype_efi_init+'_density_comparison','th'+probe+'_'+datatype_esa+'_en_eflux_pot']
+endelse
 
+endfor;loop_probe
 
 end
+

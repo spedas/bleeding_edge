@@ -1,0 +1,3 @@
+;;  @(#)colors.cmn	1.2 12/15/94   Fast orbit display program
+
+common colors,black,blue,green,yellow,red,gray,white,pltcol

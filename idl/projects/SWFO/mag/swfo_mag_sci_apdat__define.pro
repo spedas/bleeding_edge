@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2025-12-02 12:57:16 -0800 (Tue, 02 Dec 2025) $
-; $LastChangedRevision: 33888 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2025-12-15 08:24:36 -0800 (Mon, 15 Dec 2025) $
+; $LastChangedRevision: 33921 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/mag/swfo_mag_sci_apdat__define.pro $
 
 
@@ -22,11 +22,11 @@ function swfo_mag_sci_apdat::decom,ccsds,source_dict=source_dict
   n = dsize / 6
  ; rawdat =   swfo_data_select(ccsds_data, 20*8+indgen(64*2*3)*16, 16 ,/signed)
  
-  rawdat =   swfo_data_select(ccsds_data,  20*8 +indgen(n * 6)*16, 16 ,signed=1)
+  ;rawdat =   swfo_data_select(ccsds_data,  20*8 +indgen(n * 6)*16, 16 ,signed=1)
 
   case ccsds.apid of
-    1254: mdsize = 728 - 20      ; max size of data for 64 samples/sec
-    1253: mdsize  = 88 - 20      ; max size of data for 8 samples/sec
+    1254: mdsize =  64*2*6 +2 +2  ; 728 - 20      ; max size of data for 64 samples/sec
+    1253: mdsize  =  8*2*6 +2 +2  ;  88 - 20      ; max size of data for 8 samples/sec
     else: mdsize  = ccsds.pkt_size - 20
   endcase
 
@@ -50,7 +50,7 @@ function swfo_mag_sci_apdat::decom,ccsds,source_dict=source_dict
     tod_millisec: ccsds.millisec,  $   ;                    swfo_data_select(ccsds_data,  8*8,32),$
     tod_microsec:  ccsds.microsec,  $   ;                   swfo_data_select(ccsds_data, 12*8,16),$
     mag_data:  fltarr(6)  , $
-    extra: fltarr(2)  , $
+    extra: bytarr(8)  , $
     raw_data:  bytarr(mdsize) , $
     gap:ccsds.gap }
     
@@ -60,17 +60,18 @@ function swfo_mag_sci_apdat::decom,ccsds,source_dict=source_dict
       dprint,dlevel=3,time_string(datastr.time),' ',datastr.seqn, ' ',ccsds.pkt_size
     endif
     
-    if 1 then begin
+;    if 1 then begin
       ndat = (datastr.packet_size - 20)  < mdsize
       datastr.raw_data[0:ndat-1] = ccsds.data[20:ndat+20-1]
+      datastr.extra = ccsds.data[12:19]   ; unsure what these are
       return,datastr      
-    endif else begin
-      datastrs = replicate(datastr,n)
-      datastrs.time += dindgen(n)/n
-      datastrs.mag_data = float( reform( rawdat, 6, n) )
-      return,datastrs
+;    endif else begin
+;      datastrs = replicate(datastr,n)
+;      datastrs.time += dindgen(n)/n
+;      datastrs.mag_data = float( reform( rawdat, 6, n) )
+;      return,datastrs
       
-    endelse
+;    endelse
     
 
 end

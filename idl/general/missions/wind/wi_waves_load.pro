@@ -23,14 +23,16 @@
 ;     IDL> wi_waves_load, 'dust_impact_l3'
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-07-21 16:43:40 -0700 (Mon, 21 Jul 2025) $
-; $LastChangedRevision: 33480 $
+; $LastChangedDate: 2025-12-17 13:14:16 -0800 (Wed, 17 Dec 2025) $
+; $LastChangedRevision: 33933 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/missions/wind/wi_waves_load.pro $
 ;
 ;-
 
 pro wi_waves_load, type, files = files, trange = trange, $
   verbose = verbose, level = level, prefix = prefix, $
+  varformat = varformat, varnames = varnames, $
+  get_support_data = get_support_data, $
   source_options = source_options, $
   version = ver
   compile_opt idl2
@@ -116,7 +118,9 @@ pro wi_waves_load, type, files = files, trange = trange, $
 
   files = spd_download(remote_file = relpathnames, _extra = source_options)
 
-  cdf2tplot, files, prefix = prefix
+  cdf2tplot, files, prefix = prefix, $
+    varformat = varformat, varnames = varnames, $
+    get_support_data = get_support_data
 
   if level eq 2 then begin
     options, prefix + ['PSD*'], 'ystyle', 1

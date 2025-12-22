@@ -1,0 +1,22 @@
+;;  @(#)fastorb.cmn	1.2 12/15/94   Fast orbit display program
+
+; Common declaration for general parameters used by IDL procedure xfastorb.
+; Syntax:  @fastorb.cmn
+
+common fastorb,satdesc,satdescindx,rdvec,curpath,curfile,tpmode,tpdoy, $
+       printque,putdata,rdvectp
+
+; Variable descriptions:
+; satdesc       Array of structures declared and filled in fastorbfileread.
+;               Contains structure of data file and orbital elements.
+; satdescindx   Contains pointer to currently used satdesc element.
+; rdvec         Array of structures declared and filled in fastorbgetdata.
+;               Contains orbital vectors for one orbit of data.
+; curpath       Path in which current data file resides.
+; curfile       Name of current data file.
+; tpmode        Mode for time plots.  0 => plot one orbit, 1 => plot one day.
+; tpdoy         Day of year for time plots using one-day mode.
+; printque      Printer to spool PostScript plots to.
+; putdata       Flag for fastorbgetdata.  0 => put data into rdvec for animation
+;               plots, 1 => put data into rdvectp for time plots.
+; rdvectp       Similar to rdvec, but data are used for time plots.
