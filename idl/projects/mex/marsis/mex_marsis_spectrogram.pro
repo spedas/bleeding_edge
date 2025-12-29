@@ -11,12 +11,12 @@
 ;       Yuki Harada on 2017-05-11
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2023-02-13 00:30:04 -0800 (Mon, 13 Feb 2023) $
-; $LastChangedRevision: 31495 $
+; $LastChangedDate: 2025-12-22 17:31:52 -0800 (Mon, 22 Dec 2025) $
+; $LastChangedRevision: 33938 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_spectrogram.pro $
 ;-
 
-pro mex_marsis_spectrogram, suffix=suffix, drange=drange, aaltrange=aaltrange
+pro mex_marsis_spectrogram, suffix=suffix, drange=drange, aaltrange=aaltrange, mask_aaltrange=mask_aaltrange
 
 if ~keyword_set(suffix) then suffix = ''
 
@@ -49,7 +49,22 @@ if n_elements(aaltrange) eq 2 and size(marsis_geometry,/type) ne 0 then begin
    w = where( aalt gt aaltrange[0] $
               and aalt lt aaltrange[1] , comp=cw, ncomp=ncw)
    ww = aalt*!values.f_nan
-   ww[w] = 1.
+   if nw gt 0 then ww[w] = 1.
+   www = rebin(ww,n_elements(t),80,160)
+   www = transpose(www,[0,2,1])
+   sss = sss * www
+endif
+
+if n_elements(mask_aaltrange) eq 2 and size(marsis_geometry,/type) ne 0 then begin
+   arange = transpose(rebin( 0.1499 * marsis_delay_times , 80, n_elements(t) ))
+   alt = interp(marsis_geometry.alt,marsis_geometry.time,t,interp=10)
+   aalt = rebin(alt,n_elements(t),80) - arange
+   drtitle = 'Excl. H'+string(39b)+': '+string(mask_aaltrange[0],f='(i0)')+'-' $
+             +string(mask_aaltrange[1],f='(i0)')+' km!c'
+   w = where( aalt gt mask_aaltrange[0] $
+              and aalt lt mask_aaltrange[1] , comp=cw, ncomp=ncw)
+   ww = aalt*!values.f_nan
+   if ncw gt 0 then ww[cw] = 1.
    www = rebin(ww,n_elements(t),80,160)
    www = transpose(www,[0,2,1])
    sss = sss * www

@@ -61,15 +61,15 @@
 ;HISTORY:
 ; 19-may-2014, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-02-22 12:07:21 -0800 (Wed, 22 Feb 2023) $
-; $LastChangedRevision: 31504 $
+; $LastChangedDate: 2025-12-23 11:46:48 -0800 (Tue, 23 Dec 2025) $
+; $LastChangedRevision: 33940 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_concat.pro $
 ;-
 Function mvn_sta_cmn_concat, dat1, dat2
 
 ;Record varying arrays are concatenated, NRV values must be
 ;equal. rv_flag is one for tags that will be concatenated. This will
-;need to be kept up_to_date
+;need to be kept up_to_date if new variables are added.
   If(dat1.apid Ne dat2.apid) Then Begin
      dprint, 'Mismatch in apid '+dat1.apid+' '+dat2.apid
      Return, -1
@@ -92,30 +92,41 @@ Function mvn_sta_cmn_concat, dat1, dat2
         Return, -1
      Endif Else Begin
         If(rv_arr[2, j] Eq 'N') Then Begin
-;Arrays must be equal
+;Arrays must be equal, but we'll adjust if not, it looks like
+;there is only one issue, for an added mode which increases the number
+;of possible energy values
            If(Not array_equal(dat1.(x1), dat2.(x2))) Then Begin
 ;If the two arrays have the same number of elements, then use the
 ;first anyway
               dprint, dlev = [0], 'Array mismatch for: '+rv_arr[0, j]
               If(n_elements(dat1.(x1)) Eq n_elements(dat2.(x2))) Then Begin
-                 dprint, dlev = [0], 'Using first value for conacatenation:'+rv_arr[0, j]
                  If(count Eq 0) Then undefine, dat
                  count = count+1
+                 dprint, dlev = [0], 'Using first value for conacatenation:'+rv_arr[0, j]
                  str_element, dat, rv_arr[0, j], dat1.(x1), /add_replace
               Endif Else Begin
-                 dprint, dlev = [0], 'Not concatenating and returning'
-                 Return, -1
+;it looks like there are some mismatches, keep the larger array
+                 dprint, dlev = [0], 'Using larger array for concatenation:'+rv_arr[0, j]
+                 If(n_elements(dat1.(x1)) Gt n_elements(dat2.(x2))) Then Begin
+                    If(count Eq 0) Then undefine, dat
+                    count = count+1
+                    str_element, dat, rv_arr[0, j], dat1.(x1), /add_replace
+                 Endif Else Begin
+                    If(count Eq 0) Then undefine, dat
+                    count = count+1
+                    str_element, dat, rv_arr[0, j], dat2.(x2), /add_replace
+                 Endelse
               Endelse
            Endif Else Begin
               If(count Eq 0) Then undefine, dat
               count = count+1
               str_element, dat, rv_arr[0, j], dat1.(x1), /add_replace
            Endelse
-        Endif Else Begin ;records vary
+        Endif Else Begin        ;records vary
            t1 = dat1.(x1)
            t2 = dat2.(x2)
            t1 = size(t1[0,*,*,*,*])
-           t2 = size(t2[0,*,*,*,*])
+           t2 = size(t2[0,*,*,*,*]) ;trailing *'s are ignored by IDL
            If(Not array_equal(t1, t2)) Then Begin
               dprint, dlev = [0], 'Array mismatch for: '+rv_arr[0,j]
               Return, -1
