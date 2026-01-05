@@ -11,9 +11,9 @@
 ; CREATED BY:
 ;       Yuki Harada on 2017-05-03
 ;
-; $LastChangedBy: haraday $
-; $LastChangedDate: 2023-10-17 23:46:56 -0700 (Tue, 17 Oct 2023) $
-; $LastChangedRevision: 32201 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:17:28 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_load.pro $
 ;-
 
@@ -45,7 +45,7 @@ str_element,s,/add,'valid_only',1
 if keyword_set(no_server) then no_server0 = no_server else no_server0 = 0
 str_element,s,/add,'no_server',no_server0
 if keyword_set(public) then begin
-;   s.remote_data_dir = 'ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/MARSIS/'
+;   s.remote_data_dir = 'https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/MARSIS/'
    s.remote_data_dir = 'https://space.physics.uiowa.edu/pds/'
    s.local_data_dir += 'marsis/'
 endif

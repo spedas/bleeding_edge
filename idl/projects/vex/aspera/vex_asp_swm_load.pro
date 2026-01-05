@@ -17,9 +17,9 @@
 ;CREATED BY:      Takuya Hara on 2019-06-26.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2019-06-26 14:35:42 -0700 (Wed, 26 Jun 2019) $
-; $LastChangedRevision: 27382 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:18:09 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33943 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/vex/aspera/vex_asp_swm_load.pro $
 ;
 ;-
@@ -45,7 +45,7 @@ PRO vex_asp_swm_load, itime, verbose=verbose, no_download=no_download, no_server
 
      dprint, dlevel=2, verbose=verbose, 'Starts connecting ESA/PSA FTP server...'
      
-     rdir = 'ftp://psa.esac.esa.int/pub/mirror/VENUS-EXPRESS/ASPERA4/VEX-SUN-ASPERA4-4-SWM-V1.0/DATA/'
+     rdir = 'https://archives.esac.esa.int/psa/ftp/VENUS-EXPRESS/ASPERA4/VEX-SUN-ASPERA4-4-SWM-V1.0/DATA/'
 
      lists = spd_download(remote_path=rdir, remote_file='*', local_path=ldir, local_file='vex_asp_swm_lists.txt', ftp_connection_mode=0)
      OPENR, unit, lists, /get_lun

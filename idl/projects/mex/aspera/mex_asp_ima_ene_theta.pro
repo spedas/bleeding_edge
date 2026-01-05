@@ -12,9 +12,9 @@
 ;CREATED BY:      Takuya Hara on 2018-01-23.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2023-08-12 05:24:54 -0700 (Sat, 12 Aug 2023) $
-; $LastChangedRevision: 31988 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:17:28 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_ima_ene_theta.pro $
 ;
 ;-
@@ -41,7 +41,7 @@ PRO mex_asp_ima_ene_theta, time, polar, opidx=opidx, energy=energy, theta=theta,
 
   IF (pflg) THEN BEGIN
      pdir = 'MEX-M-ASPERA3-2-EDR-IMA-EXT5-V1.0/' 
-     rpath = 'ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
+     rpath = 'https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
   ENDIF ELSE rpath = 'https://pds-geosciences.wustl.edu/mex/mex-m-aspera3-2-edr-ima-ext7-v1/mexasp_2107/calib/'
   
   mtime = ['2003-06-02/17:45', '2007-03-21/18:20', '2007-03-21/19:21', $

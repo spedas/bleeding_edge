@@ -10,14 +10,14 @@
 ;KEYWORDS:        None.
 ;
 ;NOTE:            See this PDF file in pp. 74-84; however, the definition here is opposite.
-;                 ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/MEX-M-ASPERA3-2-EDR-IMA-EXT5-V1.0/DOCUMENT/IMA_CALIBRATION_REPORT.PDF
+;                 https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/ASPERA-3/MEX-M-ASPERA3-2-EDR-IMA-EXT5-V1.0/DOCUMENT/IMA_CALIBRATION_REPORT.PDF
 ;
 ;CREATED BY:      Takuya Hara on 2018-02-01.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2018-04-04 16:17:13 -0700 (Wed, 04 Apr 2018) $
-; $LastChangedRevision: 24998 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:17:28 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_ima_sc_bins.pro $
 ;
 ;-

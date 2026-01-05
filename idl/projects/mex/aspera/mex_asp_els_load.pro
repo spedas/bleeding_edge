@@ -23,9 +23,9 @@
 ;CREATED BY:      Takuya Hara on 2018-01-18.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2020-12-01 20:24:47 -0800 (Tue, 01 Dec 2020) $
-; $LastChangedRevision: 29419 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:17:28 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_els_load.pro $
 ;
 ;-
@@ -57,7 +57,7 @@ PRO mex_asp_els_list, trange, verbose=verbose, save=save, l2=l2, wget=wflg, $
   IF (psa) THEN BEGIN
      pdir += phase + '-V1.0/'
      dprint, dlevel=2, verbose=verbose, 'Starts connecting ESA/PSA FTP server...'
-     rpath = 'ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/' 
+     rpath = 'https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/ASPERA-3/' 
   ENDIF ELSE BEGIN
      pdir += phase + '-v1/'
      pdir = STRLOWCASE(pdir)

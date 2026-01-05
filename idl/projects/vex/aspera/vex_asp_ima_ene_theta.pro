@@ -7,14 +7,14 @@
 ;
 ;INPUTS:          time and polar angle indices.
 ;
-;REFERENCE:       ftp://psa.esac.esa.int/pub/mirror/VENUS-EXPRESS/ASPERA4/VEX-V-SW-ASPERA-2-EXT4-IMA-V1.0/DOCUMENT/VE-ASP-TN-060402.PDF
+;REFERENCE:       https://archives.esac.esa.int/psa/ftp/VENUS-EXPRESS/ASPERA4/VEX-V-SW-ASPERA-2-EXT4-IMA-V1.0/DOCUMENT/VE-ASP-TN-060402.PDF
 ;
 ;CREATED BY:      Takuya Hara on 2018-04-19.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2020-10-16 09:59:03 -0700 (Fri, 16 Oct 2020) $
-; $LastChangedRevision: 29259 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:18:09 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33943 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/vex/aspera/vex_asp_ima_ene_theta.pro $
 ;
 ;-

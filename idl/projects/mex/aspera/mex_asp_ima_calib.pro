@@ -12,9 +12,9 @@
 ;CREATED BY:      Takuya Hara on 2018-01-31.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2021-02-18 21:27:03 -0800 (Thu, 18 Feb 2021) $
-; $LastChangedRevision: 29684 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:17:28 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_ima_calib.pro $
 ;
 ;-
@@ -25,7 +25,7 @@ PRO mex_asp_ima_calib, calib, verbose=verbose, psa=psa
   IF undefined(psa) THEN pflg = 1 ELSE pflg = FIX(psa)
 
   pdir = 'MEX-M-ASPERA3-2-EDR-IMA-V1.0/'
-  rpath = 'ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
+  rpath = 'https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
   rfile = 'IMA_MASS.TAB'
   
   IF ~(pflg) THEN BEGIN
@@ -48,7 +48,7 @@ PRO mex_asp_ima_calib, calib, verbose=verbose, psa=psa
   mnoise = REFORM(DOUBLE(data[*, 3]))
   mratio = REFORM(DOUBLE(data[*, 4]))
 
-  ; These values are coming from "ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/MEX-M-ASPERA3-2-EDR-IMA-V1.0/CALIB/IMA_AZIMUTH.TAB".
+  ; These values are coming from "https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/ASPERA-3/MEX-M-ASPERA3-2-EDR-IMA-V1.0/CALIB/IMA_AZIMUTH.TAB".
   aeff = 1.                     ; Efficiency of Azimuth Sector 
   gf   = 0.0001                 ; Very rough (!) Geometric Factor 
 

@@ -13,9 +13,9 @@
 ;CREATED BY:      Takuya Hara on 2021-02-20.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2021-02-20 15:34:46 -0800 (Sat, 20 Feb 2021) $
-; $LastChangedRevision: 29689 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:17:28 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_ima_mass.pro $
 ;
 ;-
@@ -26,7 +26,7 @@ PRO mex_asp_ima_mass, eperq, ipacc, verbose=verbose, test=test, table=mass_table
      ipacc = ima[0].pacc
   ENDIF 
 
-  ; See, pages 42-44 at ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/MEX-M-ASPERA3-2-EDR-IMA-V1.0/DOCUMENT/IMA_CALIBRATION_REPORT.PDF
+  ; See, pages 42-44 at https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/ASPERA-3/MEX-M-ASPERA3-2-EDR-IMA-V1.0/DOCUMENT/IMA_CALIBRATION_REPORT.PDF
 
   table = [ $
           [0,  300., 200., 0,  1.913E+01, -2.389E+00,  1.200E+00,  1.200E+00,  2.737E-01, 1.000E+00, -5.000E+01, 1.000E+00], $

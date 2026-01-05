@@ -26,9 +26,9 @@
 ;CREATED BY:      Takuya Hara on 2016-07-12.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2024-01-31 15:55:56 -0800 (Wed, 31 Jan 2024) $
-; $LastChangedRevision: 32430 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:18:09 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33943 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/vex/mag/vex_mag_load.pro $
 ;
 ;-
@@ -53,7 +53,7 @@ PRO vex_mag_list, trange, verbose=verbose, l4=l4, file=file, time=modify_time, l
   ENDCASE 
   IF lvl EQ '2' THEN prefix = 'BIO_' ELSE prefix = 'MAG_'
 
-  ;rpath = 'ftp://psa.esac.esa.int/pub/mirror/VENUS-EXPRESS/MAG/'
+  ;rpath = 'https://archives.esac.esa.int/psa/ftp/VENUS-EXPRESS/MAG/'
   rpath = 'https://archives.esac.esa.int/psa/ftp/VENUS-EXPRESS/MAG/'
   
   mtime = ['2005-11', '2007-10-03', '2009-10-06', '2010-09-01', '2013']

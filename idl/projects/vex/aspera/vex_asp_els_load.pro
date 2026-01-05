@@ -20,9 +20,9 @@
 ;CREATED BY:      Takuya Hara on 2017-04-15 -> 2018-04-16.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2023-07-03 20:30:35 -0700 (Mon, 03 Jul 2023) $
-; $LastChangedRevision: 31931 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:18:09 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33943 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/vex/aspera/vex_asp_els_load.pro $
 ;
 ;-
@@ -45,7 +45,7 @@ PRO vex_asp_els_list, trange, verbose=verbose, save=save, file=file, time=modify
 
   dprint, dlevel=2, verbose=verbose, 'Starts connecting ESA/PSA FTP server...'
 
-  rpath = 'ftp://psa.esac.esa.int/pub/mirror/VENUS-EXPRESS/ASPERA4/'
+  rpath = 'https://archives.esac.esa.int/psa/ftp/VENUS-EXPRESS/ASPERA4/'
   ndat = N_ELEMENTS(date)
 
   FOR i=0, ndat-1 DO BEGIN

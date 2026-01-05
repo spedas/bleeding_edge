@@ -12,14 +12,14 @@
 ;KEYWORDS:        None.
 ;
 ;NOTE:            See, Tables 4 & 5 from
-;                 ftp://psa.esac.esa.int/pub/mirror/VENUS-EXPRESS/ASPERA4/VEX-V-SW-ASPERA-2-EXT4-ELS-V1.0/DOCUMENT/ELS_DATA_ANALYSIS_SUMMARY.PDF
+;                 https://archives.esac.esa.int/psa/ftp/VENUS-EXPRESS/ASPERA4/VEX-V-SW-ASPERA-2-EXT4-ELS-V1.0/DOCUMENT/ELS_DATA_ANALYSIS_SUMMARY.PDF
 ;
 ;CREATED BY:      Takuya Hara on 2017-04-15 -> 2018-04-16.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2018-04-16 06:35:06 -0700 (Mon, 16 Apr 2018) $
-; $LastChangedRevision: 25048 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:18:09 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33943 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/vex/aspera/vex_asp_els_energy.pro $
 ;
 ;-

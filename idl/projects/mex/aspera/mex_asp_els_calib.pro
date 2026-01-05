@@ -12,9 +12,9 @@
 ;CREATED BY:      Takuya Hara on 2018-01-29.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2018-04-04 13:51:13 -0700 (Wed, 04 Apr 2018) $
-; $LastChangedRevision: 24995 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-01-01 12:17:28 -0800 (Thu, 01 Jan 2026) $
+; $LastChangedRevision: 33942 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/aspera/mex_asp_els_calib.pro $
 ;
 ;-
@@ -23,7 +23,7 @@ PRO mex_asp_els_calib, data, verbose=verbose
   file_mkdir2, ldir
      
   pdir = 'MEX-M-ASPERA3-2-EDR-ELS-V1.0/'
-  rpath = 'ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
+  rpath = 'https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/ASPERA-3/' + pdir + 'CALIB/'
   rfile = 'ELSSCIH_CAL.TAB'
   append_array, file, FILE_SEARCH(ldir, rfile, count=nfile)
   IF nfile EQ 0 THEN file[-1] = spd_download(remote_path=rpath, remote_file=rfile, local_path=ldir, ftp_connection_mode=0) 
