@@ -13,8 +13,8 @@
 ; interval.
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-06-22 15:59:28 -0700 (Sun, 22 Jun 2025) $
-; $LastChangedRevision: 33401 $
+; $LastChangedDate: 2026-01-09 12:20:03 -0800 (Fri, 09 Jan 2026) $
+; $LastChangedRevision: 33983 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/external/IDL_GEOPACK/examples/crib_ts05_fl_tracing.pro $
 
 
@@ -25,6 +25,7 @@ function ns_trace_draw, m
   get_data, 'foot_s', data=fs
   get_data, 'erg_orb_l2_pos_gsm_avg_tclip', data=erg
   get_data, 'fline_sp_to_np',data=revtrace
+  get_data, 'retrace_foot_n',data=f_retrace
 
   n_trace = n.y[m, *, *]
   n_trace_ref = reform(n_trace)
@@ -36,17 +37,39 @@ function ns_trace_draw, m
   fs_i = fs.y[m, *]
   erg_i = erg.y[m, *]
   revtrace_i = revtrace.y[m,*,*]
+  revtrace_i_ref = reform(revtrace_i)
+  fretrace_i = f_retrace.y[m,*]
   t=time_string(erg.x[m], prec=3)
   print, t
 
-  store_data, 'erg_trace_xy', data={x: n.x, y: n_trace}
-  store_data, 'sp_trace_xy',  data={x: s.x,  y: s_trace}
-  store_data, 'fn_xy', data={x: fn.x, y: fn_i}
-  store_data, 'fs_xy', data={x: fs.x, y: fs_i}
-  store_data, 'erg_xy', data={x: erg.x, y: erg_i}
+  erg_trace_count = n_elements(n_trace_ref)/3
+  store_data, 'erg_trace_xy', data={x: replicate(n.x[0],erg_trace_count), y: n_trace_ref}
+  sp_trace_count = n_elements(s_trace_ref)/3
+  store_data, 'sp_trace_xy',  data={x: replicate(s.x[0], sp_trace_count),  y: s_trace_ref}
+  store_data, 'fn_xy', data={x: fn.x[m], y: fn_i}
+  store_data, 'fs_xy', data={x: fs.x[m], y: fs_i}
+  store_data, 'erg_xy', data={x: erg.x[m], y: erg_i}
   store_data,'fn_i',data={x:fn.x[m], y: fn.y[m,*]}
-  store_data, 'rev_i',data={x:revtrace.x[m], y: revtrace_i}
+  revtrace_count = n_elements(revtrace_i_ref)/3
+  store_data, 'rev_i',data={x:replicate(revtrace.x[0],revtrace_count), y: revtrace_i_ref}
 
+  print,'Time: ', erg.x[m], ' ',time_string(erg.x[m])
+  print,'S/C pos: ', erg_i
+  print,'Trace point count, s/c to NP: ', erg_trace_count
+  print,'First s/c to NP trace point: ', n_trace_ref[0,*]
+  print,'Last s/c to NP trace point: ', n_trace_ref[erg_trace_count-1,*]
+  print,'NP foot point: ',fn_i[*]
+  
+
+  print,'Trace point count, NP to SP: ', sp_trace_count
+  print,'First NP to SP trace point: ', s_trace_ref[0,*]
+  print,'Last NP to SP trace point: ', s_trace_ref[sp_trace_count-1,*]
+  print,'SP foot point: ',fs_i[*]
+
+  print,'Trace point count, SP to NP: ', revtrace_count
+  print,'First SP to NP trace point: ', revtrace_i_ref[0,*]
+  print,'Last SP to NP trace point: ', revtrace_i_ref[revtrace_count-1,*]
+  print,'Retrace NP foot point: ',fretrace_i[*]
 
   xran = [-4, 8] & yran = [-4, 8] & vs = 'xy'
   window, 0 & wset, 0
@@ -80,7 +103,7 @@ end
 pro crib_ts05_fl_tracing
   compile_opt idl2
   del_data, '*'
-  timespan, '2022-11-22', 2
+  timespan, '2022-11-22', 2, /days
   ;;load omni data
   omni_hro_load, /res5min
   store_data, 'omni_imf', data=['OMNI_HRO_5min_BY_GSM', 'OMNI_HRO_5min_BZ_GSM']
@@ -106,6 +129,14 @@ pro crib_ts05_fl_tracing
   ;; Reverse FL-tracing, from southern foot point back to the northern ionosphere.
   ttrace2iono, 'foot_s', newname='retrace_foot_n', in_coord='gsm', out_coord='gsm', external='t04s',  par='t04s_par', trace='fline_sp_to_np',geopack_2008=geopack_2008, standard_mapping=standard_mapping
 
+  get_data,'foot_n',data=f_n
+  get_data,'foot_s',data=f_s
+  get_data,'retrace_foot_n',data=f_r
+  print,'North:',f_n.y[0,*], 'r (km) =', sqrt(total(f_n.y[0,*]*f_n.y[0,*])) * 6371.2D
+  print,'South:',f_s.y[0,*],'r (km) =', sqrt(total(f_s.y[0,*]*f_s.y[0,*])) * 6371.2D
+  print,'Retrace:',f_r.y[0,*], 'r (km) =', sqrt(total(f_r.y[0,*]*f_r.y[0,*])) * 6371.2D
+  print,'Diff north-retrace:', f_n.y[0,*] - f_r.y[0,*], 'r (km) =', sqrt(total((f_n.y[0,*] - f_r.y[0,*])*(f_n.y[0,*] - f_r.y[0,*]))) * 6371.2D
+
 
   ; Plot the traces
   ptime=ns_trace_draw(0)
@@ -123,5 +154,14 @@ pro crib_ts05_fl_tracing
   stop
   ptime=ns_trace_draw(50)
   print,'Another trace from a spacecraft position near the end of the time interval.  Traces should still be on top of each other, and pass through the S/C position in window 1.
+  stop
+  ptime=ns_trace_draw(25)
+  print,'Another trace from a spacecraft position near the midpoint of the time interval.  Traces should still be on top of each other, and pass through the S/C position in window 1.
+  for i=0,n_times-1 do begin
+    print,'Trace ',i,' / ',n_times
+    print,'Time',d.x[i], time_string(d.x[i])
+    ptime=ns_trace_draw(i)
+    stop
+  endfor
 
 end

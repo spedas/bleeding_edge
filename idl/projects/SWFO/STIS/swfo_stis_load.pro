@@ -1,11 +1,12 @@
-;$LastChangedBy: ali $
-;$LastChangedDate: 2025-12-02 19:44:44 -0800 (Tue, 02 Dec 2025) $
-;$LastChangedRevision: 33894 $
+;$LastChangedBy: rjolitz $
+;$LastChangedDate: 2026-01-05 11:49:27 -0800 (Mon, 05 Jan 2026) $
+;$LastChangedRevision: 33965 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_load.pro $
 
 pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution=ncdf_resolution, $
   trange=trange,opts=opts,make_ncdf=make_ncdf,make_ccsds=make_ccsds,debug=debug,run_proc=run_proc, $
-  offline=offline,no_exec=no_exec,reader_object=rdr,no_widget=no_widget,lowres=lowres,daily=daily,user_pass=user_pass
+  offline=offline,no_exec=no_exec,reader_object=rdr,no_widget=no_widget,lowres=lowres,daily=daily,$
+  user_pass=user_pass, l0b=l0b, l1a=l1a, l1b=l1b, l2=l2, merge=merge, no_update=no_update, no_download=no_download
   
 
   if keyword_set(debug) then stop
@@ -16,9 +17,70 @@ pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution
   if lowres eq 1 then lowres = '01min'
   if lowres eq 2 then lowres = '30min'
   if file_type eq 'aws' then begin
-    swfo_aws_nc2sav_makefile,/load,daily=daily,trange=trange,station=station,res=lowres,user_pass=user_pass
+    ; swfo_aws_nc2sav_makefile,/load,daily=daily,trange=trange,c2=station,res=lowres,/make_levels,user_pass=user_pass
+    swfo_aws_nc2sav_makefile,/load,daily=daily,trange=trange,station=station,$
+      res=lowres,user_pass=user_pass, no_update=no_update, no_download=no_download
     swfo_apdat_info,/cr,/print,/sort,/uniq,/merge
-    swfo_stis_tplot,/set
+
+    ; Level-making to be deleted from swfo_aws_nc2sav_makefile soon, transfering
+    ; here:
+    ; swfo_apdat_info, merge=merge, /sort, /uniq, /cr
+    if keyword_set(l0b) or keyword_set(l1a) or keyword_set(l1b) or keyword_set(l2) then begin
+      dprint,'Making L0b'
+      l0b = dynamicarray(swfo_stis_sci_level_0b(/getall),name='swfo_stis_L0b')
+      store_data,l0b.name,data=l0b ,tagnames = '*'
+    endif
+
+    if keyword_set(l1a) or keyword_set(l1b) or keyword_set(l2) then begin
+      tname = 'swfo_stis_L1a'
+      dprint,'Making L1: ',tname
+      l1a = dynamicarray(swfo_stis_sci_level_1a(l0b.array),name=tname)
+      store_data,tname,data = l1a,tagnames = '*'
+      store_data,tname,data = l1a,tagnames = 'SPEC_??',val_tag='_NRG'
+      store_data,tname,data = l1a,tagnames = 'SPEC_???',val_tag='_NRG'
+      store_data,tname,data = l1a,tagnames = 'SPEC_????',val_tag='_NRG'
+      options,tname+'_SPEC_??',spec=1, zlog=1, ylog=1
+      options,tname+'_SPEC_???',spec=1, zlog=1, ylog=1
+      options,tname+'_SPEC_????',spec=1, zlog=1, ylog=1
+      options,tname+'_RATE6',/ylog
+      ;options,tname+['_RATE','*SIGMA','*BASELINE', /reverse_order, colors ='bgrmcd'
+      options,/def,'*_RATE6 *BASELINE *SIGMA *NOISE_TOTAL',colors='bgrmcd',symsize=.5,$
+        labels=channels,labflag=-1,constant=0,/reverse_order
+    endif
+
+    if keyword_set(l1b) or keyword_set(l2) then begin
+
+      get_data, 'swfo_stis_L1a_SPEC_O1', ptr=ptr
+      l1a = ptr.ddata.array
+      l1b = swfo_stis_sci_level_1b(l1a)
+      l1b_da = dynamicarray(l1b)
+      store_data, 'swfo_stis_L1b', data=l1b_da, tag='*'
+      store_data,'swfo_stis_L1b',data = l1b_da,tagnames = '???_ELEC_FLUX',val_tag='ELEC_ENERGY'
+      store_data,'swfo_stis_L1b',data = l1b_da,tagnames = '???_ION_FLUX',val_tag='ION_ENERGY'
+
+      prefix = 'swfo_stis_L1b_'
+      store_data, prefix + 'ETA',$
+          data=[prefix + 'ETA1_ELEC', prefix + 'ETA1_ION',$
+                prefix + 'ETA2_ELEC', prefix + 'ETA2_ION'],$
+              dl={colors: "brgm", labels: ["elec n1", "ion n1", "elec n2", "ion n2"], labflag: -1}
+      ylim, prefix + 'ETA', -0.1, 1.1
+
+      store_data, prefix + 'PIXEL_RATIO',$
+          data=[prefix + 'ELEC_PIXEL_RATIO', prefix + 'ION_PIXEL_RATIO'],$
+              dl={colors: "br", labels: ["elec", "ion"], labflag: -1, ylog: 1, constant: 1e-2}
+      ylim, prefix + 'PIXEL_RATIO', 1e-3, 1e1
+    endif
+
+    if keyword_set(l2) then begin
+      l2 = swfo_stis_sci_level_2(l1b)
+      l2_da = dynamicarray(l2, name='Level 2')
+      store_data, 'swfo_stis_L2', data=l2_da, tag='*'
+      store_data,'swfo_stis_L2',data = l2_da,tagnames = 'ELEC_FLUX',val_tag='ELEC_ENERGY'
+      store_data,'swfo_stis_L2',data = l2_da,tagnames = 'ION_FLUX',val_tag='ION_ENERGY'
+
+    endif
+
+    swfo_stis_tplot, /setlim
     return
   endif
   if ~keyword_set(ncdf_resolution) then ncdf_resolution = 1800

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan  3 03:18:01 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Jan  9 18:17:44 2026.<P>
  
 <HR>
  
@@ -28,6 +28,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MMS_CONVERT_VFRAME">MMS_CONVERT_VFRAME</A>
 <LI><A HREF="#MMS_DRAW_CIRCLE">MMS_DRAW_CIRCLE</A>
 <br>Draws (and fills in) a circle
+<LI><A HREF="#MMS_JDOTE">MMS_JDOTE</A>
 <LI><A HREF="#MMS_REMOVE_OLD_FILES">MMS_REMOVE_OLD_FILES</A>
 <br>Removes old MMS CDF data files stored on your local file system.
 <LI><A HREF="#MMS_TEAM_KIBANA">MMS_TEAM_KIBANA</A>
@@ -238,7 +239,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <A NAME="MMS_DRAW_CIRCLE">
 <H2>MMS_DRAW_CIRCLE</H2></A>
 <A HREF="#MMS_CONVERT_VFRAME">[Previous Routine]</A>
-<A HREF="#MMS_REMOVE_OLD_FILES">[Next Routine]</A>
+<A HREF="#MMS_JDOTE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -258,9 +259,62 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 <STRONG>(See <A href="util/mms_draw_circle.pro">projects/mms/common/util/mms_draw_circle.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MMS_JDOTE">
+<H2>MMS_JDOTE</H2></A>
+<A HREF="#MMS_DRAW_CIRCLE">[Previous Routine]</A>
+<A HREF="#MMS_REMOVE_OLD_FILES">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ Procedure:
+  mms_jdote
+
+ Purpose:
+  Create tplot variables for MMS J dot E'
+
+
+ Keywords:
+
+     trange:     time range of interest [starttime, endtime]
+                 if empty, the default time will be ['2022-03-06/05:42:00', '2022-03-06/06:12:00']
+                 if you want to use an already defined timespan then you can use:  trange = timerange()
+
+     probes:     list of probes, only the first in the list will be used
+                 default is ['3']
+
+     data_rate:  the data rate
+                 default is 'brst'
+
+     werror:     returns 1 if there was an error, 0 if no errors
+
+ Example use:
+      To run using the default values, simply use:
+      mms_jdote
+
+      To specify some keywords, use:
+      timespan,'2022-03-06/05:42', 30, /min
+      trange = timerange()
+      probes = ['3']
+      data_rate = 'brst'
+      mms_jdote, probes=probes, trange=trange, data_rate=data_rate
+
+
+ Notes:
+      Code provided by Marit Oieroset and Victoria Coffey.
+      Please note that this code requires a good measurement of the electric field parallel to the magnetic field,
+      which is very rare. It should be used for specific time intervals only.
+
+
+$LastChangedBy: nikos $
+$LastChangedDate: 2026-01-07 13:03:20 -0800 (Wed, 07 Jan 2026) $
+$LastChangedRevision: 33976 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_jdote.pro $
+</PRE><P>
+<STRONG>(See <A href="util/mms_jdote.pro">projects/mms/common/util/mms_jdote.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MMS_REMOVE_OLD_FILES">
 <H2>MMS_REMOVE_OLD_FILES</H2></A>
-<A HREF="#MMS_DRAW_CIRCLE">[Previous Routine]</A>
+<A HREF="#MMS_JDOTE">[Previous Routine]</A>
 <A HREF="#MMS_TEAM_KIBANA">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

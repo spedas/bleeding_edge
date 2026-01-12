@@ -1,10 +1,10 @@
-;$LastChangedBy: ali $
-;$LastChangedDate: 2025-12-02 19:44:44 -0800 (Tue, 02 Dec 2025) $
-;$LastChangedRevision: 33894 $
+;$LastChangedBy: rjolitz $
+;$LastChangedDate: 2026-01-05 11:49:27 -0800 (Mon, 05 Jan 2026) $
+;$LastChangedRevision: 33965 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_aws_nc2sav_makefile.pro $
 
 pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,daily=daily,force_make=force_make,$
-  info=info,station=station,res=res,l0b=l0b,l1a=l1a,l1b=l1b,user_pass=user_pass
+  info=info,station=station,res=res,l0b=l0b,l1a=l1a,l1b=l1b,user_pass=user_pass,no_update=no_update, no_download=no_download
   trange = timerange(trange)
   root=root_data_dir()
   sav_path='swfo/data/sci/aws/.sav/'
@@ -17,9 +17,10 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
   source={remote_data_dir:'http://sprg.ssl.berkeley.edu/data/' $ 
     ,master_file: 'swfo/.master'}
     
-  no_update = 0
-  no_download = 0
+  if ~keyword_set(no_update) then no_update = 0
+  if ~keyword_set(no_download) then no_download = 0
   
+  if ~keyword_set(user_pass) then user_pass = getenv('SWFO_USER_PASS')
   if ~keyword_set(user_pass) then begin
     log_info = get_login_info()
     salt = '_a0'

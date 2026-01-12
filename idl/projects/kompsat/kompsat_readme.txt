@@ -12,7 +12,7 @@ https://swe.ssa.esa.int/sosmag
 https://link.springer.com/article/10.1007/s11214-020-00742-2
 
 For summary plots, see:
-http://themis.ssl.berkeley.edu/summary.php?year=2023&month=09&day=04&hour=0024&sumType=kompsat&type=sosmag
+https://themis.ssl.berkeley.edu/summary.php?year=2022&month=01&day=01&hour=0024&sumType=kompsat&type=kompsat
 
 
 The ESA HAPI server requires registration.
@@ -21,3 +21,6 @@ After registering, the user should edit the file kompsat_password.txt, replacing
 The user can load data using kompsat_load_data.pro, which requires IDL 9.1 or later.
 For earlier versions of IDL, the user can download data as CSV files and then load these CSV files into tplot using kompsat_load_csv.pro 
 
+Update 2026-01-07:
+Particle data is now available starting from 2021-02-01.
+Magnetometer data is available starting from 2020-01-01.

@@ -310,7 +310,6 @@ endif
 dweight = sqrt(e_inf)/e
 pardens = sqrt(mass/2.)* 1e-5 * data_dv * dweight
 mom.density = total(pardens)   ; 1/cm^3
-if(charge Lt 0) then stop
 if arg_present(dmom) then begin
   pardens1 = sqrt(mass/2.)* 1e-5 * data_dv1 * dweight
   dmom.density = sqrt(total(pardens*pardens1)) ;uncertainty, jmm, 12-apr-2011
@@ -448,48 +447,54 @@ endif
 ; n_3d, j_3d, and v_3d routines.
 ; JWL 2025-07-10
 
-eV_J = 1.602176634e-19  ; conversion from eV to J
+; Skip if data3d undefined
 
-mp=data3d.mass  ; mass units are eV/(km/sec)^2, for working with eflux units.  In these units, proton mass = 0.010453500
-q = eV_J
+if defined(data3d) then begin
+  
+  eV_J = 1.602176634e-19  ; conversion from eV to J
+  
+  mp=data3d.mass  ; mass units are eV/(km/sec)^2, for working with eflux units.  In these units, proton mass = 0.010453500
+  q = eV_J
+  
+  v = sqrt(2d * data3d.energy/mp)  ; convert energy array to velocity (km/sec)
+  
+  vx = v*cos(data3d.theta/180.*!pi)*cos(data3d.phi/180.*!pi) 
+  vy = v*cos(data3d.theta/180.*!pi)*sin(data3d.phi/180.*!pi)
+  vz = v*sin(data3d.theta/180.*!pi)
+  
+  ; Subtract bulk velocity to get thermal velocity, km/sec
+  
+  wx=vx-mom.velocity[0]  
+  wy=vy-mom.velocity[1]
+  wz=vz-mom.velocity[2]
+  
+  ; thermal energy, eV
+  Eth=0.5*mp*(wx^2+wy^2+wz^2)
+  
+  ;Repurposed density calculation for integrating heat flux, original code made several calls to n_3d()
+  
+  data_dvx = Eth*wx*data3d.data * de_e * weight * domega_weight[0,*,*,*]
+  data_dvy = Eth*wy*data3d.data * de_e * weight * domega_weight[0,*,*,*]
+  data_dvz = Eth*wz*data3d.data * de_e * weight * domega_weight[0,*,*,*]
+  
+  
+  dweight = sqrt(e_inf)/e
+  parqx = sqrt(mass/2.)* 1e-5 * data_dvx * dweight
+  parqy = sqrt(mass/2.)* 1e-5 * data_dvy * dweight
+  parqz = sqrt(mass/2.)* 1e-5 * data_dvz * dweight
+  
+  ; Conversion to output units
+  conv_mw = eV_J*1d12  ; output in mW/m^2
+  conv_ev = 1d05 ; output in eV/(cm^2-sec)
+  
+  
+  heat_x = conv_ev * total(parqx)
+  heat_y = conv_ev * total(parqy)
+  heat_z = conv_ev * total(parqz)
+  
+  mom.qflux = [heat_x, heat_y, heat_z]
 
-v = sqrt(2d * data3d.energy/mp)  ; convert energy array to velocity (km/sec)
-
-vx = v*cos(data3d.theta/180.*!pi)*cos(data3d.phi/180.*!pi) 
-vy = v*cos(data3d.theta/180.*!pi)*sin(data3d.phi/180.*!pi)
-vz = v*sin(data3d.theta/180.*!pi)
-
-; Subtract bulk velocity to get thermal velocity, km/sec
-
-wx=vx-mom.velocity[0]  
-wy=vy-mom.velocity[1]
-wz=vz-mom.velocity[2]
-
-; thermal energy, eV
-Eth=0.5*mp*(wx^2+wy^2+wz^2)
-
-;Repurposed density calculation for integrating heat flux, original code made several calls to n_3d()
-
-data_dvx = Eth*wx*data3d.data * de_e * weight * domega_weight[0,*,*,*]
-data_dvy = Eth*wy*data3d.data * de_e * weight * domega_weight[0,*,*,*]
-data_dvz = Eth*wz*data3d.data * de_e * weight * domega_weight[0,*,*,*]
-
-
-dweight = sqrt(e_inf)/e
-parqx = sqrt(mass/2.)* 1e-5 * data_dvx * dweight
-parqy = sqrt(mass/2.)* 1e-5 * data_dvy * dweight
-parqz = sqrt(mass/2.)* 1e-5 * data_dvz * dweight
-
-; Conversion to output units
-conv_mw = eV_J*1d12  ; output in mW/m^2
-conv_ev = 1d05 ; output in eV/(cm^2-sec)
-
-
-heat_x = conv_ev * total(parqx)
-heat_y = conv_ev * total(parqy)
-heat_z = conv_ev * total(parqz)
-
-mom.qflux = [heat_x, heat_y, heat_z]
+endif
 
 mf3x3 = mom.mftens[map3x3]
 

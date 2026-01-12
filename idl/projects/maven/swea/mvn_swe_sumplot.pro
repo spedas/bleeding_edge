@@ -68,8 +68,8 @@
 ;       BURST:        Plot a color bar showing PAD burst coverage.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-11-26 13:47:20 -0800 (Wed, 26 Nov 2025) $
-; $LastChangedRevision: 33881 $
+; $LastChangedDate: 2026-01-08 10:36:22 -0800 (Thu, 08 Jan 2026) $
+; $LastChangedRevision: 33980 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -97,6 +97,7 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
   if (size(burst,/type) eq 0) then doburst = 1 else doburst = keyword_set(burst)
   if (size(orb,/type) eq 0) then doorb = 1 else doorb = keyword_set(orb)
   fhsk = keyword_set(fhsk)
+  tplot_options, get=topt
 
   swe_hsk_norm = [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 12., -12., 28., 28., $
                   1., 1., 1., 2.5, 5., 3.3, 5., -5., 28., 1.]
@@ -490,22 +491,31 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     endelse
     
     Baz = mvn_swe_pad.Baz*!radeg
-    Bel = mvn_swe_pad.Bel*!radeg + 90.
+    indx = where(Baz lt 0., count)
+    if (count gt 0) then Baz[indx] += 360.
+    Bel = mvn_swe_pad.Bel*!radeg*2. + 180.
     
     Bdir = fltarr(npkt,2)
     Bdir[*,0] = Baz
     Bdir[*,1] = Bel
 
+    aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], color:4, yticks:2, yminor:3, ytitle:('SWEA Elev')}
+    if tag_exist(topt,'charsize') then str_element, aopt, 'charsize', topt.charsize, /add_replace
+
     mname = 'swe_mag_svy'
-    store_data,mname,data={x:(mvn_swe_pad.time + 1.5D), y:Bdir, z:[0,1]}
+    store_data,mname,data={x:(mvn_swe_pad.time + 1.5D), y:Bdir, v:[0,1]}
     ylim,mname,0,360,0
-    options,mname,'ytitle','SWE MAG'
+    options,mname,'ytitle','MAG!cSWEA Azim'
+    options,mname,'ystyle',9
     options,mname,'yticks',4
     options,mname,'yminor',4
-    options,mname,'labels',['AZ','EL+90']
-    options,mname,'labflag',1
-    options,mname,'colors',TCcol[[1,6]]
+    options,mname,'labels',['','']
+    options,mname,'labflag',0
+    options,mname,'line_colors',11
+    options,mname,'colors',[6,4]
     options,mname,'psym',3
+    options,mname,'constant',[90,180,270]
+    options,mname,'axis',aopt
     
     if (plotap[2]) then pans = [pans,pname,mname]
 
@@ -554,22 +564,31 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     
     mvn_swe_magdir, a2.time, a2.Baz, a2.Bel, Baz, Bel
     Baz = Baz*!radeg
-    Bel = Bel*!radeg + 90.
-    
+    indx = where(Baz lt 0., count)
+    if (count gt 0) then Baz[indx] += 360.
+    Bel = Bel*!radeg*2. + 180.
+
     Bdir = fltarr(n_elements(a2),2)
     Bdir[*,0] = Baz
     Bdir[*,1] = Bel
 
+    aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], color:4, yticks:2, yminor:3, ytitle:('SWEA Elev')}
+    if tag_exist(topt,'charsize') then str_element, aopt, 'charsize', topt.charsize, /add_replace
+
     mname = 'swe_mag_svy'
-    store_data,mname,data={x:(a2.time + 1.5D), y:Bdir, z:[0,1]}
+    store_data,mname,data={x:(a2.time + 1.5D), y:Bdir, v:[0,1]}
     ylim,mname,0,360,0
-    options,mname,'ytitle','SWE MAG'
+    options,mname,'ytitle','MAG!cSWEA Azim'
+    options,mname,'ystyle',9
     options,mname,'yticks',4
     options,mname,'yminor',4
-    options,mname,'labels',['AZ','EL+90']
-    options,mname,'labflag',1
-    options,mname,'colors',TCcol[[1,6]]
+    options,mname,'labels',['','']
+    options,mname,'labflag',0
+    options,mname,'line_colors',11
+    options,mname,'colors',[6,4]
     options,mname,'psym',3
+    options,mname,'constant',[90,180,270]
+    options,mname,'axis',aopt
 
     if (n_elements(a2) gt 1L) then begin
       dca2 = a2.npkt - shift(a2.npkt,1)
@@ -699,23 +718,32 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     endif
 
     Baz = mvn_swe_pad_arc.Baz*!radeg
-    Bel = mvn_swe_pad_arc.Bel*!radeg + 90.
-    
+    indx = where(Baz lt 0., count)
+    if (count gt 0) then Baz[indx] += 360.
+    Bel = mvn_swe_pad_arc.Bel*!radeg*2. + 180.
+ 
     Bdir = fltarr(npkt,2)
     Bdir[*,0] = Baz
     Bdir[*,1] = Bel
 
+    aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], color:4, yticks:2, yminor:3, ytitle:('SWEA Elev')}
+    if tag_exist(topt,'charsize') then str_element, aopt, 'charsize', topt.charsize, /add_replace
+
     mname = 'swe_mag_arc'
     store_data,mname,data={x:(mvn_swe_pad_arc.time + 1.5D), y:Bdir, z:[0,1]}
     ylim,mname,0,360,0
-    options,mname,'ytitle','SWE MAG'
+    options,mname,'ytitle','MAG!cSWEA Azim'
+    options,mname,'ystyle',9
     options,mname,'yticks',4
     options,mname,'yminor',4
-    options,mname,'labels',['AZ','EL+90']
-    options,mname,'labflag',1
-    options,mname,'colors',TCcol[[1,6]]
+    options,mname,'labels',['','']
+    options,mname,'labflag',0
+    options,mname,'line_colors',11
+    options,mname,'colors',[6,4]
     options,mname,'psym',3
-    
+    options,mname,'constant',[90,180,270]
+    options,mname,'axis',aopt
+
     if (plotap[2]) then pans = [pans,pname,mname]
 
   endif
@@ -762,22 +790,31 @@ pro mvn_swe_sumplot, vnorm=vflg, cmdcnt=cmdcnt, sflg=sflg, pad_e=pad_e, a4_sum=a
     
     mvn_swe_magdir, a3.time, a3.Baz, a3.Bel, Baz, Bel
     Baz = Baz*!radeg
-    Bel = Bel*!radeg + 90.
-    
+    indx = where(Baz lt 0., count)
+    if (count gt 0) then Baz[indx] += 360.
+    Bel = Bel*!radeg*2. + 180.
+
     Bdir = fltarr(n_elements(a3),2)
     Bdir[*,0] = Baz
     Bdir[*,1] = Bel
 
+    aopt = {yaxis:1, ystyle:1, yrange:[-90.,90.], color:4, yticks:2, yminor:3, ytitle:('SWEA Elev')}
+    if tag_exist(topt,'charsize') then str_element, aopt, 'charsize', topt.charsize, /add_replace
+
     mname = 'swe_mag_arc'
-    store_data,mname,data={x:(a3.time + 1.5D), y:Bdir, z:[0,1]}
+    store_data,mname,data={x:(a3.time + 1.5D), y:Bdir, v:[0,1]}
     ylim,mname,0,360,0
+    options,mname,'ytitle','MAG!cSWEA Azim'
+    options,mname,'ystyle',9
     options,mname,'yticks',4
     options,mname,'yminor',4
-    options,mname,'labels',['AZ','EL']
-    options,mname,'labflag',1
-    options,mname,'colors',TCcol[[1,6]]
+    options,mname,'labels',['','']
+    options,mname,'labflag',0
+    options,mname,'colors',[6,4]
     options,mname,'psym',3
-    
+    options,mname,'constant',[90,180,270]
+    options,mname,'axis',aopt
+
     if (doburst) then begin
       bname = 'swe_a3_bar'
       y = replicate(1.,npkt,2)

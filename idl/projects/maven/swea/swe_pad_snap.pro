@@ -48,6 +48,9 @@
 ;                      units (FLUX, EFLUX, DF), then the signal level is also
 ;                      adjusted to ensure conservation of phase space density.
 ;
+;       SHOWBR:        Show an extra horizontal axis below the pitch angle distribution
+;                      that maps pitch angle to magnetic strength at the reflection point.
+;
 ;       SEC:           Remove secondary electrons.
 ;
 ;       SCONFIG:       Structure of parameters for the secondary electron models.
@@ -198,8 +201,8 @@
 ;                         0B = affected by low-energy anomaly
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-08-18 13:26:56 -0700 (Mon, 18 Aug 2025) $
-; $LastChangedRevision: 33553 $
+; $LastChangedDate: 2026-01-07 13:36:23 -0800 (Wed, 07 Jan 2026) $
+; $LastChangedRevision: 33979 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_pad_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -219,7 +222,7 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
                   result=result, vdis=vdis, padmap=padmap, sec=sec, sconfig=sconfig, $
                   color_table=color_table, reverse_color_table=reverse_color_table, $
                   line_colors=line_colors, pyrange=pyrange, qlevel=qlevel, _extra=_extra,$
-                  mkpng=mkpng, tmark=tmark, figname=figname
+                  mkpng=mkpng, tmark=tmark, figname=figname, showbr=showbr
 
   @mvn_swe_com
   @putwin_common
@@ -251,7 +254,7 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
            'ERROR_BARS','YRANGE','TRANGE2','NOTE','MINCOUNTS','MAXRERR', $
            'TSMO','SUNDIR','WSCALE','CSCALE','FSCALE','RESULT','VDIS', $
            'PADMAP','COLOR_TABLE','REVERSE_COLOR_TABLE','LINE_COLORS', $
-           'PYRANGE','QLEVEL','SCONFIG','TMARK']
+           'PYRANGE','QLEVEL','SCONFIG','TMARK','SHOWBR']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -288,6 +291,7 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
   padmap = keyword_set(padmap)
   qlevel = (n_elements(qlevel) gt 0L) ? byte(qlevel[0]) : 0B
   tmark = keyword_set(tmark)
+  showbr = keyword_set(showbr)
 
   case n_elements(trange2) of
        0 : tflg = 0
@@ -381,6 +385,12 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
       sun = {time:t[1L:*], the:the[1L:*], phi:phi[1L:*]}
     endif else sundir = 0
   endif
+
+; Get magnetic field data, if needed, at SWEA times
+
+  if (showbr) then if (size(swe_mag1,/type) ne 8) then mvn_swe_addmag
+
+; Set color table and line colors
 
   ctab = -1 & pct = -1 & crev = -1 & prev = -1 & lines = -1 & plines = -1
   if (n_elements(color_table) gt 0) then begin
@@ -1160,10 +1170,27 @@ pro swe_pad_snap, keepwins=keepwins, killwins=killwins, archive=archive, energy=
         col = [replicate(2,8), replicate(6,8)]
 ;       col = replicate(!p.color,16)
 
-        plot_io,[-1.],[0.1],psym=3,xtitle='Pitch Angle (deg)',ytitle='Normalized', $
-                yrange=pyrange,ystyle=1,xrange=[0,180],xstyle=1,xticks=6,xminor=3, $
-                title=strtrim(string(tstring, penergy, note, format='(a,5x,f6.1," eV   ",a)')), $
-                charsize=1.4*cscale, pos=[0.140005, 0.124449 - (wdy/4000.), 0.958005, 0.937783 - (wdy/525.)]
+        if (showbr) then begin
+          plot_io,[-1.],[0.1],psym=3,xtitle='Pitch Angle (deg)',ytitle='Normalized', $
+                  yrange=pyrange,ystyle=1,xrange=[0,180],xstyle=1,xticks=6,xminor=3, $
+                  title=strtrim(string(tstring, penergy, note, format='(a,5x,f6.1," eV   ",a)')), $
+                  charsize=1.4*cscale, pos=[0.140005, 0.260000 - (wdy/4000.), 0.958005, 0.937783 - (wdy/525.)]
+
+          iBsc = nn2(swe_mag1.time, pad.time)
+          Bsc = swe_mag1[iBsc].Bamp
+          nticks = 12
+          dalpha = 180./float(nticks)
+          alpha = dalpha*findgen(nticks-1) + dalpha
+          Bref = Bsc/(sin(alpha*!dtor)^2.)
+          Blab = [' ',strtrim(string(round(Bref)),2),' ']
+          axis, 0, 0.04, 0, xaxis=0, xrange=[0,180], xstyle=1, xticks=nticks, charsize=1.2*cscale, $
+                xtitle='|B| at Reflection Point (nT)', color=6, /data, xtickname=Blab
+        endif else begin
+          plot_io,[-1.],[0.1],psym=3,xtitle='Pitch Angle (deg)',ytitle='Normalized', $
+                  yrange=pyrange,ystyle=1,xrange=[0,180],xstyle=1,xticks=6,xminor=3, $
+                  title=strtrim(string(tstring, penergy, note, format='(a,5x,f6.1," eV   ",a)')), $
+                  charsize=1.4*cscale, pos=[0.140005, 0.124449 - (wdy/4000.), 0.958005, 0.937783 - (wdy/525.)]
+        endelse
 
         for j=0,15 do oplot,[ylo[j],yhi[j]],[zi[j],zi[j]],color=col[j]
         for j=0,7 do begin   ; anodes 0-7

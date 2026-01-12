@@ -11,8 +11,8 @@
 ;       Yuki Harada on 2017-05-11
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2025-12-22 17:31:52 -0800 (Mon, 22 Dec 2025) $
-; $LastChangedRevision: 33938 $
+; $LastChangedDate: 2026-01-05 22:55:59 -0800 (Mon, 05 Jan 2026) $
+; $LastChangedRevision: 33970 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mex/marsis/mex_marsis_spectrogram.pro $
 ;-
 
@@ -47,7 +47,7 @@ if n_elements(aaltrange) eq 2 and size(marsis_geometry,/type) ne 0 then begin
    drtitle = 'H'+string(39b)+': '+string(aaltrange[0],f='(i0)')+'-' $
              +string(aaltrange[1],f='(i0)')+' km!c'
    w = where( aalt gt aaltrange[0] $
-              and aalt lt aaltrange[1] , comp=cw, ncomp=ncw)
+              and aalt lt aaltrange[1] , nw , comp=cw, ncomp=ncw)
    ww = aalt*!values.f_nan
    if nw gt 0 then ww[w] = 1.
    www = rebin(ww,n_elements(t),80,160)

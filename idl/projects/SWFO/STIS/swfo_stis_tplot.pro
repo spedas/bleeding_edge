@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
-; $LastChangedRevision: 33864 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-01-05 11:54:55 -0800 (Mon, 05 Jan 2026) $
+; $LastChangedRevision: 33969 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -88,11 +88,11 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*hkp?_NEGATIVE_PULSE_RATES',labels='total_neg',psym=-2,symsize=1
     options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
-    options,/def,'*TOTAL14 *RATE14',spec=1,zlog=1,no_interp=1
+    options,/def,'*TOTAL14',spec=1,zlog=1,no_interp=1
     options,/def,'*sci_SIGMA14',ylog=1
     ylim,/def,'*_RATE6',.5,1e5,1
     options,/def,'*_RATE6',symsize=.2
-    options,/def,'*sci_*14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1
+    options,/def,'*RATE14',psym=-1,labels=['CH1','CH4','CH2','CH5','CH12','CH45','CH3','CH6','CH13','CH46','CH23','CH56','CH123','CH456'],labflag=1,ylog=1
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
     options,/def,'*TOTAL6* *RATE6*',colors='bgrmcd',symsize=.5,labels=channels,labflag=-1
     options,/def,'*_SCALED_RATE6*',constant=[.5,1]
@@ -105,8 +105,11 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*hkp?_ADC_VOLTAGES',colors='bgrmc',labels=['1.5VD','3.3VD','5VD','+5.6VA','-5.6VA'],labflag=-1,constant=[0,1.5,3.3,5,-5]
     options,/def,'*hkp?_ADC_TEMPS',colors='bgr',labels=['DAP','Sensor 1','Sensor 2'],labflag=-1
     dacs=['CH1 thresh','CH2 thresh','CH3 thresh','Baseline','CH4 thresh','CH5 thresh','CH6 thresh','AUX2','CH1-4 pulse height','CH2-5 pulse height','CH3-6 pulse height','Bias Voltage Control']
-    options,/def,'*hkp?_DAC_VALUES',panel_size=2,yrange=[0,'ffff'x],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
+    options,/def,'*DAC_VALUES',panel_size=2,yrange=[0,'ffff'x],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
     options,/def,'*hkp2_DAC_VALUES',yrange=[0,300]
+
+    options,/def,'*SCI_MODE_BITS',numbits=2,labels=reverse(['Decimate Enable', 'Linear Enable']),colors=[1,2]
+
     options,/def,'*PTCU_BITS',numbits=4,labels=reverse(['P=PPS Missing','T=TOD Missing','C=Compression','U=Use LUT']),colors=[0,1,2,6]
     options,/def,'*AAEE_BITS',numbits=4,labels=reverse(['Attenuator IN','Attenuator OUT','Checksum Error 1','Checksum Error 0']),colors=[0,1,2,6]
     options,/def,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),colors='bgrbgrkm'
@@ -155,7 +158,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
 
     if ~keyword_set(cal) then cal = swfo_stis_inst_response_calval()
 
-    options, '*QUALITY_BITS*', tplot_routine='bitplot', labels=cal.qflag_labels, psyms=1
+    options, '*QUALITY_BITS*', tplot_routine='bitplot', labels=cal.qflag_labels, psyms=3
     ylim, '*QUALITY_BITS*', -1, 42
 
     options, '*FLUX', yrange=[10, 6000],$
