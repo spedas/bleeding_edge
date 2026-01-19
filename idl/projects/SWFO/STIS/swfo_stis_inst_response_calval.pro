@@ -17,10 +17,10 @@
 ;     printdat, alt_cal
 ; 
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
-; $LastChangedRevision: 33771 $
+; $LastChangedDate: 2026-01-15 17:02:17 -0800 (Thu, 15 Jan 2026) $
+; $LastChangedRevision: 34032 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 33771 2025-10-19 01:55:35Z rjolitz $
+; $Id: swfo_stis_inst_response_calval.pro 34032 2026-01-16 01:02:17Z rjolitz $
 
 
 
@@ -47,7 +47,9 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ; Geometric factor needs verification:
     ; calval.geometric_factor = .13 * [nan, .01,  1 , .99]   * !pi
     ; calval.geometric_factor = .2  * [nan, .01,1,1,.01,1,1]
-    gf = 0.2 * [0.01, 1., 1., 0.01, 1., 1.]
+    ; gf = 0.2 * [0.01, 1., 1., 0.01, 1., 1.]
+    ; gf = [0.5d * [0.01d, 1., 1.], 0.4d * [0.01d, 1., 1.]]
+    gf = [0.53d * [0.01d, 1., 1.], 0.41d * [0.01d, 1., 1.]]
     calval.geometric_factor = gf
     ; geom_raw = [nan, calval.geometric_factor]
     ; calval.geoms         = reform( geom_raw[[1,2,3,1,2,3]] , dim )
@@ -273,7 +275,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 33771 2025-10-19 01:55:35Z rjolitz $'
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34032 2026-01-16 01:02:17Z rjolitz $'
     swfo_stis_inst_response_calval_dict  = calval
     dprint,'Using Revision: '+calval.rev_date
   endif

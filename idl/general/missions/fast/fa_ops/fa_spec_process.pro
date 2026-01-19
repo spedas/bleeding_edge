@@ -128,11 +128,15 @@ Pro fa_spec_process, full_database_management = full_database_management, $
                      'fa_dspadc_e14', 'fa_dspadc_e14hg', $
                      'fa_dspadc_e34', 'fa_dspadc_e34hg', $
                      'fa_dspadc_e56', 'fa_dspadc_e58', 'fa_dspadc_e58hg', $
-                     'fa_dspadc_e78', 'fa_dspadc_e910', 'fa_dspadc_v910trk', $
+                     'fa_dspadc_e78', 'fa_dspadc_e910', $
+                     'fa_dspadc_v12trk', 'fa_dspadc_v14trk', 'fa_dspadc_v910trk', $
                      'fa_dspadc_eomni', 'fa_dspadc_eomnihg', $
                      'fa_dsphsbm_mag3ac', 'fa_dsphsbm_e12', 'fa_dsphsbm_e14', $
                      'fa_dsphsbm_e34', 'fa_dsphsbm_e56', 'fa_dsphsbm_e58', $
                      'fa_dsphsbm_e78', 'fa_dsphsbm_e910']
+     dsp_tmp = fa_dsp_process_varnames()
+     dqds_to_check = reform(dsp_tmp[0, *])+'_Spectra'
+     dqd_fsize_limit = 5000
   Endif Else If(typ Eq 'sfa') Then Begin
      fa_fields_sfa2tplot, orb_info[1:2], tvar ;needs a time range
      to_be_stored = ['fa_sfaave_mag3ac', 'fa_sfaave_e12', $
@@ -145,6 +149,9 @@ Pro fa_spec_process, full_database_management = full_database_management, $
                      'fa_sfaburst_e56', 'fa_sfaburst_e58', $
                      'fa_sfaburst_e78', 'fa_sfaburst_e910', $
                      'fa_sfaburst_eomni']
+     sfa_tmp = fa_sfa_process_varnames()
+     dqds_to_check = reform(sfa_tmp[0, *])
+     dqd_fsize_limit = 5000
   Endif Else Begin
      message, /info, 'Bad TYP input'
   Endelse
@@ -157,6 +164,23 @@ Pro fa_spec_process, full_database_management = full_database_management, $
         break
      Endif 
   Endfor
+;files to check for -- if there is no data for the input dqd's
+;                      then add to missed orbits file.
+  ntb1 = n_elements(dqds_to_check)
+  cc1 = 0
+  For j = 0, ntb1-1 Do Begin
+     fsizej = fa_cdf_file_test(long(orb_str), dqds_to_check[j])
+     If(fsizej Gt dqd_fsize_limit) Then Begin
+        cc1 = 1
+        break                   ;found a good file, so there must be ok data
+     Endif
+  Endfor
+  If(cc1 Eq 0) Then Begin       ;Add to no_data_orbits.txt
+     If(~is_string(file_search('orbits_no_data.txt'))) Then Begin
+        openw, ndunit, 'orbits_no_data.txt', /get_lun
+     Endif Else openw, ndunit, 'orbits_no_data.txt', /get_lun, /append
+     printf, ndunit, orb_str
+  Endif
   If(~is_struct(e)) Then Begin
      message, /info, 'No '+strupcase(typ)+' data, no file output'
      If(orb_process) Then Begin
@@ -261,7 +285,7 @@ Pro fa_spec_process, full_database_management = full_database_management, $
         
      fa_tplot2cdf, filename = fulldir+filename, tvars = tb, $
                    g_attributes = global_att, /compress_cdf, $
-                   /add_tname_to_epoch
+                   /add_tname_to_epoch, v_units = 'kHz'
      If(orb_process) Then Begin
         message, /info, 'Incrementing orbit.txt'
         orbit = long(orb_str)

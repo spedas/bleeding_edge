@@ -22,18 +22,22 @@
 ;            special L2 process that creates 'iv'+iv_level files, using a
 ;            new background calculation. There will be multiple iv levels
 ;            and only the background values are saved in the file
+; directory = an output directory, full path, end with a slash '/'
+; alt_data_path = an alternate output path for the data, will replace the
+;                 'maven' in, e.g., '/disks/data/maven/data/sta/'
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-09-27 13:24:11 -0700 (Wed, 27 Sep 2023) $
-; $LastChangedRevision: 32139 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
                    directory = directory, use_l2_files = use_L2_files, $
-                   xxx = xxx, lpw_only = lpw_only, $
-                   skip_bins = skip_bins, nocatch = nocatch, $
-                   iv_level = iv_level, $
+                   lpw_only = lpw_only, skip_bins = skip_bins, $
+                   nocatch = nocatch, iv_level = iv_level, $
+                   alt_data_path = alt_data_path, $
+                   l2_only_dead = l2_only_dead, $
                    _extra = _extra
 
 ;Run in Z buffer
@@ -183,12 +187,16 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
      Endif Else Begin
         dprint, time_string(date)
      Endelse
-     Return
+     If(~keyword_set(iv_level) And ~keyword_set(use_l2_files)) Then Return
   Endif
 
 ;date and timespan
-  p1  = strsplit(file_basename(filex), '_',/extract)
-  d0 = time_double(time_string(p1[4]))
+  If(keyword_set(date)) Then Begin
+     d0 = time_double(date)
+  Endif Else Begin
+     p1  = strsplit(file_basename(filex), '_',/extract)
+     d0 = time_double(time_string(p1[4]))
+  Endelse
   timespan, d0, 1
 
 ;At this point, I have a date, check to see if it is reasonable
@@ -211,58 +219,55 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
      dir_out0 = directory 
      If(keyword_set(xxx)) Then Begin
         dir_out = dir_out0+yyyy+'/'+mmmm+'/'
-        dir_out_d1 = dir_out0+'d1_sav/'+yyyy+'/'+mmmm+'/'
      Endif Else Begin
         dir_out = dir_out0
-        dir_out_d1 = dir_out0+'d1_sav/'
      Endelse
   Endif Else Begin
+     If(keyword_set(alt_data_path)) Then Begin
+        dir00 = '/disks/data/'+alt_data_path+'data/sci/sta/'
+     Endif Else dir00 = '/disks/data/maven/data/sci/sta/'
      If(keyword_set(iv_level)) Then Begin ;jmm, 2020-08-04
-        dir_out0 = '/disks/data/maven/data/sci/sta/'+iv_lvl+'/'
+        dir_out0 = dir00+iv_lvl+'/'
         dir_out = dir_out0+yyyy+'/'+mmmm+'/'
         mvn_l2gen_outdir, dir_out0, year = yyyy, month = mmmm
-        dir_dead0 = '/disks/data/maven/data/sci/sta/'+iv_lvl+'/dead/'
+        dir_dead0 = dir00+iv_lvl+'/dead/'
         dir_dead = dir_dead0+yyyy+'/'+mmmm+'/'
         mvn_l2gen_outdir, dir_dead0, year = yyyy, month = mmmm
      Endif Else Begin
-        dir_out0 = '/disks/data/maven/data/sci/sta/l2/'
+        dir_out0 = dir00+'l2/'
         dir_out = dir_out0+yyyy+'/'+mmmm+'/'
         mvn_l2gen_outdir, dir_out0, year = yyyy, month = mmmm
-        dir_out_d1 = dir_out0+'d1_sav/'+yyyy+'/'+mmmm+'/'
-        mvn_l2gen_outdir, dir_out0+'d1_sav/', year = yyyy, month = mmmm
      Endelse
   Endelse
   print, 'OUTPUT DIRECTORY: '+dir_out
 ;define the common blocks, and zero out, jmm, 2019-11-03
-  common mvn_2a, mvn_2a_ind, mvn_2a_dat & mvn_2a_dat=0 & mvn_2a_ind=-1l ;this one is HKP data ;this one is HKP data
-  common mvn_c0, mvn_c0_ind, mvn_c0_dat & mvn_c0_dat=0 & mvn_c0_ind=-1l
-  common mvn_c2, mvn_c2_ind, mvn_c2_dat & mvn_c2_dat=0 & mvn_c2_ind=-1l
-  common mvn_c4, mvn_c4_ind, mvn_c4_dat & mvn_c4_dat=0 & mvn_c4_ind=-1l
-  common mvn_c6, mvn_c6_ind, mvn_c6_dat & mvn_c6_dat=0 & mvn_c6_ind=-1l
-  common mvn_c8, mvn_c8_ind, mvn_c8_dat & mvn_c8_dat=0 & mvn_c8_ind=-1l
-  common mvn_ca, mvn_ca_ind, mvn_ca_dat & mvn_ca_dat=0 & mvn_ca_ind=-1l
-  common mvn_cc, mvn_cc_ind, mvn_cc_dat & mvn_cc_dat=0 & mvn_cc_ind=-1l
-  common mvn_cd, mvn_cd_ind, mvn_cd_dat & mvn_cd_dat=0 & mvn_cd_ind=-1l
-  common mvn_ce, mvn_ce_ind, mvn_ce_dat & mvn_ce_dat=0 & mvn_ce_ind=-1l
-  common mvn_cf, mvn_cf_ind, mvn_cf_dat & mvn_cf_dat=0 & mvn_cf_ind=-1l
-  common mvn_d0, mvn_d0_ind, mvn_d0_dat & mvn_d0_dat=0 & mvn_d0_ind=-1l
-  common mvn_d1, mvn_d1_ind, mvn_d1_dat & mvn_d1_dat=0 & mvn_d1_ind=-1l
-  common mvn_d2, mvn_d2_ind, mvn_d2_dat & mvn_d2_dat=0 & mvn_d2_ind=-1l
-  common mvn_d3, mvn_d3_ind, mvn_d3_dat & mvn_d3_dat=0 & mvn_d3_ind=-1l
-  common mvn_d4, mvn_d4_ind, mvn_d4_dat & mvn_d4_dat=0 & mvn_d4_ind=-1l
-  common mvn_d6, mvn_d6_ind, mvn_d6_dat & mvn_d6_dat=0 & mvn_d6_ind=-1l
-  common mvn_d7, mvn_d7_ind, mvn_d7_dat & mvn_d7_dat=0 & mvn_d7_ind=-1l
-  common mvn_d8, mvn_d8_ind, mvn_d8_dat & mvn_d8_dat=0 & mvn_d8_ind=-1l
-  common mvn_d9, mvn_d9_ind, mvn_d9_dat & mvn_d9_dat=0 & mvn_d9_ind=-1l
-  common mvn_da, mvn_da_ind, mvn_da_dat & mvn_da_dat=0 & mvn_da_ind=-1l
-  common mvn_db, mvn_db_ind, mvn_db_dat & mvn_db_dat=0 & mvn_db_ind=-1l
+  common mvn_2a, mvn_2a_ind, mvn_2a_dat & mvn_2a_dat = -1
+  common mvn_c0, mvn_c0_ind, mvn_c0_dat & mvn_c0_dat = -1
+  common mvn_c2, mvn_c2_ind, mvn_c2_dat & mvn_c2_dat = -1
+  common mvn_c4, mvn_c4_ind, mvn_c4_dat & mvn_c4_dat = -1
+  common mvn_c6, mvn_c6_ind, mvn_c6_dat & mvn_c6_dat = -1
+  common mvn_c8, mvn_c8_ind, mvn_c8_dat & mvn_c8_dat = -1
+  common mvn_ca, mvn_ca_ind, mvn_ca_dat & mvn_ca_dat = -1
+  common mvn_cc, mvn_cc_ind, mvn_cc_dat & mvn_cc_dat = -1
+  common mvn_cd, mvn_cd_ind, mvn_cd_dat & mvn_cd_dat = -1
+  common mvn_ce, mvn_ce_ind, mvn_ce_dat & mvn_ce_dat = -1
+  common mvn_cf, mvn_cf_ind, mvn_cf_dat & mvn_cf_dat = -1
+  common mvn_d0, mvn_d0_ind, mvn_d0_dat & mvn_d0_dat = -1
+  common mvn_d1, mvn_d1_ind, mvn_d1_dat & mvn_d1_dat = -1
+  common mvn_d2, mvn_d2_ind, mvn_d2_dat & mvn_d2_dat = -1
+  common mvn_d3, mvn_d3_ind, mvn_d3_dat & mvn_d3_dat = -1
+  common mvn_d4, mvn_d4_ind, mvn_d4_dat & mvn_d4_dat = -1
+  common mvn_d6, mvn_d6_ind, mvn_d6_dat & mvn_d6_dat = -1
+  common mvn_d7, mvn_d7_ind, mvn_d7_dat & mvn_d7_dat = -1
+  common mvn_d8, mvn_d8_ind, mvn_d8_dat & mvn_d8_dat = -1
+  common mvn_d9, mvn_d9_ind, mvn_d9_dat & mvn_d9_dat = -1
+  common mvn_da, mvn_da_ind, mvn_da_dat & mvn_da_dat = -1
+  common mvn_db, mvn_db_ind, mvn_db_dat & mvn_db_dat = -1
 
 ;load l0 data, or L2 data, or IV data from previous process
   If(keyword_set(iv_level)) Then Begin
      mk = mvn_spice_kernels(/all,/load,trange=timerange())
      If(iv_level Eq 1) Then Begin
-;use no_time_clip to get all data, mvn_sta_l2_load will fill all of
-;the common blocks
         mvn_sta_l2_load, /no_time_clip, _extra = _extra
 ;Check for 2a data, if not present, return
         If(~is_struct(mvn_2a_dat)) Then Begin
@@ -287,43 +292,48 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
         mvn_sta_bkg_load                
         mvn_sta_scpot_load
      Endif Else If(iv_level Eq 2) Then Begin
-        mvn_sta_l2_load, /no_time_clip, iv_level = 1;, /bkg_only
+        mvn_sta_l2_load, /no_time_clip, iv_level = 1, _extra = _extra
         mvn_sta_bkg_correct
      Endif Else If(iv_level Eq 3) Then Begin
-        mvn_sta_l2_load, /no_time_clip, iv_level = 1, $
-                         sta_apid = ['2a c0 c6 c8 ca d0 d1 d6 d8 d9 da db']
+        mvn_sta_l2_load, /no_time_clip, iv_level = 1, $ ;iv_level = 1 is correct, jmm, 2025-11-07
+                         sta_apid = ['2a c0 c6 c8 ca d0 d1 d6 d8 d9 da db'], _extra = _extra
 ;Dead time files are under iv1
-        dir_dead1 = '/disks/data/maven/data/sci/sta/iv1/dead/'
+        dir_dead1 = dir00+'iv1/dead/'
         mvn_sta_bkg_correct_straggle, maven_dead_dir = dir_dead1
      Endif Else If(iv_level Eq 4) Then Begin
         mvn_sta_l2_load, /no_time_clip, iv_level = 3, $
-                         sta_apid = ['2a c0 c6 c8 ca d0 d1 d6 d8 d9 da db']
+                         sta_apid = ['2a c0 c6 c8 ca d0 d1 d6 d8 d9 da db'], _extra = _extra
         mvn_sta_bkg_cleanup
      Endif
 ;the common blocks at this point should only contain background, no data or eflux
   Endif Else If(keyword_set(use_l2_files)) Then Begin
-;use no_time_clip to get all data, mvn_sta_l2_load will fill all of
-;the common blocks
-     mvn_sta_l2_load, /no_time_clip, _extra = _extra
+;Set time range to be 5 minutes before and after, so we can clip at
+;the appropriate time range
+     l2tr = time_double(date)+[-300.0d0, 86700.0d0]
+     mvn_sta_l2_load, trange = l2tr, _extra = _extra
 ;Check for 2a data, if not present, try L0, jmm, 2015-03-17
      If(~is_struct(mvn_2a_dat)) Then Begin
         mvn_sta_l0_load, files = filex ;filex is still defined.
      Endif Else mvn_sta_dead_load
 ;Added dead_time_load, 2015-03-03, jmm, shouldn't need it
 ;Add mag load, ephemeris_load, 2015-03-15, jmm
-     mvn_sta_mag_load
-     mvn_sta_qf14_load
-     If(keyword_set(skip_bins)) Then mvn_sta_l2_gf_update       ;2019-10-28, jmm
+     If(~keyword_set(l2_only_dead)) Then Begin ;2025-10-09, for new version
+        mvn_sta_mag_load
+        mvn_sta_qf14_load
+        If(keyword_set(skip_bins)) Then mvn_sta_l2_gf_update ;2019-10-28, jmm
 ;added mvn_sta_sc_bins_load, 2015-10-25, jmm
 ;ephemeris might crash, don't kill the process, jmm, 2016-02-03
-     load_position = 'ephemeris_l2'
-     mk = mvn_spice_kernels(/all,/load,trange=timerange())
-     If(is_struct(mvn_c8_dat) && ~keyword_set(skip_bins)) $
-     Then mvn_sta_sc_bins_load
-     mvn_sta_ephemeris_load
-     If(is_struct(mvn_c6_dat) && is_struct(mvn_c0_dat) && $
-        is_struct(mvn_ca_dat)) Then mvn_sta_scpot_load
+        load_position = 'ephemeris_l2'
+        mk = mvn_spice_kernels(/all,/load,trange=timerange())
+        If(is_struct(mvn_c8_dat) && ~keyword_set(skip_bins)) $
+        Then mvn_sta_sc_bins_load
+        mvn_sta_ephemeris_load
+        If(is_struct(mvn_c6_dat) && is_struct(mvn_c0_dat) && $
+           is_struct(mvn_ca_dat)) Then mvn_sta_scpot_load
+     Endif
 skip_ephemeris_l2:
+;time clip all of the data to be on day boundaries
+     mvn_sta_l2_tclip_all, time_double(date)+[0.0d0, 86400.0d0]
   Endif Else Begin
 ;Load and save LPW tplot variables, first, because there is a
 ;del_data, '*'
@@ -414,11 +424,6 @@ skip_ephemeris_l0:
   skip_d0:
   load_position = 'D1' & Print, load_position
   mvn_sta_cmn_l2gen, mvn_d1_dat, directory = dir_out, iv_level = iv_level, _extra = _extra
-;special save of D1 data
-;  If(~keyword_set(iv_level) && is_struct(mvn_d1_dat)) Then Begin
-;     save, mvn_d1_dat, file = dir_out_d1+'mvn_sta_d1_'+yyyy+mmmm+dddd+'.sav'
-;     message, /info, 'Saved: '+dir_out_d1+'mvn_sta_d1_'+yyyy+mmmm+dddd+'.sav'
-;  Endif
   skip_d1:
   load_position = 'D2' & Print, load_position
   mvn_sta_cmn_l2gen, mvn_d2_dat, directory = dir_out, iv_level = iv_level, _extra = _extra
@@ -433,8 +438,6 @@ skip_ephemeris_l0:
 ;clear spice kernels
   mvn_spc_clear_spice_kernels
   help, /memory
-;Manage htaccess here
-;  mvn_manage_l2access, 'sta'
 
   Return
 

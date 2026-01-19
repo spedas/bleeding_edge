@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan  9 18:17:44 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jan 17 18:17:57 2026.<P>
  
 <HR>
  
@@ -48,7 +48,9 @@ KEYWORDS:
    COMPRESS_CDF: (int) Compress CDF file. See CDF_COMPRESSION
    G_ATTRIBUTES: (struct) Global attributes of CDF file
    TT2000: (flag) Indicates that time is in TT2000 format.
-  
+   v_units = units for spectral V variables, needs to be done here
+             because the CDF variable is created here. Also there are
+             keywords for v2 and v3 units.
   Additional keywords:    
    INQ: (struct) Structure of CDF file parameters, see TPLOT2CDF_SAVE_VARS code
 

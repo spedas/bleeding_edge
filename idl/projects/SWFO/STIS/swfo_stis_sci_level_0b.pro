@@ -72,9 +72,9 @@
 ;
 ;       PREV_L0B_DAT: placeholder for previous level 0b
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
-; $LastChangedRevision: 33864 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2026-01-12 14:40:17 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_0b.pro $
 
 
@@ -241,7 +241,7 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     sci_nbins:      672l, $
     sci_counts: replicate(nan, 672),$
     ; nse data
-    nse_histogram: replicate(0u, 60), $
+    nse_histogram: replicate(0., 60), $
     nse_counts: replicate(0u, 60), $
     ; apid 100 data (rxn wheel info)
     adcs_state_0wait_1detumble_2acqsun_3point_4deltav_5earth: 0b,$

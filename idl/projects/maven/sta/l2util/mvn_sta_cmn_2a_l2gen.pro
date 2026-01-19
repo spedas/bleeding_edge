@@ -29,21 +29,24 @@
 ;             directory; the default is to populate the MAVEN STA
 ;             database. /disks/data/maven/pfp/sta/l2
 ; no_compression = if set, do not compress the CDF file
+; new_l2_version = if set, then increment the L2 version number
 ;HISTORY:
 ; 16-jun-2014, jmm, hacked from mvn_sta_cmn_l2gen.pro
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2015-10-21 15:41:49 -0700 (Wed, 21 Oct 2015) $
-; $LastChangedRevision: 19131 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_2a_l2gen.pro $
 ;-
 Pro mvn_sta_cmn_2a_l2gen, cmn_dat, otp_struct = otp_struct, directory = directory, $
-                          no_compression = no_compression, _extra = _extra
+                          no_compression = no_compression, new_l2_version = new_l2_version, $
+                          _extra = _extra
 
 ;Need to keep track of spice kernels
   common mvn_spc_met_to_unixtime_com, cor_clkdrift, icy_installed, kernel_verified, time_verified, sclk, tls
 
 ;Keep track of software versioning here
   sw_vsn = mvn_sta_current_sw_version()
+  If(keyword_set(new_l2_version)) Then sw_vsn = sw_vsn+1
   sw_vsn_str = 'v'+string(sw_vsn, format='(i2.2)')
 
   If(~is_struct(cmn_dat)) Then Begin

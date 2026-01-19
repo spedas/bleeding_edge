@@ -2,17 +2,17 @@
 <html>
  
 <head>
-<TITLE>SPEDAS SW Help for spdsw_r33988_2026-01-09</TITLE>
+<TITLE>SPEDAS SW Help for spdsw_r34036_2026-01-17</TITLE>
 </head>
  
 <body>
-<H2>SPEDAS SW Help for spdsw_r33988_2026-01-09</H2>
+<H2>SPEDAS SW Help for spdsw_r34036_2026-01-17</H2>
 <P>
 This page was created by the IDL library routine 
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan  9 18:17:44 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jan 17 18:17:56 2026.<P>
  
 <HR>
  
@@ -441,6 +441,7 @@ projects/erg/ground/riometer</A>
 <LI><A HREF="projects/erg/ground/vlf_spd_doc_list.html">projects/erg/ground/vlf
 </A>
 <LI><A HREF="projects/erg/tools_spd_doc_list.html">projects/erg/tools</A>
+<LI><A HREF="projects/escapade/elp_spd_doc_list.html">projects/escapade/elp</A>
 <LI><A HREF="projects/escapade/esa/common_spd_doc_list.html">
 projects/escapade/esa/common</A>
 <LI><A HREF="projects/escapade/esa/ion_spd_doc_list.html">
@@ -2465,6 +2466,8 @@ ESA_ANODE_CALIB</A>
 <LI><A HREF="general/misc_spd_doc_list.html#ESCAPE_STRING">ESCAPE_STRING</A>
 <LI><A HREF="projects/escapade/esa/common_spd_doc_list.html#ESC_APDAT_INIT">
 ESC_APDAT_INIT</A>
+<LI><A HREF="projects/escapade/elp_spd_doc_list.html#ESC_ELP_LOAD">ESC_ELP_LOAD
+</A>
 <LI><A HREF="projects/escapade/general_spd_doc_list.html#ESC_FILE_RETRIEVE">
 ESC_FILE_RETRIEVE</A>
 <LI><A HREF="projects/escapade/general_spd_doc_list.html#ESC_FILE_SOURCE">
@@ -2621,6 +2624,8 @@ FAST_E_SUMMARY</A>
 <br>Generates ps, gif, cdf summary plots of FAST electron data.
 <LI><A HREF="general/missions/fast/fa_ops_spd_doc_list.html#FAST_FIELDS_BATCH">
 FAST_FIELDS_BATCH</A>
+<LI><A HREF="general/missions/fast/fa_ops_spd_doc_list.html#FAST_FILE_MISSING">
+FAST_FILE_MISSING</A>
 <LI><A HREF="general/missions/fast/fa_ops_spd_doc_list.html#FAST_IE_BATCH">
 FAST_IE_BATCH</A>
 <LI><A HREF="general/missions/fast/fa_ops_spd_doc_list.html#FAST_IF_SUMMARY">
@@ -6798,9 +6803,6 @@ MVN_STA_CMN_D89A_L2GEN.PRO">MVN_STA_CMN_D89A_L2GEN.PRO</A>
 <LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#
 MVN_STA_CMN_DB_L2GEN.PRO">MVN_STA_CMN_DB_L2GEN.PRO</A>
 <br>turn a MAVEN STA RATES common block into a L2 CDF.
-<LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_CMN_L2FILE_SAVE
-">MVN_STA_CMN_L2FILE_SAVE</A>
-<br>saves an STA L2 cdf, managing the revision number and md5 sum. The
 <LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#
 MVN_STA_CMN_L2GEN.PRO[1]">MVN_STA_CMN_L2GEN.PRO[1]</A>
 <br>turn a MAVEN STA common block into a L2 CDF, but only including the
@@ -7008,8 +7010,14 @@ MVN_STA_L2GEN</A>
 <LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_L2GEN_1DAY">
 MVN_STA_L2GEN_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_L2GEN_ADDBCK">
+MVN_STA_L2GEN_ADDBCK</A>
+<br>Inputs MAVEN STATIC L2 data from current files, calculates
 <LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_L2L2_1DAY">
 MVN_STA_L2L2_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_L2L2_V3_1DAY">
+MVN_STA_L2L2_V3_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_L2SCPOT">
 MVN_STA_L2SCPOT</A>
@@ -7032,6 +7040,9 @@ MVN_STA_L2_GF_UPDATE">MVN_STA_L2_GF_UPDATE</A>
 <LI><A HREF="projects/maven/sta_spd_doc_list.html#MVN_STA_L2_LOAD">
 MVN_STA_L2_LOAD</A>
 <br>Loads MVN L2 data for a given file(s), or time_range
+<LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_L2_TCLIP_ALL">
+MVN_STA_L2_TCLIP_ALL</A>
+<br>Clips all of the possible MAVEN STA data, saved in common blocks
 <LI><A HREF="projects/maven/sta_spd_doc_list.html#MVN_STA_L2_TPLOT">
 MVN_STA_L2_TPLOT</A>
 <br>Creates tplot data from the STATIC common blocks
@@ -7119,6 +7130,15 @@ MVN_STA_SLICE2D_SNAP">MVN_STA_SLICE2D_SNAP</A>
 MVN_STA_TPLOT_SCPOT">MVN_STA_TPLOT_SCPOT</A>
 <LI><A HREF="projects/maven/sta/l2analysis/general_spd_doc_list.html#
 MVN_STA_TRANSFORM_VELOCITY">MVN_STA_TRANSFORM_VELOCITY</A>
+<LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_V3_ALL_1DAY">
+MVN_STA_V3_ALL_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#MVN_STA_V3_ALL_1DAY_ALT
+">MVN_STA_V3_ALL_1DAY_ALT</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="projects/maven/sta/l2util_spd_doc_list.html#
+MVN_STA_V3_ALL_1DAY_INIT">MVN_STA_V3_ALL_1DAY_INIT</A>
+<br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="projects/maven/sta/mvn_sta_functions_spd_doc_list.html#MVN_STA_V4D
 ">MVN_STA_V4D</A>
 <LI><A HREF="projects/maven/general_spd_doc_list.html#MVN_SUNDIR">MVN_SUNDIR</A>

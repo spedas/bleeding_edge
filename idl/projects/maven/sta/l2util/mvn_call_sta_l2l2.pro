@@ -10,16 +10,23 @@
 ;KEYWORDS:
 ; days_in = An array of dates, e.g., ['2009-01-30','2009-02-01'] to
 ;           process. 
-; out_dir = the directory in which you write the data, default is './'
+; out_dir = the directory in which you write the data, default is
+;           '/disks/data/maven/data/sci/sta/l2/'
+; add_background = if set, then do all background calculations for
+;                  this date.
+; alt_data_path = New (2025-10) keyword for an alternate data path for
+;                 output, replaces 'maven' in
+;                 '/disks/data/maven/stuff/'
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 2016-10-18, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2019-11-18 09:08:17 -0800 (Mon, 18 Nov 2019) $
-; $LastChangedRevision: 28028 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2026-01-14 12:58:42 -0800 (Wed, 14 Jan 2026) $
+; $LastChangedRevision: 34004 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2l2.pro $
 ;-
 Pro mvn_call_sta_l2l2, out_dir = out_dir, $
                        days_in = days_in, $
+                       alt_data_path = alt_data_path, $
                        _extra = _extra
   
   common temp_call_sta_l2gen, load_position
@@ -33,7 +40,7 @@ Pro mvn_call_sta_l2l2, out_dir = out_dir, $
      help, /last_message, output = err_msg
      For ll = 0, n_elements(err_msg)-1 Do print, err_msg[ll]
 ;Open a file print out the error message, only once
-     If(ecount Lt 1) Then Begin
+     If(ecount Lt 1 && getenv('USER') Eq 'muser') Then Begin
         ecount = ecount+1
         ec = strcompress(string(ecount), /remove_all)
         openw, eunit, '/mydisks/home/maven/muser/sta_l2l2_err_msg'+ec+'.txt', /get_lun
@@ -56,12 +63,20 @@ Pro mvn_call_sta_l2l2, out_dir = out_dir, $
            print, '***************FILE SKIPPED****************'
            goto, SKIP_FILE
         end
+        'Add IV4':Begin
+           print, '***************FILE SKIPPED****************'
+           goto, SKIP_FILE
+        end
         else: goto, SKIP_ALL
      endcase
   endif
   If(keyword_set(out_dir)) Then odir = out_dir $
-  Else odir = '/disks/data/maven/data/sci/'
-
+  Else Begin
+     If(keyword_set(alt_data_path)) Then Begin
+        odir = '/disks/data/'+alt_data_path+'data/sci/'
+     Endif Else odir = '/disks/data/maven/data/sci/'
+  Endelse
+  
 ;--------------------------------
   btime_set_from_file = 0b      ;need this to handle defaults correctly
   times_of_procfiles = 0.0d0
@@ -94,20 +109,22 @@ Pro mvn_call_sta_l2l2, out_dir = out_dir, $
 ;        dprint, 'No Times to process'
         Return
      Endif
-;Process 3, 10, 30, 60 days before
-     days = time_double(btime)-one_day*[3.0, 10.0, 30.0, 60.0]
+;Process 3, 10, 30, days before
+     days = time_double(btime)-one_day*[3.0, 10.0, 30.0]
   Endelse
      
 ;For each day
   timep_do = time_string(days, precision = -3)
   nproc = n_elements(days)
 ;Send a message that processing is starting
-  openw, tunit, '/mydisks/home/maven/muser/sta_l2l2_msg0.txt', /get_lun
-  printf, tunit, 'Processing: sta'
-  For i = 0, nproc-1 Do printf, tunit, timep_do[i]
-  free_lun, tunit
-  cmd0 = 'mailx -s "STA L2L2 process start" jimm@ssl.berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_msg0.txt'
-  spawn, cmd0
+  If(~keyword_set(days_in) && getenv('USER') Eq 'muser') Then Begin
+     openw, tunit, '/mydisks/home/maven/muser/sta_l2l2_msg0.txt', /get_lun
+     printf, tunit, 'Processing: sta'
+     For i = 0, nproc-1 Do printf, tunit, timep_do[i]
+     free_lun, tunit
+     cmd0 = 'mailx -s "STA L2L2 process start" jimm@ssl.berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_msg0.txt'
+     spawn, cmd0
+  Endif
   message, /info, 'Processing: sta'
   For i = 0, nproc-1 Do print, timep_do[i]
   For i = 0, nproc-1 Do Begin
@@ -131,18 +148,27 @@ Pro mvn_call_sta_l2l2, out_dir = out_dir, $
      message, /info, 'PROCESSING: sta FOR: '+timei
      mvn_sta_l2gen, date = timei, directory = filei_dir, /use_l2_files, $
                     _extra=_extra
-     SKIP_FILE: 
+
+     If(keyword_set(add_background)) Then Begin
+        load_position = 'Add IV4'
+        fileivi_dir = odir
+        mvn_sta_l2gen_addbck, date = timei, alt_data_path = odir+'sta/', _extra = _extra
+     Endif
+
+SKIP_FILE: 
      del_data, '*'
      heap_gc                    ;added this here to avoid memory issues
   Endfor
   load_position = 'Done'
 
 ;Send a message that processing is done
-  openw, tunit, '/mydisks/home/maven/muser/sta_l2l2_msg1.txt', /get_lun
-  printf, tunit, 'Finished Processing: sta'
-  free_lun, tunit
-  cmd1 = 'mailx -s "STA L2L2 process end" jimm@ssl.berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_msg1.txt'
-  spawn, cmd1
+  If(~keyword_set(days_in) && getenv('USER') Eq 'muser') Then Begin
+     openw, tunit, '/mydisks/home/maven/muser/sta_l2l2_msg1.txt', /get_lun
+     printf, tunit, 'Finished Processing: sta'
+     free_lun, tunit
+     cmd1 = 'mailx -s "STA L2L2 process end" jimm@ssl.berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_msg1.txt'
+     spawn, cmd1
+  Endif
 ;reset file time
   If(btime_set_from_file) Then Begin
      message, /info, 'Resetting last file time:'

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan  9 18:17:44 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jan 17 18:17:57 2026.<P>
  
 <HR>
  
@@ -37,8 +37,6 @@ This page was created by the IDL library routine
 <br>turn a MAVEN STA RATES common block into a L2 CDF.
 <LI><A HREF="#MVN_STA_CMN_DB_L2GEN.PRO">MVN_STA_CMN_DB_L2GEN.PRO</A>
 <br>turn a MAVEN STA RATES common block into a L2 CDF.
-<LI><A HREF="#MVN_STA_CMN_L2FILE_SAVE">MVN_STA_CMN_L2FILE_SAVE</A>
-<br>saves an STA L2 cdf, managing the revision number and md5 sum. The
 <LI><A HREF="#MVN_STA_CMN_L2GEN.PRO[2]">MVN_STA_CMN_L2GEN.PRO[2]</A>
 <br>turn a MAVEN STA common block into a L2 CDF.
 <LI><A HREF="#MVN_STA_CMN_L2READ">MVN_STA_CMN_L2READ</A>
@@ -61,6 +59,8 @@ This page was created by the IDL library routine
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_L2_FILEREVISION">MVN_STA_L2_FILEREVISION</A>
 <br>tracks the revision number for a STATIC L2 file
+<LI><A HREF="#MVN_STA_L2_TCLIP_ALL">MVN_STA_L2_TCLIP_ALL</A>
+<br>Clips all of the possible MAVEN STA data, saved in common blocks
 <LI><A HREF="#MVN_STA_L2DAT_STRUCT">MVN_STA_L2DAT_STRUCT</A>
 <LI><A HREF="#MVN_STA_L2EFLUX">MVN_STA_L2EFLUX</A>
 <br>Helper function for eflux calculations
@@ -68,7 +68,11 @@ This page was created by the IDL library routine
 <br>Generates MAVEN STA L2 files
 <LI><A HREF="#MVN_STA_L2GEN_1DAY">MVN_STA_L2GEN_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_L2GEN_ADDBCK">MVN_STA_L2GEN_ADDBCK</A>
+<br>Inputs MAVEN STATIC L2 data from current files, calculates
 <LI><A HREF="#MVN_STA_L2L2_1DAY">MVN_STA_L2L2_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_L2L2_V3_1DAY">MVN_STA_L2L2_V3_1DAY</A>
 <br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#MVN_STA_L2SCPOT">MVN_STA_L2SCPOT</A>
 <br>Wrapper for mvn_sta_scpot_load that insures that c0 and c6 data have
@@ -78,6 +82,12 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_STA_SETUP_IV4PROCESS">MVN_STA_SETUP_IV4PROCESS</A>
 <LI><A HREF="#MVN_STA_SETUP_IVALLPROCESS">MVN_STA_SETUP_IVALLPROCESS</A>
 <LI><A HREF="#MVN_STA_SETUP_REPROCESS">MVN_STA_SETUP_REPROCESS</A>
+<LI><A HREF="#MVN_STA_V3_ALL_1DAY">MVN_STA_V3_ALL_1DAY</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_V3_ALL_1DAY_ALT">MVN_STA_V3_ALL_1DAY_ALT</A>
+<br>reads in a start and end date, and reprocesses all of the days in
+<LI><A HREF="#MVN_STA_V3_ALL_1DAY_INIT">MVN_STA_V3_ALL_1DAY_INIT</A>
+<br>reads in a start and end date, and reprocesses all of the days in
 <LI><A HREF="#RERUN_STA_L2GEN">RERUN_STA_L2GEN</A>
 <br>Designed to run from a cronjob, after the original L2 processing,
 <LI><A HREF="#RUN_STA_IVALL">RUN_STA_IVALL</A>
@@ -129,9 +139,9 @@ KEYWORDS:
                 sent.
 HISTORY:
 Hacked from thm_all_l1l2_gen, 17-Apr-2014, jmm
- $LastChangedBy: jimm $
- $LastChangedDate: 2020-08-18 09:53:10 -0700 (Tue, 18 Aug 2020) $
- $LastChangedRevision: 29040 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_call_sta_l2gen.pro">projects/maven/sta/l2util/mvn_call_sta_l2gen.pro</A>)</STRONG><P>
@@ -154,12 +164,18 @@ INPUT:
 KEYWORDS:
  days_in = An array of dates, e.g., ['2009-01-30','2009-02-01'] to
            process. 
- out_dir = the directory in which you write the data, default is './'
+ out_dir = the directory in which you write the data, default is
+           '/disks/data/maven/data/sci/sta/l2/'
+ add_background = if set, then do all background calculations for
+                  this date.
+ alt_data_path = New (2025-10) keyword for an alternate data path for
+                 output, replaces 'maven' in
+                 '/disks/data/maven/stuff/'
 HISTORY:
 Hacked from mvn_call_sta_l2gen, 2016-10-18, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: jimm $
- $LastChangedDate: 2019-11-18 09:08:17 -0800 (Mon, 18 Nov 2019) $
- $LastChangedRevision: 28028 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-14 12:58:42 -0800 (Wed, 14 Jan 2026) $
+ $LastChangedRevision: 34004 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2l2.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_call_sta_l2l2.pro">projects/maven/sta/l2util/mvn_call_sta_l2l2.pro</A>)</STRONG><P>
@@ -193,9 +209,9 @@ KEYWORDS:
             '/mydisks/home/maven/', don't forget the slash
 HISTORY:
  22-jul-2014, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: jimm $
- $LastChangedDate: 2023-09-26 17:09:08 -0700 (Tue, 26 Sep 2023) $
- $LastChangedRevision: 32136 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-14 11:05:30 -0800 (Wed, 14 Jan 2026) $
+ $LastChangedRevision: 34002 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_bkg_l2file_save.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_bkg_l2file_save.pro">projects/maven/sta/l2util/mvn_sta_bkg_l2file_save.pro</A>)</STRONG><P>
@@ -237,11 +253,12 @@ KEYWORDS:
              directory; the default is to populate the MAVEN STA
              database. /disks/data/maven/pfp/sta/l2
  no_compression = if set, do not compress the CDF file
+ new_l2_version = if set, then increment the L2 version number
 HISTORY:
  16-jun-2014, jmm, hacked from mvn_sta_cmn_l2gen.pro
- $LastChangedBy: jimm $
- $LastChangedDate: 2015-10-21 15:41:49 -0700 (Wed, 21 Oct 2015) $
- $LastChangedRevision: 19131 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_2a_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_2a_l2gen.pro">projects/maven/sta/l2util/mvn_sta_cmn_2a_l2gen.pro</A>)</STRONG><P>
@@ -375,11 +392,12 @@ KEYWORDS:
              directory; the default is to populate the MAVEN STA
              database. /disks/data/maven/pfp/sta/l2
  no_compression = if set, do not compress the CDF file
+ new_l2_version = if set, then increment the L2 version number
 HISTORY:
  13-jun-2014, jmm, hacked from mvn_sta_cmn_l2gen.pro
- $LastChangedBy: jimm $
- $LastChangedDate: 2015-10-21 15:41:49 -0700 (Wed, 21 Oct 2015) $
- $LastChangedRevision: 19131 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_d6_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_d6_l2gen.pro">projects/maven/sta/l2util/mvn_sta_cmn_d6_l2gen.pro</A>)</STRONG><P>
@@ -424,11 +442,12 @@ KEYWORDS:
              directory; the default is to populate the MAVEN STA
              database. /disks/data/maven/pfp/sta/l2
  no_compression = if set, do not compress the CDF file
+ new_l2_version = if set, then increment the L2 version number
 HISTORY:
  13-jun-2014, jmm, hacked from mvn_sta_cmn_l2gen.pro
- $LastChangedBy: jimm $
- $LastChangedDate: 2015-10-21 15:41:49 -0700 (Wed, 21 Oct 2015) $
- $LastChangedRevision: 19131 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_d7_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_d7_l2gen.pro">projects/maven/sta/l2util/mvn_sta_cmn_d7_l2gen.pro</A>)</STRONG><P>
@@ -476,12 +495,13 @@ KEYWORDS:
              directory; the default is to populate the MAVEN STA
              database. /disks/data/maven/pfp/sta/l2
  no_compression = if set, do not compress the CDF file
+ new_l2_version = if set, then increment the L2 version number
 HISTORY:
  13-jun-2014, jmm, hacked from mvn_sta_cmn_l2gen.pro
  22-Dec-2014, jmm, Added eprom_ver, header
- $LastChangedBy: jimm $
- $LastChangedDate: 2015-10-21 15:41:49 -0700 (Wed, 21 Oct 2015) $
- $LastChangedRevision: 19131 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_d89a_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_d89a_l2gen.pro">projects/maven/sta/l2util/mvn_sta_cmn_d89a_l2gen.pro</A>)</STRONG><P>
@@ -490,7 +510,7 @@ HISTORY:
 <A NAME="MVN_STA_CMN_DB_L2GEN.PRO">
 <H2>MVN_STA_CMN_DB_L2GEN.PRO</H2></A>
 <A HREF="#MVN_STA_CMN_D89A_L2GEN.PRO">[Previous Routine]</A>
-<A HREF="#MVN_STA_CMN_L2FILE_SAVE">[Next Routine]</A>
+<A HREF="#MVN_STA_CMN_L2GEN.PRO[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -528,58 +548,21 @@ KEYWORDS:
              directory; the default is to populate the MAVEN STA
              database. /disks/data/maven/pfp/sta/l2
  no_compression = if set, do not compress the CDF file
+ new_l2_version = if set, then increment the L2 version number
 HISTORY:
  13-jun-2014, jmm, hacked from mvn_sta_cmn_l2gen.pro
  22-Dec-2014, jmm, Added eprom_ver, header
- $LastChangedBy: jimm $
- $LastChangedDate: 2015-10-21 15:41:49 -0700 (Wed, 21 Oct 2015) $
- $LastChangedRevision: 19131 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_db_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_db_l2gen.pro">projects/maven/sta/l2util/mvn_sta_cmn_db_l2gen.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MVN_STA_CMN_L2FILE_SAVE">
-<H2>MVN_STA_CMN_L2FILE_SAVE</H2></A>
-<A HREF="#MVN_STA_CMN_DB_L2GEN.PRO">[Previous Routine]</A>
-<A HREF="#MVN_STA_CMN_L2GEN.PRO[1]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-NAME:
- mvn_sta_cmn_l2file_save
-PURPOSE:
- saves an STA L2 cdf, managing the revision number and md5 sum. The
- file will have the latest revision number, there will be a hard
- link to the revisioned file with no revision number, andan md5 sum
- for the uncompressed file. Also deletes old versions.
-CALLING SEQUENCE:
- mvn_sta_cmn_l2file_save, otp_struct, fullfile0, no_compression =
-                          no_compression, iv1_process=iv1_Process
-INPUT:
- otp_struct = the structure to output in CDF_LOAD_VARS format.
- fullfile0 = the full-path filename for the revisionless cdf file
-OUTPUT:
- No explicit output, the revisioned file is written, an md5 sum file
- is written in the same directory, and the revisionless file is
- linked to the revsioned file 
-KEYWORDS:
- no_compression = if set, skip the compression step
- temp_dir = if set, output files into subdirectories of this dir,
-            then move to final destination. The default is
-            '/mydisks/home/maven/', don't forget the slash
-HISTORY:
- 22-jul-2014, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: jimm $
- $LastChangedDate: 2020-08-18 09:53:10 -0700 (Tue, 18 Aug 2020) $
- $LastChangedRevision: 29040 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2file_save.pro $
-</PRE><P>
-<STRONG>(See <A href="l2util/mvn_sta_cmn_l2file_save.pro">projects/maven/sta/l2util/mvn_sta_cmn_l2file_save.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="MVN_STA_CMN_L2GEN.PRO[1]">
 <H2>MVN_STA_CMN_L2GEN.PRO[1]</H2></A>
-<A HREF="#MVN_STA_CMN_L2FILE_SAVE">[Previous Routine]</A>
+<A HREF="#MVN_STA_CMN_DB_L2GEN.PRO">[Previous Routine]</A>
 <A HREF="#MVN_STA_CMN_L2GEN.PRO[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -756,6 +739,7 @@ KEYWORDS:
             special L2 process that creates 'iv'+iv_level files, using a
             new background calculation. There will be multiple iv
             levels, and only the background values are saved in the file
+ new_l2_version = if set, then increment the L2 version number                                                  
 HISTORY:
  28-apr-2014, jmm, jimm@ssl.berkeley.edu
  jun-2014, jmm added compression - no_compression
@@ -770,9 +754,9 @@ HISTORY:
  6-nov-2014, jmm, Corrects clock drift 
  22-dec-2014, jmm, added eprom_ver and header
  25-aug-2020, jmm, Added iv_level
- $LastChangedBy: jimm $
- $LastChangedDate: 2020-12-17 09:26:42 -0800 (Thu, 17 Dec 2020) $
- $LastChangedRevision: 29534 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_cmn_l2gen.pro">projects/maven/sta/l2util/mvn_sta_cmn_l2gen.pro</A>)</STRONG><P>
@@ -1196,11 +1180,14 @@ KEYWORDS:
             special L2 process that creates 'iv'+iv_level files, using a
             new background calculation. There will be multiple iv levels
             and only the background values are saved in the file
+ directory = an output directory, full path, end with a slash '/'
+ alt_data_path = an alternate output path for the data, will replace the
+                 'maven' in, e.g., '/disks/data/maven/data/sta/'
 HISTORY:
  2014-05-14, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: jimm $
- $LastChangedDate: 2023-09-27 13:24:11 -0700 (Wed, 27 Sep 2023) $
- $LastChangedRevision: 32139 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33997 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_l2gen.pro">projects/maven/sta/l2util/mvn_sta_l2gen.pro</A>)</STRONG><P>
@@ -1209,7 +1196,7 @@ HISTORY:
 <A NAME="MVN_STA_L2GEN_1DAY">
 <H2>MVN_STA_L2GEN_1DAY</H2></A>
 <A HREF="#MVN_STA_L2GEN">[Previous Routine]</A>
-<A HREF="#MVN_STA_L2L2_1DAY">[Next Routine]</A>
+<A HREF="#MVN_STA_L2GEN_ADDBCK">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1232,10 +1219,49 @@ HISTORY:
 <STRONG>(See <A href="l2util/mvn_sta_l2gen_1day.pro">projects/maven/sta/l2util/mvn_sta_l2gen_1day.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_L2GEN_ADDBCK">
+<H2>MVN_STA_L2GEN_ADDBCK</H2></A>
+<A HREF="#MVN_STA_L2GEN_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2L2_1DAY">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ mvn_sta_l2gen_addbck
+PURPOSE:
+ Inputs MAVEN STATIC L2 data from current files, calculates
+ background, levels iv1 through iv4, and outputas a new L2 file, with
+ incremented version number.
+CALLING SEQUENCE:
+ mvn_sta_l2gen_addbck, date = date, directory = directory
+INPUT:
+ None, input is via keyword
+OUTPUT:
+ L2 Files are created
+KEYWORDS:
+ date = the date for the file
+ end_date = the end_data for this process. If set, then do not
+ process data for this date and afterwards.
+ alt_data_path = the output directory path, the default is
+                 'maven/'. The path must end in 'maven/'
+ init = if set, then starts the process by doing the iv1 data 3 days
+        in advance, and backfilling to this date, iv2 two days in
+        advance, iv3 one day in advance, then today. The defaut is to
+        assume that the iv1, 2, 3 data are there. Should only need to
+        do this once.
+HISTORY:
+ 8-oct-2025, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: $
+ $LastChangedDate: $
+ $LastChangedRevision: $
+ $URL: $
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_l2gen_addbck.pro">projects/maven/sta/l2util/mvn_sta_l2gen_addbck.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_L2L2_1DAY">
 <H2>MVN_STA_L2L2_1DAY</H2></A>
-<A HREF="#MVN_STA_L2GEN_1DAY">[Previous Routine]</A>
-<A HREF="#MVN_STA_L2SCPOT">[Next Routine]</A>
+<A HREF="#MVN_STA_L2GEN_ADDBCK">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2L2_V3_1DAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1258,9 +1284,37 @@ HISTORY:
 <STRONG>(See <A href="l2util/mvn_sta_l2l2_1day.pro">projects/maven/sta/l2util/mvn_sta_l2l2_1day.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_L2L2_V3_1DAY">
+<H2>MVN_STA_L2L2_V3_1DAY</H2></A>
+<A HREF="#MVN_STA_L2L2_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2SCPOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_l2l2_v3_1day
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time. Creates version 3 of files,
+with start times at the start of the day, and overlap at the end of
+the day.
+CALLING SEQUENCE:
+ .run mvn_sta_l2l2_v3_1day
+INPUT:
+start_time, end_time are input from files
+mvn_sta_l2l2_v3_1day_start_time.txt and
+mvn_sta_l2l2_v3_1day_end_time.txt.
+OUTPUT:
+ Maven STA L2 files
+HISTORY:
+ 2025-09-10, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_l2l2_v3_1day.pro">projects/maven/sta/l2util/mvn_sta_l2l2_v3_1day.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_L2SCPOT">
 <H2>MVN_STA_L2SCPOT</H2></A>
-<A HREF="#MVN_STA_L2L2_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2L2_V3_1DAY">[Previous Routine]</A>
 <A HREF="#MVN_STA_L2_FILEREVISION">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1291,7 +1345,7 @@ HISTORY:
 <A NAME="MVN_STA_L2_FILEREVISION">
 <H2>MVN_STA_L2_FILEREVISION</H2></A>
 <A HREF="#MVN_STA_L2SCPOT">[Previous Routine]</A>
-<A HREF="#MVN_STA_SETUP_IV1PROCESS">[Next Routine]</A>
+<A HREF="#MVN_STA_L2_TCLIP_ALL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1318,9 +1372,35 @@ HISTORY:
 <STRONG>(See <A href="l2util/mvn_sta_l2_filerevision.pro">projects/maven/sta/l2util/mvn_sta_l2_filerevision.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_L2_TCLIP_ALL">
+<H2>MVN_STA_L2_TCLIP_ALL</H2></A>
+<A HREF="#MVN_STA_L2_FILEREVISION">[Previous Routine]</A>
+<A HREF="#MVN_STA_SETUP_IV1PROCESS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_l2_tclip_all
+PURPOSE:
+Clips all of the possible MAVEN STA data, saved in common blocks
+CALLING SEQUENCE:
+mvn_sta_tclip_all, time_range
+INPUT:
+time_range = the time range for clipping
+OUTPUT:
+No explicit output, data saved in common blocks is clipped
+HISTORY:
+9-sep-2025, jmm, jimm@ssl.berkeley.edu
+ $LastChangedBy: $
+ $LastChangedDate: $
+ $LastChangedRevision: $
+ $URL: $
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_l2_tclip_all.pro">projects/maven/sta/l2util/mvn_sta_l2_tclip_all.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_SETUP_IV1PROCESS">
 <H2>MVN_STA_SETUP_IV1PROCESS</H2></A>
-<A HREF="#MVN_STA_L2_FILEREVISION">[Previous Routine]</A>
+<A HREF="#MVN_STA_L2_TCLIP_ALL">[Previous Routine]</A>
 <A HREF="#MVN_STA_SETUP_IV2PROCESS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1442,7 +1522,7 @@ ro mvn_sta_setup_ivallprocess, start_date = start_date, $ ;default is 2014-10-06
 <A NAME="MVN_STA_SETUP_REPROCESS">
 <H2>MVN_STA_SETUP_REPROCESS</H2></A>
 <A HREF="#MVN_STA_SETUP_IVALLPROCESS">[Previous Routine]</A>
-<A HREF="#RERUN_STA_L2GEN">[Next Routine]</A>
+<A HREF="#MVN_STA_V3_ALL_1DAY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 time range equally. Run as muser
@@ -1464,9 +1544,95 @@ ro mvn_sta_setup_reprocess, start_date = start_date, $ ;default is 2014-10-06
 <STRONG>(See <A href="l2util/mvn_sta_setup_reprocess.pro">projects/maven/sta/l2util/mvn_sta_setup_reprocess.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_V3_ALL_1DAY">
+<H2>MVN_STA_V3_ALL_1DAY</H2></A>
+<A HREF="#MVN_STA_SETUP_REPROCESS">[Previous Routine]</A>
+<A HREF="#MVN_STA_V3_ALL_1DAY_ALT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_v3_all_1day
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time. Creates version 3 of files,
+with start times at the start of the day, and overlap at the end of
+the day.
+CALLING SEQUENCE:
+ .run mvn_sta_v3_all_1day
+INPUT:
+start_time, end_time are input from files
+mvn_sta_v3_all_1day_start_time.txt and
+mvn_sta_v3_all_1day_end_time.txt.
+OUTPUT:
+ Maven STA L2 files
+HISTORY:
+ 2025-09-10, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_v3_all_1day.pro">projects/maven/sta/l2util/mvn_sta_v3_all_1day.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_V3_ALL_1DAY_ALT">
+<H2>MVN_STA_V3_ALL_1DAY_ALT</H2></A>
+<A HREF="#MVN_STA_V3_ALL_1DAY">[Previous Routine]</A>
+<A HREF="#MVN_STA_V3_ALL_1DAY_INIT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_v3_all_1day_alt
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time. Creates version 3 of files,
+with start times at the start of the day, and overlap at the end of
+the day. This script is designed to be used if the end_date has
+already been processed. It won't reprocess data for the end date and
+beyond.
+CALLING SEQUENCE:
+ .run mvn_sta_v3_all_1day_alt
+INPUT:
+start_time, end_time are input from files
+mvn_sta_v3_all_1day_alt_start_time.txt and
+mvn_sta_v3_all_1day_alt_end_time.txt.
+OUTPUT:
+ Maven STA L2 files
+HISTORY:
+ 2025-09-10, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_v3_all_1day_alt.pro">projects/maven/sta/l2util/mvn_sta_v3_all_1day_alt.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_V3_ALL_1DAY_INIT">
+<H2>MVN_STA_V3_ALL_1DAY_INIT</H2></A>
+<A HREF="#MVN_STA_V3_ALL_1DAY_ALT">[Previous Routine]</A>
+<A HREF="#RERUN_STA_L2GEN">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+mvn_sta_v3_all_1day_init
+PURPOSE:
+reads in a start and end date, and reprocesses all of the days in
+the interval. This is a main program, designed to be called from a
+shell script. Processes 1 day at a time. Creates version 3 of files,
+with start times at the start of the day, and overlap at the end of
+the day. This initializes the calculation.
+CALLING SEQUENCE:
+ .run mvn_sta_v3_all_1day_init
+INPUT:
+start_time, end_time are input from files
+mvn_sta_v3_all_1day_start_time.txt and
+mvn_sta_v3_all_1day_end_time.txt.
+OUTPUT:
+ Maven STA L2 files
+HISTORY:
+ 2025-09-10, jimm@ssl.berkeley.edu
+</PRE><P>
+<STRONG>(See <A href="l2util/mvn_sta_v3_all_1day_init.pro">projects/maven/sta/l2util/mvn_sta_v3_all_1day_init.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="RERUN_STA_L2GEN">
 <H2>RERUN_STA_L2GEN</H2></A>
-<A HREF="#MVN_STA_SETUP_REPROCESS">[Previous Routine]</A>
+<A HREF="#MVN_STA_V3_ALL_1DAY_INIT">[Previous Routine]</A>
 <A HREF="#RUN_STA_IVALL">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

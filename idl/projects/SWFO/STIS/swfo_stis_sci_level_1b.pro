@@ -23,8 +23,8 @@
 ; - swfo_stis_sci_l1b_crib.pro
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-10-18 18:55:35 -0700 (Sat, 18 Oct 2025) $
-; $LastChangedRevision: 33771 $
+; $LastChangedDate: 2026-01-15 13:17:23 -0800 (Thu, 15 Jan 2026) $
+; $LastChangedRevision: 34026 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -234,8 +234,29 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     elec_flux_big = str.spec_F3 * deadtime_correction_F3
 
     ; total counts in entire energy channel:
-    N_ion = total(ion_rate_small) * integration_time
-    N_elec = total(elec_rate_small) * integration_time
+    ; 1/8/25: since reaction wheel noise affects
+    ; O1, O2, F2, and F3 in decreasing magnitudes,
+    ; want to switch the N_ion criterion for merging
+    ; pixels to use O3 instead
+    N_ion_big   = ion_rate_big * integration_time
+    N_ion_small = ion_rate_small * integration_time
+    N_ion_tot   = total(N_ion_big)/100
+
+    N_elec = elec_rate_small * integration_time
+    N_elec_tot = total(elec_rate_small) * integration_time
+
+    ; Make ratio
+    norm_ion_rate_O3 = ion_rate_big/100
+
+    ; Mask out zero counts in big pixel +
+    ; bad statistics in small pixel:
+    norm_ion_index = where(N_ion_big eq 0 and N_ion_small le sqrt(N_ion_small))
+
+    ion_ratio = ion_rate_small/(ion_rate_big/100)
+    ion_delta = ion_rate_small - ion_rate_big/100
+
+    ion_ratio[norm_ion_index] = !values.f_nan
+    ion_delta[norm_ion_index] = !values.f_nan
 
     ; These are currently constant over energy
     ; original:
@@ -244,15 +265,15 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
 
     ; from GPA doc:
     ; sqrt(N) / 100 for total counts for param.range seconds.
-    eta1_ion =  0. > sqrt( N_ion  )/100 < 1.
-    eta1_elec =  0. > sqrt( N_elec  )/100 < 1.
+    eta1_ion =  0. > sqrt( N_ion_tot  )/100 < 1.
+    eta1_elec =  0. > sqrt( N_elec_tot  )/100 < 1.
 
     ; New approach:
     ; maximum control by calvals table:
-    f_elec = (N_elec^a - N_low^a)/(N_high^a - N_low^a)
-    eta1_elec = (N_elec gt N_high) + (N_elec lt N_high and N_elec gt N_low) * f_elec
-    f_ion = (N_ion^a - N_low^a)/(N_high^a - N_low^a)
-    eta1_ion = (N_ion gt N_high) + (N_ion lt N_high and N_ion gt N_low) * f_ion
+    f_elec = (N_elec_tot^a - N_low^a)/(N_high^a - N_low^a)
+    eta1_elec = (N_elec_tot gt N_high) + (N_elec_tot lt N_high and N_elec_tot gt N_low) * f_elec
+    f_ion = (N_ion_tot^a - N_low^a)/(N_high^a - N_low^a)
+    eta1_ion = (N_ion_tot gt N_high) + (N_ion_tot lt N_high and N_ion_tot gt N_low) * f_ion
 
     ; ; scaled poisson
     ; if tot_N_ion eq 0 then eta1_ion = 0. else  eta1_ion =  0. > sqrt( tot_N_ion  ) / tot_N_ion < 1.
@@ -428,6 +449,8 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
       Ch1_ion_flux :   ion_flux_small,  $
       Ch3_ion_flux :   ion_flux_big,  $
       hdr_ion_flux :   hdr_ion_flux,  $
+      ion_ratio: ion_ratio, $
+      ion_delta: ion_delta, $
       eta2_ion: eta2_O, $
       eta2_elec: eta2_F, $
       eta1_ion: eta1_ion, $

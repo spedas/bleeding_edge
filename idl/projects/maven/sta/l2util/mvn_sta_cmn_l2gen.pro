@@ -75,6 +75,7 @@
 ;            special L2 process that creates 'iv'+iv_level files, using a
 ;            new background calculation. There will be multiple iv
 ;            levels, and only the background values are saved in the file
+; new_l2_version = if set, then increment the L2 version number                                                  
 ;HISTORY:
 ; 28-apr-2014, jmm, jimm@ssl.berkeley.edu
 ; jun-2014, jmm added compression - no_compression
@@ -89,21 +90,21 @@
 ; 6-nov-2014, jmm, Corrects clock drift 
 ; 22-dec-2014, jmm, added eprom_ver and header
 ; 25-aug-2020, jmm, Added iv_level
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-12-17 09:26:42 -0800 (Thu, 17 Dec 2020) $
-; $LastChangedRevision: 29534 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_cmn_l2gen.pro $
 ;-
 Pro mvn_sta_cmn_l2gen, cmn_dat, otp_struct = otp_struct, directory = directory, $
                        no_compression = no_compression, iv_level = iv_level, $
-                       _extra = _extra
+                       new_l2_version = new_l2_version, _extra = _extra
 
 ;Need to keep track of spice kernels
   common mvn_spc_met_to_unixtime_com, cor_clkdrift, icy_installed, kernel_verified, time_verified, sclk, tls
 
 ;Keep track of software versioning here
   sw_vsn = mvn_sta_current_sw_version()
-;  If(keyword_set(iv_level)) Then sw_vsn++
+  If(keyword_set(new_l2_version)) Then sw_vsn++
   sw_vsn_str = 'v'+string(sw_vsn, format='(i2.2)')
 
   If(~is_struct(cmn_dat)) Then Begin

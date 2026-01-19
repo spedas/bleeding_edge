@@ -21,8 +21,8 @@
 ;     Modified from 'read_pbf_v2.c' and 'paceql_outputdata_090805.h'
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2016-09-09 11:33:47 -0700 (Fri, 09 Sep 2016) $
-; $LastChangedRevision: 21810 $
+; $LastChangedDate: 2026-01-14 19:58:43 -0800 (Wed, 14 Jan 2026) $
+; $LastChangedRevision: 34017 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kaguya/map/pace/kgy_read_pbf.pro $
 ;-
 
@@ -102,10 +102,10 @@ s_pace_header = $
     hhmmss:ulong(0) , $          ; hhmmss @ energy sweep 0
     tof_tbl:ulong(0) ,$          ; /* IMA */
     pd_pha:ulong(0) ,$           ; 
-    svg_tbl:ulong(0) ,$          ; /* IMA IEA */  
-    sva_tbl:ulong(0) ,$          ;        
-    svs_tbl:ulong(0) ,$          ;        
-    obs_tbl:ulong(0) ,$          ;        
+    svg_tbl:ulong(0) ,$          ; SVG (Sweep high Voltage for Geometrical factor control)
+    sva_tbl:ulong(0) ,$          ; SVA (Sweep high Voltage for Angular scanning deflector)
+    svs_tbl:ulong(0) ,$          ; SVS (Sweep high Voltage for Spherical deflector)
+    obs_tbl:ulong(0) ,$          ; 
     obs_ctr:ulong(0) ,$          ;        
     nv_high:ulong(0) ,$          ;        
     nv_low:ulong(0) ,$           ; 

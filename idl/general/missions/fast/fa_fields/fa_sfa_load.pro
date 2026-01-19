@@ -76,11 +76,16 @@ Pro fa_sfa_load, trange = trange, orbit = orbit, $
   If(~keyword_set(files) and ~keyword_set(no_time_clip)) Then Begin
      time_clip, tnames(tvars), tr0[0], tr0[1], /replace
   Endif
-;Add spec for variables
+;Add spec for variables, and add titles
   vars = tnames(tvars)
   For j = 0, n_elements(vars)-1 Do Begin
      options, vars[j], 'spec', 1, /default
      options, vars[j], 'datagap', 600.0, /default
+     get_data, vars[j], dlimits = dl
+     If(is_struct(dl)) Then Begin
+        options, vars[j], 'ztitle', dl.cdf.vatt.units, /default
+        options, vars[j], 'ysubtitle', 'kHz', /default
+     Endif
   Endfor
   Return
 End

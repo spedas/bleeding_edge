@@ -170,7 +170,7 @@ cols=get_colors()
 
 	ind_en = where(bkg_56_63[*,*] gt value2,ncount)     ; don't correct if too many o2+ counts
 	if ncount lt 1 then begin
-		print,'Error: No intervals with background, you must run mvn_sta_bkg_load first.''
+		print,'Error: No intervals with background, you must run mvn_sta_bkg_load first.'
 		return
 	endif
 

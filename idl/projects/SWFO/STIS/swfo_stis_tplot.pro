@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-01-05 11:54:55 -0800 (Mon, 05 Jan 2026) $
-; $LastChangedRevision: 33969 $
+; $LastChangedBy: ali $
+; $LastChangedDate: 2026-01-12 14:40:17 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33999 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -78,7 +78,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     store_data,'swfo_SEQN_DELTAS',data='swfo_*_SEQN_DELTA',dlim={ylog:1}
     store_data,'swfo_DELAYTIMES',data='swfo_*_DELAYTIME'
     options,/def,'*_BITS',tplot_routine='bitplot',psyms=1
-    options,/def,'*nse_HISTOGRAM *NOISE_HISTOGRAM',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
+    options,/def,'*_HISTOGRAM',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
     options,/def,'*memdump_DATA',spec=1
     options,/def,'*sci_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
     options,/def,'*hkp?_ADC_*',constant=0.
@@ -107,9 +107,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     dacs=['CH1 thresh','CH2 thresh','CH3 thresh','Baseline','CH4 thresh','CH5 thresh','CH6 thresh','AUX2','CH1-4 pulse height','CH2-5 pulse height','CH3-6 pulse height','Bias Voltage Control']
     options,/def,'*DAC_VALUES',panel_size=2,yrange=[0,'ffff'x],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
     options,/def,'*hkp2_DAC_VALUES',yrange=[0,300]
-
     options,/def,'*SCI_MODE_BITS',numbits=2,labels=reverse(['Decimate Enable', 'Linear Enable']),colors=[1,2]
-
     options,/def,'*PTCU_BITS',numbits=4,labels=reverse(['P=PPS Missing','T=TOD Missing','C=Compression','U=Use LUT']),colors=[0,1,2,6]
     options,/def,'*AAEE_BITS',numbits=4,labels=reverse(['Attenuator IN','Attenuator OUT','Checksum Error 1','Checksum Error 0']),colors=[0,1,2,6]
     options,/def,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),colors='bgrbgrkm'

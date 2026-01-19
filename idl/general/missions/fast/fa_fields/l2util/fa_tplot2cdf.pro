@@ -14,7 +14,9 @@
 ;   COMPRESS_CDF: (int) Compress CDF file. See CDF_COMPRESSION
 ;   G_ATTRIBUTES: (struct) Global attributes of CDF file
 ;   TT2000: (flag) Indicates that time is in TT2000 format.
-;  
+;   v_units = units for spectral V variables, needs to be done here
+;             because the CDF variable is created here. Also there are
+;             keywords for v2 and v3 units.
 ;  Additional keywords:    
 ;   INQ: (struct) Structure of CDF file parameters, see TPLOT2CDF_SAVE_VARS code
 ;
@@ -40,7 +42,8 @@
 
 pro fa_tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attributes=g_attributes_custom, $
                   tt2000=tt2000, default_cdf_structure=default_cdf_structure, compress_cdf=compress_cdf, $
-                  add_tname_to_epoch = add_tname_to_epoch
+                  add_tname_to_epoch = add_tname_to_epoch, v_units = v_units, v2_units = v2_units, $
+                  v3_units = v3_units
   
   compile_opt idl2
   FORWARD_FUNCTION cdf_default_inq_structure, cdf_default_g_attributes_structure  
@@ -212,7 +215,7 @@ pro fa_tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attr
     ;
     ; Then we work with supporting data (1), same scenario
     ;   
-    if ~undefined(v1) then v = TEMPORARY(v1) ; Use v1 isdead of v if we have v1         
+    if ~undefined(v1) then v = TEMPORARY(v1) ; Use v1 instead of v if we have v1         
     if array_contains(t,'DEPEND_1') then begin
      SupportName1 = s.CDF.DEPEND_1.NAME
      SupportVAR = s.CDF.DEPEND_1
@@ -232,6 +235,10 @@ pro fa_tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attr
        attr = *SupportVAR.ATTRPTR               
        if ndimen(v) eq 2 then str_element, attr,'DEPEND_0',EpochName,/add ; if support variable is 2d, then the first dimension corresponds to time
        if STRCMP(attr.VAR_TYPE, 'undefined') then attr.VAR_TYPE = 'support_data' ;Change attributes for support variable variable
+       if keyword_set(v_units) then begin
+          str_element, attr, 'LABLAXIS', v_units, /add
+          str_element, attr, 'UNITS', v_units, /add
+       endif
        SupportVAR.ATTRPTR = ptr_new(attr)
        SupportVARS1 = array_concat(SupportVAR,SupportVARS1)       
      endif
@@ -259,6 +266,10 @@ pro fa_tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attr
         attr = *SupportVAR.ATTRPTR
         if ndimen(v2) eq 2 then str_element, attr,'DEPEND_0',EpochName,/add ; if support variable is 2d, then the first dimension corresponds to time
         if STRCMP(attr.VAR_TYPE, 'undefined') then attr.VAR_TYPE = 'support_data' ;Change attributes for support variable variable
+        if keyword_set(v2_units) then begin
+           str_element, attr, 'LABLAXIS', v2_units, /add
+           str_element, attr, 'UNITS', v2_units, /add
+        endif
         SupportVAR.ATTRPTR = ptr_new(attr)
         SupportVARS2 = array_concat(SupportVAR,SupportVARS2)
       endif
@@ -286,6 +297,10 @@ pro fa_tplot2cdf, filename=filename, tvars=tplot_vars, inq=inq_structure, g_attr
         attr = *SupportVAR.ATTRPTR
         if ndimen(v3) eq 2 then str_element, attr,'DEPEND_0',EpochName,/add ; if support variable is 2d, then the first dimension corresponds to time
         if STRCMP(attr.VAR_TYPE, 'undefined') then attr.VAR_TYPE = 'support_data' ;Change attributes for support variable variable
+        if keyword_set(v3_units) then begin
+           str_element, attr, 'LABLAXIS', v3_units, /add
+           str_element, attr, 'UNITS', v3_units, /add
+        endif
         SupportVAR.ATTRPTR = ptr_new(attr)
         SupportVARS3 = array_concat(SupportVAR,SupportVARS3)
       endif

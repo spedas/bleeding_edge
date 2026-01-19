@@ -34,9 +34,9 @@
 ;                sent.
 ;HISTORY:
 ;Hacked from thm_all_l1l2_gen, 17-Apr-2014, jmm
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2020-08-18 09:53:10 -0700 (Tue, 18 Aug 2020) $
-; $LastChangedRevision: 29040 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2gen.pro $
 ;-
 Pro mvn_call_sta_l2gen, time_in = time_in, $
@@ -204,14 +204,16 @@ Pro mvn_call_sta_l2gen, time_in = time_in, $
      Endif Else Begin
         nproc = n_elements(timep_do)
 ;Send a message that processing is starting
-        ofile0 = '/mydisks/home/maven/muser/sta_l2_msg0.txt'+ff_ext
-        openw, tunit, ofile0, /get_lun
-        printf, tunit, 'Processing: '+instrk
-        For i = 0, nproc-1 Do printf, tunit, timep_do[i]
-        free_lun, tunit
-        cmd0 = 'mailx -s "STA L2 process start" jimm@ssl.berkeley.edu < '+ofile0
-        spawn, cmd0
-        file_delete, ofile0
+        If(einit Eq 0 && getenv('USER') Eq 'muser') Then Begin
+           ofile0 = '/mydisks/home/maven/muser/sta_l2_msg0.txt'+ff_ext
+           openw, tunit, ofile0, /get_lun
+           printf, tunit, 'Processing: '+instrk
+           For i = 0, nproc-1 Do printf, tunit, timep_do[i]
+           free_lun, tunit
+           cmd0 = 'mailx -s "STA L2 process start" jimm@ssl.berkeley.edu < '+ofile0
+           spawn, cmd0
+           file_delete, ofile0
+        Endif
         message, /info, 'Processing: '+instrk
         For i = 0, nproc-1 Do print, timep_do[i]
         For i = 0, nproc-1 Do Begin
@@ -242,13 +244,15 @@ Pro mvn_call_sta_l2gen, time_in = time_in, $
         Endfor
         SKIP_INSTR: load_position = 'instrument'
 ;Send a message that processing is done
-        ofile1 = '/mydisks/home/maven/muser/sta_l2_msg1.txt'+ff_ext
-        openw, tunit, ofile1, /get_lun
-        printf, tunit, 'Finished Processing: '+instrk
-        free_lun, tunit
-        cmd1 = 'mailx -s "STA L2 process end" jimm@ssl.berkeley.edu < '+ofile1
-        spawn, cmd1
-        file_delete, ofile1
+        If(einit Eq 0 && getenv('USER') Eq 'muser') Then Begin
+           ofile1 = '/mydisks/home/maven/muser/sta_l2_msg1.txt'+ff_ext
+           openw, tunit, ofile1, /get_lun
+           printf, tunit, 'Finished Processing: '+instrk
+           free_lun, tunit
+           cmd1 = 'mailx -s "STA L2 process end" jimm@ssl.berkeley.edu < '+ofile1
+           spawn, cmd1
+           file_delete, ofile1
+        Endif
      Endelse
   Endfor
 ;reset file time

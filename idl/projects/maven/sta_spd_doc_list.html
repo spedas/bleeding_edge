@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan  9 18:17:44 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jan 17 18:17:57 2026.<P>
  
 <HR>
  
@@ -59,9 +59,10 @@ CALLING SEQUENCE:
  version = mvn_sta_current_sw_version()
 HISTORY:
  2015-01-23
- $LastChangedBy: jimm $
- $LastChangedDate: 2020-12-17 09:54:25 -0800 (Thu, 17 Dec 2020) $
- $LastChangedRevision: 29541 $
+ Added init, reset, for control of version during background reprocessing
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:38:15 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33998 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_current_sw_version.pro $
 </PRE><P>
 <STRONG>(See <A href="sta/mvn_sta_current_sw_version.pro">projects/maven/sta/mvn_sta_current_sw_version.pro</A>)</STRONG><P>
@@ -253,18 +254,22 @@ KEYWORDS:
             recalculates the eflux value, subtracting background.
  bkg_only = if set, only load background data, iv_level, (or
             iv*_load) must be set
+ zero_bkg = if set, then insure that the beckground level is set to
+            zero. This is incompatible with iv_level and bkg_only
+            inputs, so will not be implemented if either are set. 
  no_download = if set, do not download data, passed through to
                mvn_pfp_spd_download.pro
  no_update = if set, do not check for files if a file exists
  parent_files = an array of the files input, only file basenames,
                 only files that exist
+
 OUTPUT:
  No variables, data are loaded into common blocks
 HISTORY:
  16-may-2014, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: jimm $
- $LastChangedDate: 2024-06-27 12:54:12 -0700 (Thu, 27 Jun 2024) $
- $LastChangedRevision: 32711 $
+ $LastChangedBy: muser $
+ $LastChangedDate: 2026-01-12 13:14:32 -0800 (Mon, 12 Jan 2026) $
+ $LastChangedRevision: 33996 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 </PRE><P>
 <STRONG>(See <A href="sta/mvn_sta_l2_load.pro">projects/maven/sta/mvn_sta_l2_load.pro</A>)</STRONG><P>

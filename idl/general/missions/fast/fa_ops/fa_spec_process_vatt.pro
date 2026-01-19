@@ -43,48 +43,48 @@ Function fa_spec_process_vatt, var
 ;DSP
   If(strmid(var,0,11) Eq 'fa_dspadc_m') Then Begin
      vatt.units = 'Log(nT^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,11) Eq 'fa_dspadc_n') Then Begin
      vatt.units = 'Log(#/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,11) Eq 'fa_dspadc_v') Then Begin
      X1 = strpos(var, 'trk')
      If(x1[0] Ne -1) Then vatt.units = '#/Hz' $
      Else vatt.units = 'Log(V^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,11) Eq 'fa_dspadc_e') Then Begin
      vatt.units = 'Log((V/m)^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,12) Eq 'fa_dsphsbm_m') Then Begin
      vatt.units = 'Log(nT^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,12) Eq 'fa_dsphsbm_n') Then Begin
      vatt.units = 'Log(#/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,12) Eq 'fa_dsphsbm_v') Then Begin
      X1 = strpos(var, 'trk')
      If(x1[0] Ne -1) Then vatt.units = '#/Hz' $
      Else vatt.units = 'Log(V^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,12) Eq 'fa_dsphsbm_e') Then Begin
      vatt.units = 'Log((V/m)^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
 ;SFA
   Endif Else If(strmid(var,0,11) Eq 'fa_sfaave_m') Then Begin
      vatt.units = 'Log(nT^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,11) Eq 'fa_sfaave_e') Then Begin
      vatt.units = 'Log((V/m)^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,13) Eq 'fa_sfaburst_m') Then Begin
      vatt.units = 'Log(nT^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else If(strmid(var,0,13) Eq 'fa_sfaburst_e') Then Begin
      vatt.units = 'Log((V/m)^2/Hz)'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endif Else Begin
      vatt.units = '#/Hz'
-     vatt.lablaxis = var+' '+vatt.units
+     vatt.lablaxis = var
   Endelse
   Case var Of
 ;DSP variables:

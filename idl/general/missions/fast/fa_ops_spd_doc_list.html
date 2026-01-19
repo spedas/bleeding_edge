@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jan  9 18:17:44 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jan 17 18:17:57 2026.<P>
  
 <HR>
  
@@ -126,6 +126,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#FAST_ESA_BATCH">FAST_ESA_BATCH</A>
 <LI><A HREF="#FAST_ESOLO_BATCH">FAST_ESOLO_BATCH</A>
 <LI><A HREF="#FAST_FIELDS_BATCH">FAST_FIELDS_BATCH</A>
+<LI><A HREF="#FAST_FILE_MISSING">FAST_FILE_MISSING</A>
 <LI><A HREF="#FAST_I_BATCH">FAST_I_BATCH</A>
 <LI><A HREF="#FAST_I_SUMMARY">FAST_I_SUMMARY</A>
 <br>Generates ps, gif, cdf summary plots of FAST ion data.
@@ -2432,7 +2433,7 @@ MOD HISTORY:
 <A NAME="FAST_FIELDS_BATCH">
 <H2>FAST_FIELDS_BATCH</H2></A>
 <A HREF="#FAST_E_SUMMARY">[Previous Routine]</A>
-<A HREF="#FAST_IE_BATCH">[Next Routine]</A>
+<A HREF="#FAST_FILE_MISSING">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -2460,9 +2461,22 @@ MOD HISTORY:
 <STRONG>(See <A href="fa_ops/fast_fields_batch.pro">general/missions/fast/fa_ops/fast_fields_batch.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="FAST_FILE_MISSING">
+<H2>FAST_FILE_MISSING</H2></A>
+<A HREF="#FAST_FIELDS_BATCH">[Previous Routine]</A>
+<A HREF="#FAST_IE_BATCH">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+unction fast_file_missing, datatype = datatype, $ ;'esv','e4k','e16k','dsp','sfa'
+                           version = version, $ ;version number, default is 2
+                           end_orbit = end_orbit ;end orbit to test, default is 19999
+</PRE><P>
+<STRONG>(See <A href="fa_ops/fast_file_missing.pro">general/missions/fast/fa_ops/fast_file_missing.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="FAST_IE_BATCH">
 <H2>FAST_IE_BATCH</H2></A>
-<A HREF="#FAST_FIELDS_BATCH">[Previous Routine]</A>
+<A HREF="#FAST_FILE_MISSING">[Previous Routine]</A>
 <A HREF="#FAST_IF_SUMMARY">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

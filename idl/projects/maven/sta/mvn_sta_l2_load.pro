@@ -34,18 +34,22 @@
 ;            recalculates the eflux value, subtracting background.
 ; bkg_only = if set, only load background data, iv_level, (or
 ;            iv*_load) must be set
+; zero_bkg = if set, then insure that the beckground level is set to
+;            zero. This is incompatible with iv_level and bkg_only
+;            inputs, so will not be implemented if either are set. 
 ; no_download = if set, do not download data, passed through to
 ;               mvn_pfp_spd_download.pro
 ; no_update = if set, do not check for files if a file exists
 ; parent_files = an array of the files input, only file basenames,
 ;                only files that exist
+;
 ;OUTPUT:
 ; No variables, data are loaded into common blocks
 ;HISTORY:
 ; 16-may-2014, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2024-06-27 12:54:12 -0700 (Thu, 27 Jun 2024) $
-; $LastChangedRevision: 32711 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2026-01-12 13:14:32 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33996 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_l2_load.pro $
 ;-
 Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
@@ -54,11 +58,14 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
                      tvar_names = tvar_names, l2_version_in = l2_version_in, $
                      iv_level = iv_level, bkg_only = bkg_only, $
                      no_download = no_download, no_update = no_update, $
-                     parent_files = parent_files
+                     parent_files = parent_files, alt_data_path = alt_data_path, $
+                     _extra = _extra
 ;Keep track of software versioning here
   If(keyword_set(l2_version_in)) Then sw_vsn = l2_version_in $
   Else sw_vsn = mvn_sta_current_sw_version()
   sw_vsn_str = 'v'+string(sw_vsn, format='(i2.2)')
+  sw_vsn_old = 'v'+string(sw_vsn-1, format='(i2.2)')
+  
 ;Deal with possibility of background files
   If(keyword_set(iv_level)) Then Begin
      iv_str = strcompress(string(iv_level), /remove_all)
@@ -118,15 +125,14 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
         yyyy = strmid(daystr[k], 0, 4) & mmmm = strmid(daystr[k], 4, 2)
         filepath = 'maven/data/sci/sta/l2/'+yyyy+'/'+mmmm+'/'        
         filejk0 = filepath+'mvn_sta_l2_'+app_id[j]+'*_'+daystr[k]+'_'+sw_vsn_str+'.cdf'
-;        filejk = mvn_pfp_file_retrieve(filejk0, user_pass =
-;user_pass)
-;handle no_update here, so that spd_download does not connect, jmm, 2021-04-20
+;handle no_update here, so that spd_download does not connect, jmm,
+;2021-04-20
         If(keyword_set(no_update)) Then Begin
-           ps = file_retrieve(/default_structure)
+           ps = mvn_file_source()
            filejk = file_search(ps.local_data_dir+filejk0)
            If(is_string(filejk)) Then Begin
               filejk = filejk[n_elements(filejk)-1]
-              dprint, dlevel=2, 'File found Locally: '+filejk
+              dprint, dlevel=0, 'File found Locally: '+filejk
            Endif Else Goto, look_remote
         Endif Else Begin
            look_remote:
@@ -135,16 +141,30 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
 ;Files with ? or * left were not found
         question_mark = strpos(filejk, '?')
         If(is_string(filejk) && question_mark[0] Eq -1) Then filex = [filex, filejk]
+;similar call for iv_levels
         If(keyword_set(iv_level)) Then Begin
            ivfilepath = 'maven/data/sci/sta/'+iv_lvl+'/'+yyyy+'/'+mmmm+'/'
            ivfilejk0 = ivfilepath+'mvn_sta_l2_'+app_id[j]+'*_'+daystr[k]+'_'+iv_lvl+'.cdf'
-           ;stick with no_update in spd_download here, jmm, 2021-04-20
-           ivfilejk = mvn_pfp_spd_download(ivfilejk0, user_pass = user_pass, no_download = no_download, no_update = no_update)
+;handle no_update here, so that spd_download does not connect, jmm,
+;2025-10-13
+           If(keyword_set(no_update)) Then Begin
+              ps = mvn_file_source()
+              ivfilejk = file_search(ps.local_data_dir+ivfilejk0)
+              If(is_string(ivfilejk)) Then Begin
+                 ivfilejk = ivfilejk[n_elements(ivfilejk)-1]
+                 dprint, dlevel=0, 'File found Locally: '+ivfilejk
+              Endif Else Goto, iv_look_remote
+           Endif Else Begin
+              iv_look_remote:
+              ivfilejk = mvn_pfp_spd_download(ivfilejk0, user_pass = user_pass, $
+                                              no_download = no_download, no_update = no_update)
+           Endelse
 ;Files with ? or * left were not found
            iquestion_mark = strpos(ivfilejk, '?')
            If(is_string(ivfilejk) && iquestion_mark[0] Eq -1) Then ivfilex = [ivfilex, ivfilejk]
         Endif
      Endfor
+
      If(n_elements(filex) Gt 1) Then filex = filex[1:*] Else Begin
         dprint, 'No files found fitting input criteria'
         Return
@@ -209,7 +229,8 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
               f1 = strsplit(file_basename(filex[ssj[k]]), '_', /extract)
               ti0 = time_double(f1[n_elements(f1)-2])+[0.0, 86400.0d0]
               If(time_double(trange[0, i]) Le ti0[1] and time_double(trange[1, i]) Ge ti0[0]) Then Begin
-                 datk = mvn_sta_cmn_l2read(filex[ssj[k]], iv_level = iv_level, bkg_sub = bkg_sub, trange = trange[*, i])
+                 datk = mvn_sta_cmn_l2read(filex[ssj[k]], iv_level = iv_level, bkg_sub = bkg_sub, $
+                                           trange = trange[*, i])
                  If(is_struct(datk)) Then Begin
                     If(~is_struct(datj)) Then datj = temporary(datk) $
                     Else datj = mvn_sta_cmn_concat(temporary(datj), temporary(datk))
@@ -218,7 +239,8 @@ Pro mvn_sta_l2_load, files = files, trange = trange, sta_apid = sta_apid, $
            Endfor
         Endif Else Begin
            For k = 0, nssj-1 Do Begin
-              datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange, iv_level = iv_level, bkg_sub = bkg_sub)
+              datk = mvn_sta_cmn_l2read(filex[ssj[k]], trange = trange, iv_level = iv_level, $
+                                        bkg_sub = bkg_sub)
               If(is_struct(datk)) Then Begin
                  If(~is_struct(datj)) Then datj = temporary(datk) $
                  Else datj = mvn_sta_cmn_concat(temporary(datj), temporary(datk))

@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-10-11 10:32:34 -0700 (Fri, 11 Oct 2024) $
-; $LastChangedRevision: 32884 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-01-12 10:27:36 -0800 (Mon, 12 Jan 2026) $
+; $LastChangedRevision: 33992 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_crib.pro $
 ; $ID: $
 
@@ -33,16 +33,30 @@ function swfo_stis_sim_rotate_by_180,data1          ; simulate the B side
 end
 
 
-function swfo_stis_inst_response_retrieve,pathnames,age_limit=age_limit
-  pdunn = file_retrieve(/struct)
+function swfo_stis_inst_response_retrieve,pathnames,age_limit=age_limit,user_pass=user_pass
+
+  if ~keyword_set(user_pass) then user_pass = getenv('SWFO_USER_PASS')
+  if ~keyword_set(user_pass) then begin
+    log_info = get_login_info()
+    salt = '_a0'
+    user_name = log_info.user_name+salt
+    user_pass = user_name+':'+log_info.machine_name  ; + !version.release
+    pass_word0 = string(format='(i06)', user_pass.hashcode() mod 1000000 )
+    dprint,'User_name: ',user_name
+    dprint,'password:  ',pass_word0
+    user_pass = user_name+ ':' + pass_word0
+    printdat,user_pass
+  endif
+
+  pdunn = file_retrieve(/struct, user_pass=user_pass)
   if ~keyword_set(age_limit) then age_limit= 3600*4
   pdunn.min_age_limit=age_limit
-  pdunn.local_data_dir = '~/data/pdunn/swfo/stis/'
-  pdunn.remote_data_dir = 'http://sprg.ssl.berkeley.edu/data/swfo/data/sci/stis/prelaunch/geant/
+  ; pdunn.local_data_dir = '~/data/pdunn/swfo/stis/'
+  pdunn.remote_data_dir = 'http://sprg.ssl.berkeley.edu/data/swfo/data/sci/stis/prelaunch/geant/'
   pdunn.archive_ext = '.arc'
   pdunn.archive_dir = 'archive/'
   pdunn.ignore_filesize = 1
-  files = file_retrieve(pathnames,_extra=pdunn)
+  files = file_retrieve(pathnames, user_pass=user_pass,_extra=pdunn)
   return,files
 end
 
@@ -1286,21 +1300,23 @@ endif
 
 calval=swfo_stis_inst_response_calval()
 
+data_sample = {ptcu_bits: [0, 0, 0, 0], detector_bits: [0, 0, 0], sci_resolution: 3, sci_translate: 32}
+
 
 if ~keyword_set(p_resp) then begin
-  p_resp = swfo_stis_inst_response(simstat_p,data_p,filter=f)
+  p_resp = swfo_stis_inst_response(simstat_p,data_p,filter=f, data_sample=data_sample)
   calval.responses['Proton'] = p_resp
   dprint,'Calculated p_resp'
 endif
 
 if ~keyword_set(e_resp) then begin
-  e_resp = swfo_stis_inst_response(simstat_e,data_e,filter=f)
+  e_resp = swfo_stis_inst_response(simstat_e,data_e,filter=f, data_sample=data_sample)
   dprint,'Calculated e_resp'
   calval.responses['Electron'] = e_resp
 endif
 
 if 0 && ~keyword_set(a_resp) then begin
-  a_resp = swfo_stis_inst_response(simstat_a,data_a,filter=f)
+  a_resp = swfo_stis_inst_response(simstat_a,data_a,filter=f, data_sample=data_sample)
   calval.responses[a_resp.particle_name] = a_resp
 endif
 
@@ -1394,7 +1410,7 @@ if 1 then begin
   swfo_stis_inst_response_matmult_plot,p_func_true,window=win++
   makepng,'swfo_stis_proton_response_matrix'
   swfo_stis_inst_response_matmult_plot,e_func_true,window=win++
-  makepng,'swfo_stis_electron_response_matrix
+  makepng,'swfo_stis_electron_response_matrix'
 endif
 
 
@@ -1583,7 +1599,7 @@ flux_window.show
 
 
 
-func_recon = swfo_stis_response_correct_flux(t_rate_meas,rate_plot=rate_plot,flux_plot=flux_plot)   ;,flux_plot=flux_plot)
+; func_recon = swfo_stis_response_correct_flux(t_rate_meas,rate_plot=rate_plot,flux_plot=flux_plot)   ;,flux_plot=flux_plot)
 
 ;func_recon = swfo_stis_response_correct_flux(t_rate_true,rate_plot=rate_plot,flux_plot=flux_plot)   ;,flux_plot=flux_plot)
 

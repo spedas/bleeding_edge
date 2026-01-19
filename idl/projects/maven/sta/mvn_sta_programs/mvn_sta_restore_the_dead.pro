@@ -40,19 +40,25 @@ if keyword_set(expand) then trange = [trange[0]-expand,trange[1]+expand]
 	last_day = time_double(strmid(time_string(trange[1]-1.),0,10))
 
 ndays = round((last_day-first_day)/(24.*3600.))+1
+ic = 0L
 
 for i=0,ndays-1 do begin
 	datetime = time_string(time_double(strmid(datetime1,0,10)) + 24.*3600.*i)
 	yrmoda = strmid(datetime,0,4)+strmid(datetime,5,2)+strmid(datetime,8,2)
 	dead_sav = maven_dead_dir+strmid(yrmoda,0,4)+path_sep()+$
-                   strmid(yrmoda,4,2)+path_sep()+'mvn_sta_dead_'+yrmoda+'.sav' 
+                   strmid(yrmoda,4,2)+path_sep()+'mvn_sta_dead_'+yrmoda+'.sav'
+        If(~is_string(file_search(dead_sav))) Then Begin
+           print, 'No file: '+dead_sav
+           Continue
+        Endif
 	restore,filename=dead_sav
 	minval = min(abs(dat_dead.time-trange[0]),ind1)
 	minval = min(abs(dat_dead.time-trange[1]),ind2)
 
 	print,i,ind1,ind2
 
-	if i eq 0 then begin
+	if ic eq 0 then begin
+                ic++
 		tmp_dead = {	time :dat_dead.time[ind1:ind2],$
 				dead :dat_dead.dead[ind1:ind2,*,*],$
 				droop:dat_dead.droop[ind1:ind2,*,*],$
@@ -73,8 +79,9 @@ for i=0,ndays-1 do begin
 
 
 endfor
+If(ic Eq 0) Then message, 'No dead time, stopping'
 
-	dat_dead = tmp_dead
+        dat_dead = tmp_dead
 
 ; print out the run time
 

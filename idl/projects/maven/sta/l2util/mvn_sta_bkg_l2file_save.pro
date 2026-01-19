@@ -21,9 +21,9 @@
 ;            '/mydisks/home/maven/', don't forget the slash
 ;HISTORY:
 ; 22-jul-2014, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-09-26 17:09:08 -0700 (Tue, 26 Sep 2023) $
-; $LastChangedRevision: 32136 $
+; $LastChangedBy: muser $
+; $LastChangedDate: 2026-01-14 11:05:30 -0800 (Wed, 14 Jan 2026) $
+; $LastChangedRevision: 34002 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_bkg_l2file_save.pro $
 ;-
 Pro mvn_sta_bkg_l2file_save, otp_struct, fullfile0, temp_dir = temp_dir, $
@@ -66,13 +66,13 @@ Pro mvn_sta_bkg_l2file_save, otp_struct, fullfile0, temp_dir = temp_dir, $
   fullfilex = tdir_out+'/'+file
 
   dummy = cdf_save_vars2(otp_struct, fullfilex, /no_file_id_update)
-  spawn, '/usr/local/pkg/cdf-3.6.3_CentOS-6.8/bin/cdfconvert '+fullfilex+' '+fullfilex+' -compression cdf:none -delete'
+  spawn, '/disks/socware/thmsoc_production_test/cdf_linux_latest/cdfconvert '+fullfilex+' '+fullfilex+' -compression cdf:none -delete'
 ;Convert is done here to be sure md5 file has consistent results when
 ;uncompressed elsewhere
 ;  spawn, '/usr/local/pkg/cdf-3.7.1/bin/cdfconvert '+fullfilex+' '+fullfilex+' -compression cdf:none -delete'
 
   If(~keyword_set(no_compression)) Then Begin
-     spawn, '/usr/local/pkg/cdf-3.6.3_CentOS-6.8/bin/cdfconvert '+fullfilex+' '+fullfilex+' -compression cdf:gzip.5 -delete'
+     spawn, '/disks/socware/thmsoc_production_test/cdf_linux_latest/cdfconvert '+fullfilex+' '+fullfilex+' -compression cdf:gzip.5 -delete'
   Endif
 
 ;move the files to the output directory

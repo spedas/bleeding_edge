@@ -33,14 +33,14 @@
 ;
 ;
 ; Notes:
-;      Code provided by Marit Oieroset and Victoria Coffey.
+;      Adapted from code provided by Marit Oieroset.
 ;      Please note that this code requires a good measurement of the electric field parallel to the magnetic field,
 ;      which is very rare. It should be used for specific time intervals only.
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2026-01-07 13:03:20 -0800 (Wed, 07 Jan 2026) $
-;$LastChangedRevision: 33976 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-01-13 23:22:52 -0800 (Tue, 13 Jan 2026) $
+;$LastChangedRevision: 34001 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/mms_jdote.pro $
 ;-
 
@@ -169,7 +169,7 @@ pro mms_jdote, probes=probes, trange=trange, data_rate=data_rate, werror=werror
 
   ; Default keywords
   if ~keyword_set(trange) then begin
-    timespan,'2022-03-06/05:42', 30, /min ; Victoria Coffey event
+    timespan,'2022-03-06/05:42', 30, /min ; Original event studied in crib sheet used to develop this tool
     tr = timerange()
   endif else tr = trange
   if ~keyword_set(probes) then probes=['3'] else probes=[probes[0]]
