@@ -25,15 +25,17 @@
 ;
 ;       DOVEL:         Calculate temperatures.  Default = 1 (yes).
 ;
+;       L3:            Use STATIC L3 data for densities and temperatures.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-12 17:08:19 -0700 (Wed, 12 Sep 2018) $
-; $LastChangedRevision: 25781 $
+; $LastChangedDate: 2026-01-20 12:58:43 -0800 (Tue, 20 Jan 2026) $
+; $LastChangedRevision: 34040 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;FILE: mvn_sta_cio_save.pro
 ;-
-pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel
+pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3=L3
 
   common coldion, cio_h, cio_o1, cio_o2
 
@@ -41,6 +43,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel
   if (size(dotemp,/type) eq 0) then dotemp = 1 else dotemp = keyword_set(dotemp)
   if (size(dovel,/type) eq 0) then dovel = 1 else dovel = keyword_set(dovel)
   dovel = replicate(dovel,3)
+  useL3 = keyword_set(L3)
 
   dpath = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
   froot = 'mvn_sta_cio_'
@@ -96,7 +99,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel
         mvn_swe_sciplot, padsmo=16, /loadonly
         mvn_sundir, frame='swe', /polar
 
-        mvn_sta_coldion, density=doden, temperature=dotemp, velocity=dovel, $
+        mvn_sta_coldion, L3=useL3, density=doden, temperature=dotemp, velocity=dovel, $
               /reset, tavg=16, frame='mso', /doplot, pans=pans, success=ok
 
         if (ok) then begin

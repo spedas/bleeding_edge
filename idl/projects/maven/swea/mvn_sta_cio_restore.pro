@@ -27,8 +27,8 @@
 ;       SUCCESS:       Success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-02-28 11:18:56 -0800 (Wed, 28 Feb 2018) $
-; $LastChangedRevision: 24804 $
+; $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
+; $LastChangedRevision: 34039 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -136,7 +136,7 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
 
 ; Make tplot variables
 
-  if keyword_set(doplot) then mvn_sta_cio_tplot
+  if keyword_set(doplot) then mvn_sta_cio_tplot, pans=pans
 
   return
 

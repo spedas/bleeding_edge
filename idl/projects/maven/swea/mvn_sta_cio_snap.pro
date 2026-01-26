@@ -33,8 +33,8 @@
 ;       This routine also passes keywords to PLOT.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-04-07 15:27:02 -0700 (Mon, 07 Apr 2025) $
-; $LastChangedRevision: 33238 $
+; $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
+; $LastChangedRevision: 34039 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -53,7 +53,7 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
   endif
 
   dorange = n_elements(range) eq 2
-  if (dorange) then range = range(sort(range))
+  if (dorange) then fixedrange = minmax(range)
   dostat = ~keyword_set(nostat)
   doline = ~keyword_set(nolines)
   maxcst = n_elements(constant) - 1
@@ -119,12 +119,12 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
     wset, swin
 
     if ((count gt 0) and valid) then begin
-      if (not dorange) then range = minmax(z[indx])
-      dz = (range[1] - range[0])/float(nbins)
+      range = dorange ? fixedrange : minmax(z[indx])
+      dz = (range[1] - range[0])/float(nbins - 1)
       h = histogram(z[indx], binsize=dz, loc=hz, min=range[0], max=range[1])
       htop = sigfig(1.2*max(h),2)
 
-      plot,hz,h,psym=10,charsize=1.8,xtitle=xtitle,ytitle='Sample Number', $
+      plot,hz,h,psym=4,charsize=1.8,xtitle=xtitle,ytitle='Sample Number', $
            yrange=[0,htop], /ysty, _extra=extra
       hz = [hz[0] - dz, hz, max(hz) + dz]
       h = [0., h, 0.]

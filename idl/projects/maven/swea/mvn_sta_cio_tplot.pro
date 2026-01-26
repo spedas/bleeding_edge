@@ -8,16 +8,17 @@
 ;INPUTS:
 ;
 ;KEYWORDS:
+;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-11-24 13:40:12 -0800 (Sat, 24 Nov 2018) $
-; $LastChangedRevision: 26170 $
+; $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
+; $LastChangedRevision: 34039 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
 ;FILE:  mvn_sta_cio_plot.pro
 ;-
-pro mvn_sta_cio_tplot
+pro mvn_sta_cio_tplot, pans=pans
 
     common coldion, cio_h, cio_o1, cio_o2
 
@@ -619,6 +620,7 @@ pro mvn_sta_cio_tplot
     ylim,bname,0,1,0
     zlim,bname,0,3,0
     options,bname,'spec',1
+    options,bname,'color_table',43  ; ensure blank-blue-yellow-red color scheme
     options,bname,'panel_size',0.05
     options,bname,'ytitle',''
     options,bname,'yticks',1

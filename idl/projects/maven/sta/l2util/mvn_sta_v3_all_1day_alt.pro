@@ -6,9 +6,7 @@
 ;the interval. This is a main program, designed to be called from a
 ;shell script. Processes 1 day at a time. Creates version 3 of files,
 ;with start times at the start of the day, and overlap at the end of
-;the day. This script is designed to be used if the end_date has
-;already been processed. It won't reprocess data for the end date and
-;beyond.
+;the day.
 ;CALLING SEQUENCE:
 ; .run mvn_sta_v3_all_1day_alt
 ;INPUT:
@@ -39,18 +37,14 @@ tend = time_double(en_time[0])
 If(tstart Ge tend) Then exit
 ;do the process one day at a time, in the local working directory, but
 ;the process starts by filling the new v3 L2 file 4 days in advance,
-;or to the day before the end_date
 one_day = 86400.0d0
 days_in = time_string(tstart+4.0*one_day)
-If(days_in Lt tend) Then Begin
-   mvn_call_sta_l2l2, days_in = days_in, temp_dir = './', /use_l2_files, $
-                      alt_data_path = 'fast/maven/', /new_l2_version, /l2_only_dead
-Endif
-;Now call the addbck process, No init keyword set, this will
+mvn_call_sta_l2l2, days_in = days_in, temp_dir = './', /use_l2_files, $
+                   alt_data_path = 'fast/maven/', /new_l2_version, /l2_only_dead
+;Now call the addbsk process, No init keyword set, this will
 ;reset the sw version and the default data path to find the new v3
 ;files. Since this only runs for this date, the filepaths should be consistent.
 mvn_sta_l2gen_addbck, date = time_string(tstart), $
-                      end_date = time_string(tend), $
                       alt_data_path = 'fast/maven/'
 ;Add a day and reset start time file
 tstart_new = tstart+one_day

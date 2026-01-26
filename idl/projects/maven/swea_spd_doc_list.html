@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan 17 18:17:57 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jan 24 18:19:28 2026.<P>
  
 <HR>
  
@@ -1125,8 +1125,8 @@ KEYWORDS:
        SUCCESS:       Success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-02-28 11:18:56 -0800 (Wed, 28 Feb 2018) $
- $LastChangedRevision: 24804 $
+ $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
+ $LastChangedRevision: 34039 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1167,9 +1167,11 @@ KEYWORDS:
 
        DOVEL:         Calculate temperatures.  Default = 1 (yes).
 
+       L3:            Use STATIC L3 data for densities and temperatures.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-12 17:08:19 -0700 (Wed, 12 Sep 2018) $
- $LastChangedRevision: 25781 $
+ $LastChangedDate: 2026-01-20 12:58:43 -0800 (Tue, 20 Jan 2026) $
+ $LastChangedRevision: 34040 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1218,8 +1220,8 @@ KEYWORDS:
        This routine also passes keywords to PLOT.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-04-07 15:27:02 -0700 (Mon, 07 Apr 2025) $
- $LastChangedRevision: 33238 $
+ $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
+ $LastChangedRevision: 34039 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1271,10 +1273,11 @@ USAGE:
 INPUTS:
 
 KEYWORDS:
+       PANS:          Tplot panel names created when DOPLOT is set.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-24 13:40:12 -0800 (Sat, 24 Nov 2018) $
- $LastChangedRevision: 26170 $
+ $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
+ $LastChangedRevision: 34039 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1347,7 +1350,8 @@ INPUTS:
 KEYWORDS:
     BEAM:          Use the beam version of the moment calculation.  Provides
                    the most accurate densities around periapsis.  Does not
-                   work at all away from periapsis.
+                   work at all away from periapsis.  DO NOT USE FOR COLD ION
+                   ANALYSIS.
 
     POTENTIAL:     Use the composite spacecraft potential determined from
                    SWEA, STATIC, and LPW.  See mvn_scpot.pro for details.
@@ -1361,6 +1365,9 @@ KEYWORDS:
                    H+ temperature is also determined.  Automatically sets 
                    POTENTIAL = 1.
 
+    L3:            Load STATIC L3 data for densities and temperatures.
+                   Disables DENSITY, TEMPERATURE, and POTENTIAL.
+
     VELOCITY:      Calculate velocities of H+, O+, and/or O2+.
 
                      VELOCITY = 1       --&gt; calculate for all three species
@@ -1373,9 +1380,6 @@ KEYWORDS:
                       d0 -&gt; 32E x  8M x 4D x 16A, survey time resolution
                       cf -&gt; 16E x 16M x 4D x 16A, burst time resolution
                       ce -&gt; 16E x 16M x 4D x 16A, survey time resolution
-
-    BURST:         If set, try to use d1 if available, otherwise use d0.
-                   If not set, use d0.
 
     FRAME:         Reference frame for velocities.  Default = 'mso'.  Try 'app'
                    to get apparent flow direction in APP frame.
@@ -1406,8 +1410,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2021-08-25 09:07:29 -0700 (Wed, 25 Aug 2021) $
- $LastChangedRevision: 30246 $
+ $LastChangedDate: 2026-01-20 12:58:43 -0800 (Tue, 20 Jan 2026) $
+ $LastChangedRevision: 34040 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell

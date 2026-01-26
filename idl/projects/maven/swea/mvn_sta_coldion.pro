@@ -23,7 +23,8 @@
 ;KEYWORDS:
 ;    BEAM:          Use the beam version of the moment calculation.  Provides
 ;                   the most accurate densities around periapsis.  Does not
-;                   work at all away from periapsis.
+;                   work at all away from periapsis.  DO NOT USE FOR COLD ION
+;                   ANALYSIS.
 ;
 ;    POTENTIAL:     Use the composite spacecraft potential determined from
 ;                   SWEA, STATIC, and LPW.  See mvn_scpot.pro for details.
@@ -37,6 +38,9 @@
 ;                   H+ temperature is also determined.  Automatically sets 
 ;                   POTENTIAL = 1.
 ;
+;    L3:            Load STATIC L3 data for densities and temperatures.
+;                   Disables DENSITY, TEMPERATURE, and POTENTIAL.
+;
 ;    VELOCITY:      Calculate velocities of H+, O+, and/or O2+.
 ;
 ;                     VELOCITY = 1       --> calculate for all three species
@@ -49,9 +53,6 @@
 ;                      d0 -> 32E x  8M x 4D x 16A, survey time resolution
 ;                      cf -> 16E x 16M x 4D x 16A, burst time resolution
 ;                      ce -> 16E x 16M x 4D x 16A, survey time resolution
-;
-;    BURST:         If set, try to use d1 if available, otherwise use d0.
-;                   If not set, use d0.
 ;
 ;    FRAME:         Reference frame for velocities.  Default = 'mso'.  Try 'app'
 ;                   to get apparent flow direction in APP frame.
@@ -82,8 +83,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2021-08-25 09:07:29 -0700 (Wed, 25 Aug 2021) $
-; $LastChangedRevision: 30246 $
+; $LastChangedDate: 2026-01-20 12:58:43 -0800 (Tue, 20 Jan 2026) $
+; $LastChangedRevision: 34040 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -91,9 +92,8 @@
 pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
                      density=density, velocity=velocity, tavg=tavg, pans=pans, $
                      result_h=result_h, result_o1=result_o1, result_o2=result_o2, $
-                     noload=noload, temperature=temperature, reset=reset, $
-                     frame=frame, doplot=doplot, burst=burst, success=success, $
-                     reload=reload
+                     noload=noload, temperature=temperature, reset=reset, L3=L3, $
+                     frame=frame, doplot=doplot, success=success, reload=reload
 
   common coldion, cio_h, cio_o1, cio_o2
   common mvn_sta_kk3_anode, kk3_anode
@@ -106,7 +106,6 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   cio_h = 0
   cio_o1 = 0
   cio_o2 = 0
-  v_apid = ''
 
 ; Process keywords
 
@@ -122,15 +121,27 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
   doden = keyword_set(density)
   dotmp = keyword_set(temperature)
+  useL3 = keyword_set(L3)
 
-  kk3_anode = keyword_set(adisc)
-  if (kk3_anode) then begin
-    uinfo = get_login_info()
-    if (uinfo.user_name ne 'mitchell') then begin
-      print,"Please contact DLM if you want to use this option."
-      kk3_anode = 0
-    endif
+; Use STATIC L3 densities and temperatures if possible
+
+  if (useL3) then begin
+    mvn_sta_l3_load  ; load all moments
+    get_data,'mvn_sta_l3_density',data=sta_den,index=i
+    if (i gt 0) then begin
+      get_data,'mvn_sta_l3_density_abs_uncertainty',data=sta_den_sigma
+      got_l3_den = 1
+      doden = 0
+    endif else got_l3_den = 0
+    get_data,'mvn_sta_l3_temperature_o2+',data=sta_tmp,index=i
+    if (i gt 0) then begin
+      get_data,'mvn_sta_l3_temperature_abs_uncertainty',data=sta_tmp_sigma
+      got_l3_tmp = 1
+      dotmp = 0
+    endif else got_l3_tmp = 0
   endif
+
+  kk3_anode = 1  ; enable attenuator-dependent ion suppression correction
 
   species = ['H+','O+','O2+']
   m_arr = fltarr(3,3)
@@ -143,8 +154,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   e_arr[*,1] = [0., 3000.]  ; O+
   e_arr[*,2] = [0., 3000.]  ; O2+
 
-  cols = get_colors()
-  icols = [cols.blue,cols.green,cols.red]  ; color for each species
+  lines = 11       ; line color scheme
+  icols = [2,4,6]  ; color for each species (scheme 11: blue, dark green, red)
 
   if (size(parng,/type) eq 0) then parng = 1
 
@@ -156,9 +167,16 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     print,'Calculating apparent flow in APP frame - no s/c velocity correction.'
   endif else vsc = 1
 
-; Load STATIC data (if needed)
+; Initialize the time array for the result structures
 
   trange = timerange()
+  if keyword_set(tavg) then dt = double(tavg) else dt = 16D
+  tmin = min(trange, max=tmax)
+  npts = ceil((tmax-tmin)/dt)
+  time = tmin + dt*dindgen(npts)
+
+; Load STATIC data (if needed)
+
   replot = 0
 
   eph = maven_orbit_eph()
@@ -169,49 +187,75 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     return
   endif
 
-  str_element, mvn_c6_dat, 'time', time, success=ok
-  if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
-  if keyword_set(reload) then npts = 0
-  if (npts lt 10) then begin
+  str_element, mvn_c6_dat, 'time', time_c6, success=gotc6
+  if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
+  if keyword_set(reload) then nc6 = 0
+  if (nc6 lt 10) then begin
     mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=2
-    str_element, mvn_c6_dat, 'time', time, success=ok
-    if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
-    if (npts lt 10) then begin
-      print,"No STATIC c6 data."
+    str_element, mvn_c6_dat, 'time', time_c6, success=gotc6
+    if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
+    if (nc6 lt 10) then begin
+      gotc6 = 0
+      print,"No STATIC c6 data.  Cannot process cold ion data."
       return
     endif else replot = 1
   endif
 
-  if keyword_set(burst) then begin
-    str_element, mvn_d1_dat, 'time', time, success=ok
-    if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
-    if keyword_set(reload) then npts = 0
-    if (npts lt 10) then begin
-      mvn_sta_l2_load, sta_apid=['d1'], iv_level=2
-      str_element, mvn_d1_dat, 'time', time, success=ok
-      if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
-      if (npts lt 10) then print,"No STATIC d1 data." else replot = 1
-    endif
+; Load both d0 and d1 data.  Decide which one to use later.
+
+  str_element, mvn_d0_dat, 'time', time_d0, success=gotd0
+  if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
+  if keyword_set(reload) then nd0 = 0
+  if (nd0 lt 10) then begin
+    mvn_sta_l2_load, sta_apid=['d0'], iv_level=2
+    str_element, mvn_d0_dat, 'time', time_d0, success=gotd0
+    if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
+    if (nd0 lt 10) then begin
+      print,"No STATIC d0 data."
+      gotd0 = 0
+    endif else begin
+      replot = 1
+      gotd0 = 1
+    endelse
   endif
 
-  if (v_apid eq '') then begin
-    v_apid = 'd0'
-    str_element, mvn_d0_dat, 'time', time, success=ok
-    if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
-    if keyword_set(reload) then npts = 0
-    if (npts lt 10) then begin
-      mvn_sta_l2_load, sta_apid=['d0'], iv_level=2
-      str_element, mvn_d0_dat, 'time', time, success=ok
-      if (ok) then indx = where((time gt trange[0]) and (time lt trange[1]), npts) else npts = 0
-      if (npts lt 10) then begin
-        print,"No STATIC d0 data."
-        v_apid = ''
-        return
-      endif else replot = 1
-    endif
+  str_element, mvn_d1_dat, 'time', time_d1, success=ok
+  if (ok) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
+  if keyword_set(reload) then nd1 = 0
+  if (nd1 lt 10) then begin
+    mvn_sta_l2_load, sta_apid=['d1'], iv_level=2
+    str_element, mvn_d1_dat, 'time', time_d1, success=gotd1
+    if (gotd1) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
+    if (nd1 lt 10) then begin
+      print,"No STATIC d1 data."
+      gotd1 = 0
+    endif else replot = 1
   endif
 
-  print,"Using APID ",v_apid," to calculate velocity moments."
+; Now decide which apid to use: d0 or d1?
+; Check the overlap between data times and result structure times
+
+  if (gotd0) then begin
+    i = nn2(mvn_d0_dat.time, time, maxdt=dt/2D, /valid, vindex=d0ndx)
+    nd0 = n_elements(d0ndx)  ; number of d0 data times that overlap result structure times
+    if (nd0 lt 10L) then nd0 = 0L
+  endif else nd0 = 0L
+  if (gotd1) then begin
+    i = nn2(mvn_d1_dat.time, time, maxdt=dt/2D, /valid, vindex=d1ndx)
+    nd1 = n_elements(d1ndx)  ; number of d1 data times that overlap result structure times
+    if (nd1 lt 10L) then nd1 = 0L
+  endif else nd1 = 0L
+
+  if ((nd0 + nd1) eq 0L) then begin
+    dovel = [0,0,0]
+    v_apid = ''
+    print,"No valid d0 or d1 data.  Cannot calculate velocity moments."
+  endif else begin
+    v_apid = (nd0 ge nd1) ? 'd0' : 'd1'
+    print,"Using APID ",v_apid," to calculate velocity moments."
+  endelse
+
+; Make a time series plot of the data
 
   if (replot) then mvn_sta_l2_tplot, /replace
 
@@ -245,11 +289,6 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     endif
   endif
 
-  if keyword_set(tavg) then dt = double(tavg) else dt = 16D
-  tmin = min(trange, max=tmax)
-  npts = ceil((tmax-tmin)/dt)
-  time = tmin + dt*dindgen(npts)
-
 ; Initialize the result structures
 
   if ((size(result_h,/type) ne 8) or keyword_set(reset)) then begin    
@@ -264,33 +303,15 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
   mvn_scpot
 
-; Determine the ion suppression method.  Anode-dependent ion suppression
-; uses experimental code and is for testing purposes only.
+; Ion suppression correction
 
   if (doden or dotmp) then begin
-    kk3_anode = keyword_set(adisc)
-    if (kk3_anode) then begin
-      uinfo = get_login_info()
-      if (uinfo.user_name ne 'mitchell') then begin
-        print,"This option uses unreleased, experimental code."
-        kk3_anode = 0
-      endif
-    endif
-
     kk = 0.
-    if (kk3_anode) then begin
-      kk = mvn_sta_get_kk3(mean(trange))
-      isuppress = 'nbc_4d'
-      tsuppress = 'tb_4d'  ; don't have experimental version of this
-      print,'Using attenuator-dependent ion suppression correction.'
-      print,'kk3 = ',kk
-    endif else begin
-      kk = mvn_sta_get_kk2(mean(trange))
-      isuppress = 'nb_4d'
-      tsuppress = 'tb_4d'
-      print,'Using basic ion suppression correction.'
-      print,'kk2 = ',kk
-    endelse
+    kk = mvn_sta_get_kk3(mean(trange))
+    isuppress = 'nbc_4d'
+    tsuppress = 'tb_4d'  ; don't have experimental version of this
+    print,'Using attenuator-dependent ion suppression correction.'
+    print,'kk3 = ',kk
 
     if (max(kk) gt 4.) then begin
       msg = string("Warning: STATIC ion suppression factor = ",kk,format='(16(a,f3.1))')
@@ -301,10 +322,23 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
 ; Calculate H+, O+, and O2+ densities
 
+  if (got_l3_den) then begin
+    print, "Using STATIC L3 densities ..."
+
+    dx = sta_den.x - shift(sta_den.x,1)
+    dx[0] = dx[1]
+    y = (min(dx) lt (2D*dt)) ? smooth_in_time(sta_den.y, sta_den.x, dt) : sta_den.y
+
+    result_o2.den_i = interp(tmp.y, tmp.x, time)
+
+  endif
+
   if (doden) then begin
     print, "Calculating densities ..."
 
     if keyword_set(beam) then begin
+
+      print,"WARNING!  Beam approximation in use.  NOT FOR COLD ION ANALYSIS!"
 
       get_data, 'mvn_sta_c6_mode', data=c6_mode
       wrong_mode = where((c6_mode.y ne 1) and (c6_mode.y ne 2), nwrong)
@@ -325,6 +359,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 	  get_data, vname, data=tmp
 	  if (nwrong gt 0L) then tmp.y[wrong_mode] = !values.f_nan
 	  store_data, vname, data=tmp
+	  options, vname, 'line_colors', lines
 	  options, vname, ytitle='sta c6 O+!cDensity (1/cc)', colors=icols[1]
 	  ylim, vname, 10, 100000, 1
 
@@ -350,6 +385,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       get_data, vname, data=tmp
       if (nwrong gt 0L) then tmp.y[wrong_mode] = !values.f_nan
       store_data, vname, data=tmp
+	  options, vname, 'line_colors', lines
       options, vname, ytitle='sta c6 O2+!cDensity (1/cc)', colors=icols[2]
       ylim, vname, 10, 100000, 1
 
@@ -434,7 +470,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
 ; Calculate H+, O+, and O2+ temperatures
 
-  if keyword_set(temperature) then begin
+  if (dotmp) then begin
     print, "Calculating temperatures ..."
 
     if keyword_set(beam) then begin
@@ -455,6 +491,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 	  get_4dt, tsuppress, getap, mass=minmax(mass), m_int=mass[1], $
 	           energy=erange, name=vname
 
+	  options, vname, 'line_colors', lines
 	  options, vname, ytitle='sta c6 O+!cTemp (eV)', colors=icols[1]
 	  ylim, vname, 10, 100000, 1
 	  get_data, vname, data=tmp
@@ -479,6 +516,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 	  get_4dt, tsuppress, getap, mass=minmax(mass), m_int=mass[1], $
 	           energy=erange, name=vname
 
+	  options, vname, 'line_colors', lines
       options, vname, ytitle='sta c6 O2+!cTemp (eV)', colors=icols[2]
       ylim, vname, 10, 100000, 1
       get_data, vname, data=tmp
@@ -526,7 +564,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
     endelse
 
-; Filter temperature
+; Filter temperature (based on density filter)
 
     ibad = where(~igud[*,0], nbad)
     if (nbad gt 0L) then result_h[ibad].temp = !values.f_nan
@@ -639,6 +677,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
         options, v_names[i], spice_frame=frame, spice_master_frame='MAVEN_SPACECRAFT'
         options, v_names[i], 'ytitle', (species[i] + ' V_MSO!ckm/s')
         options, v_names[i], 'labels', ['X','Y','Z','']
+        options, v_names[i], 'line_colors', lines
         options, v_names[i], 'colors', [icols,!p.color]
         options, v_names[i], 'labflag', 1
       endif
@@ -775,6 +814,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   endif else print,'Could not get plasma region information.'
 
 ; Upstream drivers (direct and proxy)
+;   Combined proxy:
+;   /home/rlillis/work/data/maven_sw_driver_files/clock_angle_vSWIM_Yaxue.sav
 
   path = root_data_dir() + 'maven/data/sci/swe/l3/'
   tplot_restore, file=(path + 'drivers_merge_l2.tplot')  ; direct (Halekas)
@@ -788,11 +829,11 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
     gap = where(~finite(By) or ~finite(Bz), ngap)
     if (ngap gt 0) then begin
-      restore, (path + 'mag_sheath.sav')                 ; proxy (Y. Dong)
+      restore, (path + 'clock_angle_vSWIM_Yaxue.sav')  ; combined proxy (Azari-Dong)
       if (size(mag_sheath,/type) eq 8) then begin
-        By[gap] = interp(mag_sheath.mag[*,1], mag_sheath.time, time[gap], int=dtmax)
-        Bz[gap] = interp(mag_sheath.mag[*,2], mag_sheath.time, time[gap], int=dtmax)
-      endif else print,'Could not get solar wind proxy database.'
+        By[gap] = interp(clock.By_norm, clock.time, time[gap], int=dtmax)
+        Bz[gap] = interp(clock.Bz_norm, clock.time, time[gap], int=dtmax)
+      endif else print,'Could not get clock angle proxy database.'
     endif
 
     Bclk = atan(Bz,By)  ; radians (0 = east, pi = west)

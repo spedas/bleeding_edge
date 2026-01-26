@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan 17 18:17:57 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jan 24 18:19:28 2026.<P>
  
 <HR>
  
@@ -1557,7 +1557,9 @@ reads in a start and end date, and reprocesses all of the days in
 the interval. This is a main program, designed to be called from a
 shell script. Processes 1 day at a time. Creates version 3 of files,
 with start times at the start of the day, and overlap at the end of
-the day.
+the day. This script is designed to be used if the end_date has
+already been processed. It won't reprocess data for the end date and
+beyond.
 CALLING SEQUENCE:
  .run mvn_sta_v3_all_1day
 INPUT:
@@ -1585,9 +1587,7 @@ reads in a start and end date, and reprocesses all of the days in
 the interval. This is a main program, designed to be called from a
 shell script. Processes 1 day at a time. Creates version 3 of files,
 with start times at the start of the day, and overlap at the end of
-the day. This script is designed to be used if the end_date has
-already been processed. It won't reprocess data for the end date and
-beyond.
+the day.
 CALLING SEQUENCE:
  .run mvn_sta_v3_all_1day_alt
 INPUT:
