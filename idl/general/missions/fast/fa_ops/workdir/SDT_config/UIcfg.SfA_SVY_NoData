@@ -1,0 +1,1208 @@
+*
+Header :this is the 'SfA_NoData' configuration file
+Header :created on Tue Sep  2 09:38:15 2025
+*
+*
+Description :Quantities needed for fa_fields_despin3.pro
+
+*
+
+Configuration
+{
+Config Name:			'SfA_NoData'
+Config MenuPosition:		15, 5
+Config MenuSize:		155, 150
+Config DefaultSourceId:	'?'
+Config CurrentPlotWindow:	'SfA_SVY:0 - DA'
+
+	PlotWinStandard
+	{
+	PlotWin Name:		'SfA_SVY:0 - DA'
+	PlotWin Position:	754, 46
+	PlotWin Size:		930, 829
+	PlotWin PlotsPage:	6
+	PlotWin TopPlotOfPage:	'FastFieldsMode_1036'
+	PlotWin DefaultDataBaseResponse:	2444444 0 2444444 1 ''
+
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'FastFieldsMode_1036'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FastFieldsMode_1036'
+		Plot2 PlotYTitleName:	'FMode (Apid 1036)'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 300, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'FastFieldsMode_1057'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FastFieldsMode_1057'
+		Plot2 PlotYTitleName:	'FMode (Apid 1057)'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 300, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAveLines'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAveLines'
+		Plot2 PlotYTitleName:	'SfaAve Words'
+		Plot2 PlotYSubTitleName:	'counts'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		4
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 40000, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		TRUE, TRUE, TRUE, TRUE
+		Plot2 LinOff:		0, 3000, 6000, 9000
+		Plot2 LogOff:		0, 3, 6, 9
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR, SDT_MLSTYLE_COLOR, SDT_MLSTYLE_COLOR, SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE, GRAPH_MODE_LINE, GRAPH_MODE_LINE, GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1, 	1, 	1, 	1
+		Plot2 UseBrk:		TRUE, TRUE, TRUE, TRUE
+		Plot2 BrkInt:		2, 1, 1, 1
+		Plot2 ErrorBar:		SDT_EBAR_NONE, SDT_EBAR_NONE, SDT_EBAR_NONE, SDT_EBAR_NONE
+		Plot2 NSymbols:		0, 0, 0, 0
+		Plot2 LineFont:		Solid, Solid, Solid, Solid
+		Plot2 LineColor:	White, White, White, White
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAveWord1'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAveWord1'
+		Plot2 PlotYTitleName:	'SfaAveWord1'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAveWord2'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAveWord2'
+		Plot2 PlotYTitleName:	'SfaAveWord2'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAveWord3'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAveWord3'
+		Plot2 PlotYTitleName:	'SfaAveWord3'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAveWord4'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAveWord4'
+		Plot2 PlotYTitleName:	'SfaAveWord4'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_Mag3AC'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_Mag3AC'
+		Plot2 PlotYTitleName:	'SfaAve_Mag3AC'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_MagPhase'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_MagPhase'
+		Plot2 PlotYTitleName:	'SfaAve_MagPhase'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 5000, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_SpinPhase'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_SpinPhase'
+		Plot2 PlotYTitleName:	'SfaAve_SpinPhase'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1200, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_V1-V2'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_V1-V2'
+		Plot2 PlotYTitleName:	'SfaAve_V1-V2'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_V1-V4'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_V1-V4'
+		Plot2 PlotYTitleName:	'SfaAve_V1-V4'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_V3-V4'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_V3-V4'
+		Plot2 PlotYTitleName:	'SfaAve_V3-V4'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_V5-V6'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_V5-V6'
+		Plot2 PlotYTitleName:	'SfaAve_V5-V6'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_V5-V8'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_V5-V8'
+		Plot2 PlotYTitleName:	'SfaAve_V5-V8'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_V7-V8'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_V7-V8'
+		Plot2 PlotYTitleName:	'SfaAve_V7-V8'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaAve_V9-V10'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaAve_V9-V10'
+		Plot2 PlotYTitleName:	'SfaAve_V9-V10'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurstLines'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurstLines'
+		Plot2 PlotYTitleName:	'SfaBurst Words'
+		Plot2 PlotYSubTitleName:	'counts'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		4
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 40000, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		TRUE, TRUE, TRUE, TRUE
+		Plot2 LinOff:		0, 3000, 6000, 9000
+		Plot2 LogOff:		0, 3, 6, 9
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR, SDT_MLSTYLE_COLOR, SDT_MLSTYLE_COLOR, SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE, GRAPH_MODE_LINE, GRAPH_MODE_LINE, GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1, 	1, 	1, 	1
+		Plot2 UseBrk:		TRUE, TRUE, TRUE, TRUE
+		Plot2 BrkInt:		2, 1, 1, 1
+		Plot2 ErrorBar:		SDT_EBAR_NONE, SDT_EBAR_NONE, SDT_EBAR_NONE, SDT_EBAR_NONE
+		Plot2 NSymbols:		0, 0, 0, 0
+		Plot2 LineFont:		Solid, Solid, Solid, Solid
+		Plot2 LineColor:	White, White, White, White
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 Accum:		TRUE -100 2500 0 300
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurstWord1'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurstWord1'
+		Plot2 PlotYTitleName:	'SfaBurstWord1'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurstWord2'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurstWord2'
+		Plot2 PlotYTitleName:	'SfaBurstWord2'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurstWord3'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurstWord3'
+		Plot2 PlotYTitleName:	'SfaBurstWord3'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurstWord4'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurstWord4'
+		Plot2 PlotYTitleName:	'SfaBurstWord4'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_Mag3AC'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_Mag3AC'
+		Plot2 PlotYTitleName:	'SfaBurst_Mag3AC'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_MagPhase'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_MagPhase'
+		Plot2 PlotYTitleName:	'SfaBurst_MagPhase'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 5000, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_SpinPhase'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_SpinPhase'
+		Plot2 PlotYTitleName:	'SfaBurst_SpinPhase'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1200, 1, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_V1-V2'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_V1-V2'
+		Plot2 PlotYTitleName:	'SfaBurst_V1-V2'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_V1-V4'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_V1-V4'
+		Plot2 PlotYTitleName:	'SfaBurst_V1-V4'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_V3-V4'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_V3-V4'
+		Plot2 PlotYTitleName:	'SfaBurst_V3-V4'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_V5-V6'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_V5-V6'
+		Plot2 PlotYTitleName:	'SfaBurst_V5-V6'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_V5-V8'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_V5-V8'
+		Plot2 PlotYTitleName:	'SfaBurst_V5-V8'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_V7-V8'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_V7-V8'
+		Plot2 PlotYTitleName:	'SfaBurst_V7-V8'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'SfaBurst_V9-V10'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'SfaBurst_V9-V10'
+		Plot2 PlotYTitleName:	'SfaBurst_V9-V10'
+		Plot2 PlotYSubTitleName:	'kHz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 2500, 256, 1, 1, 1
+		Plot2 MinLimits:	0, -100, 0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		TRUE -100 2500 0 1
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+	PlotWin EndPlotWindow:
+	}
+}
+
+*
+*

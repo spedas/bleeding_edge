@@ -1,6 +1,6 @@
 ;$LastChangedBy: rjolitz $
-;$LastChangedDate: 2026-01-05 11:49:27 -0800 (Mon, 05 Jan 2026) $
-;$LastChangedRevision: 33965 $
+;$LastChangedDate: 2026-01-27 15:33:06 -0800 (Tue, 27 Jan 2026) $
+;$LastChangedRevision: 34072 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_load.pro $
 
 pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution=ncdf_resolution, $
@@ -31,10 +31,13 @@ pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution
       store_data,l0b.name,data=l0b ,tagnames = '*'
     endif
 
+    if ~isa(cal,'dictionary') then cal = swfo_stis_inst_response_calval()
+
     if keyword_set(l1a) or keyword_set(l1b) or keyword_set(l2) then begin
+
       tname = 'swfo_stis_L1a'
-      dprint,'Making L1: ',tname
-      l1a = dynamicarray(swfo_stis_sci_level_1a(l0b.array),name=tname)
+      dprint,'Making L1a: ',tname
+      l1a = dynamicarray(swfo_stis_sci_level_1a(l0b.array, cal=cal),name=tname)
       store_data,tname,data = l1a,tagnames = '*'
       store_data,tname,data = l1a,tagnames = 'SPEC_??',val_tag='_NRG'
       store_data,tname,data = l1a,tagnames = 'SPEC_???',val_tag='_NRG'
@@ -50,13 +53,16 @@ pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution
 
     if keyword_set(l1b) or keyword_set(l2) then begin
 
+      dprint,'Making L1b'
       get_data, 'swfo_stis_L1a_SPEC_O1', ptr=ptr
       l1a = ptr.ddata.array
-      l1b = swfo_stis_sci_level_1b(l1a)
+      l1b = swfo_stis_sci_level_1b(l1a, cal=cal)
       l1b_da = dynamicarray(l1b)
       store_data, 'swfo_stis_L1b', data=l1b_da, tag='*'
       store_data,'swfo_stis_L1b',data = l1b_da,tagnames = '???_ELEC_FLUX',val_tag='ELEC_ENERGY'
       store_data,'swfo_stis_L1b',data = l1b_da,tagnames = '???_ION_FLUX',val_tag='ION_ENERGY'
+      store_data,'swfo_stis_L1b',data = l1b_da,tagnames = 'ION_RATIO',val_tag='ELEC_ENERGY'
+      store_data,'swfo_stis_L1b',data = l1b_da,tagnames = 'ION_DELTA',val_tag='ION_ENERGY'
 
       prefix = 'swfo_stis_L1b_'
       store_data, prefix + 'ETA',$
@@ -69,9 +75,12 @@ pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution
           data=[prefix + 'ELEC_PIXEL_RATIO', prefix + 'ION_PIXEL_RATIO'],$
               dl={colors: "br", labels: ["elec", "ion"], labflag: -1, ylog: 1, constant: 1e-2}
       ylim, prefix + 'PIXEL_RATIO', 1e-3, 1e1
+
+      options, 'swfo_stis_L1b_ION_RATIO', ylog=1, spec=1, zlog=1, zrange=[1e-2, 1e2]
     endif
 
     if keyword_set(l2) then begin
+      dprint,'Making L2'
       l2 = swfo_stis_sci_level_2(l1b)
       l2_da = dynamicarray(l2, name='Level 2')
       store_data, 'swfo_stis_L2', data=l2_da, tag='*'
@@ -80,7 +89,7 @@ pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution
 
     endif
 
-    swfo_stis_tplot, /setlim
+    swfo_stis_tplot, /setlim, cal=cal
     return
   endif
   if ~keyword_set(ncdf_resolution) then ncdf_resolution = 1800

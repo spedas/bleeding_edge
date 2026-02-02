@@ -1,0 +1,1326 @@
+*
+Header :this is the 'DSP_SVY' configuration file
+Header :created on Tue Aug 19 09:51:59 2025
+*
+*
+Description :Quantities needed for fa_fields_despin3.pro
+
+*
+
+Configuration
+{
+Config Name:			'DSP_SVY'
+Config MenuPosition:		55, -7
+Config MenuSize:		155, 150
+Config DefaultSourceId:	'?'
+Config CurrentPlotWindow:	'ESV3_NoData:0 - DA'
+
+	PlotWinStandard
+	{
+	PlotWin Name:		'ESV3_NoData:0 - DA'
+	PlotWin Position:	1035, 12
+	PlotWin Size:		930, 829
+	PlotWin PlotsPage:	6
+	PlotWin TopPlotOfPage:	'DspADC_Mag3ac_Spectra'
+
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_Mag3ac_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_Mag3ac_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_Mag3ac'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-07, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-14, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_Ne2_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_Ne2_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_Ne2'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_Ne3_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_Ne3_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_Ne3'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_Ne6_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_Ne6_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_Ne6'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_Ne7_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_Ne7_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_Ne7'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V1-V2HG_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V1-V2HG_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V1-V2HG'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V1-V2_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V1-V2_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V1-V2'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V1-V4HG_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V1-V4HG_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V1-V4HG'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V1-V4_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V1-V4_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V1-V4'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V12TRK_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V12TRK_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V12TRK'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V14TRK_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V14TRK_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V14TRK'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V1_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V1_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V1'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V2_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V2_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V2'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V3-V4HG_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V3-V4HG_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V3-V4HG'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V3-V4_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V3-V4_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V3-V4'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V3_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V3_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V3'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V4_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V4_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_v4'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V5-V6_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V5-V6_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V5-V6'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V5-V8HG_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V5-V8HG_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V5-V8HG'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V5-V8_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V5-V8_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V5-V8'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V5_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V5_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V5'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V6_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V6_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V6'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V7-V8_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V7-V8_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V7-V8'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V7_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V7_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V7'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V8_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V8_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V8'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V9-V10_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V9-V10_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V9-V10'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspADC_V910TRK_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspADC_V910TRK_Spectra'
+		Plot2 PlotYTitleName:	'DspADC_V910TRK'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_Mag3ac_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_Mag3ac_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_Mag3ac'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_V1-V2_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_V1-V2_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_V1-V2'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_V1-V4_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_V1-V4_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_V1-V4'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_V3-V4_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_V3-V4_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_V3-V4'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_V5-V6_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_V5-V6_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_V5-V6'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_V5-V8_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_V5-V8_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_V5-V8'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LOG
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 1e-05, 1, 1, 1
+		Plot2 MinLimits:	0, 0, 1e-10, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_V7-V8_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_V7-V8_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_V7-V8'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'DspHSBM_V9-V10_Spectra'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'DspHSBM_V9-V10_Spectra'
+		Plot2 PlotYTitleName:	'DspHSBM_V9-V10'
+		Plot2 PlotYSubTitleName:	'Hz'
+		Plot2 PlotZTitleName:	'Value'
+		Plot2 PlotZSubTitleName:	'#'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		3
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE, FALSE
+		Plot2 MaxLimits:	1, 512, 0, 1, 1, 1
+		Plot2 MinLimits:	0, 0, -100, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		FALSE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 Accum:		FALSE 0 1 0 512
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+	PlotWin EndPlotWindow:
+	}
+}
+
+*
+*

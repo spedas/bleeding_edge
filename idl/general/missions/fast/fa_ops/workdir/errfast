@@ -1,0 +1,86 @@
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspADC_Ne2 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspADC_Ne3 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspADC_Ne6 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspADC_Ne7 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspADC_V12TRK not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspADC_V14TRK not initiated. 
+Sending raw data.
+ERROR: Subroutine fast_boomlength().
+Boomlength out of range.
+Setting boomlength to 1.
+
+ERROR: Subroutine fastcal_init(). 
+Can not read calibration header. 
+Calibration for data: DspADC_V4 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspADC_V910TRK not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_Mag3ac not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_V1-V2 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_V1-V4 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_V3-V4 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_V5-V6 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_V5-V8 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_V7-V8 not initiated. 
+Sending raw data.
+
+MESSAGE: Subroutine fastcal_init(). 
+Can not open calibration file.
+Calibration for data: DspHSBM_V9-V10 not initiated. 
+Sending raw data.
+ERROR:  curl ret:  res= 56
+
+FastDecom: byeBye

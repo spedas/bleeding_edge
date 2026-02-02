@@ -42,9 +42,10 @@ If(tstart Ge tend) Then exit
 ;if it's before the end date
 one_day = 86400.0d0
 days_in = time_string(tstart+4.0*one_day)
-If(days_in Lt tend) Then Begin
+If(time_double(days_in) Lt tend) Then Begin
    mvn_call_sta_l2l2, days_in = days_in, temp_dir = './', /use_l2_files, $
-                      alt_data_path = 'fast/maven/', /new_l2_version, /l2_only_dead
+                      alt_data_path = 'fast/maven/', /new_l2_version, $
+                      /l2_only_dead
 Endif
 ;Now call the addbck process, No init keyword set, this will
 ;reset the sw version and the default data path to find the new v3

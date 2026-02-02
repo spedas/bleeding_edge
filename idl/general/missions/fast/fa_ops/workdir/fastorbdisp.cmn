@@ -1,0 +1,8 @@
+;;  @(#)fastorbdisp.cmn	1.2 12/15/94   Fast orbit display program
+
+common fastorbdisp,t,bt,psave,pclock,pnorth,psouth,pstatus,pmap,palt,pvel, $
+                    UToff, $
+                    tmstation,gstatlook,q,stat, $
+                    winanimtempl,winanimdraw,fastorbwin,wa,map_mode, $
+                    map_type,gs_proj,gs_view,map_zoom,map_zoom_region, $
+                    map_zoom_clip,map_zoom_win,map_zoom_ang

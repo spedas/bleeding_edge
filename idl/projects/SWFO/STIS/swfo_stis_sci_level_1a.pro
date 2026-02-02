@@ -25,9 +25,9 @@
 ; Cribsheets that demonstrate Level 1a loading:
 ; - swfo_stis_sci_qflag_crib.pro: quality flag demo
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
-; $LastChangedRevision: 33797 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-01-27 15:33:06 -0800 (Tue, 27 Jan 2026) $
+; $LastChangedRevision: 34072 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -152,7 +152,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     l0b = l0b_structs[i]
     L1a = L1a_strcts[i]
 
-    mapd = swfo_stis_adc_map(data_sample=l0b)  
+    mapd = swfo_stis_adc_map(data_sample=l0b, cal=cal)
     nrg = mapd.nrg
     dnrg = mapd.dnrg
     adc = mapd.adc

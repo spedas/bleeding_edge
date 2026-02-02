@@ -1,0 +1,187 @@
+
+sdt_batch - running on machine:  mojo
+User:  jimm
+CWD:  /home/jimm/themis_sw/general/missions/fast/fa_ops/workdir
+Architecture:  x86_64
+Running in 64-bit mode
+OS:  Linux 5.14.0-503.29.1.el9_5.x86_64  #1 SMP PREEMPT_DYNAMIC Tue Feb 25 10:30:47 EST 2025
+FASTBIN:    /disks/django/home/sdt/nws/Linux.2.6/bin
+FASTCONFIG: /disks/fast/software/config
+LPC Version,  Multi-User Version,  QT Version
+Invoked at (Local Time):  Fri Jan 23 12:38:42 2026
+
+sdt_batch will use DISPLAY:  DISPLAY=localhost:10.0
+
+Note that X-Windows is available and will be used for GIF output and,
+when appropriate, for PostScript output.
+
+Decommutator:  /disks/django/home/sdt/nws/Linux.2.6/bin/MmsDcom
+   does not exist - so it will be IGNORED.
+
+IDL version:  8.7.2
+
+
+TheBatchRun:
+BatchRun:
+   PrgConfigFileName= /disks/fast/software/config/sdt_cfg/UI.Config.dat
+   BatchSource= -1
+   WaitTillDone= 1
+   PlotWindowNumber= 0
+   IsMonoChrome= 0
+   NoPlots= 1
+   SpgrmBgrndWhite= 0
+   AutoScaleAll= 0
+   UseExactPlotLength= 0
+   PlotGroupingMode= 0
+   ExactPlotLengthValue= 0.000000
+   UseExactPlotHeight= 0
+   ExactPlotHeightValue= 0.000000
+   PixLinRes= 1.000000
+   Id= cdftest
+   Printer= clf0
+   OutputFile= NULL
+   PageTag= cdf_test
+   ProgVersText= P:<SDT>, V:<5.0> T:<Fri Jan 23 12:38:52 2026>
+   CurrentPCfg= 0
+   NPlotConfigurationFile= 1
+   PlotConfigurationFile[0]= DSP_SVY_NoData
+   PlotConfigurationDir[0]= SDT_config
+   DATASETGRPS:  nobjects= 1
+      DSGRP[0]
+
+   BatchDataSetGrp (28075a0):
+       type(1):  SDT_BATCH_DBASE_USAGE_DATA_SET_TYPE
+       DataDirectory= 0
+       TimeSpans= 2807440
+       NumberTimeSpans= 1
+
+
+   TSpan[0]:  27fc320
+   BatchTimeSpan (27fc320):
+       type(1):  ORBIT_RANGE TYPE
+       sorb= 6227   eorb= 6227
+       orbit_split_flag (0):  SDT_BATCHJOB_ORBIT_PROCESS_ENTIRE
+       tspan:
+
+   DataBaseResponse:
+
+   TimeSpanDescription:
+      StartJulianDay= 2444444
+      EndJulianDay=   2444444
+      Year=           1980
+      Month=          7
+      DayOfMonth=     23
+      DayOfYear=      205
+      StartTime=      1.000
+      EndTime=        2.000
+      FileName:  NULL
+      Flg1= 0
+   FileDumpFile= orbit_process_6227
+   SubTimeSpanGenerator= NULL
+   RequestedColorMap= NULL
+   IDLPath= NULL
+   EnvIDLPath= NULL
+   OldIDLPath= NULL
+   ColorMapSize= 256
+
+   IDLFileList:
+
+            StringList:
+               nqtys= 1
+               string[0]:
+                  run_process_dsp.pro
+      Destination= 0 (Net Printer)
+      Orientation= 1 (PORTRAIT)
+      OutputType= 10 (COLOR_POSTSCRIPT)
+      OutputNameConvention= 0 (NONE)
+      PageSize= 0 (SIZE_A)
+      PlotsPerPage= 8
+      PreserveAspect= 0
+      FileDumpType= 4 (CDF Separate Files)
+      FileDumpNameConvention= 0 (NONE)
+      FileDumpNameUseIndexing= 0
+      Pix:  Init= 0  Width= 800  Height= 800
+      AltOutputTypeFlag= 0
+      AltOutputType= 8
+      PARAMETERS:
+         NONE.
+
+Invoking the following decommutators:
+   FAST
+   Science Control Module
+
+IDL_PATH: <IDL_DEFAULT>:+/home/jimm/themis_sw
+IDL_DIR: /disks/apollo/export/idl_8.7.2/idl
+
+BatchRun::ExecutePCfg:   l= 3967   cfg_idx= 0   which_order= 0
+   NPlotConfigurationFile= 1
+
+   Process all TimeSpans for each PlotConfig
+
+   l= 8153   CurrentPCfg= 0
+
+      PlotConfigurationFile[CurrentPCfg]= DSP_SVY_NoData
+      PlotConfigurationDir[CurrentPCfg]= SDT_config
+
+   FullPlotConfigName= SDT_config/UIcfg.DSP_SVY_NoData
+
+Configuration:  SDT_config/UIcfg.DSP_SVY_NoData
+
+   l= 5154   OK to use Network Data:
+
+RunBatch for TimeSpan:   l= 7445
+   BatchTimeSpan (27fc320):
+       type(1):  ORBIT_RANGE TYPE
+       sorb= 6227   eorb= 6227
+       orbit_split_flag (0):  SDT_BATCHJOB_ORBIT_PROCESS_ENTIRE
+       tspan:
+
+   DataBaseResponse:
+
+   TimeSpanDescription:
+      StartJulianDay= 2450892
+      EndJulianDay=   2450893
+      Year=           1998
+      Month=          3
+      DayOfMonth=     19
+      DayOfYear=      78
+      StartTime=      86114.936
+      EndTime=        7693.020
+      FileName:  str= 2eed300
+        is TOO LONG to print as a single line (tchars= 1631).
+        Disassemble it into its components:
+        tmp_dbase:   nqtys= 24   qty_val= 2ee5dc0
+           [0]= /disks/FAST_JB_6/FAST1277_ORBIT6227/lzp/fast_lzp_DSS-29_orbit6228_r
+           [1]= /disks/FAST_JB_6/FAST1277_ORBIT6227/lzp/fast_lzp_DSS-29_orbit6228_r
+           [2]= /disks/FAST_JB_6/FAST1277_ORBIT6227/lzp/fast_lzp_DSS-29_orbit6229_r
+           [3]= /disks/FAST_JB_6/FAST1277_ORBIT6227/lzp/fast_lzp_DSS-29_orbit6229_r
+           [4]= /disks/FAST_JB_6/FAST1277_ORBIT6227/lzp/fast_lzp_DSS-76_orbit6227_r
+           [5]= /disks/FAST_JB_6/FAST1277_ORBIT6227/lzp/fast_lzp_DSS-76_orbit6227_r
+           [6]= /disks/FAST_JB_6/FAST1278_ORBIT6229/lzp/fast_lzp_DSS-29_orbit6230_r
+           [7]= /disks/FAST_JB_6/FAST1278_ORBIT6229/lzp/fast_lzp_DSS-29_orbit6230_r
+           [8]= /disks/FAST_JB_6/FAST1278_ORBIT6229/lzp/fast_lzp_DSS-29_orbit6231_r
+           [9]= /disks/FAST_JB_6/FAST1278_ORBIT6229/lzp/fast_lzp_DSS-29_orbit6231_r
+           [10]= /disks/FAST_JB_6/FAST1279_ORBIT6231/lzp/fast_lzp_DSS-29_orbit6232_r
+           [11]= /disks/FAST_JB_6/FAST1279_ORBIT6231/lzp/fast_lzp_DSS-29_orbit6232_r
+           [12]= /disks/FAST_JB_6/FAST1279_ORBIT6231/lzp/fast_lzp_DSS-29_orbit6233_r
+           [13]= /disks/FAST_JB_6/FAST1279_ORBIT6231/lzp/fast_lzp_DSS-29_orbit6233_r
+           [14]= /disks/FAST_JB_6/FAST1280_ORBIT6228/lzp/fast_lzp_DSS-29_orbit6228_t
+           [15]= /disks/FAST_JB_6/FAST1280_ORBIT6228/lzp/fast_lzp_DSS-29_orbit6228_t
+           [16]= /disks/FAST_JB_6/FAST1280_ORBIT6228/lzp/fast_lzp_DSS-29_orbit6234_r
+           [17]= /disks/FAST_JB_6/FAST1280_ORBIT6228/lzp/fast_lzp_DSS-29_orbit6234_r
+           [18]= /disks/FAST_JB_7/FAST1400_ORBIT6227/lzp/fast_lzp_DSS-76_orbit6227_t
+           [19]= /disks/FAST_JB_7/FAST1400_ORBIT6227/lzp/fast_lzp_DSS-76_orbit6227_t
+           [20]= /disks/FAST_JB_7/FAST1401_ORBIT6232/lzp/fast_lzp_DSS-29_orbit6232_t
+           [21]= /disks/FAST_JB_7/FAST1401_ORBIT6232/lzp/fast_lzp_DSS-29_orbit6232_t
+           [22]= /disks/FAST_JB_7/FAST1615_ORBIT6125/lzp/fast_lzp_DSS-29_orbit6231_t
+           [23]= /disks/FAST_JB_7/FAST1615_ORBIT6125/lzp/fast_lzp_DSS-29_orbit6231_t
+      Flg1= 0
+
+   Beginning TimeSpan:  0  (out of:  1  TimeSpan)
+
+   Beginning PlotWindow:  0  (out of:  1  PlotWindows)
+
+   Beginning IDL runs for this data set:
+
+   Run IDLFile= run_process_dsp.pro
+exit BatchRun::ExecutePCfg  l= 8101   ret= 0

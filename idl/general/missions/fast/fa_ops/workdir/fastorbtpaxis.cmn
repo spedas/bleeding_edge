@@ -1,0 +1,25 @@
+;;  @(#)fastorbtpaxis.cmn	1.2 12/15/94   Fast orbit display program
+
+; Common declaration for general parameters used by IDL procedures declared in
+; xfastorbtpaxis.pro.
+; Syntax:  @fastorbtpaxis.cmn
+
+common fastorbtpaxis,curedit,wlab,wtitfield,wlimtop,wlimbot,wtikmaj,wtikmin
+
+;Variable descriptions:
+; curedit       Index into plotparm array to designate which plot is currently
+;               being edited.
+; wlab          Widget ID of cw_field widget indicating to user which plot is
+;               currently being edited.
+; wtitfield     Widget ID of cw_field widget containing axis title of plot 
+;               which is currently being edited.
+; wlimtop       Widget ID of cw_field widget containing top limit of plot which
+;               is currently being edited.
+; wlimbot       Widget ID of cw_field widget containing bottom limit of plot 
+;               which is currently being edited.
+; wtikmaj       Widget ID of cw_field widget containing number of major ticks of
+;               plot which is currently being edited.
+; wtikmin       Widget ID of cw_field widget containing number of minor ticks of
+;               plot which is currently being edited.
+
+

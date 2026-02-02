@@ -23,8 +23,8 @@
 ; - swfo_stis_sci_l1b_crib.pro
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-01-15 13:17:23 -0800 (Thu, 15 Jan 2026) $
-; $LastChangedRevision: 34026 $
+; $LastChangedDate: 2026-01-27 16:45:03 -0800 (Tue, 27 Jan 2026) $
+; $LastChangedRevision: 34074 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -255,8 +255,8 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     ion_ratio = ion_rate_small/(ion_rate_big/100)
     ion_delta = ion_rate_small - ion_rate_big/100
 
-    ion_ratio[norm_ion_index] = !values.f_nan
-    ion_delta[norm_ion_index] = !values.f_nan
+    ion_ratio[norm_ion_index] = !values.d_nan
+    ion_delta[norm_ion_index] = !values.d_nan
 
     ; These are currently constant over energy
     ; original:
@@ -265,8 +265,8 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
 
     ; from GPA doc:
     ; sqrt(N) / 100 for total counts for param.range seconds.
-    eta1_ion =  0. > sqrt( N_ion_tot  )/100 < 1.
-    eta1_elec =  0. > sqrt( N_elec_tot  )/100 < 1.
+    eta1_ion =  0d > sqrt( N_ion_tot  )/100 < 1d
+    eta1_elec =  0d > sqrt( N_elec_tot  )/100 < 1d
 
     ; New approach:
     ; maximum control by calvals table:
@@ -314,9 +314,9 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     ;      it and move on. (will not set the qf in that case,
     ;      since can't be determined).
     if total(ion_rate_big) gt 1 then ion_pixel_ratio = total(ion_rate_small) / total(ion_rate_big) else $
-      ion_pixel_ratio = !values.f_nan
+      ion_pixel_ratio = !values.d_nan
     if total(elec_rate_big) gt 1 then elec_pixel_ratio = total(elec_rate_small) / total(elec_rate_big) else $
-      elec_pixel_ratio = !values.f_nan
+      elec_pixel_ratio = !values.d_nan
 
     ; ; Error determination (couldn't make this work):
     ; ion_pixel_ratio_error = !values.f_nan
@@ -357,10 +357,10 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
 
     qflag_econtam = 0
 
-    ratio = !values.f_nan
+    ratio = !values.d_nan
     avg_deviation = !values.d_nan
-    ion_rate_at_en = !values.f_nan
-    elec_rate_at_en = !values.f_nan
+    ion_rate_at_en = !values.d_nan
+    elec_rate_at_en = !values.d_nan
     ion_contam_inrange = (elecs_in_range and ions_in_range)
 
     if elecs_in_range and ions_in_range then begin

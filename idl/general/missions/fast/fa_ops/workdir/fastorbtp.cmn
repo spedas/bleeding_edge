@@ -1,0 +1,17 @@
+;;  @(#)fastorbtp.cmn	1.2 12/15/94   Fast orbit display program
+
+; Common declaration for general parameters used by IDL procedure xfastorbtp.
+; Syntax:  @fastorbtp.cmn
+
+common fastorbtp,wtpa,opids,fastorbtpwin,printout,printorient,plotparm
+
+; Variable descriptions:
+; wtpa          Widget ID for main base level widget for time plots.
+; opids         Array of widget ID's for buttons in time plot widget.
+; fastorbtpwin  ID for drawing canvas of time plot widget.
+; printout      Flag for indicating whether fastorbtpwindrw plots to screen
+;               or PostScript file.  0 => screen, 1 => PS file.
+; printorient   Controls format of printed time plots.  0 => landscape,
+;               1 => full portrait, 2 => half portrait
+; plotparm      Array of structures containing plot information for plots
+;               displayed in time plot widget.

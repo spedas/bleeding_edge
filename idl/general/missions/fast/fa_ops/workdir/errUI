@@ -1,0 +1,9 @@
+FILE: Source.cc - LINE: 25239 - TIME: Fri Jan 23 2026 12:38:42 - errno: 2
+LEV  1:	unknown rpgprog 'MMS_RPC_PROG'
+
+IDL 8.7.2 (linux x86_64 m64).
+(c) 2019, Harris Geospatial Solutions, Inc.
+
+Licensed for use by: UC Berkeley - Space Sciences Lab
+License: 728598
+ERROR:  curl ret:  res= 56

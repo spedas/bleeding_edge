@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-09-29 22:44:36 -0700 (Mon, 29 Sep 2025) $
-; $LastChangedRevision: 33675 $
+; $LastChangedDate: 2026-01-26 10:00:16 -0800 (Mon, 26 Jan 2026) $
+; $LastChangedRevision: 34065 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_tplot_pdf.pro $
 ;-
 
@@ -33,6 +33,23 @@ pro psp_fld_tplot_pdf, filename, timestamp = timestamp, $
 
   tplot_options, get_options = topts
   str_element, topts, 'ygap', ygap0, success = ygap_found
+
+  str_element, topts, 'title', title, success = title_found
+
+  if title_found then begin
+    if title.startsWith('PSP') then begin
+      if n_elements(topts.title.split('!C')) eq 2 then begin
+        if (topts.trange[1] - topts.trange[0]) eq 86400 and $
+          time_string(topts.trange[0], tformat = 'hh:mm:ss') eq '00:00:00' then begin
+          tr_str = time_string(topts.trange[0], tformat = 'YYYY-MM-DD (YYYY-DOY)')
+        endif else begin
+          tr_str = trange_str(topts.trange)
+        endelse
+
+        tplot_options, 'title', (topts.title.split('!C'))[0] + '!C' + tr_str
+      endif
+    endif
+  endif
 
   if n_elements(thick) eq 0 then thick = 3
 

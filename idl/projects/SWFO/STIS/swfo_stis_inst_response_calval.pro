@@ -17,16 +17,28 @@
 ;     printdat, alt_cal
 ; 
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-01-15 17:02:17 -0800 (Thu, 15 Jan 2026) $
-; $LastChangedRevision: 34032 $
+; $LastChangedDate: 2026-01-27 16:45:03 -0800 (Tue, 27 Jan 2026) $
+; $LastChangedRevision: 34074 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 34032 2026-01-16 01:02:17Z rjolitz $
+; $Id: swfo_stis_inst_response_calval.pro 34074 2026-01-28 00:45:03Z rjolitz $
 
 
 
 function swfo_stis_inst_response_calval,reset=reset, save=save
 
   common swfo_stis_inst_response_com, swfo_stis_inst_response_calval_dict, cal1, cal2
+
+  ; There are fields that we name differently in
+  ; our code versus the ground LUT. This just relabels them:
+  relabel = dictionary()
+  relabel['nonlut_ADC_bins'] = 'nonlut_adc_min'
+  relabel['energy_to_ADC_calibration'] = 'detector_keV_per_adc'
+  relabel['dead_time'] = 'deadtime_s'
+  relabel['dead_time_correction_criteria'] = 'deadtime_correction_criteria'
+  relabel['electron_contamination_factor'] = 'electron_contam_factor'
+  relabel['channel_names'] = 'channels'
+  relabel['detector_names'] = 'detectors'
+  relabel['coincidence_names'] = 'coincidence'
 
   if keyword_set(reset) then  obj_destroy,swfo_stis_inst_response_calval_dict
   
@@ -36,7 +48,21 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval = swfo_stis_inst_response_calval_dict
   endelse
 
-  if calval.isempty() then begin
+  ; Path to the ground lut in use:
+  swfo_stis_dir = FILE_DIRNAME(ROUTINE_FILEPATH(), /mark)
+  ; groundlut_fname = 'groundlut_20260115.nc'
+  groundlut_fname = 'groundlut_20260127.nc'
+  groundlut_path = swfo_stis_dir + groundlut_fname
+
+  ; if calval.isempty() then begin
+  if ~keyword_set(save) then begin
+    ; 1/27/26: new default behavior is to read the groundlut
+    ; in the SWFO/STIS directory:
+    groundlut_da = swfo_ncdf_read(filenames=[groundlut_path])
+    groundlut_array = groundlut_da.array
+    calval = groundlut_da.to_dict(relabel=relabel)
+
+  endif else begin
     nan = !values.f_nan
 
     calval.instrument_name  = 'SWFO-STIS'
@@ -183,25 +209,6 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.swfo_offpointing_qflag_index = 39
     calval.sun_in_stis_fov_qflag_index = 40
 
-    qflag_labels = strarr(64)
-    qflag_labels[0] = "Playback"
-    qflag_labels[calval.pulser_on_qflag_index] = ['P1 Enabled', 'P2 Enabled', 'P3 Enabled', 'P4 Enabled', 'P5 Enabled', 'P6 Enabled']
-    qflag_labels[calval.high_noise_sigma_qflag_index] = ['1: High Nse Sigma', '2: High Nse Sigma', '3: High Nse Sigma', $
-                                                         '4: High Nse Sigma', '5: High Nse Sigma', '6: High Nse Sigma']
-    qflag_labels[calval.any_detector_disabled_qflag_index] = 'Disabled detectors'
-    qflag_labels[calval.decimation_qflag_index] =  ['2: Dec On', '3: Dec on', '5: Dec on', '6: Dec on']
-    qflag_labels[calval.high_rate_qflag_index] = ['1: Rate > Thr.', '2: Rate > Thr.', '3: Rate > Thr.', '4: Rate > Thr.', '5: Rate > Thr.', '6: Rate > Thr.']
-    qflag_labels[calval.extreme_temperature_qflag_index] = 'T > Tlim'
-    qflag_labels[calval.nonstandard_config_qflag_index] = 'Nonstand. config'
-    qflag_labels[calval.bad_ion_pixel_merge_qflag_index] = ['Sus i+ merge: 100x O1 > O3', 'Sus i+ merge: 100x O1 < O3']
-    qflag_labels[calval.bad_elec_pixel_merge_qflag_index] = ['Sus e- merge: 100x F1 > F3', 'Sus e- merge: 100x F1 < F3']
-    qflag_labels[calval.elec_contam_qflag_index] = 'E- Contam'
-    qflag_labels[calval.high_reaction_wheel_speed_qflag_index] = ['RxWh 1', 'RxWh 2', 'RxWh 3', 'RxWh 4']
-    qflag_labels[calval.bad_iru_qflag_index] = 'any IRU invalid'
-    qflag_labels[calval.swfo_offpointing_qflag_index] = 's/c offpointing'
-    qflag_labels[calval.sun_in_stis_fov_qflag_index] = 'Sun in FOV'
-    calval.qflag_labels = qflag_labels
-
     ; nonlut ADC corresponds to clog_17_6 (compressed log)
     calval.nonlut_adc_min  =$
       [   0,    1,    2,    3,$
@@ -275,32 +282,19 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34032 2026-01-16 01:02:17Z rjolitz $'
-    swfo_stis_inst_response_calval_dict  = calval
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34074 2026-01-28 00:45:03Z rjolitz $'
     dprint,'Using Revision: '+calval.rev_date
-  endif
 
-  if keyword_set(save) then begin
 
-    relabel = dictionary()
-    relabel['nonlut_ADC_bins'] = 'nonlut_adc_min'
-    relabel['energy_to_ADC_calibration'] = 'detector_keV_per_adc'
-    relabel['dead_time'] = 'deadtime_s'
-    relabel['dead_time_correction_criteria'] = 'deadtime_correction_criteria'
-    relabel['electron_contamination_factor'] = 'electron_contam_factor'
-
-    relabel['channel_names'] = 'channels'
-    relabel['detector_names'] = 'detectors'
-    relabel['coincidence_names'] = 'coincidence'
-
-    if not file_test(save) then print, "Cannot save calval to '" + save + "', netcdf file does not exist."
+    ; Saving:
+    if not file_test(groundlut_path) then print, "Cannot save calval to '" + groundlut_path + "', netcdf file does not exist."
 
     ; Get the Netcdf variable names:
-    ncdf_list, save, vname=ncdf_fields, /var, /quiet
+    ncdf_list, groundlut_path, vname=ncdf_fields, /var, /quiet
     print, ncdf_fields
 
     ; Open for writing:
-    fid = ncdf_open(save, /write)
+    fid = ncdf_open(groundlut_path, /write)
 
     ; First, identify the calvals that are neither in the netcdf nor the relabeled
     ; categories:
@@ -358,7 +352,35 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ncdf_close, fid
 
 
-  endif
+  endelse
+
+
+  ; Missing values in ground lut:
+  ; Dictionary mapping coincidence type to positional index in the data array:
+  calval.coincidence_map = dictionary()
+  for i=0, 13 do calval.coincidence_map[calval.coincidence[i]] = i
+
+  ; Labels for the quality flag:
+  qflag_labels = strarr(64)
+  qflag_labels[0] = "Playback"
+  qflag_labels[calval.pulser_on_qflag_index] = ['P1 Enabled', 'P2 Enabled', 'P3 Enabled', 'P4 Enabled', 'P5 Enabled', 'P6 Enabled']
+  qflag_labels[calval.high_noise_sigma_qflag_index] = ['1: High Nse Sigma', '2: High Nse Sigma', '3: High Nse Sigma', $
+                                                       '4: High Nse Sigma', '5: High Nse Sigma', '6: High Nse Sigma']
+  qflag_labels[calval.any_detector_disabled_qflag_index] = 'Disabled detectors'
+  qflag_labels[calval.decimation_qflag_index] =  ['2: Dec On', '3: Dec on', '5: Dec on', '6: Dec on']
+  qflag_labels[calval.high_rate_qflag_index] = ['1: Rate > Thr.', '2: Rate > Thr.', '3: Rate > Thr.', '4: Rate > Thr.', '5: Rate > Thr.', '6: Rate > Thr.']
+  qflag_labels[calval.extreme_temperature_qflag_index] = 'T > Tlim'
+  qflag_labels[calval.nonstandard_config_qflag_index] = 'Nonstand. config'
+  qflag_labels[calval.bad_ion_pixel_merge_qflag_index] = ['Sus i+ merge: 100x O1 > O3', 'Sus i+ merge: 100x O1 < O3']
+  qflag_labels[calval.bad_elec_pixel_merge_qflag_index] = ['Sus e- merge: 100x F1 > F3', 'Sus e- merge: 100x F1 < F3']
+  qflag_labels[calval.elec_contam_qflag_index] = 'E- Contam'
+  qflag_labels[calval.high_reaction_wheel_speed_qflag_index] = ['RxWh 1', 'RxWh 2', 'RxWh 3', 'RxWh 4']
+  qflag_labels[calval.bad_iru_qflag_index] = 'any IRU invalid'
+  qflag_labels[calval.swfo_offpointing_qflag_index] = 's/c offpointing'
+  qflag_labels[calval.sun_in_stis_fov_qflag_index] = 'Sun in FOV'
+  calval.qflag_labels = qflag_labels
+
+  swfo_stis_inst_response_calval_dict  = calval
 
   return, calval
 end

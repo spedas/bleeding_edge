@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jan 24 18:19:28 2026.<P>
+<STRONG>Last modified: </STRONG>Sun Feb  1 03:18:40 2026.<P>
  
 <HR>
  
@@ -21,7 +21,11 @@ This page was created by the IDL library routine
 <H1>projects/maven/sta/mvn_sta_gen_snapshot</H1>
 <LI><A HREF="#MVN_STA_3D_SNAP">MVN_STA_3D_SNAP</A>
 <LI><A HREF="#MVN_STA_ENEPA2VV">MVN_STA_ENEPA2VV</A>
+<LI><A HREF="#MVN_STA_MSNAP">MVN_STA_MSNAP</A>
+<br>Plots mass/energy snapshots of STATIC c6 data.  Wrapper for mvn_sta_get('c6')
 <LI><A HREF="#MVN_STA_SLICE2D_SNAP">MVN_STA_SLICE2D_SNAP</A>
+<LI><A HREF="#MVN_STA_VSNAP">MVN_STA_VSNAP</A>
+<br>Wrapper for mvn_sta_slice2d_snap that provides improved interactive use.
 <br>
 </UL><P>
 <HR>
@@ -145,7 +149,7 @@ CREATED BY:      Takuya Hara on  2015-02-11.
 <A NAME="MVN_STA_ENEPA2VV">
 <H2>MVN_STA_ENEPA2VV</H2></A>
 <A HREF="#MVN_STA_3D_SNAP">[Previous Routine]</A>
-<A HREF="#MVN_STA_SLICE2D_SNAP">[Next Routine]</A>
+<A HREF="#MVN_STA_MSNAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -231,9 +235,66 @@ LAST MODIFICATION:
 <STRONG>(See <A href="mvn_sta_gen_snapshot/mvn_sta_enepa2vv.pro">projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_enepa2vv.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_MSNAP">
+<H2>MVN_STA_MSNAP</H2></A>
+<A HREF="#MVN_STA_ENEPA2VV">[Previous Routine]</A>
+<A HREF="#MVN_STA_SLICE2D_SNAP">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_sta_msnap
+PURPOSE:
+  Plots mass/energy snapshots of STATIC c6 data.  Wrapper for mvn_sta_get('c6') 
+  and contour_4d that provides improved interactive use.
+
+USAGE:
+  mvn_sta_msnap
+
+INPUTS:
+       none
+
+KEYWORDS:
+       SUM:    Average all times between two selected times.
+
+       KEEP:   Do not close the snapshot window on exit.
+
+       Passes many keywords to WIN (e.g. MONITOR, DX, DY, etc.).  If WIN is
+       enabled (win, /config), then by default the snapshot window will be 
+       placed in the secondary monitor.
+
+       Passes many keywords to PLOT (e.g., XSIZE, YTITLE, etc.).  If not set,
+       TITLE becomes the time or time range of the snapshot.
+
+       KEY:    Alternate method for setting keywords.  Structure containing
+               keyword(s) for this routine, plus many keywords for WIN and
+               PLOT.  Unrecognized or ambiguous keywords are ignored, but 
+               they will generate error messages.
+
+                      {KEYWORD: value, KEYWORD: value, ...}
+
+               This allows you to gather keywords into a single structure and
+               use them multiple times without a lot of typing.  In case of 
+               conflict, keywords set explicitly take precedence over KEY.
+
+       LASTCUT:  Named variable to hold data for the last plot.
+
+       TMARK:    On the time series window, mark the currently selected 
+                 time interval with transient timebars that show the start
+                 and end times.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-01-31 09:38:42 -0800 (Sat, 31 Jan 2026) $
+ $LastChangedRevision: 34089 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_msnap.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_gen_snapshot/mvn_sta_msnap.pro">projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_msnap.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_SLICE2D_SNAP">
 <H2>MVN_STA_SLICE2D_SNAP</H2></A>
-<A HREF="#MVN_STA_ENEPA2VV">[Previous Routine]</A>
+<A HREF="#MVN_STA_MSNAP">[Previous Routine]</A>
+<A HREF="#MVN_STA_VSNAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -341,5 +402,59 @@ LAST MODIFICATION:
 
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_gen_snapshot/mvn_sta_slice2d_snap.pro">projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_slice2d_snap.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="MVN_STA_VSNAP">
+<H2>MVN_STA_VSNAP</H2></A>
+<A HREF="#MVN_STA_SLICE2D_SNAP">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_sta_vsnap
+PURPOSE:
+  Wrapper for mvn_sta_slice2d_snap that provides improved interactive use.
+
+USAGE:
+  mvn_sta_vsnap
+
+INPUTS:
+       none
+
+KEYWORDS:
+       SUM:    Average all times between two selected times.
+
+       KEEP:   Do not close the snapshot window on exit.
+
+       Passes many keywords to WIN (e.g. MONITOR, DX, DY, etc.).  If WIN is
+       enabled (win, /config), then by default the snapshot window will be 
+       placed in the secondary monitor.
+
+       Passes many keywords to PLOT (e.g., XSIZE, YTITLE, etc.).  If not set,
+       TITLE becomes the time or time range of the snapshot.
+
+       KEY:    Alternate method for setting keywords.  Structure containing
+               keyword(s) for this routine, plus many keywords for WIN and
+               PLOT.  Unrecognized or ambiguous keywords are ignored, but 
+               they will generate error messages.
+
+                      {KEYWORD: value, KEYWORD: value, ...}
+
+               This allows you to gather keywords into a single structure and
+               use them multiple times without a lot of typing.  In case of 
+               conflict, keywords set explicitly take precedence over KEY.
+
+       LASTCUT:  Named variable to hold data for the last plot.
+
+       TMARK:    On the time series window, mark the currently selected 
+                 time interval with transient timebars that show the start
+                 and end times.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-01-31 18:27:13 -0800 (Sat, 31 Jan 2026) $
+ $LastChangedRevision: 34092 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_vsnap.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_gen_snapshot/mvn_sta_vsnap.pro">projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_vsnap.pro</A>)</STRONG><P>
 <HR>
  

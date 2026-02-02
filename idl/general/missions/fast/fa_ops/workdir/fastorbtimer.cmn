@@ -1,0 +1,19 @@
+;;  @(#)fastorbtimer.cmn	1.2 12/15/94   Fast orbit display program
+
+; Common declaration for timer parameters used by IDL procedure xfastorb.
+; Syntax:  @fastorbtimer.cmn
+
+common fastorbtimer,rtstart,rtint,playmode,playstart,playstop,playspeed,curvec
+
+; Variable descriptions:
+; rtstart       System time of animation start.  Set in fastorbupdate.
+; rtint         Amount of time to wait for timer interrupt, i.e. animation
+;               update rate.
+; playmode      Flag for animation mode.  0 => play at rate given by play speed,
+;               1 => real time display.
+; playstart     Universal time of first vector used in animation.
+; playstop      Universal time at which to stop animation.  Unused as of 14 Dec 
+;               1994.
+; playspeed     Speed of animation expressed as factor of "real time rate."
+; curvec        Pointer to most recently plotted orbital vector, i.e. pointer
+;               into rdvec.

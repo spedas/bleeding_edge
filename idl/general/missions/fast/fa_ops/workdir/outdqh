@@ -1,0 +1,49 @@
+
+DQH at 1:  stdout_path= /home/jimm/themis_sw/general/missions/fast/fa_ops/workdir/outdqh 
+   time:   1769200722.670424
+   pid= 1131368
+   getpid() ret:  1131368
+   getppid() ret:  1131367
+   argc= 1  init_argc= 1
+      argv[0]= SDTRunIndex=0 
+
+   SDT_Run_idx= 0
+
+   StandardDefaultFirstShmKey= 7890
+
+   DQHRpcProgIdx= 536916231
+
+   MemoryCleanupFile= sdt_clear_shm.0
+
+   HostMachine= mojo
+
+   strlen(CurrentUser)= 4
+   CurrentUser= jimm
+
+   MMapBaseName= mmap_file_mojo_jimm
+FASTCONFIG:  /disks/fast/software/config
+
+dqh_cfg_file:  /disks/fast/software/config/sdt_cfg/dqh.cfg
+
+DQH Configuration file:
+   /disks/fast/software/config/sdt_cfg/dqh.cfg
+
+DataDirectories:  directory_cnt= 1
+
+DataDirectories:
+   object address:  21a5d80
+      DataDirectory:  /mydisks/scratch/MMAP
+  stat_ret= -1:   sbuf.st_size= 173
+
+Construct DQHSession:
+
+    MmapPaths:
+
+            StringList:
+               nqtys= 1
+               string[0]:
+                  /mydisks/scratch/MMAP
+
+dqh SHUTDOWN requested:   t= 31598430.47
+
+Number of DQIs still in play:  0

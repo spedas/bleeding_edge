@@ -1,0 +1,15 @@
+BatchJob: cdftest
+Printer: clf0
+#FileDestination: 1996_03_06_esa.ps
+Output: ColorPostScript
+PlotsPerPage: 8
+PageSize: ASize
+Orientation: portrait
+PageTag: cdf_test
+DataOutputFile: orbit_process_6227 CDF
+NoPlots:
+IDL: run_process_dsp.pro
+DataBaseRequest:
+Orbit 6227
+PlotConfigurationDir: SDT_config
+PlotConfigurationFile: DSP_SVY_NoData

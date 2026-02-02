@@ -83,8 +83,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-20 12:58:43 -0800 (Tue, 20 Jan 2026) $
-; $LastChangedRevision: 34040 $
+; $LastChangedDate: 2026-01-28 13:07:40 -0800 (Wed, 28 Jan 2026) $
+; $LastChangedRevision: 34081 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -127,13 +127,13 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
   if (useL3) then begin
     mvn_sta_l3_load  ; load all moments
-    get_data,'mvn_sta_l3_density',data=sta_den,index=i
+    get_data,'mvn_sta_l3_density',data=sta_den,alim=sta_den_lim,index=i
     if (i gt 0) then begin
       get_data,'mvn_sta_l3_density_abs_uncertainty',data=sta_den_sigma
       got_l3_den = 1
       doden = 0
     endif else got_l3_den = 0
-    get_data,'mvn_sta_l3_temperature_o2+',data=sta_tmp,index=i
+    get_data,'mvn_sta_l3_temperature_o2+',data=sta_tmp,alim=sta_tmp_lim,index=i
     if (i gt 0) then begin
       get_data,'mvn_sta_l3_temperature_abs_uncertainty',data=sta_tmp_sigma
       got_l3_tmp = 1
@@ -329,7 +329,17 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     dx[0] = dx[1]
     y = (min(dx) lt (2D*dt)) ? smooth_in_time(sta_den.y, sta_den.x, dt) : sta_den.y
 
-    result_o2.den_i = interp(tmp.y, tmp.x, time)
+    i = where(sta_den_lim.labels eq 'H+', count)
+    if (count gt 0) then result_h.den_i = interp(y[*,i], sta_den.x, time) $
+                    else print,"Warning: missing L3 H+ density"
+
+    i = where(sta_den_lim.labels eq 'O+', count)
+    if (count gt 0) then result_o1.den_i = interp(y[*,i], sta_den.x, time) $
+                    else print,"Warning: missing L3 O+ density"
+
+    i = where(sta_den_lim.labels eq 'O2+', count)
+    if (count gt 0) then result_o2.den_i = interp(y[*,i], sta_den.x, time) $
+                    else print,"Warning: missing L3 O2+ density"
 
   endif
 
@@ -830,7 +840,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     gap = where(~finite(By) or ~finite(Bz), ngap)
     if (ngap gt 0) then begin
       restore, (path + 'clock_angle_vSWIM_Yaxue.sav')  ; combined proxy (Azari-Dong)
-      if (size(mag_sheath,/type) eq 8) then begin
+      if (size(clock,/type) eq 8) then begin
         By[gap] = interp(clock.By_norm, clock.time, time[gap], int=dtmax)
         Bz[gap] = interp(clock.Bz_norm, clock.time, time[gap], int=dtmax)
       endif else print,'Could not get clock angle proxy database.'

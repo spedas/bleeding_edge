@@ -1,0 +1,304 @@
+Input Arguments:
+   argc= 3
+      argv[0]= /disks/django/home/sdt/nws/Linux.2.6/bin/FastDecom
+      argv[1]= SDT_INITIATE_DECOM
+      argv[2]= SDTRunIndex=0
+
+FASTCONFIG:  /disks/fast/software/config
+
+
+FAST_DCOM:
+   pid= 1131419
+   machine= mojo
+   64-bit version
+   MySQL version
+   argc= 3
+      argv[0]= /disks/django/home/sdt/nws/Linux.2.6/bin/FastDecom
+      argv[1]= SDT_INITIATE_DECOM
+      argv[2]= SDTRunIndex=0
+
+   cfg_filename_ptr= /disks/fast/software/config/sdt_cfg/Fast.cfg
+
+
+ReadConfiguration:
+   cfg_filename= /disks/fast/software/config/sdt_cfg/Fast.cfg
+   fname= /disks/fast/software/config/sdt_cfg/Fast.cfg
+   fullname= /disks/fast/software/config/sdt_cfg/Fast.cfg
+   ParseFastConfigurationFile returns:  i= 0  ProgramConfig= 18f3ff0
+
+ProgramConfig:
+
+CFGFastInfo:
+   default_memory_type= 0
+   number_data_directories= 5
+
+   sesa_burst_decompress= 1
+   sesa_survey_decompress= 1
+   eiesa_burst_decompress= 1
+   eiesa_survey_decompress= 1
+   tms_mrates_decompress= 1
+   tms_burst_decompress= 1
+   tms_survey_decompress= 1
+   tms_pole_decompress= 1
+   tms_hms_decompress= 1
+
+   check_crc_errors= 1
+
+   use_sybase_for_orbit= 1
+
+   use_sybase_for_attitude= 1
+
+   fill_in_sesa_energy_gaps= 1
+
+   use_bmodel_to_compute_magphase= 1
+
+   realtime_input_prog= diskToShm
+   realtime_input_mode= separateProg
+   relaytoshm_root_flag= 0
+   dnames:  (number_data_directories= 5)
+      dnames[0]= /disks/cdstudio/DANET
+      dnames[1]= /disks/juneau/scratch/LZPfiles
+      dnames[2]= /disks/juneau/scratch/RTfiles
+      dnames[3]= /disks/juneau/scratch/RTfiles/smalldir
+      dnames[4]= /opdisk
+   DQDFname= NULL
+   PQDFname= NULL
+   UDPServer= sitkap
+
+   l= 1521  FAST_COMPUTE_MAG_PHASE_STR= FAST_COMPUTE_MAG_PHASE
+     getenv(FAST_COMPUTE_MAG_PHASE) returns:  fmphs_var= 0
+
+  CRC errors will be heeded
+
+    SdtRunIdx= 0
+    FastRpcProg= 536916261
+
+   FastSybaseAvailable= 0
+   FastOrbSybaseIsToBeUsed= 0
+   FastAttSybaseIsToBeUsed= 0
+   FillInSesaFixedModeEnergyGaps= 1
+   UseModelBFieldForMagPhaseInEsas= 0
+   UseAutoModelForBMagPhaseInEsas= 1
+
+   FastAlamanacDir will be:  /disks/fast/almanac
+
+   Orbit Definitive Almanac will be:  /disks/fast/almanac/orbit/definitive
+   Orbit Predicted Almanac will be:  /disks/fast/almanac/orbit/predicted
+   Attitude Almanac will be:  /disks/fast/almanac/attitude
+
+START DQD, PQD PARSING:  time= 31598417.33
+
+END DQD,PQD PARSING:  time= 31598417.41
+
+   DSP FMode file= /disks/fast/software/config/sdt_cfg/FastDSPmodes.dta
+
+   before OpenDQHInterface:  i= 0
+
+   after OpenDQHInterface:  i= 0
+
+   l= 2619   after serv_lpc_create:  lpc_srv= 1936620
+before lpc_run:
+
+  Fields WILL be calibrated
+
+FAST FIELDS CAL: Calibration file: DspADC_Mag3ac.cal does not
+                 exist. Using alternative: Dsp_Mag3ac.cal 
+FAST FIELDS CAL: Boomlength for DspADC_Mag3ac:  1.0000 
+FAST FIELDS CAL: DspADC_Mag3ac initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V1-V2HG.cal does not
+                 exist. Using alternative: Dsp_V1-V2HG.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V1-V2HG:  5.0000 
+FAST FIELDS CAL: DspADC_V1-V2HG initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V1-V2.cal does not
+                 exist. Using alternative: Dsp_V1-V2.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V1-V2:  5.0000 
+FAST FIELDS CAL: DspADC_V1-V2 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V1-V4HG.cal does not
+                 exist. Using alternative: Dsp_V1-V4HG.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V1-V4HG: 28.9000 
+FAST FIELDS CAL: DspADC_V1-V4HG initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V1-V4.cal does not
+                 exist. Using alternative: Dsp_V1-V4.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V1-V4: 28.9000 
+FAST FIELDS CAL: DspADC_V1-V4 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V1.cal does not
+                 exist. Using alternative: Dsp_V1.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V1: 28.3000 
+FAST FIELDS CAL: DspADC_V1 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V2.cal does not
+                 exist. Using alternative: Dsp_V2.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V2: 23.3000 
+FAST FIELDS CAL: DspADC_V2 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V3-V4HG.cal does not
+                 exist. Using alternative: Dsp_V3-V4HG.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V3-V4HG:  0.6000 
+FAST FIELDS CAL: DspADC_V3-V4HG initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V3-V4.cal does not
+                 exist. Using alternative: Dsp_V3-V4.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V3-V4:  0.6000 
+FAST FIELDS CAL: DspADC_V3-V4 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V3.cal does not
+                 exist. Using alternative: Dsp_V3.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V3:  1.0000 
+FAST FIELDS CAL: DspADC_V3 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V4.cal does not
+                 exist. Using alternative: Dsp_V4.cal 
+FAST FIELDS CAL: Calibration file: DspADC_V5-V6.cal does not
+                 exist. Using alternative: Dsp_V5-V6.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V5-V6:  5.0000 
+FAST FIELDS CAL: DspADC_V5-V6 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V5-V8HG.cal does not
+                 exist. Using alternative: Dsp_V5-V8HG.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V5-V8HG: 55.6920 
+FAST FIELDS CAL: DspADC_V5-V8HG initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V5-V8.cal does not
+                 exist. Using alternative: Dsp_V5-V8.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V5-V8: 55.6920 
+FAST FIELDS CAL: DspADC_V5-V8 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V5.cal does not
+                 exist. Using alternative: Dsp_V5.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V5: 28.0000 
+FAST FIELDS CAL: DspADC_V5 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V6.cal does not
+                 exist. Using alternative: Dsp_V6.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V6: 23.0000 
+FAST FIELDS CAL: DspADC_V6 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V7-V8.cal does not
+                 exist. Using alternative: Dsp_V7-V8.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V7-V8:  5.0000 
+FAST FIELDS CAL: DspADC_V7-V8 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V7.cal does not
+                 exist. Using alternative: Dsp_V7.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V7: 23.0000 
+FAST FIELDS CAL: DspADC_V7 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V8.cal does not
+                 exist. Using alternative: Dsp_V8.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V8: 28.0000 
+FAST FIELDS CAL: DspADC_V8 initiated.
+FAST FIELDS CAL: Calibration file: DspADC_V9-V10.cal does not
+                 exist. Using alternative: Dsp_V9-V10.cal 
+FAST FIELDS CAL: Boomlength for DspADC_V9-V10:  4.0500 
+FAST FIELDS CAL: DspADC_V9-V10 initiated.
+
+OrbOpen:  f= OrbOpen.c   l= 28
+   name= 1927e80   ftype= 0   mode= 1
+   name= /disks/fast/almanac/orbit/definitive
+
+   l= 45   ftype == ORB_FILE
+
+   l= 54   mode == ORB_RDONLY
+
+   l= 56   before OrbOpenStream:
+FAST FIELDS CAL: Dsp_V5-V8HG being calibrated.
+
+ FINAL DQI memory usage for:
+      Orb:  6226 - 6227    1998/03/19   23:55:14   02:08:13
+   qty:  DspADC_Mag3ac      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_Ne2      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_Ne3      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_Ne6      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_Ne7      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V1-V2HG      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V1-V2      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V1-V4HG      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V1-V4      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V12TRK      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V14TRK      UsedPts= 477  AvailablePts= 971
+      total allocated space (bytes):  2170656
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V1      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V2      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V3-V4HG      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V3-V4      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V3      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V4      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V5-V6      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V5-V8HG      UsedPts= 476  AvailablePts= 973
+      total allocated space (bytes):  2174960
+      ArrDesc:  NDesc= 1   UsedBytes= 12880   TotalBytes:  80528
+   qty:  DspADC_V5-V8      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V5      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V6      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V7-V8      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V7      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V8      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V9-V10      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspADC_V910TRK      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_Mag3ac      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_V1-V2      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_V1-V4      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_V3-V4      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_V5-V6      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_V5-V8      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_V7-V8      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  DspHSBM_V9-V10      UsedPts= 0  AvailablePts= 17
+      total allocated space (bytes):  82832
+      ArrDesc:  NDesc= 0   UsedBytes= 512   TotalBytes:  80528
+   qty:  Fast_Orbit_Data      UsedPts= 800  AvailablePts= 815
+      total allocated space (bytes):  127808
+Shutdown:  pid= 1131419
+BEFORE EXIT:  pid= 1131419  errno= 115

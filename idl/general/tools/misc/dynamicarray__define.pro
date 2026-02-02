@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-12-10 09:47:58 -0800 (Wed, 10 Dec 2025) $
-; $LastChangedRevision: 33913 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-01-27 15:13:57 -0800 (Tue, 27 Jan 2026) $
+; $LastChangedRevision: 34071 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -471,6 +471,26 @@ function dynamicarray::read_ncdf
 end
 
 
+; Function to return a dictionary where the keys
+; are the tag names and the values are the attribute arrays
+function dynamicarray::to_dict, relabel=relabel
+
+  da_tag_names = tag_names(*self.ptr_array)
+  dict = dictionary()
+
+  foreach tag_name, da_tag_names, tag_num do begin
+      vals = ((*self.ptr_array)[0:self.size-1,*,*,*]).(tag_num)
+
+      if ARG_PRESENT(relabel) then begin
+        if relabel.haskey(tag_name) then tag_name = (relabel[tag_name])
+      endif
+
+      dict[tag_name] = vals
+    endforeach
+
+  return, dict
+
+end
 
 
 

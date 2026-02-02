@@ -127,6 +127,9 @@ pro psp_fld_options, type = type, level = level
 
       options, 'PSP_FLD_L2_F2_100bps_DFB_VDC', 'ytitle', 'F2_100BPS!CDFB WF VDC'
     endif
+
+    options, 'PSP_FLD_L2_F2_100bps_MAGi_Average_B_SC_nT', 'colors', 'bgr'
+    options, 'PSP_FLD_L2_F2_100bps_MAGi_Average_B_SC_nT', 'ytitle', 'F2_100BPS!CMAGi SC'
   endif
 
   ; MARK: Level 2 DFB WF VDC

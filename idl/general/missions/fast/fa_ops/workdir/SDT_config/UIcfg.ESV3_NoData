@@ -1,0 +1,1326 @@
+*
+Header :this is the 'ESV3_NoData' configuration file
+Header :created on Mon Sep  9 11:11:52 2024
+*
+*
+Description :Quantities needed for fa_fields_despin3.pro
+
+*
+
+Configuration
+{
+Config Name:			'ESV3_NoData'
+Config MenuPosition:		55, -7
+Config MenuSize:		155, 150
+Config DefaultSourceId:	'?'
+Config CurrentPlotWindow:	'ESV3_NoData:0 - DA'
+
+	PlotWinStandard
+	{
+	PlotWin Name:		'ESV3_NoData:0 - DA'
+	PlotWin Position:	1035, 12
+	PlotWin Size:		930, 829
+	PlotWin PlotsPage:	6
+	PlotWin TopPlotOfPage:	'FAST_Rot_Mat_DSC_GSE_a11'
+
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V1-V2_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V1-V2_S'
+		Plot2 PlotYTitleName:	'V1-V2_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V5-V8_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V5-V8_S'
+		Plot2 PlotYTitleName:	'V5-V8_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'1032-spinPhase'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'1032-spinPhase'
+		Plot2 PlotYTitleName:	'1032-spinPhase'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1024, 0, 0
+		Plot2 MinLimits:	0, 0, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V1-V4_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V1-V4_S'
+		Plot2 PlotYTitleName:	'V1-V4_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V4_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V4_S'
+		Plot2 PlotYTitleName:	'V4_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V8_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V8_S'
+		Plot2 PlotYTitleName:	'V8_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_E_0_S_GSE_X'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_E_0_S_GSE_X'
+		Plot2 PlotYTitleName:	'E_0_S_GSE_X'
+		Plot2 PlotYSubTitleName:	'mV/m'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 2000, 0, 0
+		Plot2 MinLimits:	0, -2000, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_E_0_S_GSE_Y'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_E_0_S_GSE_Y'
+		Plot2 PlotYTitleName:	'E_0_S_GSE_Y'
+		Plot2 PlotYSubTitleName:	'mV/m'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 2000, 0, 0
+		Plot2 MinLimits:	0, -2000, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_E_0_S_GSE_Z'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_E_0_S_GSE_Z'
+		Plot2 PlotYTitleName:	'E_0_S_GSE_Z'
+		Plot2 PlotYSubTitleName:	'mV/m'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 2000, 0, 0
+		Plot2 MinLimits:	0, -2000, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_E_0_S_GSM_X'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_E_0_S_GSM_X'
+		Plot2 PlotYTitleName:	'E_0_S_GSM_X'
+		Plot2 PlotYSubTitleName:	'mV/m'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 2000, 0, 0
+		Plot2 MinLimits:	0, -2000, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_E_0_S_GSM_Y'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_E_0_S_GSM_Y'
+		Plot2 PlotYTitleName:	'E_0_S_GSM_Y'
+		Plot2 PlotYSubTitleName:	'mV/m'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 2000, 0, 0
+		Plot2 MinLimits:	0, -2000, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_E_0_S_GSM_Z'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_E_0_S_GSM_Z'
+		Plot2 PlotYTitleName:	'E_0_S_GSM_Z'
+		Plot2 PlotYSubTitleName:	'mV/m'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 2000, 0, 0
+		Plot2 MinLimits:	0, -2000, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V2_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V2_S'
+		Plot2 PlotYTitleName:	'V2_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V3_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V3_S'
+		Plot2 PlotYTitleName:	'V3_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V6_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V6_S'
+		Plot2 PlotYTitleName:	'V6_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V7_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V7_S'
+		Plot2 PlotYTitleName:	'V7_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V9_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V9_S'
+		Plot2 PlotYTitleName:	'V9_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V10_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V10_S'
+		Plot2 PlotYTitleName:	'V10_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'FAST'
+		Plot2 QtyName:		'V9-V10_S'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'V9-V10_S'
+		Plot2 PlotYTitleName:	'V9-V10_S'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	TIME LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 32768, 0, 0
+		Plot2 MinLimits:	0, -32768, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	1
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		10
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a11'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a11'
+		Plot2 PlotYTitleName:	'DSC_GSE_a11'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a12'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a12'
+		Plot2 PlotYTitleName:	'DSC_GSE_a12'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a13'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a13'
+		Plot2 PlotYTitleName:	'DSC_GSE_a13'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a21'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a21'
+		Plot2 PlotYTitleName:	'DSC_GSE_a21'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a22'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a22'
+		Plot2 PlotYTitleName:	'DSC_GSE_a22'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a23'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a23'
+		Plot2 PlotYTitleName:	'DSC_GSE_a23'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a31'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a31'
+		Plot2 PlotYTitleName:	'DSC_GSE_a31'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a32'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a32'
+		Plot2 PlotYTitleName:	'DSC_GSE_a32'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSE_a33'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSE_a33'
+		Plot2 PlotYTitleName:	'DSC_GSE_a33'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a11'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a11'
+		Plot2 PlotYTitleName:	'DSC_GSM_a11'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a12'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a12'
+		Plot2 PlotYTitleName:	'DSC_GSM_a12'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a13'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a13'
+		Plot2 PlotYTitleName:	'DSC_GSM_a13'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a21'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a21'
+		Plot2 PlotYTitleName:	'DSC_GSM_a21'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a22'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a22'
+		Plot2 PlotYTitleName:	'DSC_GSM_a22'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a23'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a23'
+		Plot2 PlotYTitleName:	'DSC_GSM_a23'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a31'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a31'
+		Plot2 PlotYTitleName:	'DSC_GSM_a31'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a32'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a32'
+		Plot2 PlotYTitleName:	'DSC_GSM_a32'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+		PlotType
+		{
+		Plot2 SourceName:	'Science Control Module'
+		Plot2 QtyName:		'FAST_Rot_Mat_DSC_GSM_a33'
+		Plot2 NPanels:		1
+		Plot2 QtyTitleName:	'FAST_Rot_Mat_DSC_GSM_a33'
+		Plot2 PlotYTitleName:	'DSC_GSM_a33'
+		Plot2 PlotYSubTitleName:	'-'
+		Plot2 HeightUnits:	1
+		Plot2 SkipPoints:	0
+		Plot2 ShadingMode:	SHADE
+		Plot2 RedLimits:	FALSE 0 0
+		Plot2 YellowLimits:	FALSE 0 0
+		Plot2 NAxes:		2
+		Plot2 NDraws:		1
+		Plot2 ScaleTypes:	LINEAR LINEAR
+		Plot2 AxesUseBins:	FALSE, FALSE
+		Plot2 MaxLimits:	1, 1.2, 1, 1
+		Plot2 MinLimits:	0, -1.2, 0, 0
+		Plot2 UseOff:		FALSE
+		Plot2 LinOff:		0
+		Plot2 LogOff:		0
+		Plot2 LineStyle:	SDT_MLSTYLE_COLOR
+		Plot2 LinePointsMode:	GRAPH_MODE_LINE
+		Plot2 PreservePtsModeinFullZoom:
+		Plot2 PointsPlot:	0
+		Plot2 UseBrk:		TRUE
+		Plot2 BrkInt:		3.1
+		Plot2 ErrorBar:		SDT_EBAR_NONE
+		Plot2 NSymbols:		0
+		Plot2 LineFont:		Solid
+		Plot2 LineColor:	White
+		Plot2 ColorLimits:	COLORMAP 239 1
+		Plot2 EndPlot:
+		}
+	PlotWin EndPlotWindow:
+	}
+}
+
+*
+*

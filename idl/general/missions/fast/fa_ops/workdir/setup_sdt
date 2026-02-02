@@ -1,0 +1,483 @@
+#
+#	setup
+#
+#	@(#)setup.sh	1.40 04/04/12	UCB SSL
+#
+#	Set FASTHOME environ variable; add bin, library, and man
+#	directories to appropriate path variables.
+#
+#	Usage:  source <pathname>/setup [-v]
+#
+#		-v sets verbose mode
+#
+# ****************************************************************
+
+# ****************************************************************
+#  FASTHOME should be set to the root of Workspace.  This file is
+#  configured for the location at the time the software was compiled.
+#  If the run-time portions of the Workspace are installed in a different
+#  location, then this file can be edited to reflect the change.
+#
+#  FASTHOME is used during compilation, and to set PATH, LD_LIBRARY_PATH,
+#  and MANPATH.  It is not needed by any of the software at run-time.
+#
+#  NOTE:  For MacOSX, we also have to insure that DYLD_LIBRARY_PATH
+#  exists and contains FASTLIB.
+#
+#  FASTLIB is the location of runtime libraries and default configuration
+#  files.  Configuration files in FASTCONFIG will override configuration
+#  files in FASTLIB.  At a minimum, FASTLIB must be set at run-time, although
+#  all programs with configuration files check the FASTCONFIG variable
+#  first.
+
+# This is the same as the setup: /disks/fast/software/setup_linux64_2.6, with
+# any IDL setup removed, jmm, 2024-03-12
+
+#check for any previously set FASTHOME (used in idl path below)
+unset OLDFASTHOME
+if ( $?FASTHOME ) then
+    set OLDFASTHOME = $FASTHOME
+endif
+
+setenv FASTHOME /disks/django/home/sdt/nws
+
+if ( ! -d $FASTHOME) then
+    echo " "
+    echo "ERROR:  SDT setup:  FASTHOME= $FASTHOME"
+    echo " "
+    echo "is not a directory."
+    exit
+endif
+
+# Find where "pwd" is on this system:
+if ( -f /bin/pwd ) then
+    set SDTPWD = /bin/pwd
+else
+    if ( -f /sbin/pwd ) then
+        set SDTPWD = /sbin/pwd
+    else
+        if ( -f /usr/bin/pwd ) then
+            set SDTPWD = /usr/bin/pwd
+        else
+            set SDTPWD = pwd
+        endif
+    endif
+endif
+
+# Save the current directory so that we can return
+# to it after checking FASTHOME for OS.maj.min
+# sub-directories:
+set SAVE_CWD = `$SDTPWD`
+
+unset SDTPWD 
+
+# Find where "uname" is on this system:
+if ( -f /bin/uname ) then
+    set SDTUNAME = /bin/uname
+else
+    if ( -f /sbin/uname ) then
+        set SDTUNAME = /sbin/uname
+    else
+        if ( -f /usr/bin/uname ) then
+            set SDTUNAME = /usr/bin/uname
+        else
+            set SDTUNAME = uname
+        endif
+    endif
+endif
+
+set OS = `$SDTUNAME -s`
+
+unset SDTUNAME 
+
+# For the "cd" command, be sure to use the built-in shell
+# version.  On Solaris at least, "/bin/cd" does not work.
+set SDTCD = cd
+
+# Look for the most version recent OS.maj.min release
+# subdirectory in FASTHOME:
+$SDTCD $FASTHOME
+
+# Find where "ls" is on this system:
+if ( -f /bin/ls ) then
+    set SDTLS = /bin/ls
+else
+    if ( -f /sbin/ls ) then
+        set SDTLS = /sbin/ls
+    else
+        if ( -f /usr/bin/ls ) then
+            set SDTLS = /usr/bin/ls
+        else
+            set SDTLS = ls
+        endif
+    endif
+endif
+
+# Find where "grep" is on this system:
+if ( -f /bin/grep ) then
+    set SDTGREP = /bin/grep
+else
+    if ( -f /sbin/grep ) then
+        set SDTGREP = /sbin/grep
+    else
+        if ( -f /usr/bin/grep ) then
+            set SDTGREP = /usr/bin/grep
+        else
+            set SDTGREP = grep
+        endif
+    endif
+endif
+
+# Find where "sed" is on this system:
+if ( -f /bin/sed ) then
+    set SDTSED = /bin/sed
+else
+    if ( -f /sbin/sed ) then
+        set SDTSED = /sbin/sed
+    else
+        if ( -f /usr/bin/sed ) then
+            set SDTSED = /usr/bin/sed
+        else
+            set SDTSED = sed
+        endif
+    endif
+endif
+
+# Use "sed" to ignore, from "ls", anything that is not
+# of the exact form:
+#
+#    $OS.major_relnum.minor_relnum
+#
+set OSVERS = `$SDTLS | $SDTSED -n '/^'${OS}'[.][0-9][0-9]*[.][0-9][0-9]*$/p'`
+
+unset SDTLS 
+unset SDTGREP 
+
+# Find where "awk" is on this system:
+if ( -f /bin/awk ) then
+    set SDTAWK = /bin/awk
+else
+    if ( -f /sbin/awk ) then
+        set SDTAWK = /sbin/awk
+    else
+        if ( -f /usr/bin/awk ) then
+            set SDTAWK = /usr/bin/awk
+        else
+            set SDTAWK = awk
+        endif
+    endif
+endif
+
+set MAJOR_REL = 0
+set MINOR_REL = 0
+
+# Find the OS directory with latest release:
+foreach i ( $OSVERS )
+    set I_MAJOR_REL = `echo $i | $SDTAWK -F. '{print $2}'`
+    set I_MINOR_REL = `echo $i | $SDTAWK -F. '{print $3}'`
+    if ( $I_MAJOR_REL > $MAJOR_REL ) then
+        set MAJOR_REL = $I_MAJOR_REL
+        set MINOR_REL = $I_MINOR_REL
+    else
+        if ( $I_MAJOR_REL == $MAJOR_REL ) then
+	    if ($I_MINOR_REL > $MINOR_REL ) then
+                set MINOR_REL = $I_MINOR_REL
+	    endif
+	endif
+    endif
+end
+
+set REL = $MAJOR_REL.$MINOR_REL
+
+# Return to the original directory:
+$SDTCD $SAVE_CWD
+
+unset SDTCD
+
+# If MAJOR_REL <= 0, then we didn't find an appropriate
+# OS version sub-directory:
+if ($MAJOR_REL <= 0) then
+    echo " "
+    echo "ERROR:  unable to find an OS release sub-directory:"
+    echo " "
+    echo "  $FASTHOME/$OS.maj.min"
+    echo " "
+    echo "Check directory:"
+    echo "   $FASTHOME"
+    echo "for $OS.maj.min subdirectories."
+    exit
+endif
+
+setenv FASTOS $FASTHOME/$OS.$REL
+setenv FASTBIN $FASTOS/bin
+setenv FASTLIB $FASTOS/lib
+setenv FASTSNAPONS $FASTLIB/SnapOns
+setenv FASTMAN $FASTHOME/man
+setenv FASTCONFIG /disks/fast/software/config
+
+if ( ! -d $FASTOS) then
+    echo " "
+    echo "ERROR:  SDT setup:  FASTOS= $FASTOS"
+    echo " "
+    echo "is not a directory."
+    exit
+endif
+if ( ! -d $FASTBIN) then
+    echo " "
+    echo "ERROR:  SDT setup:  FASTBIN= $FASTBIN"
+    echo " "
+    echo "is not a directory."
+    exit
+endif
+if ( ! -d $FASTLIB) then
+    echo " "
+    echo "ERROR:  SDT setup:  FASTLIB= $FASTLIB"
+    echo " "
+    echo "is not a directory."
+    exit
+endif
+if ( ! -d $FASTCONFIG) then
+    echo " "
+    echo "WARNING:  SDT setup:  FASTCONFIG= $FASTCONFIG"
+    echo " "
+    echo "is not a directory."
+    echo "SDT will no operate correctly without FASTCONFIG"
+endif
+
+if ( $OS == "SunOS") then
+    set SGUILIB = openwin/lib
+else
+    set SGUILIB = Qt
+endif
+
+set path = ($FASTBIN $path)
+if ( ! $?LD_LIBRARY_PATH ) then
+    setenv LD_LIBRARY_PATH /usr/lib
+endif
+
+# Insure that "LD_LIBRARY_PATH" includes everything
+# important from FASTLIB.  However, only prepend them if they
+# don't already exist within "LD_LIBRARY_PATH":
+
+# FASTLIB
+
+set CHL = `echo ${FASTLIB} | $SDTSED 's/\//\\\//g'`
+
+# Note that the "sed" s/...//g  command must be enclosed in
+# double quotes so that "${CHL}" will be expanded into a
+# regular expression.  Also note, just for the FASTLIB case,
+# we want to be certain to exclude cases of "FASTLIB/" since
+# we don't want to confuse the existence of FASTLIB with that
+# of FASTLIB/Sybase/lib, for instance.  So that is why we
+# put the [^/] at the end of the regular expression in this
+# case.
+set TLDLIB = `echo $LD_LIBRARY_PATH | $SDTSED "s/${CHL}[^/]//g"`
+
+if ( "$LD_LIBRARY_PATH" == "$TLDLIB" ) then
+    set LD_LIB_APPEND = ${FASTLIB}
+else
+endif
+
+# FASTLIB/SGUILIB
+
+set CHL = `echo ${FASTLIB}/${SGUILIB} | $SDTSED 's/\//\\\//g'`
+
+# Note that the "sed" s/...//g  command must be enclosed in
+# double quotes so that "${CHL}" will be expanded into a
+# regular expression.
+set TLDLIB = `echo $LD_LIBRARY_PATH | $SDTSED "s/${CHL}//g"`
+
+if ( "$LD_LIBRARY_PATH" == "$TLDLIB" ) then
+    if ( $?LD_LIB_APPEND ) then
+        set LD_LIB_APPEND = ${LD_LIB_APPEND}:${FASTLIB}/${SGUILIB}
+    else
+        set LD_LIB_APPEND = ${FASTLIB}/${SGUILIB}
+    endif
+else
+endif
+
+# FASTLIB/Sybase/lib
+
+set CHL = `echo ${FASTLIB}/Sybase/lib | $SDTSED 's/\//\\\//g'`
+
+# Note that the "sed" s/...//g  command must be enclosed in
+# double quotes so that "${CHL}" will be expanded into a
+# regular expression.
+set TLDLIB = `echo $LD_LIBRARY_PATH | $SDTSED "s/${CHL}//g"`
+
+if ( "$LD_LIBRARY_PATH" == "$TLDLIB" ) then
+    if ( $?LD_LIB_APPEND ) then
+        set LD_LIB_APPEND = ${LD_LIB_APPEND}:${FASTLIB}/Sybase/lib
+    else
+        set LD_LIB_APPEND = ${FASTLIB}/Sybase/lib
+    endif
+else
+endif
+
+# FASTLIB/MySQL/lib/mysql
+
+set CHL = `echo ${FASTLIB}/MySQL/lib/mysql | $SDTSED 's/\//\\\//g'`
+
+# Note that the "sed" s/...//g  command must be enclosed in
+# double quotes so that "${CHL}" will be expanded into a
+# regular expression.
+set TLDLIB = `echo $LD_LIBRARY_PATH | $SDTSED "s/${CHL}//g"`
+
+if ( "$LD_LIBRARY_PATH" == "$TLDLIB" ) then
+    if ( $?LD_LIB_APPEND ) then
+        set LD_LIB_APPEND = ${LD_LIB_APPEND}:${FASTLIB}/MySQL/lib/mysql
+    else
+        set LD_LIB_APPEND = ${FASTLIB}/MySQL/lib/mysql
+    endif
+else
+endif
+
+# Were there any libraries from FASTLIB to append?
+if ( $?LD_LIB_APPEND ) then
+    setenv LD_LIBRARY_PATH "${LD_LIB_APPEND}:${LD_LIBRARY_PATH}"
+    unset LD_LIB_APPEND
+else
+endif
+
+# On MacOSX, insure that "DYLD_LIBRARY_PATH" includes everything
+# important from FASTLIB.  However, only prepend them if they
+# don't already exist within "DYLD_LIBRARY_PATH":
+if ( $OS == "Darwin") then
+    if ( $?DYLD_LIBRARY_PATH ) then
+
+        # FASTLIB
+
+        set CHL = `echo ${FASTLIB} | $SDTSED 's/\//\\\//g'`
+
+        # Note that the "sed" s/...//g  command must be enclosed
+        # in double quotes so that "${CHL}" will be expanded into
+        # a regular expression.  Also note, just for the FASTLIB
+	# case, we want to be certain to exclude cases of
+	# "FASTLIB/" since we don't want to confuse the existence
+	# of FASTLIB with that of FASTLIB/Sybase/lib, for
+	# instance.  So that is why we put the [^/] at the end of
+	# the regular expression in this case.
+        set TLDLIB = `echo $DYLD_LIBRARY_PATH | $SDTSED "s/${CHL}[^/]//g"`
+
+        if ( "$DYLD_LIBRARY_PATH" == "$TLDLIB" ) then
+            set DYLD_LIB_APPEND = ${FASTLIB}
+        else
+        endif
+
+        # FASTLIB/SGUILIB
+
+        set CHL = `echo ${FASTLIB}/${SGUILIB} | $SDTSED 's/\//\\\//g'`
+
+        # Note that the "sed" s/...//g  command must be enclosed
+        # in double quotes so that "${CHL}" will be expanded into
+        # a regular expression.
+        set TLDLIB = `echo $DYLD_LIBRARY_PATH | $SDTSED "s/${CHL}//g"`
+
+        if ( "$DYLD_LIBRARY_PATH" == "$TLDLIB" ) then
+            if ( $?DYLD_LIB_APPEND ) then
+                set DYLD_LIB_APPEND = ${DYLD_LIB_APPEND}:${FASTLIB}/${SGUILIB}
+            else
+                set DYLD_LIB_APPEND = ${FASTLIB}/${SGUILIB}
+            endif
+        else
+        endif
+
+        # FASTLIB/Sybase/lib
+
+        set CHL = `echo ${FASTLIB}/Sybase/lib | $SDTSED 's/\//\\\//g'`
+
+        # Note that the "sed" s/...//g  command must be enclosed
+        # in double quotes so that "${CHL}" will be expanded into
+        # a regular expression.
+        set TLDLIB = `echo $DYLD_LIBRARY_PATH | $SDTSED "s/${CHL}//g"`
+
+        if ( "$DYLD_LIBRARY_PATH" == "$TLDLIB" ) then
+            if ( $?DYLD_LIB_APPEND ) then
+                set DYLD_LIB_APPEND = ${DYLD_LIB_APPEND}:${FASTLIB}/Sybase/lib
+            else
+                set DYLD_LIB_APPEND = ${FASTLIB}/Sybase/lib
+            endif
+        else
+        endif
+
+        # FASTLIB/MySQL/lib/mysql
+
+        set CHL = `echo ${FASTLIB}/MySQL/lib/mysql | $SDTSED 's/\//\\\//g'`
+
+        # Note that the "sed" s/...//g  command must be enclosed
+        # in double quotes so that "${CHL}" will be expanded into
+        # a regular expression.
+        set TLDLIB = `echo $DYLD_LIBRARY_PATH | $SDTSED "s/${CHL}//g"`
+
+        if ( "$DYLD_LIBRARY_PATH" == "$TLDLIB" ) then
+            if ( $?DYLD_LIB_APPEND ) then
+                set DYLD_LIB_APPEND = ${DYLD_LIB_APPEND}:${FASTLIB}/MySQL/lib/mysql
+            else
+                set DYLD_LIB_APPEND = ${FASTLIB}/MySQL/lib/mysql
+            endif
+        else
+        endif
+
+        # Were there any libraries from FASTLIB to append?
+        if ( $?DYLD_LIB_APPEND ) then
+            setenv DYLD_LIBRARY_PATH ${DYLD_LIB_APPEND}:${DYLD_LIBRARY_PATH}
+            unset DYLD_LIB_APPEND
+        else
+        endif
+    else
+	setenv DYLD_LIBRARY_PATH ${FASTLIB}:${FASTLIB}/${SGUILIB}:${FASTLIB}/Sybase/lib:${FASTLIB}/MySQL/lib/mysql:/usr/lib
+    endif
+endif
+
+unset SGUILIB 
+unset SDTAWK 
+unset SDTSED 
+
+if ( ! $?MANPATH ) then
+	setenv MANPATH /usr/man
+endif
+setenv MANPATH ${FASTMAN}:${MANPATH}
+
+# ****************************************************************
+# CDF stuff
+
+setenv CDF_HOME $FASTHOME/src/cdf/cdfdist
+
+setenv CDF_SMPL $CDF_HOME/samples
+setenv CDF_HELP $CDF_HOME/help
+setenv CDF_BIN  $FASTOS/bin
+setenv CDF_LIB  $FASTOS/lib
+setenv CDF_INC  $CDF_BIN
+
+alias cdfconvert     cdfcvt
+alias cdfinquire     cdfinq
+alias cdfcompare     cdfcmp
+alias skeletontable  cdf2skt
+alias skeletoncdf    skt2cdf
+alias cdfbrowse      "cdfedit -prompt -browse"
+alias cdfskeleton    skt2cdf
+
+# ****************************************************************
+# FAST specific CDF stuff (Must be changed for remote sites)
+
+setenv FAST_CDF_HOME /disks/juneau/cdf1
+setenv CDF_INDEX_DIR ${FAST_CDF_HOME}/index
+
+# the next two will be obsolete soon
+setenv FAST_CDF_MAST_DIR /disks/juneau/cdf1/index/fast_mast
+setenv FAST_TPLOTFILE_HOME /disks/juneau/cdf1/tplotfile
+
+# ****************************************************************
+# POLAR specific CDF stuff (Must be changed for remote sites)
+
+setenv POLAR_CDF_MAST_DIR /disks/juneau/cdf1/index/polar_mast
+
+# ****************************************************************
+# ****************************************************************
+# Image directories
+
+setenv GIFDIR	$FASTHOME/images/gif
+setenv JPEGDIR	$FASTHOME/images/jpeg
+setenv TIFFDIR	$FASTHOME/images/tiff
+
+
