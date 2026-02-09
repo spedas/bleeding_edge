@@ -56,7 +56,7 @@
 ;      VOFF:      Offset velocity for slice.  Centers the slice in the dimension
 ;                 orthogonal to the slice.
 ;
-;  SHOWDATA:      Plos all the data points over the contour (symsize = showdata).
+;  SHOWDATA:      Plots sampling locations over the contour (symsize = showdata).
 ;                 Pluses = Free sky bins, Crosses = Blocked bins.
 ;
 ;    ERANGE:      Specifies the energy range used in analyses. 
@@ -68,6 +68,8 @@
 ;     V_ESC:      Overplot a circle with radius = escape velocity.
 ;
 ;      DIAG:      Print out diagnistics on the plot: S/C pot, S/C velocity
+;
+;    RESULT:      Structure of distribution moments.
 ;
 ;USAGE EXAMPLES:
 ;         1.      ; Normal case
@@ -98,8 +100,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-03-07 11:33:31 -0800 (Wed, 07 Mar 2018) $
-; $LastChangedRevision: 24844 $
+; $LastChangedDate: 2026-02-02 11:12:55 -0800 (Mon, 02 Feb 2026) $
+; $LastChangedRevision: 34101 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_slice2d_snap.pro $
 ;
 ;-
@@ -107,9 +109,10 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
                           bline=bline, mass=mass, m_int=mq, mmin=mmin, mmax=mmax, apid=id, units=units, $
                           verbose=verbose, keepwin=keepwin, charsize=chsz, sum=sum, burst=burst, $
                           dopot=dopot, sc_pot=sc_pot, vsc=vsc, showdata=showdata, erange=erange, $
-                          v_esc=v_esc, datplot=datplot, diag=diag, subtract=subtract
+                          v_esc=v_esc, datplot=datplot, diag=diag, subtract=subtract, result=result
 
   IF STRUPCASE(STRMID(!version.os, 0, 3)) EQ 'WIN' THEN lbreak = STRING([13B, 10B]) ELSE lbreak = STRING(10B)
+
   tplot_options, get_option=topt
   dsize = GET_SCREEN_SIZE()
   IF SIZE(var2, /type) NE 0 THEN BEGIN
@@ -120,12 +123,11 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
   IF SIZE(var2, /type) NE 0 THEN trange = time_double(var2)
   IF keyword_set(dopot) THEN dopot = 1 else dopot = 0
   IF SIZE(sc_pot, /type) NE 0 THEN forcepot = 1 else forcepot = 0
-  if keyword_set(subtract) then voff = subtract else voff = 0
+  if keyword_set(subtract) then voff = subtract else voff = [0.,0.,0.]
 
   IF keyword_set(window) THEN wnum = window ELSE BEGIN
      IF !d.name NE 'PS' THEN BEGIN
-        WINDOW, /free, xsize=dsize[0]/2., ysize=dsize[1]*2./3., xpos=0., ypos=0.
-        wnum = !d.window
+        win, wnum, /free, /secondary, xsize=dsize[0]/2., ysize=dsize[1]*2./3., dx=10, dy=10
      ENDIF 
   ENDELSE 
   ochsz = !p.charsize
@@ -266,10 +268,14 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
           Vesc_x = Vesc*cos(phi)
           Vesc_y = Vesc*sin(phi)
         endif
+        
+        result = {vel:vel, scpot:d.sc_pot, v_sc:v_sc, vesc:vesc}
 
         IF !d.name NE 'PS' THEN BEGIN
            wstat = EXECUTE("wset, wnum")
-           IF wstat EQ 0 THEN wi, wnum, wsize=[dsize[0]/2., dsize[1]*2./3.] ELSE undefine, wstat
+           IF wstat EQ 0 THEN BEGIN
+             win, wnum, /secondary, xsize=dsize[0]/2., ysize=dsize[1]*2./3., dx=10, dy=10
+           ENDIF ELSE undefine, wstat
         ENDIF 
 
         IF keyword_set(showdata) THEN BEGIN
@@ -292,21 +298,13 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
            vmsg = strtrim(string(sqrt(total(vel*vel)),vel,'(f11.2)'),2)
            msg = 'V_bulk = ' + vmsg[0] + ' = [' + vmsg[1] + ', ' + vmsg[2] + ', ' + vmsg[3] + '] km/s'
            XYOUTS, x0, y0, msg, charsize=!p.charsize, /normal
-           case voff of
-             2 : begin
-                   y0 -= dy
-                   xyouts, x0, y0, 'Slice through V_x = ' + vmsg[1], charsize=!p.charsize, /normal
-                 end
-             3 : begin
-                   y0 -= dy
-                   xyouts, x0, y0, 'Slice through V_y = ' + vmsg[2], charsize=!p.charsize, /normal
-                 end
-             4 : begin
-                   y0 -= dy
-                   xyouts, x0, y0, 'Slice through V_z = ' + vmsg[3], charsize=!p.charsize, /normal
-                 end
-             else : ; do nothing
-           endcase
+           msg = 'Slice through V_' + ['x','y','z'] + ' = '
+           for i=0,2 do begin
+             if (voff[i]) then begin
+               y0 -= dy
+               xyouts, x0, y0, msg[i] + vmsg[i+1], charsize=!p.charsize, /normal
+             endif
+           endfor
            if keyword_set(diag) then begin
              y0 -= dy
              msg = string(-d.sc_pot,'("s/c pot = ",f5.1," V")')

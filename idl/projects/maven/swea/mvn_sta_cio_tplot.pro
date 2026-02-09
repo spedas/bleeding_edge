@@ -11,8 +11,8 @@
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
-; $LastChangedRevision: 34039 $
+; $LastChangedDate: 2026-02-02 13:44:20 -0800 (Mon, 02 Feb 2026) $
+; $LastChangedRevision: 34106 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -102,7 +102,7 @@ pro mvn_sta_cio_tplot, pans=pans
 
     store_data,'den_i+',data=vars
     ylim,'den_i+',0.1,100,1
-    options,'den_i+','constant',[1,10]
+    options,'den_i+','constant',[1,10,100]
     options,'den_i+','ytitle','Ion Density!c1/cc'
     options,'den_i+','colors',cols
     options,'den_i+','labels',spec
@@ -635,6 +635,34 @@ pro mvn_sta_cio_tplot, pans=pans
     store_data,'L_s',data={x:cio_o2.time, y:cio_o2.L_s}
     store_data,'slat',data={x:cio_o2.time, y:cio_o2.slat}
     store_data,'Mdist',data={x:cio_o2.time, y:cio_o2.mdist}
+
+; Set some options for some STATIC L2 panels
+
+  vname = 'mvn_sta_c8_D'
+  i = find_handle(vname)
+  if (i gt 0) then begin
+    ylim,vname,-45,45,0
+    zlim,vname,1e3,3e7,1
+    options,vname,'ytitle','sta c8!cTheta!cdeg'
+    options,vname,'yticks',2
+    options,vname,'yminor',3
+  endif else print, "Tplot variable not found: ", vname
+
+  vname = 'mvn_sta_c0_H_E'
+  i = find_handle(vname)
+  if (i gt 0) then begin
+    options,vname, ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log'
+    options,vname,'ytitle','STA c0 M>12!cEnergy (eV)'
+    options,vname,'ysubtitle',''
+  endif else print, "Tplot variable not found: ", vname
+
+  vname = 'mvn_sta_c0_L_E'
+  i = find_handle(vname)
+  if (i gt 0) then begin
+    options,vname, ytickformat='mvn_ql_pfp_tplot_ytickname_plus_log'
+    options,vname,'ytitle','STA c0 M<10!cEnergy (eV)'
+    options,vname,'ysubtitle',''
+  endif else print, "Tplot variable not found: ", vname
 
   return
 

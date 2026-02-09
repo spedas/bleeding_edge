@@ -7,8 +7,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2024-06-10 12:53:07 -0700 (Mon, 10 Jun 2024) $
-; $LastChangedRevision: 32692 $
+; $LastChangedDate: 2026-02-04 12:39:28 -0800 (Wed, 04 Feb 2026) $
+; $LastChangedRevision: 34118 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/spedas_plugin/goesr_ui_load_data.pro $
 ;-
 
@@ -246,8 +246,8 @@ pro goesr_ui_load_data,tabid,loadedData,historyWin,statusBar,treeCopyPtr,timeRan
     uname='time_widget',$
     startyear=1995)
 
-  probeArrayValues = ['8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
-  probeArrayDisplayed = ['GOES 8', 'GOES 9', 'GOES 10', 'GOES 11', 'GOES 12', 'GOES 13', 'GOES 14', 'GOES 15', 'GOES 16', 'GOES 17', 'GOES 18']
+  probeArrayValues = ['8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
+  probeArrayDisplayed = ['GOES 8', 'GOES 9', 'GOES 10', 'GOES 11', 'GOES 12', 'GOES 13', 'GOES 14', 'GOES 15', 'GOES 16', 'GOES 17', 'GOES 18', 'GOES 19']
 
   typeArray = ['mag', 'mpsh', 'sgps', 'xrs']
   ;typeArray = ['*','b_gsm','b_gei','b_enp','b_total','pos_gsm','pos_gei','vel_gei','t1_counts','t2_counts','dataqual','longitude','mlt']

@@ -14,8 +14,8 @@
 ;     Option to set tplot ymargin.
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-07-24 13:40:33 -0700 (Thu, 24 Jul 2025) $
-; $LastChangedRevision: 33495 $
+; $LastChangedDate: 2026-02-02 12:38:39 -0800 (Mon, 02 Feb 2026) $
+; $LastChangedRevision: 34102 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_tplot_ticksout.pro $
 ;
 ;-
@@ -58,7 +58,9 @@ pro psp_fld_tplot_ticksout, xmargin = xmargin, ymargin = ymargin
       options, tplot_name, 'yticklen', yticklen
     end
 
-    options, tplot_name, 'zoffset', [2, 4]
+    str_element, lim, 'zoffset', zoffset, success = zoff_found
+
+    if zoff_found eq 0 then options, tplot_name, 'zoffset', [2, 4]
   endfor
 
   if n_elements(xmargin) eq 0 then tplot_options, 'xmargin', [16, 16] else $

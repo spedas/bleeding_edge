@@ -456,7 +456,8 @@ if defined(data3d) then begin
   mp=data3d.mass  ; mass units are eV/(km/sec)^2, for working with eflux units.  In these units, proton mass = 0.010453500
   q = eV_J
   
-  v = sqrt(2d * data3d.energy/mp)  ; convert energy array to velocity (km/sec)
+  ;v = sqrt(2d * data3d.energy/mp)  ; convert energy array to velocity (km/sec)
+  v = sqrt(2d * e_inf/mp)  ; convert energy array to velocity (km/sec), accounting for spacecraft potential
   
   vx = v*cos(data3d.theta/180.*!pi)*cos(data3d.phi/180.*!pi) 
   vy = v*cos(data3d.theta/180.*!pi)*sin(data3d.phi/180.*!pi)

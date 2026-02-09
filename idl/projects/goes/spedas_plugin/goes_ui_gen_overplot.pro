@@ -24,8 +24,8 @@
 ;  none
 ;  
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2023-02-05 18:20:40 -0800 (Sun, 05 Feb 2023) $
-;$LastChangedRevision: 31473 $
+;$LastChangedDate: 2026-02-04 12:39:28 -0800 (Wed, 04 Feb 2026) $
+;$LastChangedRevision: 34118 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goes/spedas_plugin/goes_ui_gen_overplot.pro $
 ;-
 
@@ -181,6 +181,7 @@ pro goes_ui_gen_overplot_event, event
     'PROBE:16': state.probe='16'
     'PROBE:17': state.probe='17'
     'PROBE:18': state.probe='18'
+    'PROBE:19': state.probe='19'
     'TIME': ; don't send 'Not yet implemented' to the console for time events
     ELSE: dprint,  'Not yet implemented'
   ENDCASE
@@ -252,10 +253,11 @@ pro goes_ui_gen_overplot, gui_id = gui_id, $
   Button15 = widget_button(probeButtonBase, value='15', uvalue='PROBE:15')
   Button16 = widget_button(probeButtonBase, value='16', uvalue='PROBE:16')
   Button17 = widget_button(probeButtonBase, value='17', uvalue='PROBE:17')
-  Button18 = widget_button(probeButtonBase, value='18', uvalue='PROBE:18')
+  Button18 = widget_button(probeButtonBase, value='18', uvalue='PROBE:18')  
+  Button19 = widget_button(probeButtonBase, value='19', uvalue='PROBE:19')
   
-  widget_control, Button18, /set_button
-  probe='18'
+  widget_control, Button19, /set_button
+  probe='19'
 
 ; Time range-related widgets
   getresourcepath,rpath

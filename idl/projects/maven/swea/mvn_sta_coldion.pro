@@ -83,8 +83,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-28 13:07:40 -0800 (Wed, 28 Jan 2026) $
-; $LastChangedRevision: 34081 $
+; $LastChangedDate: 2026-02-02 13:44:20 -0800 (Mon, 02 Feb 2026) $
+; $LastChangedRevision: 34106 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -122,8 +122,9 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   doden = keyword_set(density)
   dotmp = keyword_set(temperature)
   useL3 = keyword_set(L3)
+  ivlev = 4  ; STATIC background subtraction level (should be >= 2)
 
-; Use STATIC L3 densities and temperatures if possible
+; Use STATIC L3 densities and temperatures if possible (these use IV4)
 
   if (useL3) then begin
     mvn_sta_l3_load  ; load all moments
@@ -191,7 +192,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
   if keyword_set(reload) then nc6 = 0
   if (nc6 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=2
+    mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=ivlev
     str_element, mvn_c6_dat, 'time', time_c6, success=gotc6
     if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
     if (nc6 lt 10) then begin
@@ -207,7 +208,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
   if keyword_set(reload) then nd0 = 0
   if (nd0 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['d0'], iv_level=2
+    mvn_sta_l2_load, sta_apid=['d0'], iv_level=ivlev
     str_element, mvn_d0_dat, 'time', time_d0, success=gotd0
     if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
     if (nd0 lt 10) then begin
@@ -223,7 +224,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (ok) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
   if keyword_set(reload) then nd1 = 0
   if (nd1 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['d1'], iv_level=2
+    mvn_sta_l2_load, sta_apid=['d1'], iv_level=ivlev
     str_element, mvn_d1_dat, 'time', time_d1, success=gotd1
     if (gotd1) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
     if (nd1 lt 10) then begin

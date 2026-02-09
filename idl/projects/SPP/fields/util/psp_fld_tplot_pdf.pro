@@ -1,7 +1,7 @@
 ;+
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2026-01-26 10:00:16 -0800 (Mon, 26 Jan 2026) $
-; $LastChangedRevision: 34065 $
+; $LastChangedDate: 2026-02-02 12:38:39 -0800 (Mon, 02 Feb 2026) $
+; $LastChangedRevision: 34102 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_tplot_pdf.pro $
 ;-
 
@@ -142,7 +142,9 @@ pro psp_fld_tplot_pdf, filename, timestamp = timestamp, $
         xw0 = tplot_vars.settings.x.window
         yw0 = tplot_vars.settings.y[var_i].window
 
-        offset = [1., 2]
+        str_element, lim, 'zoffset', offset, success = zoff_found
+
+        if zoff_found eq 0 then offset = [1., 2]
         if not keyword_set(charsize) then charsize = !p.charsize
         if charsize eq 0. then charsize = 1.0
         space = charsize * !d.x_ch_size / !d.x_size

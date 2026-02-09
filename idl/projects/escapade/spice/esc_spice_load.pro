@@ -12,7 +12,7 @@
 ;       RES:      Specifies the time resolution to be created tplots.
 ;                 Default is 60 s.
 ;
-;     HELIO:      Specifies the heliospheric frame kernel.
+;     HELIO:      Obsolete: No longer needed to specify the heliospheric frame kernel.
 ;
 ;        km:      If set, the unit should be kilometer.
 ;                 Default is R_E (Earth Radii).
@@ -24,20 +24,20 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2025-11-24 11:16:03 -0800 (Mon, 24 Nov 2025) $
-; $LastChangedRevision: 33871 $
+; $LastChangedDate: 2026-02-03 15:22:23 -0800 (Tue, 03 Feb 2026) $
+; $LastChangedRevision: 34113 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_load.pro $
 ;
 ;-
 PRO esc_spice_load, trange=itime, verbose=verbose, blue=blue, gold=gold, resolution=res, $
-                    load=load, clear=clear, info=info, helio=helio, km=km, _extra=extra
+                    load=load, clear=clear, info=info, km=km, _extra=extra;, helio=helio
 
   tr = timerange(itime)
   IF undefined(clear) THEN clear = 1
   IF undefined(load)  THEN load  = 1
  
   kernels = esc_spice_kernels(trange=tr, blue=blue, gold=gold, load=load, clear=clear, info=info)
-  IF FILE_TEST(helio) THEN spice_kernel_load, helio ELSE RETURN
+  ;IF FILE_TEST(helio) THEN spice_kernel_load, helio ELSE RETURN
 
   IF ~undefined(blue) THEN bflg = FIX(blue) ELSE bflg = 0
   IF ~undefined(gold) THEN gflg = FIX(gold) ELSE gflg = 0
@@ -47,7 +47,6 @@ PRO esc_spice_load, trange=itime, verbose=verbose, blue=blue, gold=gold, resolut
   ENDIF 
 
   IF is_struct(info) THEN BEGIN
-     ;w = WHERE(info.type EQ 'SPK' and ( (info.obj_name EQ 'ESCAPADE_BLUE') OR (info.obj_name EQ 'ESCAPADE_GOLD') ), nw)
      w = WHERE(info.type EQ 'SPK' and info.obj_name EQ 'ESCAPADE_BLUE', nw)
      v = WHERE(info.type EQ 'SPK' and info.obj_name EQ 'ESCAPADE_GOLD', nv)
      IF nw GT 0 THEN tcov_b = minmax(time_double(info[w].trange))

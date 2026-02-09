@@ -40,8 +40,8 @@
 ;                 and end times.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-31 09:38:42 -0800 (Sat, 31 Jan 2026) $
-; $LastChangedRevision: 34089 $
+; $LastChangedDate: 2026-02-02 11:12:55 -0800 (Mon, 02 Feb 2026) $
+; $LastChangedRevision: 34101 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_msnap.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -111,6 +111,7 @@ pro mvn_sta_msnap, sum=sum, keep=keep, key=key, lastcut=result, tmark=tmark, xma
   mass = (n_elements(mass) gt 0) ? keyword_set(mass) : 1
   points = (n_elements(points) gt 0) ? keyword_set(points) : 1
   label = (n_elements(label) gt 0) ? keyword_set(label) : 1
+  charsize = (n_elements(charsize) gt 0) ? charsize[0] : 1.5
   vel = keyword_set(vel)
   tmark = keyword_set(tmark)
 

@@ -91,8 +91,8 @@ end
 ;
 ;CREATED BY:    Davin Larson  Oct 1996
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-; $LastChangedRevision: 33563 $
+; $LastChangedDate: 2026-02-04 13:30:20 -0800 (Wed, 04 Feb 2026) $
+; $LastChangedRevision: 34119 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_string.pro $
 ;-
 function time_string,time0, $
@@ -146,7 +146,10 @@ if keyword_set(tformat) then begin
         token = token +'f'
         pos = strpos(tformat, token )
     endrep until strpos(tformat,token+'f') lt 0
-    time_substitute,res,strmid(string(time.fsec,format='(f10.8)'),1,strlen(token)), pos
+    if strlen(token) gt 10 then begin
+      message,/info,"Sub-nanosecond precision not supported for format "+tformat
+    endif
+    time_substitute,res,strmid(string(time.fsec,format='(f11.9)'),1,strlen(token)), pos
     if keyword_set(escape_seq) then res = str_sub(res,escape_seq,'')
     return,res
 
