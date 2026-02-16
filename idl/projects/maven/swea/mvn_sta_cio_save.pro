@@ -28,8 +28,8 @@
 ;       L3:            Use STATIC L3 data for densities and temperatures.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-20 12:58:43 -0800 (Tue, 20 Jan 2026) $
-; $LastChangedRevision: 34040 $
+; $LastChangedDate: 2026-02-13 09:04:43 -0800 (Fri, 13 Feb 2026) $
+; $LastChangedRevision: 34141 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -50,6 +50,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
   version = '_v02'
   oneday = 86400D  ; process one day at a time
 
+
   case n_elements(trange) of
      0  :  begin
              print,'You must specify a start time or time range.'
@@ -66,6 +67,22 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
              ndays = (tstop - tstart)/oneday
            end
   endcase
+
+; Send email that process is starting
+
+  uinfo = get_login_info()
+  mailto = 'calif_dave@icloud.com'
+  ff_ext = strcompress(/remove_all, string(long(100000.0*randomu(seed))))
+  ofile0 = '/mydisks/home/maven/' + uinfo.user_name + '/sta_cio_msg0.txt' + ff_ext
+  openw, tunit, ofile0, /get_lun
+    printf, tunit, 'Processing: '
+    for i=0L,(ndays-1L) do printf, tunit, time_string(tstart + double(i)*oneday)
+  free_lun, tunit
+  file_chmod, ofile0, '664'o
+  subj = 'STATIC CIO process start on ' + uinfo.machine_name
+  cmd0 = 'mailx -s "' + subj + '" ' + mailto + ' < ' + ofile0
+  spawn, cmd0
+  file_delete, ofile0
 
 ; Process the data one calendar day at a time
 
@@ -114,6 +131,20 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
       endif else print,'No SWEA data: ',tstring
     endelse
   endfor
+
+; Send email that process has completed
+
+  ff_ext = strcompress(/remove_all, string(long(100000.0*randomu(seed))))
+  ofile0 = '/mydisks/home/maven/' + uinfo.user_name + '/sta_cio_msg0.txt' + ff_ext
+  openw, tunit, ofile0, /get_lun
+    printf, tunit, 'Process completed: '
+    for i=0L,(ndays-1L) do printf, tunit, time_string(tstart + double(i)*oneday)
+  free_lun, tunit
+  file_chmod, ofile0, '664'o
+  subj = 'STATIC CIO process completed on ' + uinfo.machine_name
+  cmd0 = 'mailx -s "' + subj + '" ' + mailto + ' < ' + ofile0
+  spawn, cmd0
+  file_delete, ofile0
 
   return
 

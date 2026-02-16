@@ -1,6 +1,6 @@
-; $LastChangedBy: ali $
-; $LastChangedDate: 2026-01-12 14:40:17 -0800 (Mon, 12 Jan 2026) $
-; $LastChangedRevision: 33999 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-02-11 17:05:06 -0800 (Wed, 11 Feb 2026) $
+; $LastChangedRevision: 34138 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -81,11 +81,13 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*_HISTOGRAM',spec=1,panel_size=2,/no_interp,/zlog,constant=findgen(6)*10+5;,zrange=[10,4000.]
     options,/def,'*memdump_DATA',spec=1
     options,/def,'*sci_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
+    options,/def,'*SCI_COUNTS',spec=1,panel_size=3,/no_interp,/zlog,zrange=[1,4000.],constant=findgen(15)*48
+
     options,/def,'*hkp?_ADC_*',constant=0.
     channels=['CH1','CH2','CH3','CH4','CH5','CH6']
-    options,/def,'*hkp?_*RATES* *BASELINE *SIGMA *NOISE_TOTAL',colors='bgrmcd',symsize=.5,labels=channels,labflag=-1,constant=0
-    options,/def,'*hkp?_*RATES*',constant=2.^(indgen(4)+16)
-    options,/def,'*hkp?_NEGATIVE_PULSE_RATES',labels='total_neg',psym=-2,symsize=1
+    options,/def,'*_*RATES* *BASELINE *SIGMA *NOISE_TOTAL',colors='bgrmcd',symsize=.5,labels=channels,labflag=-1,constant=0
+    options,/def,'*_*RATES*',constant=2.^(indgen(4)+16)
+    options,/def,'*_NEGATIVE_PULSE_RATES',labels='total_neg',psym=-2,symsize=1
     options,/def,'*sci_TOTAL *sci_RATE',colors='r',psym=6,symsize=.5,labels='SCI'
     options,/def,'*sci_TOTAL2 *sci_RATE2',colors='m',labels='SCI2'
     options,/def,'*TOTAL14',spec=1,zlog=1,no_interp=1
@@ -96,14 +98,14 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*nse_TOTAL *nse_RATE*',colors='r',psym=-2,symsize=.5,labels='NOISE'
     options,/def,'*TOTAL6* *RATE6*',colors='bgrmcd',symsize=.5,labels=channels,labflag=-1
     options,/def,'*_SCALED_RATE6*',constant=[.5,1]
-    options,/def,'*hkp?_VALID_RATES_TOTAL',colors='b',psym=-1,symsize=.1,labels='HKP'
-    options,/def,'*hkp?_SCIENCE_EVENTS',labels='EVENTS'
-    options,/def,'*hkp?_EDAC_ERRORS',colors='bcrmgk',labels=['nse2','nse1','cmd_rec2','cmd_rec1','cmd_fifo2','cmd_fifo1','sci_B2','sci_B1','sci_A2','sci_A1'],labflag=-1
-    options,/def,'*hkp?_STATE_MACHINE_ERRORS',panel_size=2,colors='bcrmgk',labels=['cmd','cmd_state','arb','cksm','da','dac','hk','tx','pha','noi','det','scope','noimgr'],labflag=-1
-    options,/def,'*hkp?_BUS_TIMEOUT_COUNTERS',colors='bgrk',labels=['memfill','telemetry','event','noise'],labflag=-1
-    options,/def,'*hkp?_ADC_BASELINES',colors='bgrmcd',labels=channels,labflag=-1
-    options,/def,'*hkp?_ADC_VOLTAGES',colors='bgrmc',labels=['1.5VD','3.3VD','5VD','+5.6VA','-5.6VA'],labflag=-1,constant=[0,1.5,3.3,5,-5]
-    options,/def,'*hkp?_ADC_TEMPS',colors='bgr',labels=['DAP','Sensor 1','Sensor 2'],labflag=-1
+    options,/def,'*_VALID_RATES_TOTAL',colors='b',psym=-1,symsize=.1,labels='HKP'
+    options,/def,'*_SCIENCE_EVENTS',labels='EVENTS'
+    options,/def,'*_EDAC_ERRORS',colors='bcrmgk',labels=['nse2','nse1','cmd_rec2','cmd_rec1','cmd_fifo2','cmd_fifo1','sci_B2','sci_B1','sci_A2','sci_A1'],labflag=-1
+    options,/def,'*_STATE_MACHINE_ERRORS',panel_size=2,colors='bcrmgk',labels=['cmd','cmd_state','arb','cksm','da','dac','hk','tx','pha','noi','det','scope','noimgr'],labflag=-1
+    options,/def,'*_BUS_TIMEOUT_COUNTERS',colors='bgrk',labels=['memfill','telemetry','event','noise'],labflag=-1
+    options,/def,'*_ADC_BASELINES',colors='bgrmcd',labels=channels,labflag=-1
+    options,/def,'*_ADC_VOLTAGES',colors='bgrmc',labels=['1.5VD','3.3VD','5VD','+5.6VA','-5.6VA'],labflag=-1,constant=[0,1.5,3.3,5,-5]
+    options,/def,'*_ADC_TEMPS',colors='bgr',labels=['DAP','Sensor 1','Sensor 2'],labflag=-1
     dacs=['CH1 thresh','CH2 thresh','CH3 thresh','Baseline','CH4 thresh','CH5 thresh','CH6 thresh','AUX2','CH1-4 pulse height','CH2-5 pulse height','CH3-6 pulse height','Bias Voltage Control']
     options,/def,'*DAC_VALUES',panel_size=2,yrange=[0,'ffff'x],colors='bgrmmcdcbgrk',labels=dacs,labflag=-1
     options,/def,'*hkp2_DAC_VALUES',yrange=[0,300]
@@ -113,10 +115,10 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     options,/def,'*PULSER_BITS',labels=reverse(['LUT 0:Lower 1:Upper','Pulser Enable',reverse(channels)]),colors='bgrbgrkm'
     options,/def,'*DETECTOR_BITS',labels=reverse(['Decimate','NONLUT 0:Log 1:Linear',reverse(channels)]),colors='bgrbgrcm'
     options,/def,'*DECIMATION_FACTOR_BITS',labels=['CH2','CH2','CH3','CH3','CH5','CH5','CH6','CH6'],colors='ggrrcckk'
-    options,/def,'*hkp?_VALID_ENABLE_MASK_BITS',numbits=6,labels=channels,colors='bgrmcd'
-    options,/def,'*hkp?_DIGI_FILTER_CLOCK_CYCLES',colors='br',labels=['Valid_Sig to Valid_En','Valid_En to Peak_En'],labflag=-1
-    options,/def,'*hkp?_PULSER_DELAY_CLOCK_CYCLES',colors='bgr',labels=['0x17 Pulser1','0x18 Pulser2','0x19 Pulser3'],labflag=1
-    options,/def,'*hkp?_TIMEOUTS_*US',colors='bgr',labels=['0x1D Event','0x1E Valid','0x1F Nopeak'],labflag=-1
+    options,/def,'*VALID_ENABLE_MASK_BITS',numbits=6,labels=channels,colors='bgrmcd'
+    options,/def,'*_DIGI_FILTER_CLOCK_CYCLES',colors='br',labels=['Valid_Sig to Valid_En','Valid_En to Peak_En'],labflag=-1
+    options,/def,'*PULSER_DELAY_CLOCK_CYCLES',colors='bgr',labels=['0x17 Pulser1','0x18 Pulser2','0x19 Pulser3'],labflag=1
+    options,/def,'*TIMEOUTS_*US',colors='bgr',labels=['0x1D Event','0x1E Valid','0x1F Nopeak'],labflag=-1
     options,/def,'*NOISE_BITS',numbits=12,labels=reverse(['ENABLE','RES2','RES1','RES0','PERIOD7','PERIOD6','PERIOD5','PERIOD4','PERIOD3','PERIOD2','PERIOD1','PERIOD0']),colors=[0,1,2,6]
     options,/def,'*swfo_sc_120_INSTRUMENT_*',colors='bgrk',labels=['STIS','CCOR','MAG','SWiPS'],labflag=1,numbits=4
     options,/def,'*_REACTION_WHEEL_*',colors='bgrk',labels=['1','2','3','4'],labflag=1,numbits=4,constant=0
@@ -158,6 +160,29 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
 
     options, '*QUALITY_BITS*', tplot_routine='bitplot', labels=cal.qflag_labels, psyms=3
     ylim, '*QUALITY_BITS*', -1, 42
+
+    ; variable for both measured/modeled sun-stis angle:
+    tplot_names, '*MODELED_SUN_STIS*', names=modeled_vname, /silent
+
+    if modeled_vname ne '' then begin
+
+      tplot_names, '*MEASURED_SUN_STIS*', names=meas_vname, /silent
+      vname_spl = meas_vname.split("_")
+      level1a_str = (vname_spl[where(Vname_spl eq 'MEASURED') - 1])[0]
+
+      store_data, 'swfo_stis_' + level1a_str + '_SUN_STIS_ANGLE_DEG',$
+        data=[modeled_vname, meas_vname],$
+        dl={colors: 'rb', labels:['MODELED', 'MEASURED'],$
+        labflag: 1, constant: cal.minimum_stis_sun_angle}
+
+      ; variable for both measured/modeled sun-sc angle:
+      tplot_names, '*MODEL_SUN_SC*', names=modeled_vname, /silent
+      tplot_names, '*MEASURED_SUN_SC*', names=meas_vname, /silent
+      store_data, 'swfo_stis_' + level1a_str + '_SUN_SC_ANGLE_DEG',$
+        data=[modeled_vname, meas_vname],$
+        dl={colors: 'rb', labels:['MODELED', 'MEASURED'],$
+        labflag: 1, constant: cal.MAXIMUM_SWFO_SUN_OFFPOINTING_ANGLE}
+    endif
 
     options, '*FLUX', yrange=[10, 6000],$
       zrange=[1e-2, 1e3], spec=1, ylog=1, zlog=1

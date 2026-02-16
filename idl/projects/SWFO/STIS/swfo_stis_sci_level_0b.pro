@@ -72,9 +72,9 @@
 ;
 ;       PREV_L0B_DAT: placeholder for previous level 0b
 ;
-; $LastChangedBy: ali $
-; $LastChangedDate: 2026-01-12 14:40:17 -0800 (Mon, 12 Jan 2026) $
-; $LastChangedRevision: 33999 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2026-02-14 14:50:35 -0800 (Sat, 14 Feb 2026) $
+; $LastChangedRevision: 34153 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_0b.pro $
 
 
@@ -235,7 +235,8 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     ; adc_voltages: replicate(0., 5),$  ; not currently in spreadsheet
     ; adc_temps: replicate(0., 3),$  ; not currently in spreadsheet
     ; mux_all: replicate(0., 16),$ ; not currently in spreadsheet
-    ; hkp_replay: 0b, $ ; not currently in spreadsheet, only for IDL - useful for debugging, different var names for replay
+    hkp_replay: 0b, $ ; not currently in spreadsheet, only for IDL - useful for debugging, different var names for replay
+    hkp_station: 0b, $ ; not currently in spreadsheet, only for IDL - useful for debugging, different var names for replay
     ; hkp_valid: 0b, $ ; not currently in spreadsheet, only for IDL - placeholder
     ; sci data
     sci_nbins:      672l, $
@@ -520,7 +521,8 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     ; Opted to not include the replay (encoded in filename,
     ; as replay files have different names), valid redundant
     ; quality flag:
-    ; output.hkp_replay = hkp_dat.replay
+     output.hkp_replay = hkp_dat.replay
+     output.hkp_station= hkp_dat.station
     ; output.hkp_valid = hkp_dat.valid
 
 

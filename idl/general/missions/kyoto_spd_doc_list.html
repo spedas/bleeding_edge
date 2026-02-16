@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Feb  8 03:17:59 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Feb 14 18:17:57 2026.<P>
  
 <HR>
  
@@ -220,10 +220,16 @@ KYOTO_LOAD_AE
 Purpose:
   Queries the Kyoto servers for AE, AL, AO, AU, and AX data and loads data into
   tplot format.  Highly modified from KYOTO_AE_LOAD.
-  Note: Only provisional data is available. Kyoto does not make realtime AE indices available in this
-  form due to the possible problems with the data (plots of realtime AE can be found on their website).
-  Provisional data is usually available for up to few months before the present. Exact dates of availability
-  can be checked at https://wdc.kugi.kyoto-u.ac.jp/ae_provisional/index.html.
+  
+  Kyoto now makes realtime data available in numeric format.  The directory structure and filenames are
+  a little different from the provisional data, so there is now a helper routine that gets called once
+  for provisional data, and once for realtime data, then merges them if necessary.
+  
+  There does not appear to be realtime data for the AX index.
+  
+  At this writing (2026-02-10), the cutoff point between provisional and realtime data is 2021-01-01.
+  
+  Exact dates of availability can be checked at https://wdc.kugi.kyoto-u.ac.jp/ae_provisional/index.html.
   Note that there are no final AE indices produced.
   See also thm_crib_make_ae.pro for information on generating THEMIS pseudo AE indices.
 

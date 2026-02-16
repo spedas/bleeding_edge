@@ -54,7 +54,7 @@ pro swfo_mag_decom,magda,maghr_da = maghr_da,mag1s_da = mag1s_da,clear=clear
     raw_ns[0,*] = 0
     raw_int = ishft( fix( raw_ns ), 8 ) / 256   ; convert to signed value
     raw_int[0,*] = mag_data
-    raw_int = total(/cumulative,/preserve,raw_int,1)   ; Sum then increments to get full value
+    raw_int = total(/cumulative,/preserve,raw_int,1)   ; Sum the increments to get full value
     if (i / 3) then begin
       mag_hr.b1[i mod 3] = raw_int
     endif else begin
@@ -63,7 +63,7 @@ pro swfo_mag_decom,magda,maghr_da = maghr_da,mag1s_da = mag1s_da,clear=clear
 
     dprint,dlevel=3,i
   endfor
-  magda.array = mag             ; delete this?
+;  magda.array = mag             ; delete this?
 
   wnotcomp = where( mag.packet_size ne compressed_packet_size, /null)   ; at least one the 6 components is not compressed
   if isa(wnotcomp) then begin
@@ -73,8 +73,12 @@ pro swfo_mag_decom,magda,maghr_da = maghr_da,mag1s_da = mag1s_da,clear=clear
       ndat = m.packet_size - 20
       raw= m.raw_data[0:ndat-1]
       j =0
-      vals = intarr(ns,6)
+      vals = replicate(!values.f_nan,ns,6)
       for i= 0,5 do begin
+        if j+2 gt ndat then begin
+          dprint,'ERROR: Special MAG packet, EXTRA= ', m.extra[4]
+          continue
+        endif
         if (raw[j] and 0x80) ne 0 then begin  ; compressed
           mag_data = reform( ishft( fix( raw[j] * 256 + raw[j+1] ), 1) / 2 ) ; convert first value to signed int
           raw_ns = raw[j+1:j+ns]
@@ -111,6 +115,7 @@ pro swfo_mag_decom,magda,maghr_da = maghr_da,mag1s_da = mag1s_da,clear=clear
     mag1s.b0 = average(mag_hr.b0, 2)
     mag1s.b1 = average(mag_hr.b1, 2)
     mag1s.time = average(mag_hr.time, 1)
+    if keyword_set(clear) then mag1s_da.size=0
     mag1s_da.append,mag1s
   endif
 

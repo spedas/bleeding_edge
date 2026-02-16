@@ -16,9 +16,9 @@
 ;History:
 ;  ver.0.0: The 1st experimental release 
 ;  
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2019-10-23 14:19:14 -0700 (Wed, 23 Oct 2019) $
-;$LastChangedRevision: 27922 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-02-13 11:08:26 -0800 (Fri, 13 Feb 2026) $
+;$LastChangedRevision: 34145 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/erg/satellite/erg/particle/erg_convert_flux_units.pro $
 ;
 ;-
@@ -116,7 +116,7 @@ pro erg_convert_flux_units $
     'flux':out = -[1, 0, 0]
     'eflux': 
     'df': out = -[2, -1, 0]
-    'df_cm': out = -[2, -1, 1]
+    'df_cm': out = -[2, -1, -1]
     else: message, 'Unknown output units: '+units_out
   endcase
 

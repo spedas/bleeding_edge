@@ -1,6 +1,6 @@
 ;$LastChangedBy: rjolitz $
-;$LastChangedDate: 2026-01-27 15:33:06 -0800 (Tue, 27 Jan 2026) $
-;$LastChangedRevision: 34072 $
+;$LastChangedDate: 2026-02-10 12:30:37 -0800 (Tue, 10 Feb 2026) $
+;$LastChangedRevision: 34135 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_load.pro $
 
 pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution=ncdf_resolution, $
@@ -49,6 +49,11 @@ pro swfo_stis_load,file_type=file_type,station=station,host=host,ncdf_resolution
       ;options,tname+['_RATE','*SIGMA','*BASELINE', /reverse_order, colors ='bgrmcd'
       options,/def,'*_RATE6 *BASELINE *SIGMA *NOISE_TOTAL',colors='bgrmcd',symsize=.5,$
         labels=channels,labflag=-1,constant=0,/reverse_order
+
+      coincidences = cal.coincidence
+      foreach det, coincidences do store_data, tname, data=l1a,tagnames='RATE_' + det, val_tag='SPEC_' + det + '_NRG'
+      options, 'swfo_stis_L1a_RATE_*', no_interp=1, zlog=1, ylog=1, spec=1
+
     endif
 
     if keyword_set(l1b) or keyword_set(l2) then begin

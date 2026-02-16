@@ -26,8 +26,8 @@
 ; - swfo_stis_sci_qflag_crib.pro: quality flag demo
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-01-27 15:33:06 -0800 (Tue, 27 Jan 2026) $
-; $LastChangedRevision: 34072 $
+; $LastChangedDate: 2026-02-10 12:41:56 -0800 (Tue, 10 Feb 2026) $
+; $LastChangedRevision: 34136 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -108,7 +108,8 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     model_sun_sc_angle_deg: !values.f_nan, $
     measured_sun_sc_angle_deg: !values.f_nan, $
     modeled_spacecraft_sun_vxyz_sc: replicate(!values.f_nan,3), $
-    sun_stis_angle_deg: !values.f_nan, $
+    modeled_sun_stis_angle_deg: !values.f_nan, $
+    measured_sun_stis_angle_deg: !values.f_nan, $
     quality_bits: 0ULl, $
     sci_resolution: 0b, $
     sci_translate: 0u, $
@@ -414,12 +415,20 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
       ; this is the only vector simulated in MR3
       meas_sun_vec_sc = l0b.measured_sun_vector_xyz
 
-      ; ; ADSCSUNVX[Y,Z] / modeled_spacecraft_sun_vxyz is the modeled sun vector is in ECI coordinates
+      ; ; ADSCSUNVX[Y,Z] / modeled_spacecraft_sun_vxyz is the;
+      ; modeled sun vector is in ECI coordinates
+      ; (equivalent to the vector subtraction [sun_in_ECI - sc_in_ECI] )
       model_sun_vec_eci = l0b.modeled_spacecraft_sun_vxyz
-      ; ; this is the quaternion that converts from EGI to s/c coordinates
-      quaternion = l0b.body_frame_attitude_q1234
+      ; ; this is the quaternion that converts from s/c to ECI coordinates
+      ; it is scalar last, so have to rearrange:
+      q_sc2eci_scalarlast = l0b.body_frame_attitude_q1234
+      q_sc2eci_scalarfirst = [q_sc2eci_scalarlast[3], q_sc2eci_scalarlast[0:2]]
+      ; Now invert to get ECI to sc
+      q_eci2sc_scalarfirst = qinv(q_sc2eci_scalarfirst)
       ; ; Put the modeled sun vector into s/c body coordinates:
-      model_sun_vec_sc = quaternion_rotation(model_sun_vec_eci, quaternion, last_index=1)
+      model_sun_vec_sc = quaternion_rotation(model_sun_vec_eci, q_eci2sc_scalarfirst, last_index=0)
+      ; sometimes the magnitude of this vector is >1, causing NaN - renormalize:
+      model_sun_vec_sc = model_sun_vec_sc/sqrt(total(model_sun_vec_sc^2))
       l1a.modeled_spacecraft_sun_vxyz_sc = model_sun_vec_sc
 
       ; Angle between X_sc and sun:
@@ -431,10 +440,11 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
 
       ; Angle is ~15 deg when Earth pointing, 0 deg sun pointing
       ; - set flag if earth pointing?  +/-5 deg
+      ; 2/10/26: modeled now working, set back to use modeled:
       ; 10/17/25: currently using the measured, since the rotation
       ;  into sc frame from ECI on the model_sun vector isn't returning
       ;  a sensible number.
-      offpointing_flag = (measured_sun_sc_angle_deg gt cal.maximum_swfo_sun_offpointing_angle)
+      offpointing_flag = (model_sun_sc_angle_deg gt cal.maximum_swfo_sun_offpointing_angle)
 
       q = q or ishft(offpointing_flag*1ull, cal.swfo_offpointing_qflag_index)
 
@@ -445,16 +455,20 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
       ; STIS requirement that center of field-of-view is
       ; 50 deg. in the ecliptic off sun-earth line in "ahead" direction
       ; in spacecraft reference frame, unit vector for the FOV is (0.643, 0, 0.766)
-      stis_fov = cal.stis_boresight_sc_unit_vector
+      stis_fov_sc = cal.stis_boresight_sc_unit_vector
 
-      ; Likewise, calculate angle between STIS FOV center and sun:
-      sun_sc = meas_sun_vec_sc
-      sun_stis_angle_deg = acos(stis_fov[0]*sun_sc[0] + stis_fov[2]*sun_sc[2]) / !dtor
-      l1a.sun_stis_angle_deg = sun_stis_angle_deg
+      ; Calculate angle between STIS FOV center and measured sun vector:
+      meas_sun_stis_angle_deg = acos(stis_fov_sc[0]*meas_sun_vec_sc[0] + stis_fov_sc[2]*meas_sun_vec_sc[2])/!dtor
+      l1a.measured_sun_stis_angle_deg = meas_sun_stis_angle_deg
+
+      ; Calculate angle between STIS FOV boresight and modeled EC sun vector:
+      model_sun_stis_angle_deg = acos(stis_fov_sc[0]*model_sun_vec_sc[0] + stis_fov_sc[2]*model_sun_vec_sc[2])/!dtor
+      l1a.modeled_sun_stis_angle_deg = model_sun_stis_angle_deg
 
       ; Sun in STIS FOV flag: angle subtended by fov 60 x 80 deg, angle of
       ; sun relative to center of boresight between 30-40
       ; - set flag if under 40
+      sun_stis_angle_deg = model_sun_stis_angle_deg
       sun_in_stis_fov_flag = (sun_stis_angle_deg lt cal.minimum_stis_sun_angle)
       q = q or ishft(sun_in_stis_fov_flag*1ull, cal.sun_in_stis_fov_qflag_index)
 

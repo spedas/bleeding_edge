@@ -19,26 +19,12 @@ bkg = data.bkg							; background array usec for STATIC
 ; get COUNTS
 tmp = data.cnts
 
-; if physical units, remove background
-
 ; take out dead time correction
-if strupcase(data.units_name) ne 'COUNTS' and strupcase(data.units_name) ne 'RATE' then tmp = tmp/dead
+; kgh 2025-02-10 -- this is not needed because we always start with counts 
+; taking it out bc it will cause an error if a structure is converted more than once
+;if strupcase(data.units_name) ne 'COUNTS' and strupcase(data.units_name) ne 'RATE' then tmp = tmp/dead
 
-scale = 0
-case strupcase(units) of
-'COMPRESSED' :  scale = 1.
-'COUNTS' :  scale = 1.d
-'RATE'   :  scale = 1.d/(dt)
-'CRATE'  :  scale = 1.d/(dt)
-'EFLUX'  :  scale = 1.d/(dt * gf)
-'FLUX'   :  scale = 1.d/(dt * gf * energy)
-'DF'     :  scale = 1.d/(dt * gf * energy^2 * 2./mass/mass*1e5 )
-else: begin
-        message,'Undefined units: '+units
-        return
-      end
-endcase
-
+; if physical units, remove background
 case strupcase(units) of
 'COMPRESSED' :  tmp=tmp
 'COUNTS' :  tmp=tmp
@@ -51,6 +37,22 @@ endcase
 
 ; dead time correct data if not counts or rate
 if strupcase(units) ne 'COUNTS' and strupcase(units) ne 'RATE' then tmp=tmp*dead
+
+scale = 0
+case strupcase(units) of
+  'COMPRESSED' :  scale = 1.
+  'COUNTS' :  scale = 1.d
+  'RATE'   :  scale = 1.d/(dt)
+  'CRATE'  :  scale = 1.d/(dt)
+  'EFLUX'  :  scale = 1.d/(dt * gf)
+  'FLUX'   :  scale = 1.d/(dt * gf * energy)
+  'DF'     :  scale = 1.d/(dt * gf * energy^2 * 2./mass/mass*1e5 )
+  else: begin
+    message,'Undefined units: '+units
+    return
+  end
+endcase
+
 
 ; scale to new units
 data.units_name = units

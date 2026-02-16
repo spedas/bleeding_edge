@@ -24,9 +24,9 @@
 ;  output: Set to named variable that will hold converted structure  
 ;  
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2018-11-21 18:02:57 -0800 (Wed, 21 Nov 2018) $
-;$LastChangedRevision: 26169 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-02-13 11:10:00 -0800 (Fri, 13 Feb 2026) $
+;$LastChangedRevision: 34146 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_convert_flux_units.pro $
 ;-
 pro mms_convert_flux_units,dist,units=units,output=output
@@ -94,7 +94,7 @@ case units_out of
   'flux':out = -[1,0,0]
   'eflux': 
   'df_km': out = -[2,-1,0]
-  'df_cm': out = -[2,-1,1]
+  'df_cm': out = -[2,-1,-1]
   'df': message, 'df units no longer supported - use df_km or df_cm instead'
   else: message, 'Unknown output units: '+units_out
 endcase
