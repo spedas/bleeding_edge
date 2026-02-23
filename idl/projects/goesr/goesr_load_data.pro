@@ -35,8 +35,8 @@
 ; 
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2025-11-07 11:03:20 -0800 (Fri, 07 Nov 2025) $
-; $LastChangedRevision: 33841 $
+; $LastChangedDate: 2026-02-16 13:18:27 -0800 (Mon, 16 Feb 2026) $
+; $LastChangedRevision: 34155 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 ;-
 
@@ -328,11 +328,11 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           if resolution eq 'hires' then begin
             res0='irrad'
           endif else res0='avg1m'
-          lr = level + '-' + res0 + '_'
+          lr = level + '-' + res0 
           if resolution eq 'hires' then begin
-            pathformat = 'xrs/' + sc + '/gxrs-'+ lr +'science/YYYY/MM/sci_gxrs-' + lr + sc0 +'_dYYYYMMDD_v?-?-?.nc
+            pathformat = 'xrs/' + sc + '/gxrs-'+ lr +'_science/YYYY/MM/sci_gxrs-' + lr + sc0 +'_dYYYYMMDD_v?-?-?.nc
           endif else begin
-            pathformat = 'xrs/' + sc + '/xrsf-'+ lr +'science/YYYY/MM/sci_xrsf-' + lr + sc0 +'_dYYYYMMDD_v?-?-?.nc
+            pathformat = 'xrs/' + sc + '/xrsf-'+ lr +'_science/YYYY/MM/sci_xrsf-' + lr + sc0 +'_dYYYYMMDD_v?-?-?.nc
           endelse
         endelse
       end
@@ -348,7 +348,7 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           res0='avg1m'
         endif
         lr = level + '-' + res0
-        pathformat = sc + '/' + level + '/data/mpsh-' + lr + '/YYYY/MM/sci_mpsh-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc'
+        pathformat = sc + '/' + level + '/data/mpsh-' + lr + '_science/YYYY/MM/sci_mpsh-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc'
       end
       'sgps': begin
         ; Solar and Galactic Proton Sensors (SGPS)

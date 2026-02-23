@@ -83,8 +83,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-02 13:44:20 -0800 (Mon, 02 Feb 2026) $
-; $LastChangedRevision: 34106 $
+; $LastChangedDate: 2026-02-18 12:34:22 -0800 (Wed, 18 Feb 2026) $
+; $LastChangedRevision: 34173 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -125,18 +125,22 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   ivlev = 4  ; STATIC background subtraction level (should be >= 2)
 
 ; Use STATIC L3 densities and temperatures if possible (these use IV4)
+;   five species (m/q): 1, 2, 16, 32, 44
+;   quality: 0 = good, 1 = bad
 
   if (useL3) then begin
     mvn_sta_l3_load  ; load all moments
     get_data,'mvn_sta_l3_density',data=sta_den,alim=sta_den_lim,index=i
     if (i gt 0) then begin
       get_data,'mvn_sta_l3_density_abs_uncertainty',data=sta_den_sigma
+      get_data,'mvn_sta_l3_density_quality_flag',data=sta_den_quality
       got_l3_den = 1
       doden = 0
     endif else got_l3_den = 0
     get_data,'mvn_sta_l3_temperature_o2+',data=sta_tmp,alim=sta_tmp_lim,index=i
     if (i gt 0) then begin
       get_data,'mvn_sta_l3_temperature_abs_uncertainty',data=sta_tmp_sigma
+      get_data,'mvn_sta_l3_temperature_quality_flag',data=sta_tmp_quality
       got_l3_tmp = 1
       dotmp = 0
     endif else got_l3_tmp = 0
@@ -187,6 +191,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     print,"  -> Rerun maven_orbit_tplot to include your time range."
     return
   endif
+  pdata = 'MAVEN_POS_(MARS-MSO)'
+  store_data,pdata,data={x:eph.time, y:eph.mso_x, v:[0,1,2]}  ; needed by mvn_swia_regid
 
   str_element, mvn_c6_dat, 'time', time_c6, success=gotc6
   if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
@@ -277,7 +283,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
   pans = pans[1:*]
 
-  if (~doden and ~dotmp and (max(dovel) eq 0)) then return
+  if (~doden and ~got_l3_den and ~dotmp and ~got_l3_tmp and (max(dovel) eq 0)) then return
 
   var4d = 'mvn_sta_' + v_apid + '_E'
   get_data, var4d, data=dat4d, index=i
@@ -328,19 +334,35 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
     dx = sta_den.x - shift(sta_den.x,1)
     dx[0] = dx[1]
-    y = (min(dx) lt (2D*dt)) ? smooth_in_time(sta_den.y, sta_den.x, dt) : sta_den.y
 
     i = where(sta_den_lim.labels eq 'H+', count)
-    if (count gt 0) then result_h.den_i = interp(y[*,i], sta_den.x, time) $
-                    else print,"Warning: missing L3 H+ density"
+    if (count eq 1) then begin
+      i = i[0]  ; must be a scalar for 2D array indexing with i and j
+      j = where(sta_den_quality.y[*,i] eq 1, count)  ; 0 = good, 1 = bad
+      if (count gt 0) then sta_den.y[j,i] = !values.f_nan  ; smooth_in_time ignores NaN's
+      y = (min(dx) lt (2D*dt)) ? smooth_in_time(sta_den.y[*,i], sta_den.x, dt) : sta_den.y[*,i]
+      result_h.den_i = interp(y, sta_den.x, time, /ignore_nan, /no_extrapolate, interp_thresh=(2D*dt))
+    endif else print,"Warning: missing L3 H+ density"
 
     i = where(sta_den_lim.labels eq 'O+', count)
-    if (count gt 0) then result_o1.den_i = interp(y[*,i], sta_den.x, time) $
-                    else print,"Warning: missing L3 O+ density"
+    if (count eq 1) then begin
+      i = i[0]  ; must be a scalar for 2D array indexing with i and j
+      j = where(sta_den_quality.y[*,i] eq 1, count)  ; 0 = good, 1 = bad
+      if (count gt 0) then sta_den.y[j,i] = !values.f_nan  ; smooth_in_time ignores NaN's
+      y = (min(dx) lt (2D*dt)) ? smooth_in_time(sta_den.y[*,i], sta_den.x, dt) : sta_den.y[*,i]
+      result_o1.den_i = interp(y, sta_den.x, time, /ignore_nan, /no_extrapolate, interp_thresh=(2D*dt))
+    endif else print,"Warning: missing L3 O+ density"
 
     i = where(sta_den_lim.labels eq 'O2+', count)
-    if (count gt 0) then result_o2.den_i = interp(y[*,i], sta_den.x, time) $
-                    else print,"Warning: missing L3 O2+ density"
+    if (count eq 1) then begin
+      i = i[0]  ; must be a scalar for 2D array indexing with i and j
+      j = where(sta_den_quality.y[*,i] eq 1, count)  ; 0 = good, 1 = bad
+      if (count gt 0) then sta_den.y[j,i] = !values.f_nan  ; smooth_in_time ignores NaN's
+      y = (min(dx) lt (2D*dt)) ? smooth_in_time(sta_den.y[*,i], sta_den.x, dt) : sta_den.y[*,i]
+      result_o2.den_i = interp(y, sta_den.x, time, /ignore_nan, /no_extrapolate, interp_thresh=(2D*dt))
+    endif else print,"Warning: missing L3 O2+ density"
+
+    doden = 0  ; reassert - no longer need to calculate densities
 
   endif
 
@@ -722,6 +744,10 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
 ; Magnetic field (fill in missing values)
 
+  if ~find_handle('mvn_B_1sec') then mvn_mag_load
+  if ~find_handle('mvn_B_1sec_maven_mso') then mvn_mag_geom
+  if ~find_handle('mvn_B_full') then mvn_mag_load, 'L2_FULL'  ; needed by mvn_swia_regid
+
   get_data, 'mvn_B_1sec_maven_mso', index=i
   if (i gt 0) then begin
     tsmooth_in_time, 'mvn_B_1sec_maven_mso', dt
@@ -747,7 +773,6 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       result_o2[indx].magf[1] = interpol(mag.y[*,1], mag.x, time[indx])
       result_o2[indx].magf[2] = interpol(mag.y[*,2], mag.x, time[indx])
     endif
-
   endif
 
 ; Reference frame
@@ -807,46 +832,67 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   endif else print,'Could not get topology information.'
 
 ; Plasma Region (Halekas method)
-;   Both ionosphere indices are combined into one.
-;   0 = unknown, 1 = solar wind, 2 = sheath, 3 = ionosphere, 4 = tail lobe
+;   0 = unknown, 1 = solar wind, 2 = sheath, 3 = ionosphere, 4 = dayside ionosphere, 5 = tail lobe
 
-  get_data,'reg_id',data=reg_id
-  if (size(reg_id,/type) eq 8) then begin
-    dtt = reg_id.x - shift(reg_id.x,1)
+  if ~find_handle('regid') then begin
+    mvn_swia_load_l2_data, /loadall, /tplot
+    bdata = 'mvn_B_1sec_maven_mso'
+    fbdata = 'mvn_B_full'
+    mvn_swia_regid, bdata=bdata, fbdata=fbdata, pdata=pdata
+  endif
+
+  get_data,'regid',data=regid
+  if (size(regid,/type) eq 8) then begin
+    dtt = regid.x - shift(regid.x,1)
     dtt = median(dtt[1:*])
     nfilter = round(dt/dtt)
     if ~(nfilter mod 2) then nfilter++
-    region = round(median(reg_id.y, nfilter))  ; dt-width median filter
+    region = round(median(regid.y[*,0], nfilter))  ; dt-width median filter
 
-    indx = nn2(reg_id.x, time)
+    indx = nn2(regid.x, time)
     result_h.region = region[indx]
     result_o1.region = region[indx]
     result_o2.region = region[indx]
   endif else print,'Could not get plasma region information.'
 
-; Upstream drivers (direct and proxy)
-;   Combined proxy:
-;   /home/rlillis/work/data/maven_sw_driver_files/clock_angle_vSWIM_Yaxue.sav
+; Upstream drivers
+;
+;   Upstream density and velocity (direct + penetrating proton)
+;   https://homepage.physics.uiowa.edu/~jhalekas/drivers/solar_wind_combined.tplot
+;   coverage: 2014-10-06 to 2025-12-05  (all CIO campaigns)
+;   latest refresh: 2026-02-16
+
+  dtmax = 5D*3600D  ; within 5 hours of CIO measurement
 
   path = root_data_dir() + 'maven/data/sci/swe/l3/'
-  tplot_restore, file=(path + 'drivers_merge_l2.tplot')  ; direct (Halekas)
+  fname = 'solar_wind_combined.tplot'
+  finfo = file_info(path + fname)
+  if (finfo.exists) then begin
+    tplot_restore, file=(path + fname)  ; direct + penetrating proton (Halekas)
 
-  ngud = 0L
-  get_data, 'bsw', data=imf, index=i
-  if (i gt 0) then begin
-    dtmax = 5D*3600D  ; within 5 hours of sw measurement
-    By = interp(imf.y[*,1], imf.x, time, int=dtmax)
-    Bz = interp(imf.y[*,2], imf.x, time, int=dtmax)
+    get_data, 'ncomb', data=npsw, index=i
+    Np = interp(npsw.y, npsw.x, time, interp_threshold=dtmax, /no_extrapolate)  ; cm-3
+    get_data, 'vcomb', data=vpsw, index=i
+    Vp = interp(vpsw.y, vpsw.x, time, interp_threshold=dtmax, /no_extrapolate)  ; km/s
 
-    gap = where(~finite(By) or ~finite(Bz), ngap)
-    if (ngap gt 0) then begin
-      restore, (path + 'clock_angle_vSWIM_Yaxue.sav')  ; combined proxy (Azari-Dong)
-      if (size(clock,/type) eq 8) then begin
-        By[gap] = interp(clock.By_norm, clock.time, time[gap], int=dtmax)
-        Bz[gap] = interp(clock.Bz_norm, clock.time, time[gap], int=dtmax)
-      endif else print,'Could not get clock angle proxy database.'
-    endif
+    Psw = (1.67e-6) * (Np*Vp*Vp)  ; nPa
+    result_h.sw_press = Psw
+    result_o1.sw_press = Psw
+    result_o2.sw_press = Psw
+  endif else print, "Solar wind parameters not found: " + fname
 
+;   Combined clock angle (Azari + Dong)
+;   /home/rlillis/work/data/maven_sw_driver_files/clock_angle_vSWIM_Yaxue.sav
+;   coverage: 2014-11-13 to 2024-04-17  (CIO campaigns A-N)
+;   latest refresh: 2025-06-25
+
+  fname = 'clock_angle_vSWIM_Yaxue.sav'
+  finfo = file_info(path + fname)
+  if (finfo.exists) then begin
+    restore, (path + fname)  ; combined proxy (Azari-Dong)
+
+    By = interp(clock.By_norm, clock.time, time, interp_threshold=dtmax, /no_extrapolate)
+    Bz = interp(clock.Bz_norm, clock.time, time, interp_threshold=dtmax, /no_extrapolate)
     Bclk = atan(Bz,By)  ; radians (0 = east, pi = west)
     result_h.imf_clk = Bclk
     result_o1.imf_clk = Bclk
@@ -870,17 +916,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       result_o2.v_mse[2] = cosclk*result_o2.v_mso[2] - sinclk*result_o2.v_mso[1]
     endif
 
-    get_data, 'npsw', data=npsw, index=i
-    Np = interp(npsw.y, npsw.x, time, int=dtmax)  ; cm-3
-    get_data, 'vpsw', data=vpsw, index=i
-    Vp = interp(vpsw.y, vpsw.x, time, int=dtmax)  ; km/s
-
-    Psw = (1.67e-6) * (Np*Vp*Vp)  ; nPa
-    result_h.sw_press = Psw
-    result_o1.sw_press = Psw
-    result_o2.sw_press = Psw
-
-  endif else print,'Could not get upstream drivers database.'
+  endif else print,"Clock angle database not found: " + fname
 
 ; MSO, MSE and GEO ephemerides
 

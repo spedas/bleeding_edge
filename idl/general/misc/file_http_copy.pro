@@ -134,10 +134,10 @@
  ;       then the connection would be closed
  ;
  ; $LastChangedBy: davin-mac $
- ; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
- ; $LastChangedRevision: 33797 $
+ ; $LastChangedDate: 2026-02-16 14:44:40 -0800 (Mon, 16 Feb 2026) $
+ ; $LastChangedRevision: 34156 $
  ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_http_copy.pro $
- ; $Id: file_http_copy.pro 33797 2025-10-27 18:02:52Z davin-mac $
+ ; $Id: file_http_copy.pro 34156 2026-02-16 22:44:40Z davin-mac $
  ;-
  
  
@@ -542,7 +542,7 @@ end
    ;; sockets supported in unix & windows since V5.4, Macintosh since V5.6
    tstart = systime(1)
    
-   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 33797 2025-10-27 18:02:52Z davin-mac $
+   dprint,dlevel=5,verbose=verbose,'Start; $Id: file_http_copy.pro 34156 2026-02-16 22:44:40Z davin-mac $
 
    if n_elements(strict_html) eq 0 then begin
       strict_html = 1      ;  set to 1 to be robust,  set to 0 to be much faster
@@ -550,7 +550,7 @@ end
    endif
 
    if keyword_set(user_agent) eq 0 then begin
-     swver = strsplit('$Id: file_http_copy.pro 33797 2025-10-27 18:02:52Z davin-mac $',/extract)
+     swver = strsplit('$Id: file_http_copy.pro 34156 2026-02-16 22:44:40Z davin-mac $',/extract)
      if !version.release ge '7' then begin
       login_info = get_login_info()
       user = login_info.user_name+'@'+login_info.machine_name
@@ -858,7 +858,7 @@ endif else begin
      
      if n_elements(if_modified_since) eq 0 then if_modified_since=1 
      if keyword_set(if_modified_since) then begin
-       filemodtime = time_string(if_modified_since lt 2 ? lcl.mtime+1 : if_modified_since , tformat='DOW, DD MTH YYYY hh:mm:ss GMT' )       
+       filemodtime = time_string(if_modified_since lt 2 ? lcl.mtime+1 : if_modified_since , tformat='DOW, DD Mth YYYY hh:mm:ss GMT' )       
        ;printf, unit, 'If-Modified-Since: '+filemodtime
        get_str += newline + 'If-Modified-Since: '+filemodtime
        dprint,dlevel=4,verbose=verbose,'If-Modified-Since: '+filemodtime

@@ -54,9 +54,9 @@
 ;  -checks contents of "http_proxy" environment variable for proxy server
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2024-11-20 07:53:04 -0800 (Wed, 20 Nov 2024) $
-;$LastChangedRevision: 32966 $
+;$LastChangedBy: davin-mac $
+;$LastChangedDate: 2026-02-16 14:44:40 -0800 (Mon, 16 Feb 2026) $
+;$LastChangedRevision: 34156 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download_file.pro $
 ;
 ;-
@@ -224,7 +224,7 @@ function spd_download_file, $
       return, filename
     endif
 
-    reference_time = time_string(local_info.mtime,tformat='DOW, DD MTH YYYY hh:mm:ss GMT')
+    reference_time = time_string(local_info.mtime,tformat='DOW, DD Mth YYYY hh:mm:ss GMT')
     headers = array_concat('If-Modified-Since: '+reference_time,headers)
 
   endif

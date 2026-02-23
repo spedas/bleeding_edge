@@ -90,9 +90,9 @@ end
 ;  time_string(1514851198) = 2018-01-01/23:59:58 (Correct!)  
 ;
 ;CREATED BY:    Davin Larson  Oct 1996
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-02-04 13:30:20 -0800 (Wed, 04 Feb 2026) $
-; $LastChangedRevision: 34119 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2026-02-16 14:44:40 -0800 (Mon, 16 Feb 2026) $
+; $LastChangedRevision: 34156 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_string.pro $
 ;-
 function time_string,time0, $
@@ -104,6 +104,9 @@ function time_string,time0, $
    msec = msec, sql=sql, autoprec=autoprec, deltat=dt,timezone=timezone,badstring=badstring,escape_seq=escape_seq
 
 ms=['   ','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+msuc=['   ','JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+mslc=['   ','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+
 dow = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 ;if not keyword_set(badstring) then badstring='NULL'
 
@@ -131,7 +134,9 @@ if keyword_set(tformat) then begin
 
     pos = 0
     repeat time_substitute,res, dow[time.dow],  strpos(tformat,'DOW',pos), next=pos  until pos lt 0
-    repeat time_substitute,res, ms[time.month], strpos(tformat,'MTH',pos), next=pos  until pos lt 0
+    repeat time_substitute,res, msuc[time.month], strpos(tformat,'MTH',pos), next=pos  until pos lt 0
+    repeat time_substitute,res, ms[time.month], strpos(tformat,'Mth',pos), next=pos  until pos lt 0
+    repeat time_substitute,res, mslc[time.month], strpos(tformat,'mth',pos), next=pos  until pos lt 0
     repeat time_substitute,res, string(time.year ,format='(i4.4)'), strpos(tformat,'YYYY',pos),next=pos  until pos lt 0
     repeat time_substitute,res, string(time.year mod 100 ,format='(i2.2)'), strpos(tformat,'yy',pos),next=pos  until pos lt 0
     repeat time_substitute,res, string(time.month,format='(i2.2)'), strpos(tformat,'MM',pos)  ,next=pos  until pos lt 0

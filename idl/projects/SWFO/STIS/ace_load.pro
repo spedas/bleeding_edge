@@ -4,8 +4,14 @@
 ; and the quicklook (updated throughout day).
 ; Intended for comparison/baseline study with STIS.
 ;
-; Example call:
-;  > ace_rtsw_epam_load, /quicklook, /tplot, cadence='5min'
+; Example call (returns all ACE RTSW data):
+;  > ace_load, /tplot
+;  > tplot, 'ace_*_epam_*_flux'
+;
+;If need more recent data than the Key-Parameter data
+; in the RTSW, can instead read "expedited" ACE EPAM Browse data.
+; (updated within minutes of receipt of Level 0 data to the Ace Science Center):
+;  > ace_load, /tplot, /quicklook
 ;  > tplot, 'ace_*_epam_*_flux'
 ;
 ; Missing functionality:
@@ -14,8 +20,8 @@
 ; - Mask keyword for errant data
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-11-05 18:25:21 -0800 (Wed, 05 Nov 2025) $
-; $LastChangedRevision: 33833 $
+; $LastChangedDate: 2026-02-20 17:03:51 -0800 (Fri, 20 Feb 2026) $
+; $LastChangedRevision: 34178 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/ace_load.pro $
 
 function ace_struct_template, instrument
@@ -193,6 +199,8 @@ pro ace_rtsw_load, instrument, data_struct, trange=trange, cadence=cadence, ext=
   for i=0, nfiles - 1 do begin
     ; open file, count # lines and read
     file_i = files[i]
+    if file_test(file_i) eq 0 then continue
+
     openr, lun, file_i,/get_lun
     nlines = file_lines(file_i)
     nd = nlines - n_skippedlines
@@ -291,7 +299,10 @@ pro ace_quicklook_read, epam_struct
   files = spd_download_plus(remote_file=quicklook_url,$
                             local_path=local_data_dir + 'ace/', /last_version)
   ; paths = spd_download(remote_file=epam_quicklook_url, local_path='/Users/rjolitz/Desktop/EPAM/')
-
+  if file_test(files[0]) eq 0 then begin
+    dprint, 'No EPAM quicklook data found, returning...'
+    return
+  endif
   openr, lun, files[0],/get_lun
   nlines = file_lines(files[0])
   n_skippedlines = 12
@@ -408,18 +419,20 @@ pro ace_load, download=download, tplot=tplot, quicklook=quicklook,$
 
   for i=0, n_elements(instruments) - 1 do begin
 
-    ; to be fixed for non epam:
-    if keyword_set(quicklook) then begin
-      ace_quicklook_read, epam_ql
-      if keyword_set(tplot) then ace_epam_tplot, epam_ql, prefix='ace_ql_epam'
-    endif
-
     ace_rtsw_load, instruments[i], struct_rtsw, trange=trange,$
       cadence=cadence[i], ext=ext, download=download
 
     if keyword_set(tplot) then ace_rtsw_tplot, struct_rtsw, instruments[i], prefix='ace_rtsw'
 
   endfor
+
+
+  ; to be fixed for non epam:
+  if keyword_set(quicklook) then begin
+    ace_quicklook_read, epam_ql
+    if keyword_set(tplot) then ace_rtsw_tplot, epam_ql, 'epam', prefix='ace_ql'
+  endif
+
 
 
 end

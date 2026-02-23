@@ -5,7 +5,7 @@ pro swfo_gen_apdat_stats::handler,ccsds, source_dict=source_dict ;,ptp_header
 ;print_struct,ccsds
 self.increment_counters, ccsds
 strct =ccsds  ;{time: ccsds.time,  apid: ccsds.apid ,pkt_size: ccsds.pkt_size,  gap:ccsds.gap }
-strct.pdata = ptr_new()
+;strct.pdata = ptr_new()
 self.data.append, strct
 if self.rt_flag then begin
   store_data,'APIDS_ALL',ccsds.time,ccsds.apid, /append,dlimit={psym:3,symsize:.2 ,ynozero:1}

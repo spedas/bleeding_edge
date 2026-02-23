@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Feb 14 18:17:57 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Feb 20 18:18:37 2026.<P>
  
 <HR>
  
@@ -2344,7 +2344,7 @@ CALLING SEQUENCE:
 INPUT:
  array = a data array
  time_array = a time array (in units of seconds)
- dt = the averaging time (in seconds)
+ dtboxwidth = the averaging time (in seconds)
  no_time_interp = if set, do *not* interpolate the data to the
                   minimum time resolution. The default procedure is
                   to interpolate the data to a regularly spaced grid,
@@ -2371,7 +2371,7 @@ INPUT:
  warning_result = assign a named variable to this keyword to determine the result of the computation
 OUTPUT:
  y = the data array where at each point an average of the data for
- the previous dt has been subtracted.
+ the previous dtboxwidth has been subtracted.
 HISTORY:
  14-jan-2008, jmm, jimm@ssl.berkeley.edu
  06-feb-2008, teq, teq@ssl.berkeley.edu
@@ -2382,8 +2382,8 @@ HISTORY:
                         mod to guarantee that precision of output is at least as 
                         large as precision of input
 $LastChangedBy: jwl $
-$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-$LastChangedRevision: 33563 $
+$LastChangedDate: 2026-02-17 11:51:46 -0800 (Tue, 17 Feb 2026) $
+$LastChangedRevision: 34164 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/high_pass_filter.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/high_pass_filter.pro">general/misc/high_pass_filter.pro</A>)</STRONG><P>
@@ -2478,15 +2478,16 @@ KEYWORDS:
       (same dimensons as u)
   NO_EXTRAPOLATE:  Set this keyword to prevent extrapolation.
   LAST_VALUE:  Set this keyword to return the last value of y array:  y[index]    (no interpolation performed)
-  INTERP_THRESHOLD:  Set to minimum allowed gap size.
+  INTERP_THRESHOLD:  Set to maximum allowed gap size in x.  If the gap between two bounding x values is
+                     greater then this, then no interpolation is performed.
 
 CREATED BY:	Davin Larson  4-30-96
 FILE:  interp.pro
- $LastChangedBy: jwl $
- $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
- $LastChangedRevision: 33563 $
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-02-18 09:28:24 -0800 (Wed, 18 Feb 2026) $
+ $LastChangedRevision: 34169 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/interp.pro $
- $Id: interp.pro 33563 2025-08-20 18:11:05Z jwl $
+ $Id: interp.pro 34169 2026-02-18 17:28:24Z dmitchell $
 </PRE><P>
 <STRONG>(See <A href="misc/interp.pro">general/misc/interp.pro</A>)</STRONG><P>
 <HR>
@@ -4001,17 +4002,17 @@ NAME:
 PURPOSE:
  Runs smooth for irregular grids, after regularising grid
 CALLING SEQUENCE:
- ts = smooth_in_time(array, time_array, dt, /backward, /forward,
+ ts = smooth_in_time(array, time_array, dtboxwidth, /backward, /forward,
                   /double, /no_time_interp)
 INPUT:
  array = a data array, can be 2-d (ntimes, n_something_else), the
          first index is smoothed or averaged.
  time_array = a time array (in units of seconds)
- dt = the averaging time (in seconds)
+ dtboxwidth = the averaging time (in seconds)
 KEYWORDS:
- backward = if set, perform an average over the previous dt, the
-            default is to average from t-dt/2 to t+dt/2
- forward = if set, perform an average over the next dt
+ backward = if set, perform an average over the previous dtboxwidth, the
+            default is to average from t-dtboxwidth/2 to t+dtboxwidth/2
+ forward = if set, perform an average over the next dtboxwidth
  double = if set, do calculation in double precision
                   regardless of input type. (If input data is double
                   calculation is always done in double precision)
@@ -4069,9 +4070,9 @@ HISTORY:
  28-apr-2008, pcruce, Added interp_resolution option, added memory warning, 
                         mod to guarantee that precision of output is at least as 
                         large as precision of input
-$LastChangedBy: ghanley $
-$LastChangedDate: 2024-07-03 11:10:37 -0700 (Wed, 03 Jul 2024) $
-$LastChangedRevision: 32716 $
+$LastChangedBy: jwl $
+$LastChangedDate: 2026-02-17 11:51:46 -0800 (Tue, 17 Feb 2026) $
+$LastChangedRevision: 34164 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/smooth_in_time.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/smooth_in_time.pro">general/misc/smooth_in_time.pro</A>)</STRONG><P>
@@ -5023,14 +5024,14 @@ HISTORY:
 <A HREF="#TIMEBOX_MEAN">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-PROCEDURE: thigh_pass_filter, varname, dt, newname = newname
+PROCEDURE: thigh_pass_filter, varname, dtboxwidth, newname = newname
 PURPOSE:
  Uses high_pass_filter to calculate a running average of the input data and
    store the data with the running average subtracted in an output tplot variable.
                    
 INPUT:
  varname = variable passed to get_data, example - thg_mag_ccnv
- dt = the averaging time (in seconds)
+ dtboxwidth = the averaging time (in seconds)
 KEYWORDS:
  newname: set output variable name
  no_time_interp:  Set to save memory by preventing interpolation of time
@@ -5063,8 +5064,8 @@ HISTORY:
                         mod to guarantee that precision of output is at least as 
                         large as precision of input
 $LastChangedBy: jwl $
-$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-$LastChangedRevision: 33563 $
+$LastChangedDate: 2026-02-17 11:51:46 -0800 (Tue, 17 Feb 2026) $
+$LastChangedRevision: 34164 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/thigh_pass_filter.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/thigh_pass_filter.pro">general/misc/thigh_pass_filter.pro</A>)</STRONG><P>

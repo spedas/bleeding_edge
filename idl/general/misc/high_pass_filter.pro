@@ -8,7 +8,7 @@
 ;INPUT:
 ; array = a data array
 ; time_array = a time array (in units of seconds)
-; dt = the averaging time (in seconds)
+; dtboxwidth = the averaging time (in seconds)
 ; no_time_interp = if set, do *not* interpolate the data to the
 ;                  minimum time resolution. The default procedure is
 ;                  to interpolate the data to a regularly spaced grid,
@@ -35,7 +35,7 @@
 ; warning_result = assign a named variable to this keyword to determine the result of the computation
 ;OUTPUT:
 ; y = the data array where at each point an average of the data for
-; the previous dt has been subtracted.
+; the previous dtboxwidth has been subtracted.
 ;HISTORY:
 ; 14-jan-2008, jmm, jimm@ssl.berkeley.edu
 ; 06-feb-2008, teq, teq@ssl.berkeley.edu
@@ -46,12 +46,12 @@
 ;                        mod to guarantee that precision of output is at least as 
 ;                        large as precision of input
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-;$LastChangedRevision: 33563 $
+;$LastChangedDate: 2026-02-17 11:51:46 -0800 (Tue, 17 Feb 2026) $
+;$LastChangedRevision: 34164 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/high_pass_filter.pro $
 ;-
 
-Function high_pass_filter, array, time_array, dt,warning_result=warning_result, _extra = _extra
+Function high_pass_filter, array, time_array, dtboxwidth,warning_result=warning_result, _extra = _extra
 	;
 	;; Declaring variable as -1 for later check
 	;
@@ -71,7 +71,7 @@ Function high_pass_filter, array, time_array, dt,warning_result=warning_result, 
     return,  out_array
   Endif
 ;Call the smooth_in_time routine to get the running average
-  av_array = smooth_in_time(array, time_array, dt, /backward, $
+  av_array = smooth_in_time(array, time_array, dtboxwidth, /backward, $
                             /true_t_integration, warning_result=warning_result,_extra = _extra)
      ;                        _extra = _extra)
 ;And subtract, note that NaNs will remain NaN's

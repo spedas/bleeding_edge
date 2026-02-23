@@ -21,13 +21,18 @@ pro swfo_load_tplot_store,da
     end
     strmatch(da.name,'*_l1b*'):   begin
       tname = prefix + da.name
+      if 1 then begin
+        str_element,/add,*da.ptr,'HDR_ION_EFLUX', (*da.ptr).HDR_ION_FLUX  * (*da.ptr).ion_energy
+        str_element,/add,*da.ptr,'HDR_ELEC_EFLUX', (*da.ptr).HDR_ELEC_FLUX  * (*da.ptr).ELEC_energy
+      endif
       store_data,tname,data=da,tagnames='*'
       dlim = {spec:1,ylog:1,yrange:[10.,10000.],zlog:1,zrange:[1e1,1e10]}
-      store_data,tname,data=da,tagnames='*ION_FLUX',val='ION_ENERGY';,dlim=dlim
-      store_data,tname,data=da,tagnames='*ELEC_FLUX',val='ELEC_ENERGY';,dlim=dlim
-      options,tname+'*HDR*',spec=1
-      ylim,tname+'*HDR*',10,10000,1
-      zlim,tname+'*HDR*',.0001,1e4,1
+      store_data,tname,data=da,tagnames='*ION_*FLUX',val='ION_ENERGY';,dlim=dlim
+      store_data,tname,data=da,tagnames='*ELEC_*FLUX',val='ELEC_ENERGY';,dlim=dlim
+      options,tname+'*FLUX',spec=1,/default
+      ylim,tname+'*FLUX',10,10000,1,/default
+      zlim,tname+'*_FLUX',.0001,1e4,1,/default
+      zlim,tname+'*_EFLUX',1,1e4,1,/default
     end
     else: begin
       store_data,prefix+da.name,data=da,tagnames='*'
@@ -45,7 +50,8 @@ end
 
 pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datahash  $
   ,resolution=resolution,file_hashes=file_hashes,user_pass=user_pass,lowres=lowres  $
-  ,force_l0b = force_l0b
+  ,force_l0b = force_l0b $
+  ,station=station, varnames=varnames
 
 
   if isa(user_pass,'string') then setenv,'SWFO_USER_PASS='+user_pass
@@ -77,10 +83,10 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
 
       for tint= tints[0],tints[1]+1 do begin
         tr= (tint +[0,1]) *res
-        swfo_ccsds_frame_read,trange=tr,merge=0,reader=rdr,user_pass=getenv('SWFO_USER_PASS')
+        swfo_ccsds_frame_read,trange=tr,merge=0,reader=rdr,user_pass=getenv('SWFO_USER_PASS'),station=station
         dh=!null
 
-        swfo_load,/make,datahash=dh,types=types,resolution=res,file_hashes=rdr.dyndata
+        swfo_load,/make,datahash=dh,types=types,resolution=res,file_hashes=rdr.dyndata,trange=tr
         foreach d,dh do begin
           d.size = 0      ;clear contents of dynamic arrays
         endforeach   ; data type
@@ -104,12 +110,16 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
       endif
 
       ;   if n_elements(trange) ne 2 then trange =[time_double('2025-9-23'),systime(1) ]   ;+ [-1,0] * 3600d *24 * current
+      resolution = 3600d*24
+      if ~keyword_set(trange) then trange = time_double(['2020-1-1','now'])  ; + [0,1] * resolution
       ;    n = n_elements(objs)
       foreach da,datahash,key do begin
         if isa(da,'dynamicarray') then begin
           if da.size gt 0 then begin
             dprint,key,' ',da.name,da.size
-            da.ncdf_make_file,/append ,resolution=resolution, pathformat=pathname0 ; don't include trange!,trange=trange
+            tr = minmax(da.sample(varname='time') ) 
+            if keyword_set(trange) then tr = trange[0] > tr < trange[1] 
+            da.ncdf_make_file,/append ,resolution=resolution, pathformat=pathname0 ,trange=tr  ; be careful using trange! it can be changed
           endif
         endif
       endforeach
@@ -175,7 +185,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
           endforeach
 
           if l0b_filetime lt l0a_filetime then begin
-            dprint,'Reprocessing files for ',l0b_filename
+            dprint,'Reprocessing files for '+l0b_filename
 
             foreach type,types do begin
               dynarray = datahash[type]
@@ -298,7 +308,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
       if datahash.haskey(type) then dynarray = datahash[type] else dynarray= dynamicarray(name=type)
       pathname = str_sub(pathname0,'$NAME$',type)
       files = file_retrieve(pathname,trange=trange,_extra=source)
-      dat_da = swfo_ncdf_read(filenames = files,dynarray = dynarray )
+      dat_da = swfo_ncdf_read(filenames = files,dynarray = dynarray, varnames=varnames )
       datahash[type] = dat_da
     endif
 
@@ -313,39 +323,6 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
     endif
 
   endforeach
-
-
-  if keyword_set(0) || keyword_set(tplot_store) then begin
-
-    tname = 'swfo_stis_L1a'
-    dprint,'Making L1 tplot variables: ',tname
-    ;   l1a = dynamicarray(swfo_stis_sci_level_1a(l0b.array),name=tname)
-    store_data,tname,data = l1a_da,tagnames = '*'
-    store_data,tname,data = l1a_da,tagnames = 'SPEC_??',val_tag='_NRG'
-    store_data,tname,data = l1a_da,tagnames = 'SPEC_???',val_tag='_NRG'
-    store_data,tname,data = l1a_da,tagnames = 'SPEC_????',val_tag='_NRG'
-    options,tname+'_SPEC_??',spec=1, zlog=1, ylog=1, yrange=[5,10000.]
-    options,tname+'_SPEC_???',spec=1, zlog=1, ylog=1, yrange=[5,10000.]
-    options,tname+'_SPEC_????',spec=1, zlog=1, ylog=1, yrange=[5,10000.]
-    options,tname+'_RATE6',/ylog
-    ;options,tname+['_RATE','*SIGMA','*BASELINE', /reverse_order, colors ='bgrmcd'
-
-    tname = 'swfo_stis_L1b'
-    store_data,tname,data=l1b_da,tagnames='*'
-    dlim = {spec:1,ylog:1,yrange:[10.,10000.],zlog:1,zrange:[1e1,1e10]}
-    store_data,tname,data=l1b_da,tagnames='*ION_FLUX',val='ION_ENERGY';,dlim=dlim
-    store_data,tname,data=l1b_da,tagnames='*ELEC_FLUX',val='ELEC_ENERGY';,dlim=dlim
-    options,'*HDR*',spec=1
-    ylim,'*HDR*',5,10000,1
-    zlim,'*HDR*',1,1,1
-
-    options,/def,'*_RATE6 *BASELINE *SIGMA tlimi*NOISE_TOTAL',colors='bgrmcd',symsize=.5,$
-      labels=channels,labflag=-1,constant=0,/reverse_order
-
-
-  endif
-  ;l1b_da.
-
 
   tplot_options,'title','SWFO Prelimary Data - Do not disseminate'
   ; tplot_options,'notes','Preliminary data - Do not disseminate'

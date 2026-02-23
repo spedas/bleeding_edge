@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-12-10 09:47:58 -0800 (Wed, 10 Dec 2025) $
-; $LastChangedRevision: 33913 $
+; $LastChangedDate: 2026-02-17 22:04:16 -0800 (Tue, 17 Feb 2026) $
+; $LastChangedRevision: 34166 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_read.pro $
 ; $ID: $
 
@@ -9,7 +9,8 @@ function swfo_ncdf_read,  dynarray=dynarray, filenames=filenames $
   ,def_values=def_values $
   ,verbose=verbose,num_recs=num_recs  $
   ,force_recdim=force_recdim $
-  ,recdimname=recdimname
+  ,recdimname=recdimname $
+  ,varnames = varnames , not_varnames=not_varnames
 
   if ~keyword_set(def_values) then begin
     def_values = dictionary()
@@ -80,8 +81,14 @@ function swfo_ncdf_read,  dynarray=dynarray, filenames=filenames $
 
     dat0 = !null
     vartypes = strarr(inq.nvars)  ; for latter ID of char arrays
+    vidnums = intarr(inq.nvars)
+    ntags = 0
     for vid=0,inq.nvars-1 do begin
       vinq = ncdf_varinq(id,vid)
+      
+      if isa(varnames,/string) && ~strfilter(vinq.name, varnames,/byte,delimiter=' ',/fold_case) && (vinq.name ne 'TIME') then continue
+      if isa(not_varnames,/string) && strfilter(vinq.name, not_varnames,/byte,delimiter=' ',/fold_case) && (vinq.name ne 'TIME') then continue
+     
       ;printdat,vinq
 
       ; get the datatype, ndims, and dim:
@@ -110,22 +117,36 @@ function swfo_ncdf_read,  dynarray=dynarray, filenames=filenames $
         if keyword_set(dim) then val = replicate(val,dim)
         dat0 = create_struct(dat0,vinq.name,val)
       endelse
+      vidnums[ntags++] = vid
     endfor
 
     ; Make # recs of the dat0 for dat or set to dat
     if num_recs gt 0 then dat = replicate(dat0,num_recs) else dat = dat0
 
     ; Fill in the structure:
-    for vid=0, inq.nvars-1 do begin
-      ncdf_varget,id,vid,values
+    if 1 then begin
+      for n = 0,ntags-1 do begin
+        vid = vidnums[n]
+        ncdf_varget,id,vid,values
+  
+        ; varget returns string fields as a byte array
+        ; needs to be converted into string:
+        if vartypes[vid] eq 'CHAR' then values = string(values)
 
-      ; varget returns string fields as a byte array
-      ; needs to be converted into string:
-      if vartypes[vid] eq 'CHAR' then values = string(values)
+        dat.(n) = values
+      endfor
+    endif else begin
+      for vid=0, inq.nvars-1 do begin
+        ncdf_varget,id,vid,values
 
-      dat.(vid) = values
+        ; varget returns string fields as a byte array
+        ; needs to be converted into string:
+        if vartypes[vid] eq 'CHAR' then values = string(values)
+
+        dat.(vid) = values
 
     endfor
+    endelse
 
     ncdf_close,id
     ;  if isa(dynarray,'dynamicarray' then begin

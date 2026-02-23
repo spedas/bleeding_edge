@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-12-10 09:47:58 -0800 (Wed, 10 Dec 2025) $
-; $LastChangedRevision: 33913 $
+; $LastChangedDate: 2026-02-16 14:47:42 -0800 (Mon, 16 Feb 2026) $
+; $LastChangedRevision: 34157 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_create.pro $
 ; $ID: $
 
@@ -38,7 +38,7 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
           return
         endif
         if n_tags(/length,dat) ne n_tags(/length,dat_old) then begin
-          dprint,'New format for ncdf_filename'
+          dprint,'New format for ncdf_filename: ',ncdf_filename
         endif
         dat_new = replicate(dat[0],n_elements(dat_old))
         struct_assign,dat_old,dat_new,/verbose

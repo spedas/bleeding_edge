@@ -27,18 +27,22 @@
 ;
 ;       L3:            Use STATIC L3 data for densities and temperatures.
 ;
+;       MAILTO:        Send email to this address on job start and finish.
+;                      Default = 'calif_dave@icloud.com'
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-13 09:04:43 -0800 (Fri, 13 Feb 2026) $
-; $LastChangedRevision: 34141 $
+; $LastChangedDate: 2026-02-16 15:19:42 -0800 (Mon, 16 Feb 2026) $
+; $LastChangedRevision: 34160 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;FILE: mvn_sta_cio_save.pro
 ;-
-pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3=L3
+pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3=L3, mailto=mailto
 
   common coldion, cio_h, cio_o1, cio_o2
 
+  if (size(mailto,/type) ne 7) then mailto = 'calif_dave@icloud.com'
   if (size(doden,/type) eq 0) then doden = 1 else doden = keyword_set(doden)
   if (size(dotemp,/type) eq 0) then dotemp = 1 else dotemp = keyword_set(dotemp)
   if (size(dovel,/type) eq 0) then dovel = 1 else dovel = keyword_set(dovel)
@@ -47,9 +51,8 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
 
   dpath = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
   froot = 'mvn_sta_cio_'
-  version = '_v02'
+  version = '_v03'  ; iv4 background removal, L3 densities, and latest proxies
   oneday = 86400D  ; process one day at a time
-
 
   case n_elements(trange) of
      0  :  begin
@@ -71,12 +74,12 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
 ; Send email that process is starting
 
   uinfo = get_login_info()
-  mailto = 'calif_dave@icloud.com'
   ff_ext = strcompress(/remove_all, string(long(100000.0*randomu(seed))))
-  ofile0 = '/mydisks/home/maven/' + uinfo.user_name + '/sta_cio_msg0.txt' + ff_ext
+  tpath = getenv('CDF_TMP')
+  ofile0 = tpath + '/sta_cio_msg0.txt' + ff_ext
   openw, tunit, ofile0, /get_lun
     printf, tunit, 'Processing: '
-    for i=0L,(ndays-1L) do printf, tunit, time_string(tstart + double(i)*oneday)
+    for i=0L,(ndays-1L) do printf, tunit, time_string(tstart + double(i)*oneday, prec=-3)
   free_lun, tunit
   file_chmod, ofile0, '664'o
   subj = 'STATIC CIO process start on ' + uinfo.machine_name
@@ -135,10 +138,10 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
 ; Send email that process has completed
 
   ff_ext = strcompress(/remove_all, string(long(100000.0*randomu(seed))))
-  ofile0 = '/mydisks/home/maven/' + uinfo.user_name + '/sta_cio_msg0.txt' + ff_ext
+  ofile0 = tpath + '/sta_cio_msg0.txt' + ff_ext
   openw, tunit, ofile0, /get_lun
     printf, tunit, 'Process completed: '
-    for i=0L,(ndays-1L) do printf, tunit, time_string(tstart + double(i)*oneday)
+    for i=0L,(ndays-1L) do printf, tunit, time_string(tstart + double(i)*oneday, prec=-3)
   free_lun, tunit
   file_chmod, ofile0, '664'o
   subj = 'STATIC CIO process completed on ' + uinfo.machine_name

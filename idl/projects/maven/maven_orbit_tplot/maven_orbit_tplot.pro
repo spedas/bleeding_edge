@@ -176,21 +176,14 @@
 ;                 the save files are 17 GB in size (as of December 2024), so this 
 ;                 keyword is only useful for computers with sufficient memory.
 ;
-;                   Latest refresh: 2024-12-16
-;                   Range 1: 2014-09-21 to 2025-01-18
-;                            -- gap --
-;                   Range 2: 2025-02-01 to 2025-04-05
-;
-;                 The first range is derived from reconstructed spk kernels plus
-;                 short-term predict kernels.  The second range is derived from 
-;                 medium-term predict kernels.
+;                   Latest refresh: 2026-02-12
 ;
 ;                 Using the where command, you can identify times that meet an
 ;                 arbitrary set of ephemeris conditions.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-09-22 12:33:28 -0700 (Mon, 22 Sep 2025) $
-; $LastChangedRevision: 33644 $
+; $LastChangedDate: 2026-02-16 11:12:59 -0800 (Mon, 16 Feb 2026) $
+; $LastChangedRevision: 34154 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -268,21 +261,44 @@ pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=re
     return
   endif
 
-; Restore mission-to-date from save files
+; Restore mission-to-date from save files (last refresh 2026-02-12)
 
   if keyword_set(mission) then begin
     fname = 'maven_moi_present.sav'
     file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
-    if (nfiles eq 1) then restore, file else print,"File not found: " + fname
+    if (nfiles ne 1) then begin
+      print,"Mission ephemeris file not found: " + fname
+      return
+    endif
+    restore, file
 
     fname = 'maven_moi_present.tplot'
     file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
-    if (nfiles eq 1) then tplot_restore, file=file else print,"File not found: " + fname
+    if (nfiles ne 1) then begin
+      print,"Mission tplot file not found: " + fname
+      return
+    endif
+    tplot_restore, file=file
 
     timefit, var='alt'
-    options, 'alt2', 'datagap', 2D*oneday
+    ylim,'alt2',0,7000,0
+    options,'alt2','datagap',2D*oneday
+    ylim,'palt',100,250,0
+    options,'palt','yticks',3
+    options,'palt','yminor',5
+    options,'plat','constant',0
+    options,'plat','const_line',2
+
+    if ~find_handle('SEM') then orrery, /tplot, /noplot
+    ylim,'SEM',0.1,10,1
+    options,'SEM','thick',2
+    Asun = (6.957e10/1.496e13)*!radeg
+    options,'SEM','constant',[Asun,3.0]
+
+    tplot,['alt2','palt','SEM','plat','S-M']
+
     return
   endif
 

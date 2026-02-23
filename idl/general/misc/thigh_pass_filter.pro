@@ -1,12 +1,12 @@
 ;+
-;PROCEDURE: thigh_pass_filter, varname, dt, newname = newname
+;PROCEDURE: thigh_pass_filter, varname, dtboxwidth, newname = newname
 ;PURPOSE:
 ; Uses high_pass_filter to calculate a running average of the input data and
 ;   store the data with the running average subtracted in an output tplot variable.
 ;                   
 ;INPUT:
 ; varname = variable passed to get_data, example - thg_mag_ccnv
-; dt = the averaging time (in seconds)
+; dtboxwidth = the averaging time (in seconds)
 ;KEYWORDS:
 ; newname: set output variable name
 ; no_time_interp:  Set to save memory by preventing interpolation of time
@@ -39,18 +39,18 @@
 ;                        mod to guarantee that precision of output is at least as 
 ;                        large as precision of input
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-;$LastChangedRevision: 33563 $
+;$LastChangedDate: 2026-02-17 11:51:46 -0800 (Tue, 17 Feb 2026) $
+;$LastChangedRevision: 34164 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/thigh_pass_filter.pro $
 ;-
 
-Pro thigh_pass_filter, varname, dt, newname = newname,warning_result=warning_result, display_object=display_object,_extra=ex
+Pro thigh_pass_filter, varname, dtboxwidth, newname = newname,warning_result=warning_result, display_object=display_object,_extra=ex
 
   get_data, varname, data = data, dlimits = dlimits, limits = limits
   If is_struct(data) eq 0 Then Begin
     dprint, 'No data in '+varname, display_object=display_object
   Endif Else Begin
-    y1 = high_pass_filter(data.y, data.x, dt,warning_result=warning_result,interactive_varname=varname,_extra=ex)
+    y1 = high_pass_filter(data.y, data.x, dtboxwidth,warning_result=warning_result,interactive_varname=varname,_extra=ex)
     str_element, data, 'v', success = ok
     If(ok Eq 0) Then data1 = {x:data.x, y:y1} $
     Else data1 = {x:data.x, y:y1, v:data.v}

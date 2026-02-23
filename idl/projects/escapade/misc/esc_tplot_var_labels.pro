@@ -11,8 +11,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2025-08-15 16:23:06 -0700 (Fri, 15 Aug 2025) $
-; $LastChangedRevision: 33548 $
+; $LastChangedDate: 2026-02-18 12:18:56 -0800 (Wed, 18 Feb 2026) $
+; $LastChangedRevision: 34172 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/misc/esc_tplot_var_labels.pro $
 ;
 ;-
@@ -33,7 +33,8 @@ PRO esc_tplot_var_labels, data=data, limits=limits
   pos = limits.position
   IF tag_exist(limits, 'labels', /quiet) THEN vtitle = limits.labels ELSE vtitle = limits.ytitle
   IF tag_exist(limits, 'format', /quiet) THEN format = limits.format ELSE format = '(F0.1)'
-
+  IF tag_exist(limits, 'ygap', /quiet) THEN ygap = limits.ygap ELSE ygap = 1.
+  
   xspace = chsize * !d.x_ch_size / !d.x_size
   yspace = chsize * !d.y_ch_size / !d.y_size
   yw = pos[3] - pos[1]
@@ -41,7 +42,7 @@ PRO esc_tplot_var_labels, data=data, limits=limits
   ypos = pos[3] - yspace
   ypos = (CONVERT_COORD([pos[0], ypos], /normal, /to_data))[1]
   ypos = dgen(range=[ypos, 0.], dimen2(data.y))
-  gy   = 2.d0 * limits.ygap * yspace
+  gy   = 2.d0 * ygap * yspace
   hgt  = yspace * dimen2(data.y) 
   
   FOR i=0, dimen1(limits.xtickv)-1 DO BEGIN

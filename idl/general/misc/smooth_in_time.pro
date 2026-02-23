@@ -40,17 +40,17 @@ End
 ;PURPOSE:
 ; Runs smooth for irregular grids, after regularising grid
 ;CALLING SEQUENCE:
-; ts = smooth_in_time(array, time_array, dt, /backward, /forward,
+; ts = smooth_in_time(array, time_array, dtboxwidth, /backward, /forward,
 ;                  /double, /no_time_interp)
 ;INPUT:
 ; array = a data array, can be 2-d (ntimes, n_something_else), the
 ;         first index is smoothed or averaged.
 ; time_array = a time array (in units of seconds)
-; dt = the averaging time (in seconds)
+; dtboxwidth = the averaging time (in seconds)
 ;KEYWORDS:
-; backward = if set, perform an average over the previous dt, the
-;            default is to average from t-dt/2 to t+dt/2
-; forward = if set, perform an average over the next dt
+; backward = if set, perform an average over the previous dtboxwidth, the
+;            default is to average from t-dtboxwidth/2 to t+dtboxwidth/2
+; forward = if set, perform an average over the next dtboxwidth
 ; double = if set, do calculation in double precision
 ;                  regardless of input type. (If input data is double
 ;                  calculation is always done in double precision)
@@ -108,13 +108,13 @@ End
 ; 28-apr-2008, pcruce, Added interp_resolution option, added memory warning, 
 ;                        mod to guarantee that precision of output is at least as 
 ;                        large as precision of input
-;$LastChangedBy: ghanley $
-;$LastChangedDate: 2024-07-03 11:10:37 -0700 (Wed, 03 Jul 2024) $
-;$LastChangedRevision: 32716 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-02-17 11:51:46 -0800 (Tue, 17 Feb 2026) $
+;$LastChangedRevision: 34164 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/smooth_in_time.pro $
 ;-
 
-Function smooth_in_time, array, time_array, dt, $
+Function smooth_in_time, array, time_array, dtboxwidth, $
                          backward = backward,$
                          forward = forward, $
                          double = double, $
@@ -162,20 +162,20 @@ Function smooth_in_time, array, time_array, dt, $
 ;; Get subscripts of group to take running average over
 ;; nss is the number values returned
       If(keyword_set(backward)) Then Begin
-        t0 = time_array[j]-dt
+        t0 = time_array[j]-dtboxwidth
         t1 = time_array[j]
       Endif Else If(keyword_set(forward)) Then Begin
         t0 = time_array[j]
-        t1 = time_array[j]+dt
+        t1 = time_array[j]+dtboxwidth
       Endif Else Begin
-        t0 = time_array[j]-dt/2.0
-        t1 = time_array[j]+dt/2.0
+        t0 = time_array[j]-dtboxwidth/2.0
+        t1 = time_array[j]+dtboxwidth/2.0
       Endelse
       
       ;padding is done in-place.  This probably entails a speed hit because the operation is repeated,
       ;But it is assumed that the /no_time_interp is being used because the user values space over time
-      ss = where([time_array[0]-dt/2.0, time_array, time_array[n-1]+dt/2.0] Lt t1 And $
-                 [time_array[0]-dt/2.0, time_array, time_array[n-1]+dt/2.0] Ge t0, nss)
+      ss = where([time_array[0]-dtboxwidth/2.0, time_array, time_array[n-1]+dtboxwidth/2.0] Lt t1 And $
+                 [time_array[0]-dtboxwidth/2.0, time_array, time_array[n-1]+dtboxwidth/2.0] Ge t0, nss)
       
       ;; Check if subscripts available
       
@@ -213,7 +213,7 @@ Function smooth_in_time, array, time_array, dt, $
         endelse
 ;          dtx0 = min(dtx[where(dtx Gt 0.0)]) ;min value of t resolution
         not_min = where(abs(dtx-dtx0) Gt dtx0/100.0, cnot_min) ;small allowance
-        nrv = ceil(dt/dtx0)
+        nrv = ceil(dtboxwidth/dtx0)
 ;Note that for non-forward or backwards, this value must be an odd
 ;number gt 3
         If(nrv Lt 3) Then begin

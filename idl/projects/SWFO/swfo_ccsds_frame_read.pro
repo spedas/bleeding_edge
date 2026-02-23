@@ -101,9 +101,43 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,station=stati
       endelse
       frames_name = 'swfo_frame_data'
     end
+    'RXWCD': begin
+      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFORXWCD/YYYY/mth/YYYYMMDD/OR_SWFORXWCD-L0_SL1_sYYYYDOYhh'
+      rdr.source_dict.station = 3
+      source.resolution = 3600
+      allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
+      fileformat =  file_basename(pathname+'mm')
+      filerange = time_string(time_double(trange)+[0,600],tformat=fileformat)
+      ;      if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
+      if 1 then begin
+        w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
+        files = allfiles[w]
+      endif else begin
+        w = where(file_test(allfiles),nw,/null)
+        files = allfiles
+      endelse
+      frames_name = 'swfo_frame_data'
+    end
     'CBU': begin
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOCBU/YYYY/MM/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh'
+      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOCBU/YYYY/mth/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh'
       rdr.source_dict.station = 2
+      source.resolution = 3600
+      allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
+      fileformat =  file_basename(pathname+'mm')
+      filerange = time_string(time_double(trange)+[0,600],tformat=fileformat)
+      ;      if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
+      if 1 then begin
+        w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
+        files = allfiles[w]
+      endif else begin
+        w = where(file_test(allfiles),nw,/null)
+        files = allfiles
+      endelse
+      frames_name = 'swfo_frame_data'
+    end
+    'RXCBU': begin
+      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFORXCBU/YYYY/mth/YYYYMMDD/OR_SWFORXCBU-L0_SL1_sYYYYDOYhh'
+      rdr.source_dict.station = 4
       source.resolution = 3600
       allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
       fileformat =  file_basename(pathname+'mm')

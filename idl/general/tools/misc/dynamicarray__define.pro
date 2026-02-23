@@ -1,8 +1,8 @@
 ;+
 ; Written by Davin Larson - August 2016
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-02-04 01:42:16 -0800 (Wed, 04 Feb 2026) $
-; $LastChangedRevision: 34116 $
+; $LastChangedDate: 2026-02-16 14:47:42 -0800 (Mon, 16 Feb 2026) $
+; $LastChangedRevision: 34157 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tools/misc/dynamicarray__define.pro $
 
 ; Purpose: Object that provides an efficient means of concatenating arrays
@@ -421,7 +421,7 @@ end
 ;end
 
 
-pro dynamicarray::ncdf_make_file,trange=trange,resolution=resolution ,append=append ,pathformat=pathformat ;,testdir=testdir,ret_filename=ret_filename,type=type
+pro dynamicarray::ncdf_make_file,trange=trange0,resolution=resolution ,append=append ,pathformat=pathformat ;,testdir=testdir,ret_filename=ret_filename,type=type
 
   message,'In testing',/cont
 
@@ -433,7 +433,7 @@ pro dynamicarray::ncdf_make_file,trange=trange,resolution=resolution ,append=app
   ncdf_directory = root_data_dir()
   
   if resolution gt 0 then begin
-    if n_elements(trange) ne 2 then trange = minmax(self.sample(varname='time') )
+    if keyword_set(trange0) then trange=trange0 else trange = minmax(self.sample(varname='time') ) 
     trange_int = [floor( trange[0] / resolution ) , ceil(trange[1] /resolution) ]
     nfiles = trange_int[1] - trange_int[0]
     for i=0 ,nfiles-1 do begin

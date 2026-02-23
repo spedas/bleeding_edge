@@ -3,7 +3,13 @@
 ; ace_epm_load 
 ; 
 ;PURPOSE:
-; Downloads ACE data from SPDF
+; Downloads ACE EPAM data from SPDF.
+; By default, will download 'K0' data, the 5-minute key parameter.
+; Alternatively can download via keywords:
+; - K1: 1-hour key parameter
+; - H1: 5-minute Level 2 data
+; - H2: 1-hour Level 2 data
+; - H3: 12-second Level 2 data
 ; 
 ;Typical Usage:
 ;  ace_epm_load, trange=trange 
@@ -14,8 +20,9 @@
 ; $URL:$
 ;-
 
-pro ace_epm_load,pathnames=pathnames,trange=trange,files=files,download_only=download_only, $
-        source=source,verbose=verbose,k0=k0,h1=h1,h2=h2,h3=h3,k1=k1,no_download=no_download, no_update=no_update
+pro ace_epm_load,pathnames=pathnames,trange=trange,files=files,$
+        download_only=download_only,no_download=no_download, no_update=no_update$
+        source=source,verbose=verbose,k0=k0,h1=h1,h2=h2,h3=h3,k1=k1
 
 istp_init
 if not keyword_set(source) then source = !istp
@@ -26,23 +33,23 @@ dprint,'Loading ACE EPAM files at ',time_string(/local,tstart)
 ; Define trailing end of URL
 
 ;if keyword_set(k0) then begin
-  pathname = 'ace/epam/level_2_cdaweb/epm_k0/YYYY/ac_k0_epm_YYYYMMDD_v??.cdf'  
-  prefix = 'ACE_EPM_K0_'
+pathname = 'ace/epam/level_2_cdaweb/epm_k0/YYYY/ac_k0_epm_YYYYMMDD_v??.cdf'  
+prefix = 'ACE_EPM_K0_'
 ;endif
 if keyword_set(k1) then begin
-  pathname = 'ace/epam/level_2_cdaweb/epm_k1/YYYY/ac_k1_epm_YYYYMMDD_v??.cdf
+  pathname = 'ace/epam/level_2_cdaweb/epm_k1/YYYY/ac_k1_epm_YYYYMMDD_v??.cdf'
   prefix = 'ACE_EPM_K1_'
 endif
 if keyword_set(h1) then begin
-  pathname = 'ace/epam/level_2_cdaweb/epm_h1/YYYY/ac_h1_epm_YYYYMMDD_v??.cdf
+  pathname = 'ace/epam/level_2_cdaweb/epm_h1/YYYY/ac_h1_epm_YYYYMMDD_v??.cdf'
   prefix = 'ACE_EPM_H1_'
 endif
 if keyword_set(h2) then begin
-  pathname = 'ace/epam/level_2_cdaweb/epm_h2/YYYY/ac_h2_epm_YYYYMMDD_v??.cdf
+  pathname = 'ace/epam/level_2_cdaweb/epm_h2/YYYY/ac_h2_epm_YYYYMMDD_v??.cdf'
   prefix = 'ACE_EPM_H2_'
 endif
 if keyword_set(h3) then begin
-  pathname = 'ace/epam/level_2_cdaweb/epm_h3/YYYY/ac_h3_epm_YYYYMMDD_v??.cdf
+  pathname = 'ace/epam/level_2_cdaweb/epm_h3/YYYY/ac_h3_epm_YYYYMMDD_v??.cdf'
   prefix = 'ACE_EPM_H3_'
 endif
 
@@ -70,11 +77,14 @@ if 1 then begin
   ylim,'ACE_EPM_Ion',.01,1e6,1,/def
   ylim,'ACE_EPM_Electron',1,1e6,1,/def
   tn= tnames(prefix+'*')
-  for i=0,n_elements(tn)-1 do begin
-    get_data,tn[i],dlimit=dlim
-    options,tn[i],ytitle=dlim.cdf.vatt.lablaxis,/def
-    dprint,dlevel=2,tn[i],"  ",dlim.cdf.vatt.lablaxis
-  endfor
+  ; check if tn empty string
+  if keyword_set(tn) then begin
+    for i=0,n_elements(tn)-1 do begin
+      get_data,tn[i],dlimit=dlim
+      options,tn[i],ytitle=dlim.cdf.vatt.lablaxis,/def
+      dprint,dlevel=2,tn[i],"  ",dlim.cdf.vatt.lablaxis
+    endfor
+  endif
 endif else begin
   cdfi = cdf_load_vars(files)
   ind = where(cdfi.vars.name eq 'Ion_very_lo')

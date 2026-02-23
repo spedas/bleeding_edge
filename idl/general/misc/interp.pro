@@ -22,15 +22,16 @@
 ;      (same dimensons as u)
 ;  NO_EXTRAPOLATE:  Set this keyword to prevent extrapolation.
 ;  LAST_VALUE:  Set this keyword to return the last value of y array:  y[index]    (no interpolation performed)
-;  INTERP_THRESHOLD:  Set to minimum allowed gap size.
+;  INTERP_THRESHOLD:  Set to maximum allowed gap size in x.  If the gap between two bounding x values is
+;                     greater then this, then no interpolation is performed.
 ;
 ;CREATED BY:	Davin Larson  4-30-96
 ;FILE:  interp.pro
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-; $LastChangedRevision: 33563 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2026-02-18 09:28:24 -0800 (Wed, 18 Feb 2026) $
+; $LastChangedRevision: 34169 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/interp.pro $
-; $Id: interp.pro 33563 2025-08-20 18:11:05Z jwl $
+; $Id: interp.pro 34169 2026-02-18 17:28:24Z dmitchell $
 ;-
 function interp,y,x,u,index=i,no_check_monotonic=ch_mon,no_extrapolate=no_extrap,interp_threshold=int_th, $
   ignore_nan=ignore_nan,last_value=last_value,missing = missing,xlog=xlog,ylog=ylog

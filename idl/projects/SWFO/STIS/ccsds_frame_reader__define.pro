@@ -83,7 +83,7 @@ end
 
 
 pro ccsds_frame_reader::print_info,hdr,txt,dlevel=dlevel
-  dprint,dlevel=dlevel,verbose=self.verbose,hdr.index,hdr.vcid,hdr.seqn,hdr.seqn_delta,hdr.sigfield,hdr.offset,' '+txt
+  dprint,dlevel=dlevel,verbose=self.verbose,hdr.index,hdr.vcid,hdr.seqn,hdr.seqn_delta,hdr.sigfield,hdr.offset,' '+txt  ,dwait=1
 
 end
 
