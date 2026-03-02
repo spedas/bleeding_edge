@@ -41,12 +41,12 @@ If(tstart Ge tend) Then exit
 one_day = 86400.0d0
 days_in = time_string(tstart+one_day*dindgen(5))
 mvn_call_sta_l2l2, days_in = days_in, temp_dir = './', /use_l2_files, $
-                   alt_data_path = 'fast/maven/', /new_l2_version, /l2_only_dead
+                   alt_data_path = '/mydisks/usb_disk/maven/', /new_l2_version, /l2_only_dead
 ;Now call the addbsk process, with the init keyword set, this will
 ;reset the sw version and the default data path to find the new v3
 ;files. Since this only runs for this date, the filepaths should be consistent.
 mvn_sta_l2gen_addbck, date = time_string(tstart), $
-                      alt_data_path = 'fast/maven/', $
+                      alt_data_path = '/mydisks/usb_disk/maven/', $
                       /init
 
 

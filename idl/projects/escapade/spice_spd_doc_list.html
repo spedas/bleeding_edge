@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 20 18:18:38 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Feb 27 18:17:57 2026.<P>
  
 <HR>
  
@@ -19,6 +19,7 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/escapade/spice</H1>
+<LI><A HREF="#ESC_EPH_LOAD">ESC_EPH_LOAD</A>
 <LI><A HREF="#ESC_SPICE_KERNELS">ESC_SPICE_KERNELS</A>
 <LI><A HREF="#ESC_SPICE_LOAD">ESC_SPICE_LOAD</A>
 <br>
@@ -26,8 +27,56 @@ This page was created by the IDL library routine
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="ESC_EPH_LOAD">
+<H2>ESC_EPH_LOAD</H2></A>
+<A HREF="#ESC_SPICE_KERNELS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       ESC_EPH_LOAD
+
+PURPOSE:         Loads the ESCAPADE ancillary ephemeris CDF file(s).
+
+INPUTS:          Time range to be loaded.
+
+KEYWORDS:
+
+ NO_SERVER:      If set, prevents any contact with a remote server.
+
+      BLUE:      If set, loads only BLUE spacecraft data.
+
+      GOLD:      If set, loads only GOLD spacecraft data.
+
+     FILES:      If set, returns the file name(s) to be loaded.
+
+    SOURCE:      Specifies the file source information. Default is esc_file_source().
+
+ PRELAUNCH:      If set, the prelaunch data will be loaded.
+
+COMMISSION:      If set, the commissioning data will be loaded.
+
+    FRAMES:      Specifies which frames (i.e., coordinate systems) will be loaded.
+                 Default is to load all frames.
+
+        RE:      If set, the output data is normalized by Earth radii.
+
+        RM:      If set, the output data is normalized by Mars radii.
+
+CREATED BY:      Takuya Hara on 2026-02-05.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-02-27 17:42:42 -0800 (Fri, 27 Feb 2026) $
+ $LastChangedRevision: 34209 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_eph_load.pro $
+
+</PRE><P>
+<STRONG>(See <A href="spice/esc_eph_load.pro">projects/escapade/spice/esc_eph_load.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ESC_SPICE_KERNELS">
 <H2>ESC_SPICE_KERNELS</H2></A>
+<A HREF="#ESC_EPH_LOAD">[Previous Routine]</A>
 <A HREF="#ESC_SPICE_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -58,8 +107,8 @@ CREATED BY:      Takuya Hara on 2025-11-17.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2025-12-19 23:57:20 -0800 (Fri, 19 Dec 2025) $
- $LastChangedRevision: 33937 $
+ $LastChangedDate: 2026-02-23 14:40:11 -0800 (Mon, 23 Feb 2026) $
+ $LastChangedRevision: 34180 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_kernels.pro $
 
 </PRE><P>

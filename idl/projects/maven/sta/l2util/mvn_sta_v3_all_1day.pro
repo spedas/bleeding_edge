@@ -44,7 +44,7 @@ one_day = 86400.0d0
 days_in = time_string(tstart+4.0*one_day)
 If(time_double(days_in) Lt tend) Then Begin
    mvn_call_sta_l2l2, days_in = days_in, temp_dir = './', /use_l2_files, $
-                      alt_data_path = 'fast/maven/', /new_l2_version, $
+                      alt_data_path = '/mydisks/usb_disk/maven/', /new_l2_version, $
                       /l2_only_dead
 Endif
 ;Now call the addbck process, No init keyword set, this will
@@ -52,7 +52,7 @@ Endif
 ;files, and not reprocess the end_date.
 mvn_sta_l2gen_addbck, date = time_string(tstart), $
                       end_date = time_string(tend), $
-                      alt_data_path = 'fast/maven/'
+                      alt_data_path = '/mydisks/usb_disk/maven/'
 ;Add a day and reset start time file
 tstart_new = tstart+one_day
 openw, unit, this_file+'_start_time.txt', /get_lun

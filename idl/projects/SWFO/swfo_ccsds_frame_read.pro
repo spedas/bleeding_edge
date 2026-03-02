@@ -1,16 +1,63 @@
-;swfo_ccsds_frame_read
+;+
+;PROCEDURE:  swfo_ccsds_frame_read
+;
+;PURPOSE: Downloads SWFO CCSDS files from
+; SSL SPRG and reads the frames into a dictionary,
+; using a file hash to skip duplicates.
+;
+; This routine is currently called by SWFO_LOAD, which is
+; the current main routine to make/download processed high-level
+; SWFO data files.
+;
+; Will merge playback and realtime streams for 
+; higher level products (L0b+) if requested.
+;
+; Default keyword values:
+;   trange: Last 24 hours
+;   station: WCD
+;   hlevel: 1 [Gets high level products]
+;   merge: 1 [Merges playback+realtime for higher level]
+;
+;USAGE:
+; One way is to define a time range and run for that case:
+;
+;  trange=['2026 2 24 03:00', '2026 2 24 03:30']
+;  swfo_ccsds_frame_read, trange=trange
+;
+; Alternatively, can explicitly read file(s):
+;
+;  swfo_ccsds_frame_read, files=[ex_fname]
+;
+; Currently, this routine is called by swfo_load.pro.
+;
+;KEYWORDS:
+;       READER:   CCSDS packet reader object, see ccsds_reader__define.pro
+;                 for details.
+;
+;       TRANGE:   Time range for reading files, defaults to
+;                 last 24 hours if current=1.
+;
+;       FILES:    Filenames to decommutate/read into tplot variables
+;                 directly.
+;
+;       STATION:  Ground station from which files are downloaded
+;                 Current working options: WCD, CBU, RXCBU, RXWCD
+;
+;       USER_PASS:Username and password for downloading from SPRG.
+;
+;       MERGE:    Combines playback and realtime streams for higher
+;                 level products (L0b, L1a, L1b)
+;
+;       HLEVEL:   Boolean for making higher level products (L0b, L1a, L1b)
+;
 ; $LastChangedBy: davin-mac $
 ; $LastChangedDate: 2025-10-27 15:44:24 -0700 (Mon, 27 Oct 2025) $
 ; $LastChangedRevision: 33798 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu:36867/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ccsds_frame_read_crib.pro $
 
 
-
-
-
-
-
-pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,station=station,user_pass=user_pass,merge=merge,hlevel=hlevel
+pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
+  station=station,user_pass=user_pass,merge=merge,hlevel=hlevel
 
   common swfo_ccsds_frame_read_common, reader
   t0 = systime(1)  
@@ -72,7 +119,7 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,station=stati
      
 
   if ~keyword_set(trange) then begin
-    if ~keyword_set(current) then current=24
+    if ~keyword_set(current) then current=8
     trange = systime(1)   + [-1,0] * 3600d   * current  ; last 24 hours
   ;  if rdr.source_dict.haskey('frame_time') then begin
   ;    trange[0] = rdr.source_dict.frame_time - 300
@@ -88,17 +135,19 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,station=stati
       pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/MM/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
       rdr.source_dict.station = 1
       source.resolution = 3600
-      allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
-      fileformat =  file_basename(pathname+'mm')
-      filerange = time_string(time_double(trange)+[0,600],tformat=fileformat)
-      ;      if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
-      if 1 then begin
-        w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
-        files = allfiles[w]
-      endif else begin
-        w = where(file_test(allfiles),nw,/null)
-        files = allfiles
-      endelse
+      if ~keyword_set(files) then begin
+        allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
+        fileformat =  file_basename(pathname+'mm')
+        filerange = time_string(time_double(trange)+[0,600],tformat=fileformat)
+        ;      if keyword_set(lastfile) then filerange[0] = file_basename(lastfile)
+        if 1 then begin
+          w = where(file_basename(allfiles) gt filerange[0] and file_basename(allfiles) lt filerange[1] and file_test(allfiles),nw,/null)
+          files = allfiles[w]
+        endif else begin
+          w = where(file_test(allfiles),nw,/null)
+          files = allfiles
+        endelse
+      endif
       frames_name = 'swfo_frame_data'
     end
     'RXWCD': begin
@@ -302,6 +351,10 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,station=stati
         products.l1a_da = sci.getattr('level_1a')
         products.l1b_da = sci.getattr('level_1b')
 
+        if ~isa(products.l0b_da) then products.l0b_da = dynamicarray(name = 'swfo_stis_l0b')
+        if ~isa(products.l1a_da) then products.l1a_da = dynamicarray(name = 'swfo_stis_l1a')
+        if ~isa(products.l1b_da) then products.l1b_da = dynamicarray(name = 'swfo_stis_l1b')
+
         products.l1a_red_30_da = dynamicarray(name = 'L1a_red')
         parent.init = 1
       endif
@@ -320,6 +373,22 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,current=current,station=stati
           if products.haskey('l1b_da') then products.l1b_da.array = swfo_stis_sci_level_1b( products.l1a_da.array )
 
           if products.haskey('l1a_red_30_da') then products.l1a_red_30_da.array = products.l1a_da.reduce_resolution(30)
+
+          store_data,products.l0b_da.name,data=products.l0b_da ,tagnames = '*'
+          store_data,products.l1a_da.name,data=products.l1a_da,tagnames = '*'
+          store_data,products.l1b_da.name,data=products.l1b_da, tag='*'
+
+          store_data,'swfo_stis_l1a',data = products.l1a_da,$
+            tagnames = 'SPEC_??',val_tag='_NRG'
+          store_data,'swfo_stis_l1a',data = products.l1a_da,$
+            tagnames = 'SPEC_???',val_tag='_NRG'
+          store_data,'swfo_stis_l1a',data = products.l1a_da,$
+            tagnames = 'SPEC_????',val_tag='_NRG'
+
+          store_data,'swfo_stis_l1b',data = products.l1b_da,tagnames = '???_ELEC_FLUX',$
+            val_tag='ELEC_ENERGY'
+          store_data,'swfo_stis_l1b',data = products.l1b_da,tagnames = '???_ION_FLUX',$
+            val_tag='ION_ENERGY'
 
 
         endif

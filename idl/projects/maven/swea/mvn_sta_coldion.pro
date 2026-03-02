@@ -83,8 +83,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-18 12:34:22 -0800 (Wed, 18 Feb 2026) $
-; $LastChangedRevision: 34173 $
+; $LastChangedDate: 2026-02-25 13:15:38 -0800 (Wed, 25 Feb 2026) $
+; $LastChangedRevision: 34198 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -128,6 +128,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 ;   five species (m/q): 1, 2, 16, 32, 44
 ;   quality: 0 = good, 1 = bad
 
+  got_l3_den = 0
+  got_l3_tmp = 0
   if (useL3) then begin
     mvn_sta_l3_load  ; load all moments
     get_data,'mvn_sta_l3_density',data=sta_den,alim=sta_den_lim,index=i
@@ -135,18 +137,20 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       get_data,'mvn_sta_l3_density_abs_uncertainty',data=sta_den_sigma
       get_data,'mvn_sta_l3_density_quality_flag',data=sta_den_quality
       got_l3_den = 1
-      doden = 0
-    endif else got_l3_den = 0
+      doden = 0  ; using L3, no longer need to calculate densities
+    endif
     get_data,'mvn_sta_l3_temperature_o2+',data=sta_tmp,alim=sta_tmp_lim,index=i
     if (i gt 0) then begin
       get_data,'mvn_sta_l3_temperature_abs_uncertainty',data=sta_tmp_sigma
       get_data,'mvn_sta_l3_temperature_quality_flag',data=sta_tmp_quality
       got_l3_tmp = 1
-      dotmp = 0
-    endif else got_l3_tmp = 0
+      dotmp = 0 ; using L3, no longer need to calculate temperatures
+    endif
   endif
 
   kk3_anode = 1  ; enable attenuator-dependent ion suppression correction
+
+; Mass ranges for H+, O+, and O2+ (from McFadden)
 
   species = ['H+','O+','O2+']
   m_arr = fltarr(3,3)
@@ -154,10 +158,19 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   m_arr[*,1] = [14,16,20]   ; O+
   m_arr[*,2] = [25,32,40]   ; O2+
 
+; Energy ranges for H+, O+, and O2+
+;   Since I'm working with iv4 data, it's safe to remove any energy
+;   restriction in the moment calculation.  I don't want to clip the
+;   main distributions (some are at pickup energies), and background
+;   should be effectively removed.  There remains the possibility that
+;   two or more distinct populations with different energies are 
+;   present at the same time.  In this case, the moment calculations
+;   may poorly represent the actual situation.
+
   e_arr = fltarr(2,3)
-  e_arr[*,0] = [0.,30000.]  ; H+
-  e_arr[*,1] = [0., 3000.]  ; O+
-  e_arr[*,2] = [0., 3000.]  ; O2+
+  e_arr[*,0] = [0.,30000.]  ; H+  (2400 km/s max velocity)
+  e_arr[*,1] = [0.,30000.]  ; O+  (600 km/s max velocity)
+  e_arr[*,2] = [0.,30000.]  ; O2+ (425 km/s max velocity)
 
   lines = 11       ; line color scheme
   icols = [2,4,6]  ; color for each species (scheme 11: blue, dark green, red)
@@ -179,6 +192,15 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   tmin = min(trange, max=tmax)
   npts = ceil((tmax-tmin)/dt)
   time = tmin + dt*dindgen(npts)
+
+; The following are assumed to be pre-loaded:
+;   - Ephemeris (spice and maven_orbit_tplot)
+;   - SWEA data
+;
+; Here, I need to load:
+;   - MAG data (1-sec and 32-Hz)
+;   - STATIC L2 data (c0, c6, d0, d1)
+;   - STATIC L3 data
 
 ; Load STATIC data (if needed)
 
@@ -226,8 +248,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     endelse
   endif
 
-  str_element, mvn_d1_dat, 'time', time_d1, success=ok
-  if (ok) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
+  str_element, mvn_d1_dat, 'time', time_d1, success=gotd1
+  if (gotd1) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
   if keyword_set(reload) then nd1 = 0
   if (nd1 lt 10) then begin
     mvn_sta_l2_load, sta_apid=['d1'], iv_level=ivlev
@@ -375,7 +397,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
       get_data, 'mvn_sta_c6_mode', data=c6_mode
       wrong_mode = where((c6_mode.y ne 1) and (c6_mode.y ne 2), nwrong)
-      erange = [0.,100.]
+      erange = [0.,100.]  ; ram beam
       mincts = 25
 
 ; There is no H+ density calculation for the beam approx.
@@ -438,11 +460,11 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
       getap = 'mvn_sta_get_c6'
       dnames = 'mvn_sta_' + ['p+','o+','o2+','i+'] + '_c6_den'
-      erange = [0.,30000.]
       mincts = 25
 
       for i=0,2 do begin
         mass = m_arr[*,i]
+        erange = e_arr[*,i]
 
         get_4dt, 'n_4d', getap, mass=minmax(mass), m_int=mass[1], $
                  energy=erange, name=dnames[i]
@@ -510,7 +532,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
       get_data,'mvn_sta_c6_mode',data=tmp7
       ind_mode = where(tmp7.y ne 1 and tmp7.y ne 2, count)
-	  erange = [0.,100.]
+	  erange = [0.,100.]  ; ram beam
 	  mincnts = 25
 
 ; There is no H+ temperature calculation for the beam approx.
@@ -834,12 +856,10 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 ; Plasma Region (Halekas method)
 ;   0 = unknown, 1 = solar wind, 2 = sheath, 3 = ionosphere, 4 = dayside ionosphere, 5 = tail lobe
 
-  if ~find_handle('regid') then begin
-    mvn_swia_load_l2_data, /loadall, /tplot
-    bdata = 'mvn_B_1sec_maven_mso'
-    fbdata = 'mvn_B_full'
-    mvn_swia_regid, bdata=bdata, fbdata=fbdata, pdata=pdata
-  endif
+  mvn_swia_load_l2_data, /loadall, /tplot
+  bdata = 'mvn_B_1sec_maven_mso'
+  fbdata = 'mvn_B_full'
+  mvn_swia_regid, bdata=bdata, fbdata=fbdata, pdata=pdata  ; refreshes regid tplot variable
 
   get_data,'regid',data=regid
   if (size(regid,/type) eq 8) then begin
@@ -875,7 +895,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
     get_data, 'vcomb', data=vpsw, index=i
     Vp = interp(vpsw.y, vpsw.x, time, interp_threshold=dtmax, /no_extrapolate)  ; km/s
 
-    Psw = (1.67e-6) * (Np*Vp*Vp)  ; nPa
+    Psw = (1.67262e-6) * (Np*Vp*Vp)  ; nPa
     result_h.sw_press = Psw
     result_o1.sw_press = Psw
     result_o2.sw_press = Psw
@@ -883,7 +903,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
 ;   Combined clock angle (Azari + Dong)
 ;   /home/rlillis/work/data/maven_sw_driver_files/clock_angle_vSWIM_Yaxue.sav
-;   coverage: 2014-11-13 to 2024-04-17  (CIO campaigns A-N)
+;   coverage: 2014-11-13 to 2024-04-17  (CIO campaigns A-N; need update for O, P, Q)
 ;   latest refresh: 2025-06-25
 
   fname = 'clock_angle_vSWIM_Yaxue.sav'

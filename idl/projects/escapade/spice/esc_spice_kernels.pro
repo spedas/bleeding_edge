@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2025-12-19 23:57:20 -0800 (Fri, 19 Dec 2025) $
-; $LastChangedRevision: 33937 $
+; $LastChangedDate: 2026-02-23 14:40:11 -0800 (Mon, 23 Feb 2026) $
+; $LastChangedRevision: 34180 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_kernels.pro $
 ;
 ;-
@@ -68,13 +68,10 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
 
   tr = timerange(itime)
   FOR i=0, N_ELEMENTS(probes)-1 DO BEGIN
-     ; SPK
+     ; SPK & CK
      prefix = 'esc-' + (probes[i]).substring(0, 0)
-     ;bsp   = prefix + '_orb-pre-eph_*-*_v*.bsp'
      bsp   = prefix + '_orb-pre-eph_YYYYMMDD-????????_v??.bsp'
-     ;spath = 'escapade/commissioning/' + probes[i] + '/ephemeris/predictive/'
-     ;spk = file_retrieve('YYYY/MM/' + bsp, local_data_dir=path + spath, trange=tr + [-1.d0, 1.d0] * oneday * 30.d0, $
-     ;                    /daily_res, /last_version, /valid_only, /verbose)
+     bc    = prefix + '_orb-pre-ck_YYYYMMDD-????????_v??.bc'
 
      spath = 'commissioning/' + probes[i] + '/ephemeris/predictive/'
      IF src.no_server EQ 1 THEN BEGIN
@@ -84,7 +81,11 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
         spath = src.remote_data_dir + spath
         urls  = STRSPLIT(STRING(IDL_BASE64(src.user_pass)), ':', /extract)
      ENDELSE 
+
      spks = spd_uniq(time_intervals(tformat='YYYY/MM/' + prefix + '*.bsp', trange=tr + [-1.d0, 1.d0] * oneday * 30.d0, /daily_res))
+     cks  = spd_uniq(time_intervals(tformat='YYYY/MM/' + prefix + '*.bc', trange=tr + [-1.d0, 1.d0] * oneday * 30.d0, /daily_res))
+
+     ; SPK
      FOR j=0, N_ELEMENTS(spks)-1 DO BEGIN
         aspk = spath + spks[j]
         spd_download_expand, aspk, url_username=urls[0], url_password=urls[1], no_server=src.no_server;, /last_version
@@ -109,7 +110,35 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
      ENDIF 
 
      IF nw GT 0 THEN append_array, kernels, spk
-     undefine, spk 
+     undefine, spk
+
+     ; CK
+     FOR j=0, N_ELEMENTS(cks)-1 DO BEGIN
+        ack = spath + cks[j]
+        spd_download_expand, ack, url_username=urls[0], url_password=urls[1], no_server=src.no_server ;, /last_version
+        append_array, ck, TEMPORARY(ack)
+     ENDFOR
+     w = WHERE(ck NE '', nw)
+     IF nw GT 0 THEN BEGIN
+        ck = ck[w]
+        tck = time_double(FILE_BASENAME(ck), tformat=bc)
+        
+        ; Only using the latest version.
+        ick = UNIQ(tck)
+        ck  = ck[ick]
+        tck = tck[ick]
+
+        w = WHERE(tck GE tr[0] - 30.d0*oneday AND tck LE tr[1] + 30.d0*oneday, nw)
+        IF nw GT 0 THEN BEGIN
+           IF src.no_server EQ 1 THEN ck = ck.replace(src.local_data_dir, '') $
+           ELSE ck = ck.replace(src.remote_data_dir, '')
+           ck = esc_file_retrieve(ck[w], source=src, /valid_only, verbose=verbose)
+        ENDIF
+     ENDIF
+
+     IF nw GT 0 THEN append_array, kernels, ck
+     undefine, ck
+      
   ENDFOR
   IF KEYWORD_SET(clear) THEN cspice_kclear
   IF KEYWORD_SET(load)  THEN spice_kernel_load, kernels, info=info, maxiv=10000

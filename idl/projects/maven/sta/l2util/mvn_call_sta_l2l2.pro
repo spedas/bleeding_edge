@@ -17,11 +17,12 @@
 ; alt_data_path = New (2025-10) keyword for an alternate data path for
 ;                 output, replaces 'maven' in
 ;                 '/disks/data/maven/stuff/'
+;                 UPDATED 2026-02 no longer prepends /disks/data/ 
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 2016-10-18, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: muser $
-; $LastChangedDate: 2026-01-14 12:58:42 -0800 (Wed, 14 Jan 2026) $
-; $LastChangedRevision: 34004 $
+; $LastChangedBy: ghanley $
+; $LastChangedDate: 2026-02-23 15:18:22 -0800 (Mon, 23 Feb 2026) $
+; $LastChangedRevision: 34181 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2l2.pro $
 ;-
 Pro mvn_call_sta_l2l2, out_dir = out_dir, $
@@ -73,7 +74,8 @@ Pro mvn_call_sta_l2l2, out_dir = out_dir, $
   If(keyword_set(out_dir)) Then odir = out_dir $
   Else Begin
      If(keyword_set(alt_data_path)) Then Begin
-        odir = '/disks/data/'+alt_data_path+'data/sci/'
+        ;odir = '/disks/data/'+alt_data_path+'data/sci/'
+        odir = alt_data_path+'data/sci/'
      Endif Else odir = '/disks/data/maven/data/sci/'
   Endelse
   

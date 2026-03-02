@@ -27,17 +27,19 @@
 ;    FRAMES:      Specifies which frames (i.e., coordinate systems) will be loaded.
 ;                 Default is to load all frames.
 ;
+;     TNAME:      If set, returns tplot variables to be created.
+;
 ;CREATED BY:      Takuya Hara on 2026-01-09.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-02-04 16:42:10 -0800 (Wed, 04 Feb 2026) $
-; $LastChangedRevision: 34121 $
+; $LastChangedDate: 2026-02-26 19:21:48 -0800 (Thu, 26 Feb 2026) $
+; $LastChangedRevision: 34206 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/emag/esc_emag_load.pro $
 ;
 ;-
 PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blue=blue, gold=gold, files=afile, source=source, $
-                   prelaunch=prelaunch, commissioning=commissioning, frames=frames
+                   prelaunch=prelaunch, commissioning=commissioning, frames=frames, tname=rname
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
   IF is_string(trange) THEN trange = time_double(trange)
 
@@ -76,12 +78,16 @@ PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blu
      cdf2tplot, files[w], prefix='esc', tplotnames=tname, varformat=TEMPORARY(varformat)
      IF ~undefined(tname) THEN BEGIN
         options, tname, /def, labels=['X', 'Y', 'Z'], labflag=-1, constant=0., colors='bgr'
-        suffix = ((STRSPLIT(tname, '_', /extract)).toarray())[*, -1]
+        suffix = STRSPLIT(tname, '_', /extract)
+        IF is_string(suffix) THEN suffix = suffix[-1] ELSE suffix = (suffix.toarray())[*, -1]
+        ;suffix = ((STRSPLIT(tname, '_', /extract)).toarray())[*, -1]
         FOR j=0, N_ELEMENTS(tname)-1 DO options, tname[j], /def, ytitle=(probes[i]).toupper() + '!CB' + suffix[j]
+        append_array, rname, tname
      ENDIF
      get_data, tname[0], data=d
      btot = tname[0].replace(suffix[0], 'tot')
      store_data, btot, data={x: d.x, y: SQRT(TOTAL(d.y*d.y, 2))}, dl=dl
+     append_array, rname, btot
      options, TEMPORARY(btot), /def, ytitle=(probes[i]).toupper() + '!C|B|', ysubtitle='[nT]'
 
      undefine, tname
@@ -90,6 +96,7 @@ PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blu
   IF (both) THEN BEGIN
      line_colors, 5
      store_data, 'esc_emag_tot', data='esc' + ['b', 'g'] + '_emag_tot', dlim={labels: ['BLUE', 'GOLD'], labflag: -1, colors: [2, 5], ytitle: 'ESCAPADE', ysubtitle: '|B| [nT]'}
+     append_array, rname, 'esc_emag_tot'
   ENDIF 
   RETURN
 END 

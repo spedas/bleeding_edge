@@ -25,11 +25,12 @@
 ; directory = an output directory, full path, end with a slash '/'
 ; alt_data_path = an alternate output path for the data, will replace the
 ;                 'maven' in, e.g., '/disks/data/maven/data/sta/'
+;                 UPDATED 2026-02 no longer prepends /disks/data/
 ;HISTORY:
 ; 2014-05-14, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: muser $
-; $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
-; $LastChangedRevision: 33997 $
+; $LastChangedBy: ghanley $
+; $LastChangedDate: 2026-02-24 15:14:59 -0800 (Tue, 24 Feb 2026) $
+; $LastChangedRevision: 34187 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 ;-
 Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
@@ -224,7 +225,8 @@ Pro mvn_sta_l2gen, date = date, l0_input_file = l0_input_file, $
      Endelse
   Endif Else Begin
      If(keyword_set(alt_data_path)) Then Begin
-        dir00 = '/disks/data/'+alt_data_path+'data/sci/sta/'
+       ; dir00 = '/disks/data/'+alt_data_path+'data/sci/sta/'
+       dir00 = alt_data_path+'data/sci/sta/'
      Endif Else dir00 = '/disks/data/maven/data/sci/sta/'
      If(keyword_set(iv_level)) Then Begin ;jmm, 2020-08-04
         dir_out0 = dir00+iv_lvl+'/'

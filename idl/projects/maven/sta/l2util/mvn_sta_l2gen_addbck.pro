@@ -17,6 +17,7 @@
 ; process data for this date and afterwards.
 ; alt_data_path = the output directory path, the default is
 ;                 'maven/'. The path must end in 'maven/'
+;                 UPDATED 2026-02 no longer prepends /disks/data/
 ; init = if set, then starts the process by doing the iv1 data 3 days
 ;        in advance, and backfilling to this date, iv2 two days in
 ;        advance, iv3 one day in advance, then today. The defaut is to
@@ -66,7 +67,8 @@ Pro mvn_sta_l2gen_addbck, date = date, alt_data_path = alt_data_path, $
         message, /info, 'Bad alt_data_path'
         Return
      Endif
-     local_data_dir = '/disks/data/'+strmid(alt_data_path, 0, l-6)
+   ;  local_data_dir = '/disks/data/'+strmid(alt_data_path, 0, l-6)
+      local_data_dir = strmid(alt_data_path, 0, l-6)
      ppp = mvn_file_source(local_data_dir = local_data_dir, /set)
   Endif
 
@@ -120,7 +122,8 @@ Pro mvn_sta_l2gen_addbck, date = date, alt_data_path = alt_data_path, $
   mvn_sta_l2_load, iv_level = 4, alt_data_path = alt_data_path
 ;the directory output is full-path
   If(keyword_set(alt_data_path)) Then Begin
-     dir00 = '/disks/data/'+alt_data_path+'data/sci/sta/'
+     ;dir00 = '/disks/data/'+alt_data_path+'data/sci/sta/'
+     dir00 = alt_data_path+'data/sci/sta/'
   Endif Else dir00 = '/disks/data/maven/data/sci/sta/'
   datein = time_string(date)
   yyyy = strmid(datein, 0, 4)

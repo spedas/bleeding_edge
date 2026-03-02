@@ -31,8 +31,8 @@
 ;                      Default = 'calif_dave@icloud.com'
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-16 15:19:42 -0800 (Mon, 16 Feb 2026) $
-; $LastChangedRevision: 34160 $
+; $LastChangedDate: 2026-02-24 18:35:02 -0800 (Tue, 24 Feb 2026) $
+; $LastChangedRevision: 34192 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -101,7 +101,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
     dd = strmid(tstring,8,2)
     opath = dpath + yyyy + '/' + mm + '/'
     file_mkdir2, opath, mode='0755'o  ; create directory structure, if needed
-    if (!version.os eq 'linux') then spawn, 'chgrp maven ' + opath
+    file_chgrp, opath, 'maven', errcode=err
     ofile = opath + froot + yyyy + mm + dd + version + '.sav'
 
 ; If the file already exists, then just update it
@@ -124,8 +124,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
 
         if (ok) then begin
           save, cio_h, cio_o1, cio_o2, file=ofile
-          if (!version.os eq 'linux') then spawn, 'chgrp maven ' + ofile
-          file_chmod, ofile, '644'o
+          file_chgrp, ofile, 'maven', errcode=err
         endif else print,'CIO pipeline failed: ',tstring
 
         elapsed_min = (systime(/sec) - timer_start)/60D

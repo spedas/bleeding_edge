@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 20 18:18:38 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Feb 27 18:17:57 2026.<P>
  
 <HR>
  
@@ -30,8 +30,11 @@ This page was created by the IDL library routine
 <LI><A HREF="#ESC_IESA_FM1_ANO">ESC_IESA_FM1_ANO</A>
 <LI><A HREF="#ESC_IESA_FM1_SCI">ESC_IESA_FM1_SCI</A>
 <LI><A HREF="#ESC_IESA_FM1_TOF">ESC_IESA_FM1_TOF</A>
+<LI><A HREF="#ESC_IESA_LOAD">ESC_IESA_LOAD</A>
 <LI><A HREF="#ESC_IESA_SCI_LUTS">ESC_IESA_SCI_LUTS</A>
+<LI><A HREF="#ESC_IESA_STRUCT">ESC_IESA_STRUCT</A>
 <LI><A HREF="#ESC_IESA_SWEEP_TABLE">ESC_IESA_SWEEP_TABLE</A>
+<LI><A HREF="#ESC_IESA_TPLOT">ESC_IESA_TPLOT</A>
 <br>
 </UL><P>
 <HR>
@@ -221,7 +224,7 @@ This page was created by the IDL library routine
 <A NAME="ESC_IESA_FM1_TOF">
 <H2>ESC_IESA_FM1_TOF</H2></A>
 <A HREF="#ESC_IESA_FM1_SCI">[Previous Routine]</A>
-<A HREF="#ESC_IESA_SCI_LUTS">[Next Routine]</A>
+<A HREF="#ESC_IESA_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -240,10 +243,59 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="ion/esc_iesa_fm1_tof.pro">projects/escapade/esa/ion/esc_iesa_fm1_tof.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ESC_IESA_LOAD">
+<H2>ESC_IESA_LOAD</H2></A>
+<A HREF="#ESC_IESA_FM1_TOF">[Previous Routine]</A>
+<A HREF="#ESC_IESA_SCI_LUTS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       ESC_IESA_LOAD
+
+PURPOSE:         Loads the ESCAPADE EESA-i CDF file(s).
+
+INPUTS:          Time range to be loaded.
+
+KEYWORDS:
+
+   PRODUCT:      Specifies the science products abbreviation(s) to be loaded. 
+
+      DATA:      If set, returns the output data as a structure.
+
+     IPATH:      Explicitly specifies the input path for loading the CDF file(s) (e.g., for testing purposes).
+
+     LEVEL:      Specifies the data level. Default is L1.
+
+ NO_SERVER:      If set, prevents any contact with a remote server.
+
+      BLUE:      If set, loads only BLUE spacecraft data.
+
+      GOLD:      If set, loads only GOLD spacecraft data.
+
+     FILES:      If set, returns the file name(s) to be loaded.
+
+    SOURCE:      Specifies the file source information. Default is esc_file_source().
+
+ PRELAUNCH:      If set, prelaunch data will be loaded.
+
+COMMISSION:      If set, commissioning data will be loaded.
+
+CREATED BY:      Takuya Hara on 2026-02-07.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-02-25 17:08:54 -0800 (Wed, 25 Feb 2026) $
+ $LastChangedRevision: 34200 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_load.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ion/esc_iesa_load.pro">projects/escapade/esa/ion/esc_iesa_load.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ESC_IESA_SCI_LUTS">
 <H2>ESC_IESA_SCI_LUTS</H2></A>
-<A HREF="#ESC_IESA_FM1_TOF">[Previous Routine]</A>
-<A HREF="#ESC_IESA_SWEEP_TABLE">[Next Routine]</A>
+<A HREF="#ESC_IESA_LOAD">[Previous Routine]</A>
+<A HREF="#ESC_IESA_STRUCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -258,9 +310,51 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="ion/esc_iesa_sci_luts.pro">projects/escapade/esa/ion/esc_iesa_sci_luts.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ESC_IESA_STRUCT">
+<H2>ESC_IESA_STRUCT</H2></A>
+<A HREF="#ESC_IESA_SCI_LUTS">[Previous Routine]</A>
+<A HREF="#ESC_IESA_SWEEP_TABLE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        ESC_IESA_STRUCT
+
+PURPOSE:         Defines the ESCAPADE EESA-i data structure. 
+
+INPUTS:          Abbreviation of the EESA-i data product.
+
+KEYWORDS:
+
+      BLUE:      If set, specifies the BLUE spacecraft explicitly.
+
+      GOLD:      If set, specifies the GOLD spacecraft explicitly.
+
+     PROBE:      Specifies 'BLUE' or 'GOLD'. Default is 'BLUE'.
+
+   NENERGY:      Specifies the number of energy bins.
+
+     NMASS:      Specifies the number of mass bins.
+
+    NANODE:      Specifies the number of azimuth anode bins.
+
+      NDEF:      Specifies the number of deflector bins.
+
+CREATED BY:      Takuya Hara on 2026-02-07.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-02-23 10:10:11 -0800 (Mon, 23 Feb 2026) $
+ $LastChangedRevision: 34179 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_struct.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ion/esc_iesa_struct.pro">projects/escapade/esa/ion/esc_iesa_struct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ESC_IESA_SWEEP_TABLE">
 <H2>ESC_IESA_SWEEP_TABLE</H2></A>
-<A HREF="#ESC_IESA_SCI_LUTS">[Previous Routine]</A>
+<A HREF="#ESC_IESA_STRUCT">[Previous Routine]</A>
+<A HREF="#ESC_IESA_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -273,5 +367,33 @@ This page was created by the IDL library routine
 
 </PRE><P>
 <STRONG>(See <A href="ion/esc_iesa_sweep_table.pro">projects/escapade/esa/ion/esc_iesa_sweep_table.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ESC_IESA_TPLOT">
+<H2>ESC_IESA_TPLOT</H2></A>
+<A HREF="#ESC_IESA_SWEEP_TABLE">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       ESC_IESA_TPLOT
+
+PURPOSE:         Creates tplot variables of the ESCAPADE EESA-i data.
+
+INPUTS:          None.
+
+KEYWORDS:
+
+     TNAME:      Returns the tplot variables created.
+
+CREATED BY:      Gwen Hanley &amp; Takuya Hara on 2026-02-22.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-02-27 13:15:38 -0800 (Fri, 27 Feb 2026) $
+ $LastChangedRevision: 34208 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ion/esc_iesa_tplot.pro">projects/escapade/esa/ion/esc_iesa_tplot.pro</A>)</STRONG><P>
 <HR>
  

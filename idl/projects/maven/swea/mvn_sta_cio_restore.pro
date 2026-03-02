@@ -27,8 +27,8 @@
 ;       SUCCESS:       Success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
-; $LastChangedRevision: 34039 $
+; $LastChangedDate: 2026-02-24 18:34:27 -0800 (Tue, 24 Feb 2026) $
+; $LastChangedRevision: 34191 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -46,7 +46,7 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
   success = 0
 
   rootdir = 'maven/data/sci/sta/l3/cio/YYYY/MM/'
-  fname = 'mvn_sta_cio_YYYYMMDD_v02.sav'
+  fname = 'mvn_sta_cio_YYYYMMDD_v03.sav'
 
   tplot_options, get_opt=topt
   tspan_exists = (max(topt.trange_full) gt time_double('2013-11-18'))

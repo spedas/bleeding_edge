@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 20 18:18:38 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Feb 27 18:17:57 2026.<P>
  
 <HR>
  
@@ -171,11 +171,12 @@ KEYWORDS:
  alt_data_path = New (2025-10) keyword for an alternate data path for
                  output, replaces 'maven' in
                  '/disks/data/maven/stuff/'
+                 UPDATED 2026-02 no longer prepends /disks/data/ 
 HISTORY:
 Hacked from mvn_call_sta_l2gen, 2016-10-18, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: muser $
- $LastChangedDate: 2026-01-14 12:58:42 -0800 (Wed, 14 Jan 2026) $
- $LastChangedRevision: 34004 $
+ $LastChangedBy: ghanley $
+ $LastChangedDate: 2026-02-23 15:18:22 -0800 (Mon, 23 Feb 2026) $
+ $LastChangedRevision: 34181 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2l2.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_call_sta_l2l2.pro">projects/maven/sta/l2util/mvn_call_sta_l2l2.pro</A>)</STRONG><P>
@@ -1183,11 +1184,12 @@ KEYWORDS:
  directory = an output directory, full path, end with a slash '/'
  alt_data_path = an alternate output path for the data, will replace the
                  'maven' in, e.g., '/disks/data/maven/data/sta/'
+                 UPDATED 2026-02 no longer prepends /disks/data/
 HISTORY:
  2014-05-14, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: muser $
- $LastChangedDate: 2026-01-12 13:34:31 -0800 (Mon, 12 Jan 2026) $
- $LastChangedRevision: 33997 $
+ $LastChangedBy: ghanley $
+ $LastChangedDate: 2026-02-24 15:14:59 -0800 (Tue, 24 Feb 2026) $
+ $LastChangedRevision: 34187 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_sta_l2gen.pro $
 </PRE><P>
 <STRONG>(See <A href="l2util/mvn_sta_l2gen.pro">projects/maven/sta/l2util/mvn_sta_l2gen.pro</A>)</STRONG><P>
@@ -1243,6 +1245,7 @@ KEYWORDS:
  process data for this date and afterwards.
  alt_data_path = the output directory path, the default is
                  'maven/'. The path must end in 'maven/'
+                 UPDATED 2026-02 no longer prepends /disks/data/
  init = if set, then starts the process by doing the iv1 data 3 days
         in advance, and backfilling to this date, iv2 two days in
         advance, iv3 one day in advance, then today. The defaut is to
