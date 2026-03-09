@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2023
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-10-02 15:51:03 -0700 (Thu, 02 Oct 2025) $
-; $LastChangedRevision: 33687 $
+; $LastChangedDate: 2026-03-03 11:56:14 -0800 (Tue, 03 Mar 2026) $
+; $LastChangedRevision: 34221 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -166,7 +166,7 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
   ; SCaM data is Level 3
 
   if type eq 'merged_scam_wf' or type eq 'sqtn_rfs_V1V2' or $
-    type eq 'rfs_lfr_qtn' then level = 3
+    type eq 'rfs_lfr_qtn' or type eq 'sqtn_rfs_V3V4' then level = 3
 
   ;
   ; If the type keyword is set to DFB AC or DC spectra or cross spectra,
@@ -326,6 +326,11 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
         resolution = 3600l * 24l ; hours
         daily_names = 1
         tname_prefix = 'psp_fld_l3_sqtn_rfs_V1V2_'
+      endif else if type eq 'sqtn_rfs_V3V4' then begin
+        pathformat = 'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMMDD_v?.?.cdf'
+        resolution = 3600l * 24l ; hours
+        daily_names = 1
+        tname_prefix = 'psp_fld_l3_sqtn_rfs_V3V4_'
       endif else if type eq 'rfs_lfr_qtn' then begin
         pathformat = 'TYPE/YYYY/MM/psp_fld_l3_TYPE_YYYYMM*_*_v??.cdf'
         if n_elements(tname_prefix) eq 0 then $
@@ -703,7 +708,7 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
       endif
 
       if strmatch(type, 'sqtn_rfs*') then begin
-        sqtn = 'psp_fld_l3_sqtn_rfs_V1V2_'
+        sqtn = 'psp_fld_l3_' + type + '_'
 
         get_data, sqtn + 'electron_density', $
           data = d_ne, al = al_ne
@@ -721,7 +726,7 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
 
         options, sqtn + 'electron_density*', 'psym', -3
         options, sqtn + 'electron_density*', 'ylog', 1
-        options, sqtn + 'electron_density_*delta', 'colors', ['r', 'k']
+        options, sqtn + 'electron_density_*delta', 'colors', ['b', 'r']
         options, sqtn + 'electron_density_*delta', 'ysubtitle', $
           al_ne.ysubtitle
         options, sqtn + 'electron_core_temperature', 'ylog', 1

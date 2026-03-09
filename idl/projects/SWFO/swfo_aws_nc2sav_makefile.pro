@@ -1,6 +1,6 @@
-;$LastChangedBy: rjolitz $
-;$LastChangedDate: 2026-01-05 11:49:27 -0800 (Mon, 05 Jan 2026) $
-;$LastChangedRevision: 33965 $
+;$LastChangedBy: ali $
+;$LastChangedDate: 2026-03-03 17:57:35 -0800 (Tue, 03 Mar 2026) $
+;$LastChangedRevision: 34225 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_aws_nc2sav_makefile.pro $
 
 pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,daily=daily,force_make=force_make,$
@@ -11,15 +11,15 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
   nc_path='swfo/aws/'
   if ~keyword_set(station) then station='WCD'
   if ~keyword_set(res) then res='' else res='_'+res
-  filepath='preplt/SWFO-L1/l0/SWFO'+station+'/YYYY/MM/YYYYMMDD/'
+  filepath='preplt/SWFO-L1/l0/SWFO'+station+'/YYYY/mth/YYYYMMDD/'
   filename='OR_SWFO'+station+'-L0_SL1_sYYYYDOYhh*.nc'
-  
-  source={remote_data_dir:'http://sprg.ssl.berkeley.edu/data/' $ 
+
+  source={remote_data_dir:'http://sprg.ssl.berkeley.edu/data/' $
     ,master_file: 'swfo/.master'}
-    
+
   if ~keyword_set(no_update) then no_update = 0
   if ~keyword_set(no_download) then no_download = 0
-  
+
   if ~keyword_set(user_pass) then user_pass = getenv('SWFO_USER_PASS')
   if ~keyword_set(user_pass) then begin
     log_info = get_login_info()
@@ -33,8 +33,6 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
     printdat,user_pass
   endif
 
-  
-  
   source = {$
     remote_data_dir:'http://sprg.ssl.berkeley.edu/data/', $
     master_file:'swfo/.master', $
@@ -42,7 +40,6 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
     no_update : no_update ,$
     no_download :no_download ,$
     user_pass:  user_pass  }
-   
 
   if keyword_set(daily) then begin
     daysec=86400
@@ -69,16 +66,16 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
 
   if keyword_set(make_sav) then begin
     ncfiles=file_retrieve(_extra=source,nc_path+filepath+filename,trange=trange,resolution=3600,/valid,verbose=1)
-    nctimes=time_double(ncfiles.substring(83,95),tformat='YYYYDOYhhmmss')
+    nctimes=time_double(ncfiles.substring(84,96),tformat='YYYYDOYhhmmss')
     store_data,'nctimes',nctimes,nctimes
     tres_data,'nctimes'
     get_data,'nctimes_tres(s)',dat=dat
-    missing=ncfiles[where(dat.y gt 310 and dat.y lt 1000)-1].substring(55)
+    missing=ncfiles[where(dat.y gt 310 and dat.y lt 1000)-1].substring(56)
     rdr=ccsds_frame_reader(mission='SWFO',/no_widget,verbose=verbose,run_proc=run_proc)
     dict = rdr.source_dict
     frames_name = 'swfo_frame_data'
     foreach file,ncfiles do begin
-      sav_file=root+sav_path+(file).substring(-111)+'.sav'
+      sav_file=root+sav_path+(file).substring(-112)+'.sav'
       if ~keyword_set(force_make) then if (file_info(file)).mtime le (file_info(sav_file)).mtime then continue
       swfo_apdat_info,/reset
       swfo_stis_apdat_init,/reset,/save_flag

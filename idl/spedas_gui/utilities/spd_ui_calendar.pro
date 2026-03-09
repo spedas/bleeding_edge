@@ -17,10 +17,10 @@
 ; 
 ;HISTORY:
 ;
-; $LastChangedBy: $
-; $LastChangedDate: $
-; $LastChangedRevision: $
-; $URL: $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2026-03-03 08:42:49 -0800 (Tue, 03 Mar 2026) $
+; $LastChangedRevision: 34220 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/spd_ui_calendar.pro $
 ;-
 
 
@@ -268,14 +268,20 @@ PRO spd_ui_calendar, title, otime, gui_id, startyear=startyear
    
 ;Create labels for the caledar's days
   dayBase = widget_base(calBase, /row, /base_align_center, xpad=0, space=0)
-  for j=0, 6 do dID = widget_Label(daybase, value=days[j], /align_center)
+  for j=0, 6 do begin
+    dayspad = string(days[j], format='(A6)')
+    dID = widget_Label(daybase, value=dayspad, /align_center)
+  endfor
   
 ;Create 5 rows of 7 buttons for calendar days 
   rows = lonarr(5)
-  for j=0, n_elements(rows)-1 do rows[j] = widget_base(calBase, /row, xpad=0, ypad=0, space=0,frame=0)
+  for j=0, n_elements(rows)-1 do rows[j] = widget_base(calBase, /row, xpad=0, ypad=0, space=0,frame=0)  
+  numpad = string('', format='(A5)')
   for j=0, n_elements(rows)-1 do begin
-    for i=0, 6 do bID = widget_button(rows[j], value='', /no_release, ysize=35, $
-                                      uvalue='DAY', uname=strtrim((7*j)+(i),2), ToolTip = valid_dates_tooltip)
+    for i=0, 6 do begin
+      bID = widget_button(rows[j], value=numpad, /no_release, ysize=35, uvalue='DAY', uname=strtrim((7*j)+(i),2), ToolTip = valid_dates_tooltip)
+    endfor
+                                      
   endfor
  
 ;Create the ok and cancel buttons

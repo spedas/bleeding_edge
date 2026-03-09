@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Feb 27 18:17:57 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Mar  6 18:17:10 2026.<P>
  
 <HR>
  
@@ -21,6 +21,7 @@ This page was created by the IDL library routine
 <H1>projects/escapade/general</H1>
 <LI><A HREF="#ESC_FILE_RETRIEVE">ESC_FILE_RETRIEVE</A>
 <LI><A HREF="#ESC_FILE_SOURCE">ESC_FILE_SOURCE</A>
+<LI><A HREF="#ESC_L0_FILE_RETRIEVE">ESC_L0_FILE_RETRIEVE</A>
 <br>
 </UL><P>
 <HR>
@@ -87,6 +88,7 @@ LAST MODIFICATION:
 <A NAME="ESC_FILE_SOURCE">
 <H2>ESC_FILE_SOURCE</H2></A>
 <A HREF="#ESC_FILE_RETRIEVE">[Previous Routine]</A>
+<A HREF="#ESC_L0_FILE_RETRIEVE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -117,5 +119,47 @@ LAST MODIFICATION:
 
 </PRE><P>
 <STRONG>(See <A href="general/esc_file_source.pro">projects/escapade/general/esc_file_source.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ESC_L0_FILE_RETRIEVE">
+<H2>ESC_L0_FILE_RETRIEVE</H2></A>
+<A HREF="#ESC_FILE_SOURCE">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        ESC_L0_FILE_RETRIEVE
+
+PURPOSE:         Retrieves (downloads if necessary) ESCAPADE L0 raw packet data files.
+
+INPUTS:          Time range specified via the TRANGE keyword.
+                 APID(s) specified via the APID keyword.
+
+KEYWORDS:
+
+    TRANGE:      Specifies the time range to retrieve.
+                 If not set, the time range is determined by get_timespan.
+
+      APID:      Specifies the APID(s) to retrieve.
+
+      BLUE:      If set, retrieves only BLUE spacecraft data.
+
+      GOLD:      If set, retrieves only GOLD spacecraft data.
+
+    SOURCE:      Specifies the file source information. Default is esc_file_source().
+
+ PRELAUNCH:      If set, retrieves prelaunch data.
+
+COMMISSION:      If set, retrieves commissioning data.
+
+CREATED BY:      Takuya Hara on 2026-03-03.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-03-03 11:58:58 -0800 (Tue, 03 Mar 2026) $
+ $LastChangedRevision: 34222 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/general/esc_l0_file_retrieve.pro $
+
+</PRE><P>
+<STRONG>(See <A href="general/esc_l0_file_retrieve.pro">projects/escapade/general/esc_l0_file_retrieve.pro</A>)</STRONG><P>
 <HR>
  

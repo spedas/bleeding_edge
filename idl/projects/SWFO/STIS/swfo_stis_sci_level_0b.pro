@@ -73,8 +73,8 @@
 ;       PREV_L0B_DAT: placeholder for previous level 0b
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-02-14 14:50:35 -0800 (Sat, 14 Feb 2026) $
-; $LastChangedRevision: 34153 $
+; $LastChangedDate: 2026-03-04 12:56:59 -0800 (Wed, 04 Mar 2026) $
+; $LastChangedRevision: 34229 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_0b.pro $
 
 
@@ -99,6 +99,7 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     tod_microsec: 0ul, $
     ; relative time differences between
     ; science and housekeeping/noise packets
+    file_hash:  0Ull,  $
     hkp_offset: dnan,$
     nse_offset: dnan,$
     ; these headers are invariant across nse/hkp/sci
@@ -355,6 +356,7 @@ function swfo_stis_sci_level_0b,getall=getall,prev_l0b_dat=output,$
     output.tod_day  = sci_dat.tod_day
     output.tod_millisec  = sci_dat.tod_millisec
     output.tod_microsec= sci_dat.tod_microsec
+    output.file_hash = sci_dat.file_hash
     ; sci:
     output.sci_nbins  = sci_dat.nbins
     output.sci_counts= sci_dat.counts

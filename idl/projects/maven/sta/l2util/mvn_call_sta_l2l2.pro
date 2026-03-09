@@ -21,8 +21,8 @@
 ;HISTORY:
 ;Hacked from mvn_call_sta_l2gen, 2016-10-18, jmm, jimm@ssl.berkeley.edu
 ; $LastChangedBy: ghanley $
-; $LastChangedDate: 2026-02-23 15:18:22 -0800 (Mon, 23 Feb 2026) $
-; $LastChangedRevision: 34181 $
+; $LastChangedDate: 2026-03-02 13:38:04 -0800 (Mon, 02 Mar 2026) $
+; $LastChangedRevision: 34213 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/l2util/mvn_call_sta_l2l2.pro $
 ;-
 Pro mvn_call_sta_l2l2, out_dir = out_dir, $
@@ -50,8 +50,9 @@ Pro mvn_call_sta_l2l2, out_dir = out_dir, $
            printf, eunit, timei
         Endif
         free_lun, eunit
-;mail it to jimm@ssl.berkeley.edu
-        cmd_rq = 'mailx -s "Problem with STA L2L2 process" jimm@ssl.berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_err_msg'+ec+'.txt'
+;mail it to jimm@ssl.berkeley.edu 
+; update 2026-03 change to gwen.hanley@berkeley.edu
+        cmd_rq = 'mailx -s "Problem with STA L2L2 process" gwen.hanley@berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_err_msg'+ec+'.txt'
         spawn, cmd_rq
      Endif
 
@@ -168,7 +169,7 @@ SKIP_FILE:
      openw, tunit, '/mydisks/home/maven/muser/sta_l2l2_msg1.txt', /get_lun
      printf, tunit, 'Finished Processing: sta'
      free_lun, tunit
-     cmd1 = 'mailx -s "STA L2L2 process end" jimm@ssl.berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_msg1.txt'
+     cmd1 = 'mailx -s "STA L2L2 process end" gwen.hanley@berkeley.edu < /mydisks/home/maven/muser/sta_l2l2_msg1.txt'
      spawn, cmd1
   Endif
 ;reset file time

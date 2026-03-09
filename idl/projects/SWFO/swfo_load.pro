@@ -21,7 +21,7 @@ pro swfo_load_tplot_store,da
     end
     strmatch(da.name,'*_l1b*'):   begin
       tname = prefix + da.name
-      if 1 then begin
+      if 1 then begin    ; create EFLUX 
         str_element,/add,*da.ptr,'HDR_ION_EFLUX', (*da.ptr).HDR_ION_FLUX  * (*da.ptr).ion_energy
         str_element,/add,*da.ptr,'HDR_ELEC_EFLUX', (*da.ptr).HDR_ELEC_FLUX  * (*da.ptr).ELEC_energy
       endif
@@ -33,6 +33,11 @@ pro swfo_load_tplot_store,da
       ylim,tname+'*FLUX',10,10000,1,/default
       zlim,tname+'*_FLUX',.0001,1e4,1,/default
       zlim,tname+'*_EFLUX',1,1e4,1,/default
+      if 1 then begin
+        l2 = swfo_stis_sci_level_2(da.array)
+        l2_da = dynamicarray(l2,name = str_sub(da.name,'_l1b','_l2'))
+        store_data,l2_da.name,data=l2_da,tagnames='*',dlim={ylog:1,ystyle:1,yrange:[1e-5,1e5]}
+      endif
     end
     else: begin
       store_data,prefix+da.name,data=da,tagnames='*'
@@ -309,6 +314,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
       pathname = str_sub(pathname0,'$NAME$',type)
       files = file_retrieve(pathname,trange=trange,_extra=source)
       dat_da = swfo_ncdf_read(filenames = files,dynarray = dynarray, varnames=varnames )
+      if  ~keyword_set(lowres)  then dat_da.name += '_fr'
       datahash[type] = dat_da
     endif
 

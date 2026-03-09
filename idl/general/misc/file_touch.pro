@@ -28,9 +28,9 @@
 ;   is not considered stable for general purpose use and the interface
 ;   may change. 
 ;
-;$LastChangedBy: jimmpc1 $
-;$LastChangedDate: 2019-02-22 12:24:10 -0800 (Fri, 22 Feb 2019) $
-;$LastChangedRevision: 26686 $
+;$LastChangedBy: davin-mac $
+;$LastChangedDate: 2026-03-04 01:06:05 -0800 (Wed, 04 Mar 2026) $
+;$LastChangedRevision: 34226 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/file_touch.pro $
 ;-
 
@@ -80,8 +80,15 @@ if !version.os_family eq 'unix' then begin
       ;;;; tstring = time_string(time[0], tformat= 'YYYY-MM-DD hh:mm:ss')   ;+ toffset   ;;; previous version (for -d option)
 ;      tstring = time_string(double(time[0])+double(toffset)*60.*60., tformat='YYYYMMDDhhmm.ss') ;I believe that this version is in error.  It interprets toffset as seconds, when it should be hours(pcruce)
 
-      tstring = time_string(time[0],/local, tformat ='YYYYMMDDhhmm.ss')
-      commands = [commands,"-t",tstring]
+      if 1 then begin   ; new method
+        tstring = time_string(time[0],tformat='YYYY-MM-DD hh:mm:ssZ')
+        dprint,tstring,dlevel=4
+        commands = [commands,"-d",tstring]
+      endif else begin  ; this old method creates annoying offsets when changing timezones
+        tstring = time_string(time[0],/local, tformat ='YYYYMMDDhhmm.ss')
+        commands = [commands,"-t",tstring]
+        
+      endelse
    endif
  
    commands = [commands,filename]

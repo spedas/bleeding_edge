@@ -132,7 +132,7 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
 
   case station of
     'WCD': begin
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/MM/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
+      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/mth/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
       rdr.source_dict.station = 1
       source.resolution = 3600
       if ~keyword_set(files) then begin
