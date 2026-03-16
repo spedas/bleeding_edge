@@ -29,17 +29,22 @@
 ;
 ;     TNAME:      If set, returns tplot variables to be created.
 ;
+;     IPATH:      Explicitly specifies the input path for loading the CDF file(s) (e.g., for testing purposes).
+;
+;        HK:      If set, loads the EMAG housekeeping CDF file(s).
+;
 ;CREATED BY:      Takuya Hara on 2026-01-09.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-02-26 19:21:48 -0800 (Thu, 26 Feb 2026) $
-; $LastChangedRevision: 34206 $
+; $LastChangedDate: 2026-03-09 16:12:03 -0700 (Mon, 09 Mar 2026) $
+; $LastChangedRevision: 34239 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/emag/esc_emag_load.pro $
 ;
 ;-
 PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blue=blue, gold=gold, files=afile, source=source, $
-                   prelaunch=prelaunch, commissioning=commissioning, frames=frames, tname=rname
+                   prelaunch=prelaunch, commissioning=commissioning, frames=frames, tname=rname, ipath=ipath, hk=hk
+
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
   IF is_string(trange) THEN trange = time_double(trange)
 
@@ -50,22 +55,33 @@ PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blu
   
   IF undefined(source) THEN src = esc_file_source() ELSE src = source
   IF undefined(level) THEN lvl = 'l1' ELSE lvl = level.tolower()
-  fname = 'YYYY/MM/esc-p_emag_lvl_YYYY-MM-DD_*.cdf'
-
+  fname = 'esc-p_emag_lvl_prodYYYY-MM-DD_*.cdf'
+  yymm  = 'YYYY/MM/'
+  
   phases = ['prelaunch', 'commissioning', 'science']
   IF KEYWORD_SET(prelaunch) THEN ip = 0
   IF KEYWORD_SET(commissioning) THEN ip = 1
   IF undefined(ip) THEN ip = -1 ; science
 
   rpath = phases[ip] + '/probe/emag/'
-  FOR i=0, N_ELEMENTS(probes)-1 DO BEGIN
+  prod  = ['']
+  IF KEYWORD_SET(hk) THEN append_array, prod, 'housekeeping_'
+
+  FOR i=0, N_ELEMENTS(probes)-1 DO FOR ip=0, N_ELEMENTS(prod)-1 DO BEGIN
      prefix = fname.replace('esc-p', 'esc-' + (probes[i]).substring(0, 0))
      prefix = prefix.replace('lvl', lvl)
+     prefix = prefix.replace('prod', prod[ip])
      path = rpath.replace('probe', probes[i]) + lvl + '/'
 
      undefine, files
-     files = esc_file_retrieve(prefix, remote_data_dir=path, trange=trange, /daily, /last_version, /valid_only, no_server=no_server, verbose=verbose, source=src)
-
+     
+     IF undefined(ipath) THEN $
+        files = esc_file_retrieve(yymm + prefix, remote_data_dir=path, trange=trange, /daily, /last_version, /valid_only, no_server=no_server, verbose=verbose, source=src) $
+     ELSE BEGIN
+        yymm  = ''
+        files = file_retrieve(yymm + prefix, local_data_dir=ipath, trange=trange, /daily, /last_version, /valid_only, /no_server)
+     ENDELSE
+     
      w = WHERE(files NE '', nw)
      IF nw EQ 0 THEN BEGIN
         dprint, dlevel=2, verbose=verobse, 'No file(s) found.'
@@ -73,23 +89,35 @@ PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blu
      ENDIF 
      append_array, afile, files[w]
 
-     IF ~undefined(frames) THEN varformat = STRJOIN((probes[i]).substring(0, 0) + '_emag_' + frames.tolower(), ' ')
+     CASE ip OF ; products
+        0: BEGIN ; science
+           IF ~undefined(frames) THEN varformat = STRJOIN((probes[i]).substring(0, 0) + '_emag_' + frames.tolower(), ' ')
      
-     cdf2tplot, files[w], prefix='esc', tplotnames=tname, varformat=TEMPORARY(varformat)
-     IF ~undefined(tname) THEN BEGIN
-        options, tname, /def, labels=['X', 'Y', 'Z'], labflag=-1, constant=0., colors='bgr'
-        suffix = STRSPLIT(tname, '_', /extract)
-        IF is_string(suffix) THEN suffix = suffix[-1] ELSE suffix = (suffix.toarray())[*, -1]
-        ;suffix = ((STRSPLIT(tname, '_', /extract)).toarray())[*, -1]
-        FOR j=0, N_ELEMENTS(tname)-1 DO options, tname[j], /def, ytitle=(probes[i]).toupper() + '!CB' + suffix[j]
-        append_array, rname, tname
-     ENDIF
-     get_data, tname[0], data=d
-     btot = tname[0].replace(suffix[0], 'tot')
-     store_data, btot, data={x: d.x, y: SQRT(TOTAL(d.y*d.y, 2))}, dl=dl
-     append_array, rname, btot
-     options, TEMPORARY(btot), /def, ytitle=(probes[i]).toupper() + '!C|B|', ysubtitle='[nT]'
-
+           cdf2tplot, files[w], prefix='esc', tplotnames=tname, varformat=TEMPORARY(varformat)
+           IF ~undefined(tname) THEN BEGIN
+              options, tname, /def, labels=['X', 'Y', 'Z'], labflag=-1, constant=0., colors='bgr'
+              suffix = STRSPLIT(tname, '_', /extract)
+              IF is_string(suffix) THEN suffix = suffix[-1] ELSE suffix = (suffix.toarray())[*, -1]
+              FOR j=0, N_ELEMENTS(tname)-1 DO options, tname[j], /def, ytitle=(probes[i]).toupper() + '!CB' + suffix[j]
+              append_array, rname, tname
+           ENDIF
+           get_data, tname[0], data=d
+           btot = tname[0].replace(suffix[0], 'tot')
+           store_data, btot, data={x: d.x, y: SQRT(TOTAL(d.y*d.y, 2))}, dl=dl
+           append_array, rname, btot
+           options, TEMPORARY(btot), /def, ytitle=(probes[i]).toupper() + '!C|B|', ysubtitle='[nT]'
+        END
+        1: BEGIN ; housekeeping
+           cdf2tplot, files[w], prefix='esc', tplotnames=tname
+           FOR j=0, N_ELEMENTS(tname)-1 DO BEGIN
+              IF ~((tname[j]).matches('esc' + (probes[i]).substring(0, 0) + '_emag_hk')) THEN BEGIN
+                 store_data, tname[j], newname=(tname[j]).replace('esc' + (probes[i]).substring(0, 0), 'esc' + (probes[i]).substring(0, 0) + '_emag_hk')
+                 tname[j] = (tname[j]).replace('esc' + (probes[i]).substring(0, 0), 'esc' + (probes[i]).substring(0, 0) + '_emag_hk')
+              ENDIF 
+           ENDFOR 
+           append_array, rname, tname
+        END
+     ENDCASE 
      undefine, tname
   ENDFOR
 

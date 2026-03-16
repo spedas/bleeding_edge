@@ -29,6 +29,7 @@
 ;                                  density is above this value are
 ;                                  flagged as 'bad' and set to
 ;                                  'NaN'. The default value is 4.0e1
+;    scpot_input - tplot variable name for an alternate scpot variable
 ; OUTPUTS:
 ;    'th?_*_density' Electron density in cm-3
 ; RESTRICTIONS:
@@ -52,7 +53,7 @@
 ;
 ;-
 pro thm_scpot2dens_opt_n, probe = probe, datatype_esa = datatype_esa, trange = trange, no_data_load = no_data_load, $
-                          nscpot_ion_density_threshold = nscpot_ion_density_threshold, _extra = _extra
+                          nscpot_ion_density_threshold = nscpot_ion_density_threshold, scpot_input = scpot_input, _extra = _extra
 
   if (keyword_set(probe)) then sc = probe[0] Else sc = 'a'
   thx = 'th'+sc
@@ -107,12 +108,20 @@ pro thm_scpot2dens_opt_n, probe = probe, datatype_esa = datatype_esa, trange = t
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;load data
-  ;Vsc
-  get_data, thx+'_'+datatype_esa+'_sc_pot', data = Vdata, index = index
-  if(index eq 0) then begin
-    dprint, 'Missing: '+thx+'_'+datatype_esa+'_sc_pot'
-    return
-  endif
+;Vsc
+  If(keyword_set(scpot_input)) Then Begin
+     get_data, scpot_input, data = Vdata, index = index
+     if(index eq 0) then begin
+        dprint, 'Missing: '+scpot_input
+        return
+     endif
+  Endif Else Begin
+     get_data, thx+'_'+datatype_esa+'_sc_pot', data = Vdata, index = index
+     if(index eq 0) then begin
+        dprint, 'Missing: '+thx+'_'+datatype_esa+'_sc_pot'
+        return
+     endif
+  Endelse
   Vdata.y[*] = -Vdata.y[*]
   store_data, thx+'_'+datatype_esa+'_-sc_pot', data = Vdata
   ;Ne
@@ -157,7 +166,11 @@ pro thm_scpot2dens_opt_n, probe = probe, datatype_esa = datatype_esa, trange = t
     'e': Ne_scpot = (10^(Vdata.y/25.5)*20000.+10^(Vdata.y/ 5.0)*30000.+10^(Vdata.y/2.0)*10000000.0+10^(Vdata.y/0.2)*3000000000000000.0)/Vthdata.y
   Endcase
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  store_data, thx+'_'+datatype_esa+'_en_eflux_pot', data = [thx+'_'+datatype_esa+'_en_eflux', thx+'_'+datatype_esa+'_scpot']
+  If(keyword_set(scpot_input)) Then Begin
+     store_data, thx+'_'+datatype_esa+'_en_eflux_pot', data = [thx+'_'+datatype_esa+'_en_eflux', scpot_input]
+  Endif Else Begin
+     store_data, thx+'_'+datatype_esa+'_en_eflux_pot', data = [thx+'_'+datatype_esa+'_en_eflux', thx+'_'+datatype_esa+'_sc_pot']
+  Endelse
   ylim, thx+'_'+datatype_esa+'_en_eflux_pot', 5e0, 2.3e4, style = 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

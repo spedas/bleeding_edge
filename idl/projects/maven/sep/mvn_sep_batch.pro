@@ -1,6 +1,6 @@
 ; $LastChangedBy: ali $
-; $LastChangedDate: 2023-10-21 18:50:42 -0700 (Sat, 21 Oct 2023) $
-; $LastChangedRevision: 32205 $
+; $LastChangedDate: 2026-03-09 15:01:50 -0700 (Mon, 09 Mar 2026) $
+; $LastChangedRevision: 34238 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sep/mvn_sep_batch.pro $
 ; mvn_sep_batch: to be run from a cron job typically
 
@@ -23,16 +23,19 @@ dprint,'Starting mvn_sep_batch at: '+time_string(t0,/local)+' host:'+getenv('HOS
 timespan,c=120
 
 mvn_mag_sts_to_sav,/init,coord='pl',level='l1'
+mvn_mag_sts_to_sav,/init,coord='pc',level='l1'
 mvn_mag_sts_to_sav,/init,coord='pl',level='l2'
 mvn_mag_sts_to_sav,/init,coord='pc',level='l2'
 
 mvn_save_reduce_timeres,/init,resstr='1sec', 'maven/data/sci/mag/l1/sav/$RES/YYYY/MM/mvn_mag_l1_pl_$RES_YYYYMMDD.sav'
+mvn_save_reduce_timeres,/init,resstr='1sec', 'maven/data/sci/mag/l1/sav/$RES/YYYY/MM/mvn_mag_l1_pc_$RES_YYYYMMDD.sav'
 mvn_save_reduce_timeres,/init,resstr='30sec','maven/data/sci/mag/l1/sav/$RES/YYYY/MM/mvn_mag_l1_pl_$RES_YYYYMMDD.sav'
+mvn_save_reduce_timeres,/init,resstr='30sec','maven/data/sci/mag/l1/sav/$RES/YYYY/MM/mvn_mag_l1_pc_$RES_YYYYMMDD.sav'
 
 mvn_save_reduce_timeres,/init,resstr='1sec', 'maven/data/sci/mag/l2/sav/$RES/YYYY/MM/mvn_mag_l2_pl_$RES_YYYYMMDD.sav'
 mvn_save_reduce_timeres,/init,resstr='1sec', 'maven/data/sci/mag/l2/sav/$RES/YYYY/MM/mvn_mag_l2_pc_$RES_YYYYMMDD.sav'
 mvn_save_reduce_timeres,/init,resstr='30sec','maven/data/sci/mag/l2/sav/$RES/YYYY/MM/mvn_mag_l2_pl_$RES_YYYYMMDD.sav'
-;mvn_save_reduce_timeres,/init,resstr='30sec','maven/data/sci/mag/l2/sav/$RES/YYYY/MM/mvn_mag_l2_pc_$RES_YYYYMMDD.sav'
+mvn_save_reduce_timeres,/init,resstr='30sec','maven/data/sci/mag/l2/sav/$RES/YYYY/MM/mvn_mag_l2_pc_$RES_YYYYMMDD.sav'
 
 ;mvn_sep_gen_plots,init=-10
 mvn_sep_makefile;,/init
