@@ -15,9 +15,9 @@
 ;   thm_load_gmag_networks, gmag_networks=gmag_networks, gmag_stations=gmag_stations, selected_network=['gima', 'autumnx']
 ;
 ;HISTORY:
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2024-02-23 05:59:59 -0800 (Fri, 23 Feb 2024) $
-; $LastChangedRevision: 32454 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-03-18 15:27:24 -0700 (Wed, 18 Mar 2026) $
+; $LastChangedRevision: 34270 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag_networks.pro $
 ;-
 
@@ -102,19 +102,33 @@ pro thm_load_gmag_networks, gmag_networks=gmag_networks, gmag_stations=gmag_stat
       dprint, 'Warning: some data may be uncalibrated.'
     endif
   endif
-
+  
+  idx = where(strpos(gmag_stations,'_') GT -1, ncnt)
+  if ncnt GT 0 then begin
+    for i=0,ncnt-1 do begin
+      if (STRLOWCASE(selected_network) eq 'bas') then begin
+        ;gmag_stations[idx[i]]=strmid(gmag_stations[idx[i]],0,3) + '-' + strmid(gmag_stations[idx[i]],4,3)
+        siteparts=STRSPLIT(gmag_stations[idx[i]],'_',/regex,/extract)
+        gmag_stations[idx[i]]=siteparts[0]+'-'+siteparts[1]
+      endif else begin
+        if ( STRLOWCASE(gmag_networks[gstationgroups[idx[i]]]) eq 'bas') then begin
+            siteparts=STRSPLIT(gmag_stations[idx[i]],'_',/regex,/extract)
+            gmag_stations[idx[i]]=siteparts[0]+'-'+siteparts[1]
+        endif  
+      endelse
+    endfor
+  endif
+  
   gmag_stations = strlowcase(strtrim(gmag_stations))
   gmag_stations = gmag_stations[where(gmag_stations ne '' and gmag_stations ne ' ')]
   gmag_stations = gmag_stations[sort(gmag_stations)]
   gmag_stations = gmag_stations[uniq(gmag_stations)]
-  idx = where(strpos(gmag_stations,'_') GT -1, ncnt)
-  if ncnt GT 0 then begin
-    for i=0,ncnt-1 do gmag_stations[idx[i]]=strmid(gmag_stations[idx[i]],0,3) + '-' + strmid(gmag_stations[idx[i]],4,3)
-  endif
-
+  
+  
   gmag_networks = strtrim(gmag_networks)
   gmag_networks = gmag_networks[where(gmag_networks ne '' and gmag_networks ne ' ')]
   gmag_networks = gmag_networks[sort(gmag_networks)]
-
   gmag_networks = gmag_networks[uniq(gmag_networks)]
+  
+  
 end

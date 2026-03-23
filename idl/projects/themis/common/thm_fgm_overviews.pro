@@ -11,9 +11,9 @@
 ; 
 ;       device(optional):switch to 'z' device for cron plotting
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2025-01-28 16:16:23 -0800 (Tue, 28 Jan 2025) $
-; $LastChangedRevision: 33102 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-03-17 17:38:33 -0700 (Tue, 17 Mar 2026) $
+; $LastChangedRevision: 34259 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fgm_overviews.pro $
 ;-
 
@@ -65,8 +65,13 @@ for i = 0L,n_elements(probe_list)-1L do begin
     endif
     
     sc = probe_list[i]          ;load routines can change this to an array
-    var_string1 += 'th'+sc+'_fgs_gse '
-    var_string2 += ' sample_rate_'+sc + ' th'+sc+'_fgl_gse '
+    If(sc Eq 'e' And time_double(date) Ge time_double('2024-05-25')) Then Begin
+      var_string1 += 'th'+sc+'_fgs_dsl '
+      var_string2 += ' sample_rate_'+sc + ' th'+sc+'_fgl_dsl '
+    endif else begin
+      var_string1 += 'th'+sc+'_fgs_gse '
+      var_string2 += ' sample_rate_'+sc + ' th'+sc+'_fgl_gse '
+    endelse
 ;Adjust titles
     options, 'th'+sc+'_fgs_gse', 'ytitle', 'th'+sc+'_fgs_gse'
     options, 'th'+sc+'_fgl_gse', 'ytitle', 'th'+sc+'_fgl_gse'
@@ -76,16 +81,25 @@ for i = 0L,n_elements(probe_list)-1L do begin
 ;for recent THENIS E FGS data, if there is an estimated Bz, put the Bz curve
 ;behind Bx and By. jmm, 2024-12-12
    If(sc Eq 'e' And time_double(date) Ge time_double('2024-05-25')) Then Begin
-      options, 'th'+sc+'_fgs_gse', 'indices', [2,0,1]
-      options, 'th'+sc+'_fgl_gse', 'indices', [2,0,1]
+      thm_load_fgm, probe = sc, coord = 'dsl', suff = '_dsl', level = 'l1'
+      thm_load_fit, probe = sc, coord = 'dsl', suff = '_dsl', level = 'l1' ;level 1 is default
+      ;Adjust titles
+      options, 'th'+sc+'_fgs_dsl', 'ytitle', 'th'+sc+'_fgs_dsl'
+      options, 'th'+sc+'_fgl_dsl', 'ytitle', 'th'+sc+'_fgl_dsl'
+      ;kill units in ytitles
+      options, 'th'+sc+'_fgs_dsl', 'ysubtitle', 'DSL'
+      options, 'th'+sc+'_fgl_dsl', 'ysubtitle', 'DSL'
+
+      options, 'th'+sc+'_fgs_dsl', 'indices', [2,0,1]
+      options, 'th'+sc+'_fgl_dsl', 'indices', [2,0,1]
 ;check for l1b data, if there is none yet, set Bz to NaN 
       If(~is_string(thm_l1b_check(date, sc))) Then Begin
-         get_data, 'th'+sc+'_fgs_gse', data = btmp
+         get_data, 'th'+sc+'_fgs_dsl', data = btmp
          btmp.y[*, 2] = !values.f_nan
-         store_data, 'th'+sc+'_fgs_gse', data = btmp
-         get_data, 'th'+sc+'_fgl_gse', data = btmp
+         store_data, 'th'+sc+'_fgs_dsl', data = btmp
+         get_data, 'th'+sc+'_fgl_dsl', data = btmp
          btmp.y[*, 2] = !values.f_nan
-         store_data, 'th'+sc+'_fgl_gse', data = btmp
+         store_data, 'th'+sc+'_fgl_dsl', data = btmp
       Endif
    Endif
 endfor
@@ -102,7 +116,7 @@ loadct2,43
 tplot_options,'xmargin',[16,8]
 ;tclip instead of ylim, jmm, 13-jun-2008
 ;ylim,'*',-100.,100.
-tclip, -100.0, 100.0, /overwrite
+tclip, '*_fg*', -100.0, 100.0, /overwrite
 
 title = 'P5, P1, P2, P3, P4 (TH-A,B,C,D,E) FGS, FGL [nT]'
 If(Not keyword_set(nopng)) Then Begin

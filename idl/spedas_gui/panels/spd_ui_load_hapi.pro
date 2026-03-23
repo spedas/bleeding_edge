@@ -12,114 +12,74 @@
 ;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2023-08-23 15:12:44 -0700 (Wed, 23 Aug 2023) $
-;$LastChangedRevision: 32059 $
+;$LastChangedDate: 2026-03-19 09:55:38 -0700 (Thu, 19 Mar 2026) $
+;$LastChangedRevision: 34273 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
 
 function hapi_include_sosmag
-  ; SOSMAG HAPI server is: 'https://swe.ssa.esa.int/hapi/'
-  ; As of 2021/12/05 the server has non-standard behavior that requires special treatment:
-  ; 1. It requires username and password for each user.
-  ; 2. The catalog contains 134 datasets, but only 2 are actually available.
-  ; 3. By design, it returns Error 500 responses for some queries (those cannot be parsed by json).
-  ; The sosmag plugin is required for this server.
-
-  addsosmag = 1
-
-  ; Check if the sosmag directory exists.
-  GETRESOURCEPATH, path ; start at the resources folder
-  sosmag_dir = path + PATH_SEP(/PARENT_DIRECTORY)+ PATH_SEP() + PATH_SEP(/PARENT_DIRECTORY) + PATH_SEP() +  'projects'+ PATH_SEP() + 'sosmag' +PATH_SEP()
-
-  if ~file_test(sosmag_dir, /read) then begin
-    ; If that failed, try to find password file in current dir
-    dir = FILE_DIRNAME(ROUTINE_FILEPATH(), /MARK_DIRECTORY)
-    passfile = dir + 'sosmag_password.txt'
-    if ~file_test(passfile, /read) then begin
-      addsosmag = 0
-    endif
-  endif
-
+  ; Check if connection is possible
+  
+  RESOLVE_ROUTINE, 'check_esa_hapi_connection', /COMPILE_FULL_FILE, /EITHER
+  addsosmag = check_esa_hapi_connection()
+  
   return, addsosmag
 
 end
 
-function hapi_server_is_sosmag, server
-  ; Check if the server selected is sosmag server (ESA)
-  if hapi_include_sosmag() ne 1 then return, 0
-
-  if server eq 'https://swe.ssa.esa.int/hapi/' then return, 1
-
+function esa_known_datasets, dataset
+  ; Load only the KOMPSAT/SOSMAG datasets (currently, 4 datasets)
+  dsets = ['kma_gk2a_ksem_pd_p_l1', 'kma_gk2a_ksem_pd_e_l1', 'd3s_gk2a_sosmag_1m', 'd3s_gk2a_sosmag_recalib']
+  
+  for i=0, n_elements(dsets)-1 do begin
+    if STRPOS(dataset, dsets[i]) NE -1 then return, 1
+  endfor
+  
   return, 0
+
+end
+
+function hapi_server_is_sosmag, server
+  ; Check if the server selected is sosmag server (ESA) 
+  ;   
+  if server ne 'https://swe.ssa.esa.int/hapi/' then return, 0  
+  
+  if hapi_include_sosmag() ne 1 then begin
+    return, 0
+  endif 
+
+  return, 1
 end
 
 function hapi_sosmag_capabilities
   ; Return HAPI capabilities for SOSMAG
-  hquery = 'capabilities'
-  server_capabilities = ''
+  widget_control, /hourglass
+  kompsat_load_data, getrest='capabilities', showrest=showrestout
 
-  sosmag_hapi_query, hquery=hquery, query_response=query_response
-  if query_response eq '-1' || query_response eq '' then begin
-    server_capabilities = ''
-  endif else begin
-    server_capabilities = sosmag_json_parse(query_response)
-  endelse
-
-  return, server_capabilities
+  return, showrestout
 end
 
 function hapi_sosmag_datasets
-  ; Return HAPI catalog datasets, only for SOSMAG datasets
-  sosmag_datasets = []
-  hquery = 'catalog'
-  sosmag_hapi_query, hquery=hquery, query_response=query_response
+  ; Return HAPI catalog datasets, only for KOMPSAT datasets
+  widget_control, /hourglass
+  kompsat_load_data, getrest='catalog', showrest=showrestout
 
-  if query_response eq '-1' || query_response eq '' then begin
-    sosmag_datasets = []
-  endif else begin
-    catalog = sosmag_json_parse(query_response)
-    available_datasets = catalog['catalog']
-    for i=0, n_elements(available_datasets)-1 do begin
-      d = available_datasets[i]
-      if n_elements(d) eq 2 && d.haskey('id') then begin
-        d0 = strlowcase(d['id'])
-        if d0[0].contains('sosmag') then begin
-          sosmag_datasets = [sosmag_datasets, d]
-        endif
-      endif
-    endfor
-  endelse
-
-  return, sosmag_datasets
+  return, showrestout
 end
 
 function hapi_sosmag_info, dataset
-  ; Return HAPI info for SOSMAG
+  ; Return HAPI info for a dataset
+  widget_control, /hourglass
+  kompsat_load_data, dataset=dataset, getrest='info', showrest=showrestout
 
-  info_str = ''
-  ;There is a problem for some ESA datasets
-  catch, Error_status
-  IF Error_status NE 0 THEN BEGIN
-    dprint, 'ERROR_STATE: ', !ERROR_STATE.MSG
-    dinfo = 'Error: No info available.'
-    catch, /cancel
-    return, dinfo
-  ENDIF
-
-  hquery = 'info?id='+dataset
-  sosmag_hapi_query, hquery=hquery, query_response=query_response
-  if query_response eq '-1' || query_response eq '' then begin
-    info_str = ''
-  endif else begin
-    info_str = sosmag_json_parse(query_response)
-  endelse
-
-  return, info_str
+  return, showrestout
 end
 
 pro hapi_sosmag_load_data, trange=trange, dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix
-  ; Load HAPI data for SOSMAG
-  sosmag_hapi_load_data, trange=trange, dataset=dataset, tplotnames=tplotvars, prefix=prefix
+  ; Load HAPI data for SOSMAG/KOMPSAT
+  widget_control, /hourglass
+  kompsat_load_data, trange=trange, dataset=dataset, prefix=prefix, tplotvars=tplotvars
+  
 end
 
 pro spd_ui_hapi_set_server, server, neturl=neturl
@@ -153,9 +113,10 @@ pro spd_ui_hapi_get_capabilities, server, capabilities=capabilities
   neturl->SetProperty, URL_PATH=url_path+'/capabilities'
 
   if hapi_server_is_sosmag(server) then begin
-    server_capabilities = hapi_sosmag_capabilities()
-    if size(server_capabilities, /type) eq 11 then begin
-      hversion = server_capabilities['version']
+    capabilities_str = hapi_sosmag_capabilities()
+    if strlen(capabilities_str) ge 5 then begin
+      server_capabilities = json_parse(capabilities_str)
+      hversion = server_capabilities['HAPI']
       outputFormats = strjoin(server_capabilities['outputFormats'].toArray(), ', ')
       capabilities = 'HAPI v' + hversion + newline + 'Output formats: ' + outputFormats
     endif else capabilities = 'Error communicating with server.' + newline + 'Check username and password.' + newline + 'File: sosmag_password.txt'
@@ -172,9 +133,13 @@ end
 pro spd_ui_hapi_get_datasets, server, datasets=datasets
 
   if (!D.NAME eq 'WIN') then newline = string([13B, 10B]) else newline = string(10B)
+  
+  if hapi_server_is_sosmag(server) then kompsat_server=1 else kompsat_server=0
 
-  if hapi_server_is_sosmag(server) then begin
-    available_datasets = hapi_sosmag_datasets()
+  if kompsat_server then begin
+    catalog_str = hapi_sosmag_datasets()
+    catalog = json_parse(catalog_str)
+    available_datasets = catalog['catalog']
   endif else begin
     spd_ui_hapi_set_server, server, neturl=neturl
     neturl->GetProperty, URL_PATH=url_path
@@ -186,7 +151,10 @@ pro spd_ui_hapi_get_datasets, server, datasets=datasets
 
   datasets = []
   for dataset_idx = 0, n_elements(available_datasets)-1 do begin
-    datasets = [datasets, (available_datasets[dataset_idx])['id']]
+    dset = (available_datasets[dataset_idx])['id']
+    if ~kompsat_server || (kompsat_server && esa_known_datasets(dset)) then begin      
+      datasets = [datasets, dset]
+    endif
   endfor
 end
 
@@ -201,7 +169,8 @@ pro spd_ui_hapi_get_dataset_info, server, dataset, dinfo=dinfo
   endif
 
   if hapi_server_is_sosmag(server) then begin
-    info = hapi_sosmag_info(dataset)
+    info_str = hapi_sosmag_info(dataset)
+    info = json_parse(info_str)
   endif else begin
     spd_ui_hapi_set_server, server, neturl=neturl
     neturl->GetProperty, URL_PATH=url_path
@@ -345,7 +314,7 @@ Pro spd_ui_load_hapi_event, ev
 
 end
 
-Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
+Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj, kompsat=kompsat
 
   mainBase = widget_base(/column, title = 'Load Data using HAPI', /modal, Group_Leader=gui_id)
 
@@ -365,8 +334,10 @@ Pro spd_ui_load_hapi, gui_id, historywin, statusbar,timeRangeObj=timeRangeObj
     'http://planet.physics.uiowa.edu/das/das2Server/hapi','https://iswa.gsfc.nasa.gov/IswaSystemWebApp/hapi', $
     'http://lasp.colorado.edu/lisird/hapi']
   ; If there is a SOSMAG plugin, also include the ESA HAPI server which requires special treatment due to irregularities.
-  ; Removed 2023/08/23, because currently the user authentication does not work correctly in IDL 
-  ;if hapi_include_sosmag() eq 1 then hapi_servers=[hapi_servers, 'https://swe.ssa.esa.int/hapi/']
+  ; Removed 2023/08/23, because currently the user authentication does not work correctly in IDL
+  ; 2026/03/03: SOSMAG/KOMPSAT was added again for IDL 9.1+  
+  if float(!version.release) gt 9.1 then hapi_servers=[hapi_servers, 'https://swe.ssa.esa.int/hapi/']
+
 
   serverList = widget_list(upLeftBase, value=hapi_servers, /align_top, ysize=n_elements(hapi_servers),uvalue='SERVERLIST', uname='SERVERLIST')
   selectServerLabelEmpty11 = widget_label(upLeftBase, value=' ', /align_top, /dynamic_resize)

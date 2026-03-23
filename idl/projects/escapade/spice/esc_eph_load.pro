@@ -33,8 +33,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-02-27 17:42:42 -0800 (Fri, 27 Feb 2026) $
-; $LastChangedRevision: 34209 $
+; $LastChangedDate: 2026-03-20 12:50:31 -0700 (Fri, 20 Mar 2026) $
+; $LastChangedRevision: 34285 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_eph_load.pro $
 ;
 ;-
@@ -85,9 +85,10 @@ PRO esc_eph_load, itime, verbose=verbose, no_server=no_server, blue=blue, gold=g
      ENDIF 
      append_array, afile, files[w]
 
-     IF ~undefined(frames) THEN varformat = 'esc_' + STRJOIN((probes[i]).substring(0, 0) + '_eph_' + frames.tolower(), ' ')
+     ;IF ~undefined(frames) THEN varformat = 'esc_' + STRJOIN((probes[i]).substring(0, 0) + '_eph_' + frames.tolower(), ' ')
+     IF ~undefined(frames) THEN varformat = STRJOIN((probes[i]).substring(0, 0) + '_eph_' + frames.tolower(), ' ')
 
-     cdf2tplot, files[w], tplotnames=tname, varformat=TEMPORARY(varformat)
+     cdf2tplot, files[w], tplotnames=tname, varformat=TEMPORARY(varformat), prefix='esc'
      IF ~undefined(tname) THEN BEGIN
         yes = WHERE(STRMATCH(tname, '*qrot*') EQ 1, n_yes, complement=no, ncomplement=n_no)
         IF n_yes GT 0 THEN BEGIN

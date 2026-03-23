@@ -43,9 +43,9 @@
 ;HISTORY:
 ;  This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 ;
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2025-05-19 11:45:05 -0700 (Mon, 19 May 2025) $
-;$LastChangedRevision: 33318 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-03-17 17:41:32 -0700 (Tue, 17 Mar 2026) $
+;$LastChangedRevision: 34260 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -256,33 +256,43 @@ SKIP_FGM_LOAD:
 ;kluge to prevent missing data from crashing things
 index_fit=where(thx+'_fgs' eq tnames())
 index_state=where(thx+'_state_spinras' eq tnames())
+fgs_varname = thx+'_fgs_gse'
 if (index_fit[0] eq -1 or index_state[0] eq -1) then begin
   filler=fltarr(2,3)
   filler[*,*]=float('NaN')
   store_data,thx+'_fgs_gse',data={x:time_double(date_ext)+findgen(2),y:filler}
   ylim,thx+'_fgs_gse',-100,100,0
 endif else begin
-  thm_cotrans,thx+'_fgs',out_suf='_gse', in_c='dsl', out_c='gse'
 ;for recent FGS data, if there is an estimated Bz, put the Bz curve
 ;behind Bx and By. jmm, 2024-12-12
   If(sc[0] Eq 'e' And time_double(date) Ge time_double('2024-05-25')) Then Begin
-     options, thx+'_fgs_gse', 'indices', [2,0,1]
+     ; this is the varname that will be added to the list of vars to plot
+     fgs_varname=thx+'_fgs'
+     options, fgs_varname, 'indices', [2,0,1]
 ;check for l1b data, if there is none yet, set Bz to NaN 
      If(~is_string(thm_l1b_check(date, sc[0]))) Then Begin
-        get_data, thx+'_fgs_gse', data = btmp
+        get_data, fgs_varname, data = btmp
         btmp.y[*, 2] = !values.f_nan
-        store_data, thx+'_fgs_gse', data = btmp
+        store_data, fgs_varname, data = btmp
      Endif
-  Endif
+     options, fgs_varname, 'ytitle', 'B FIT!CDSL!C[nT]'
+     options, fgs_varname, 'labels', ['Bx', 'By', 'Bz']
+     options, fgs_varname, 'labflag', 1
+     options, fgs_varname, 'colors', [2, 4, 6]
+
+  Endif else begin
+   ; other probes and times: use cotrans to gse
+   thm_cotrans,thx+'_fgs',out_suf='_gse', in_c='dsl', out_c='gse'
+   options, fgs_varname, 'ytitle', 'B FIT!CGSE!C[nT]'
+   options, fgs_varname, 'labels', ['Bx', 'By', 'Bz']
+   options, fgs_varname, 'labflag', 1
+   options, fgs_name, 'colors', [2, 4, 6]
+
+  Endelse
 endelse
 
 ;clip data
-tclip, thx+'_fgs_gse', -100.0, 100.0, /overwrite
-name = thx+'_fgs_gse'
-options, name, 'ytitle', 'B FIT!CGSE!C[nT]'
-options, name, 'labels', ['Bx', 'By', 'Bz']
-options, name, 'labflag', 1
-options, name, 'colors', [2, 4, 6]
+tclip, fgs_varname, -100.0, 100.0, /overwrite
 
 
 ;load FBK and FFT data, skip this if probe = 'a' and date past
@@ -990,7 +1000,7 @@ Endif
 ;; Panel 1: Kyoto and THEMIS AE
 spd_gen_overplot_ae_panel
 
-vars_full = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
+vars_full = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', fgs_varname, $
              esaf_n_name, esaif_v_name, esaf_t_name, sample_rate_var, $
              ssti_name, esaif_flux_name, sste_name,  $
              esaef_flux_name, fbk_tvars[0], fbk_tvars[1], thx+'_pos_gse_z']
@@ -1075,11 +1085,11 @@ if keyword_set(makepng) then begin
       esar_n_name = thx+'_Nief'
     Endif
   Endif
-  vars06 = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
+  vars06 = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', fgs_varname, $
              esar_n_name, esair_v_name, esar_t_name, 'sample_rate_'+sc, $
              ssti_name, esair_flux_name, sste_name,  $
              esaer_flux_name, fbk_tvars[0], fbk_tvars[1], thx+'_pos_gse_z']
-  vars02 = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', thx+'_fgs_gse', $
+  vars02 = ['kyoto_thm_combined_ae', roi_bar, 'Keogram', fgs_varname, $
              esar_n_name, esair_v_name, esar_t_name, 'sample_rate_'+sc, $
              ssti_name, esair_flux_name, sste_name,  $
              esaer_flux_name, fbk_tvars[0], fbk_tvars[1], thx+'_pos_gse_z']

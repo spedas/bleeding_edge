@@ -73,6 +73,10 @@
 ;
 ;    NOLOAD:        Skip the step of loading data.
 ;
+;    L2_VERSION:    STATIC L2 version to use.  Default = 2.
+;                   The STATIC loader does not use file_retreive, so the normal version
+;                   control doesn't work.
+;
 ;    PANS:          Named variable to hold a space delimited string containing
 ;                   the tplot variable(s) created.
 ;
@@ -83,8 +87,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-25 13:15:38 -0800 (Wed, 25 Feb 2026) $
-; $LastChangedRevision: 34198 $
+; $LastChangedDate: 2026-03-20 08:45:34 -0700 (Fri, 20 Mar 2026) $
+; $LastChangedRevision: 34282 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -93,7 +97,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
                      density=density, velocity=velocity, tavg=tavg, pans=pans, $
                      result_h=result_h, result_o1=result_o1, result_o2=result_o2, $
                      noload=noload, temperature=temperature, reset=reset, L3=L3, $
-                     frame=frame, doplot=doplot, success=success, reload=reload
+                     frame=frame, doplot=doplot, success=success, reload=reload, $
+                     l2_version=l2_version
 
   common coldion, cio_h, cio_o1, cio_o2
   common mvn_sta_kk3_anode, kk3_anode
@@ -123,6 +128,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   dotmp = keyword_set(temperature)
   useL3 = keyword_set(L3)
   ivlev = 4  ; STATIC background subtraction level (should be >= 2)
+  l2_v = keyword_set(l2_version) ? l2_version[0] : 2
 
 ; Use STATIC L3 densities and temperatures if possible (these use IV4)
 ;   five species (m/q): 1, 2, 16, 32, 44
@@ -166,6 +172,14 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 ;   two or more distinct populations with different energies are 
 ;   present at the same time.  In this case, the moment calculations
 ;   may poorly represent the actual situation.
+;
+;   The minimum measureable velocity depends on the spacecraft potential:
+;
+;      Vmin = sqrt(2*(phi+0.4)/m)
+;
+;   When the potential is -0.4 Volts or less, then STATIC can measure 
+;   down to zero velocity.  This is often the case in shadow.  For
+;   positive potentials, the lowest energy component is not measured.
 
   e_arr = fltarr(2,3)
   e_arr[*,0] = [0.,30000.]  ; H+  (2400 km/s max velocity)
@@ -220,7 +234,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
   if keyword_set(reload) then nc6 = 0
   if (nc6 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=ivlev
+    mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=ivlev, l2_version_in=l2_v
     str_element, mvn_c6_dat, 'time', time_c6, success=gotc6
     if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
     if (nc6 lt 10) then begin
@@ -236,7 +250,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
   if keyword_set(reload) then nd0 = 0
   if (nd0 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['d0'], iv_level=ivlev
+    mvn_sta_l2_load, sta_apid=['d0'], iv_level=ivlev, l2_version_in=l2_v
     str_element, mvn_d0_dat, 'time', time_d0, success=gotd0
     if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
     if (nd0 lt 10) then begin
@@ -252,7 +266,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotd1) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
   if keyword_set(reload) then nd1 = 0
   if (nd1 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['d1'], iv_level=ivlev
+    mvn_sta_l2_load, sta_apid=['d1'], iv_level=ivlev, l2_version_in=l2_v
     str_element, mvn_d1_dat, 'time', time_d1, success=gotd1
     if (gotd1) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
     if (nd1 lt 10) then begin
@@ -903,8 +917,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
 
 ;   Combined clock angle (Azari + Dong)
 ;   /home/rlillis/work/data/maven_sw_driver_files/clock_angle_vSWIM_Yaxue.sav
-;   coverage: 2014-11-13 to 2024-04-17  (CIO campaigns A-N; need update for O, P, Q)
-;   latest refresh: 2025-06-25
+;   coverage: 2014-11-13 to 2025-10-29  (all CIO campaigns)
+;   latest refresh: 2026-03-17
 
   fname = 'clock_angle_vSWIM_Yaxue.sav'
   finfo = file_info(path + fname)

@@ -24,8 +24,8 @@ aeold|Themis AE (pre 2015)||
 epo|Themis EPO||
 gbo|Themis GBO||
 usgs|USGS||
-usgs_var|USGS Variometer||
-variometer|Variometer||
+variom|Variometers||
+variom_100ms|Variometers (10 Hz)||
 kyoto|KYOTO|abk|Abisko, Sweden
 sgu|SGU|abk|Abisko, Sweden
 autx|AUTUMNX|akul|Akulivik, QC
@@ -327,7 +327,7 @@ gbo|Themis GBO|yknf|Yellowknife, NT
 bas|BAS|M65_297|Antarctica
 bas|BAS|M66_294|Antarctica
 bas|BAS|M67_292|Antarctica
-bas|BAS|M78-337|Antarctica
+bas|BAS|M78_337|Antarctica
 bas|BAS|M79_336|Antarctica
 bas|BAS|M81_003|Antarctica
 bas|BAS|M83_347|Antarctica
@@ -338,83 +338,83 @@ bas|BAS|M85_096|Antarctica
 bas|BAS|M87_028|Antarctica
 bas|BAS|M87_068|Antarctica
 bas|BAS|M88_316|Antarctica
-usgs_var|USGS Variometer|anmo|Albuquerque, NM
-usgs_var|USGS Variometer|casy|Casey, Antarctica
-usgs_var|USGS Variometer|ccm|Cathedral Cave, MO
-usgs_var|USGS Variometer|cola|College Outpost, AL
-usgs_var|USGS Variometer|cor|Corvallis, OR
-usgs_var|USGS Variometer|dgmt|Dagmar, MT
-usgs_var|USGS Variometer|dwpf|Disney Wilderness Preserve, FL
-usgs_var|USGS Variometer|ecsd|Sioux Falls, SD
-usgs_var|USGS Variometer|eymn|Ely, MN
-usgs_var|USGS Variometer|e46a|Sault Ste Marie, MI
-usgs_var|USGS Variometer|e62a|Clayton Lake, ME
-usgs_var|USGS Variometer|goga|Godfrey, GA
-usgs_var|USGS Variometer|hrv|Oak Ridge, MA
-usgs_var|USGS Variometer|j47a|Sumner, MI
-usgs_var|USGS Variometer|kbs|Spitzbergen, Norway
-usgs_var|USGS Variometer|kevo|Kevo, Finland
-usgs_var|USGS Variometer|kono|Kongsberg, Norway
-usgs_var|USGS Variometer|ksu1|Konza Prairie, KS
-usgs_var|USGS Variometer|k30b|Basset, NE
-usgs_var|USGS Variometer|k50a|Casco, MI
-usgs_var|USGS Variometer|mbwa|Marble Bar, Western Australia
-usgs_var|USGS Variometer|mstx|Muleshoe, TX
-usgs_var|USGS Variometer|m63a|Gales Ferry, CT
-usgs_var|USGS Variometer|o20a|White River City, CO
-usgs_var|USGS Variometer|pab|San Pablo, Spain
-usgs_var|USGS Variometer|p57a|Martinsburg, WV
-usgs_var|USGS Variometer|qspa|SPRESO, Antarctica
-usgs_var|USGS Variometer|rssd|Black Hills, SD
-usgs_var|USGS Variometer|r49a|Shelbyville, KY
-usgs_var|USGS Variometer|sba|Scott Base, Antarctica
-usgs_var|USGS Variometer|sfjd|Sondre Stromfjord, Greenland
-usgs_var|USGS Variometer|spmn|Marine on St. Croix, MN
-usgs_var|USGS Variometer|sspa|Standing Stone, PA
-usgs_var|USGS Variometer|s61a|Accomac, VA
-usgs_var|USGS Variometer|t47a|Sharon Grove, KY
-usgs_var|USGS Variometer|u38b|Gravette, AR
-usgs_var|USGS Variometer|wci|Wyandotte Cave, IN
-usgs_var|USGS Variometer|whtx|Meridian, TX
-usgs_var|USGS Variometer|wvt|Waverly, TN
-usgs_var|USGS Variometer|352a|Blakely, GA
-variometer|Variometer|anmo|Albuquerque, NM
-variometer|Variometer|casy|Casey, Antarctica
-variometer|Variometer|ccm|Cathedral Cave, MO
-variometer|Variometer|cola|College Outpost, AL
-variometer|Variometer|cor|Corvallis, OR
-variometer|Variometer|dgmt|Dagmar, MT
-variometer|Variometer|dwpf|Disney Wilderness Preserve, FL
-variometer|Variometer|ecsd|Sioux Falls, SD
-variometer|Variometer|eymn|Ely, MN
-variometer|Variometer|e46a|Sault Ste Marie, MI
-variometer|Variometer|e62a|Clayton Lake, ME
-variometer|Variometer|goga|Godfrey, GA
-variometer|Variometer|hrv|Oak Ridge, MA
-variometer|Variometer|j47a|Sumner, MI
-variometer|Variometer|kbs|Spitzbergen, Norway
-variometer|Variometer|kevo|Kevo, Finland
-variometer|Variometer|kono|Kongsberg, Norway
-variometer|Variometer|ksu1|Konza Prairie, KS
-variometer|Variometer|k30b|Basset, NE
-variometer|Variometer|k50a|Casco, MI
-variometer|Variometer|mbwa|Marble Bar, Western Australia
-variometer|Variometer|mstx|Muleshoe, TX
-variometer|Variometer|m63a|Gales Ferry, CT
-variometer|Variometer|o20a|White River City, CO
-variometer|Variometer|pab|San Pablo, Spain
-variometer|Variometer|p57a|Martinsburg, WV
-variometer|Variometer|qspa|SPRESO, Antarctica
-variometer|Variometer|rssd|Black Hills, SD
-variometer|Variometer|r49a|Shelbyville, KY
-variometer|Variometer|sba|Scott Base, Antarctica
-variometer|Variometer|sfjd|Sondre Stromfjord, Greenland
-variometer|Variometer|spmn|Marine on St. Croix, MN
-variometer|Variometer|sspa|Standing Stone, PA
-variometer|Variometer|s61a|Accomac, VA
-variometer|Variometer|t47a|Sharon Grove, KY
-variometer|Variometer|u38b|Gravette, AR
-variometer|Variometer|wci|Wyandotte Cave, IN
-variometer|Variometer|whtx|Meridian, TX
-variometer|Variometer|wvt|Waverly, TN
-variometer|Variometer|352a|Blakely, GA
+variom|Variometers|anmo|Albuquerque, NM
+variom|Variometers|casy|Casey, Antarctica
+variom|Variometers|ccm|Cathedral Cave, MO
+variom|Variometers|cola|College Outpost, AL
+variom|Variometers|cor|Corvallis, OR
+variom|Variometers|dgmt|Dagmar, MT
+variom|Variometers|dwpf|Disney Wilderness Preserve, FL
+variom|Variometers|ecsd|Sioux Falls, SD
+variom|Variometers|eymn|Ely, MN
+variom|Variometers|e46a|Sault Ste Marie, MI
+variom|Variometers|e62a|Clayton Lake, ME
+variom|Variometers|goga|Godfrey, GA
+variom|Variometers|hrv|Oak Ridge, MA
+variom|Variometers|j47a|Sumner, MI
+variom|Variometers|kbs|Spitzbergen, Norway
+variom|Variometers|kevo|Kevo, Finland
+variom|Variometers|kono|Kongsberg, Norway
+variom|Variometers|ksu1|Konza Prairie, KS
+variom|Variometers|k30b|Basset, NE
+variom|Variometers|k50a|Casco, MI
+variom|Variometers|mbwa|Marble Bar, Western Australia
+variom|Variometers|mstx|Muleshoe, TX
+variom|Variometers|m63a|Gales Ferry, CT
+variom|Variometers|o20a|White River City, CO
+variom|Variometers|pab|San Pablo, Spain
+variom|Variometers|p57a|Martinsburg, WV
+variom|Variometers|qspa|SPRESO, Antarctica
+variom|Variometers|rssd|Black Hills, SD
+variom|Variometers|r49a|Shelbyville, KY
+variom|Variometers|sba|Scott Base, Antarctica
+variom|Variometers|sfjd|Sondre Stromfjord, Greenland
+variom|Variometers|spmn|Marine on St. Croix, MN
+variom|Variometers|sspa|Standing Stone, PA
+variom|Variometers|s61a|Accomac, VA
+variom|Variometers|t47a|Sharon Grove, KY
+variom|Variometers|u38b|Gravette, AR
+variom|Variometers|wci|Wyandotte Cave, IN
+variom|Variometers|whtx|Meridian, TX
+variom|Variometers|wvt|Waverly, TN
+variom|Variometers|352a|Blakely, GA
+variom_100ms|Variometers (10 Hz)|anmo_100ms|Albuquerque, NM
+variom_100ms|Variometers (10 Hz)|casy_100ms|Casey, Antarctica
+variom_100ms|Variometers (10 Hz)|ccm_100ms|Cathedral Cave, MO
+variom_100ms|Variometers (10 Hz)|cola_100ms|College Outpost, AL
+variom_100ms|Variometers (10 Hz)|cor_100ms|Corvallis, OR
+variom_100ms|Variometers (10 Hz)|dgmt_100ms|Dagmar, MT
+variom_100ms|Variometers (10 Hz)|dwpf_100ms|Disney Wilderness Preserve, FL
+variom_100ms|Variometers (10 Hz)|ecsd_100ms|Sioux Falls, SD
+variom_100ms|Variometers (10 Hz)|eymn_100ms|Ely, MN
+variom_100ms|Variometers (10 Hz)|e46a_100ms|Sault Ste Marie, MI
+variom_100ms|Variometers (10 Hz)|e62a_100ms|Clayton Lake, ME
+variom_100ms|Variometers (10 Hz)|goga_100ms|Godfrey, GA
+variom_100ms|Variometers (10 Hz)|hrv_100ms|Oak Ridge, MA
+variom_100ms|Variometers (10 Hz)|j47a_100ms|Sumner, MI
+variom_100ms|Variometers (10 Hz)|kbs_100ms|Spitzbergen, Norway
+variom_100ms|Variometers (10 Hz)|kevo_100ms|Kevo, Finland
+variom_100ms|Variometers (10 Hz)|kono_100ms|Kongsberg, Norway
+variom_100ms|Variometers (10 Hz)|ksu1_100ms|Konza Prairie, KS
+variom_100ms|Variometers (10 Hz)|k30b_100ms|Basset, NE
+variom_100ms|Variometers (10 Hz)|k50a_100ms|Casco, MI
+variom_100ms|Variometers (10 Hz)|mbwa_100ms|Marble Bar, Western Australia
+variom_100ms|Variometers (10 Hz)|mstx_100ms|Muleshoe, TX
+variom_100ms|Variometers (10 Hz)|m63a_100ms|Gales Ferry, CT
+variom_100ms|Variometers (10 Hz)|o20a_100ms|White River City, CO
+variom_100ms|Variometers (10 Hz)|pab_100ms|San Pablo, Spain
+variom_100ms|Variometers (10 Hz)|p57a_100ms|Martinsburg, WV
+variom_100ms|Variometers (10 Hz)|qspa_100ms|SPRESO, Antarctica
+variom_100ms|Variometers (10 Hz)|rssd_100ms|Black Hills, SD
+variom_100ms|Variometers (10 Hz)|r49a_100ms|Shelbyville, KY
+variom_100ms|Variometers (10 Hz)|sba_100ms|Scott Base, Antarctica
+variom_100ms|Variometers (10 Hz)|sfjd_100ms|Sondre Stromfjord, Greenland
+variom_100ms|Variometers (10 Hz)|spmn_100ms|Marine on St. Croix, MN
+variom_100ms|Variometers (10 Hz)|sspa_100ms|Standing Stone, PA
+variom_100ms|Variometers (10 Hz)|s61a_100ms|Accomac, VA
+variom_100ms|Variometers (10 Hz)|t47a_100ms|Sharon Grove, KY
+variom_100ms|Variometers (10 Hz)|u38b_100ms|Gravette, AR
+variom_100ms|Variometers (10 Hz)|wci_100ms|Wyandotte Cave, IN
+variom_100ms|Variometers (10 Hz)|whtx_100ms|Meridian, TX
+variom_100ms|Variometers (10 Hz)|wvt_100ms|Waverly, TN
+variom_100ms|Variometers (10 Hz)|352a_100ms|Blakely, GA

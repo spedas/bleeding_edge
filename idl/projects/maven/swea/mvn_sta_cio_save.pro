@@ -27,18 +27,23 @@
 ;
 ;       L3:            Use STATIC L3 data for densities and temperatures.
 ;
+;       L2_VERSION:    STATIC L2 version to use.  Default = 2.
+;                      The STATIC loader does not use file_retreive, so the normal version
+;                      control doesn't work.
+;
 ;       MAILTO:        Send email to this address on job start and finish.
 ;                      Default = 'calif_dave@icloud.com'
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-24 18:35:02 -0800 (Tue, 24 Feb 2026) $
-; $LastChangedRevision: 34192 $
+; $LastChangedDate: 2026-03-19 15:27:07 -0700 (Thu, 19 Mar 2026) $
+; $LastChangedRevision: 34278 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;FILE: mvn_sta_cio_save.pro
 ;-
-pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3=L3, mailto=mailto
+pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3=L3, mailto=mailto, $
+                              l2_version=l2_version
 
   common coldion, cio_h, cio_o1, cio_o2
 
@@ -48,6 +53,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
   if (size(dovel,/type) eq 0) then dovel = 1 else dovel = keyword_set(dovel)
   dovel = replicate(dovel,3)
   useL3 = keyword_set(L3)
+  l2_v = keyword_set(l2_version) ? l2_version[0] : 2
 
   dpath = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
   froot = 'mvn_sta_cio_'
@@ -120,7 +126,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
         mvn_sundir, frame='swe', /polar
 
         mvn_sta_coldion, L3=useL3, density=doden, temperature=dotemp, velocity=dovel, $
-              /reset, tavg=16, frame='mso', /doplot, pans=pans, success=ok
+              /reset, tavg=16, frame='mso', /doplot, pans=pans, l2_version=l2_v, success=ok
 
         if (ok) then begin
           save, cio_h, cio_o1, cio_o2, file=ofile

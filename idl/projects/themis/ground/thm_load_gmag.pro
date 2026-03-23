@@ -114,9 +114,9 @@
 ;                         rather than by network.
 ; 04-Apr-2012, clrussell, Added units to the data_att structure
 ; 
-; $LastChangedBy: crussell $
-; $LastChangedDate: 2024-02-23 05:59:59 -0800 (Fri, 23 Feb 2024) $
-; $LastChangedRevision: 32454 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-03-18 14:47:03 -0700 (Wed, 18 Mar 2026) $
+; $LastChangedRevision: 34266 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag.pro $
 ;-
 
@@ -224,6 +224,7 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
                    aari_sites = aari_sites, $
                    bas_sites = bas_sites, $
                    magstar_sites = magstar_sites, $
+                   sampling_rate = sampling_rate, $
                    suffix=suffix
 ;                   _extra = _extra ;krb 5/4
 
@@ -262,7 +263,23 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
 ;      'M77_040 M65-297'
     vsnames_b_arr = strsplit(vsnames_b, ' ', /extract)
     vsnames_b_arr_low = strlowcase(vsnames_b_arr)
-    vsnames_all = [vsnames_arr, vsnames_g_arr, vsnames_c_arr, vsnames_b_arr_low, vsnames_m_arr]
+    vsnames_v_arr = [$
+      'anmo','casy','ccm','cola','cor','dgmt',$
+      'dwpf','ecsd','eymn','e46a','e62a','goga',$
+      'hrv','j47a','kbs','kevo','kono','ksu1',$
+      'k30b','k50a','mbwa','mstx','m63a','o20a',$
+      'pab','p57a','qspa','rssd','r49a','sba',$
+      'sfjd','spmn','sspa','s61a','t47a','u38b',$
+      'wci','whtx','wvt','352a']
+    vsnames_v_10hz_arr = [$
+      'anmo_100ms','casy_100ms','ccm_100ms','cola_100ms','cor_100ms','dgmt_100ms',$
+      'dwpf_100ms','ecsd_100ms','eymn_100ms','e46a_100ms','e62a_100ms','goga_100ms',$
+      'hrv_100ms','j47a_100ms','kbs_100ms','kevo_100ms','kono_100ms','ksu1_100ms',$
+      'k30b_100ms','k50a_100ms','mbwa_100ms','mstx_100ms','m63a_100ms','o20a_100ms',$
+      'pab_100ms','p57a_100ms','qspa_100ms','rssd_100ms','r49a_100ms','sba_100ms',$
+      'sfjd_100ms','spmn_100ms','sspa_100ms','s61a_100ms','t47a_100ms','u38b_100ms',$
+      'wci_100ms','whtx_100ms','wvt_100ms','352a_100ms']
+    vsnames_all = [vsnames_arr, vsnames_g_arr, vsnames_c_arr, vsnames_b_arr_low, vsnames_m_arr, vsnames_v_arr, vsnames_v_10hz_arr]
   Endelse
   
   If(keyword_set(site)) Then site_in = site 
@@ -350,9 +367,18 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
                  'gull', 'isll', 'lgrr', 'mcmu', 'mstk', 'norm', 'osak', 'oxfo', $
                  'pols', 'rabb', 'sach', 'talo', 'thrf', 'vulc', 'weyb', 'wgry'],site_in)
     endif      
-  
+    
+    if keyword_set(variometer_sites) then begin
+      site_in = array_concat([$
+        'anmo','casy','ccm','cola','cor','dgmt',$
+        'dwpf','ecsd','eymn','e46a','e62a','goga',$
+        'hrv','j47a','kbs','kevo','kono','ksu1',$
+        'k30b','k50a','mbwa','mstx','m63a','o20a',$
+        'pab','p57a','qspa','rssd','r49a','sba',$
+        'sfjd','spmn','sspa','s61a','t47a','u38b',$
+        'wci','whtx','wvt','352a'],site_in)
+    endif
   endif
-  
   if ~keyword_set(site_in) then begin
     site_in = 'all'
   endif
@@ -363,6 +389,8 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
   bas_sites = ssl_check_valid_name(site_in, vsnames_b_arr, /ignore_case, /include_all, /no_warning)
   bas_sites=strupcase(bas_sites)
   magstar_sites = ssl_check_valid_name(site_in, vsnames_m_arr, /ignore_case, /include_all, /no_warning)
+  vsnames_v_all_arr=[vsnames_v_arr,vsnames_v_10hz_arr]
+  variometer_sites = ssl_check_valid_name(site_in, vsnames_v_all_arr, /ignore_case, /include_all, /no_warning)
  
   ; If no sites are valid issue a warning to the user
   ; Not using the default warning issued by ssl_check_valid_name above because that step needs to check green and thm sites separately
@@ -444,7 +472,19 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
       thm_load_bas_gmag, site=bas_sites, trange=trange, no_download=no_download, suffix=suffix, $
                          files=files                    
   Endif
-
+  
+  if(is_string(variometer_sites)) then begin
+      
+      if ~keyword_set(sampling_rate) then sampling_rate = 1
+      
+      thm_load_variometer_gmag, site = variometer_sites, datatype = datatype, trange = trange, $
+        level = level, verbose = verbose, subtract_average = subavg, $
+        subtract_median = subtract_median, varname_out = varname_out, $
+        subtracted_values = subtracted_values, downloadonly = downloadonly, $
+        no_download = no_download, valid_names = valid_names, $
+        get_support_data = get_support_data, progobj = progobj, files = files, sampling_rate = sampling_rate, suffix=suffix
+  endif
+  
   If(is_string(thm_sites)) Then Begin
     if arg_present(relpathnames_all) then begin
       downloadonly = 1
@@ -480,5 +520,5 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
       if msg_site[i] ne '' then dprint, dlevel=1, msg_site[i]
     endfor
   endif
-  
+
 end

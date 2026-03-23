@@ -10,11 +10,16 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-12 11:07:06 -0700 (Thu, 12 Mar 2026) $
-; $LastChangedRevision: 34251 $
+; $LastChangedDate: 2026-03-19 18:18:47 -0700 (Thu, 19 Mar 2026) $
+; $LastChangedRevision: 34281 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/general/esc_gen_crib.pro $
 ;
 ;-
+
+
+;-------------------------------------------------------------------------------------------------------------------
+; Loading procedures
+
 
 ; Note: Please keep in mind using /commissioning keyword!  
 
@@ -66,9 +71,18 @@ esc_iesa_load, prod='f4d', /blue, ipath=ipath, data=data ; 'f4d' = Fine 4D (APID
 esc_iesa_tplot 
 
 
-; Search & Retrieves the latest L0 raw packet data file.
+; Searches & Retrieves the latest L0 raw packet data file.
 
 timespan, '2026-03-05'
 get_timespan, trange
 files = esc_l0_file_retrieve(trange=trange, apid='125', /commissioning)
+
+
+;-------------------------------------------------------------------------------------------------------------------
+; Useful Tips (L2 loitering & Cruise Phases)
+
+; Converting coordinate systems from GSE to GSM.
+timespan, ['2026-02-21', '2026-03-15']
+esc_spice_load
+cotrans, 'escb_eph_gse', 'escb_eph_gsm', /gse2gsm
 

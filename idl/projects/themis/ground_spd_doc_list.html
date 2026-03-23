@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Thu Mar 12 18:17:12 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Mar 20 18:18:34 2026.<P>
  
 <HR>
  
@@ -47,6 +47,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_LOAD_GREENLAND_GMAG">THM_LOAD_GREENLAND_GMAG</A>
 <LI><A HREF="#THM_LOAD_PSEUDOAE">THM_LOAD_PSEUDOAE</A>
 <LI><A HREF="#THM_LOAD_REGO">THM_LOAD_REGO</A>
+<LI><A HREF="#THM_LOAD_VARIOMETER_GMAG">THM_LOAD_VARIOMETER_GMAG</A>
 <LI><A HREF="#THM_MAKE_AE">THM_MAKE_AE</A>
 <LI><A HREF="#THM_MULT_GMAG_PLOT.PRO">THM_MULT_GMAG_PLOT.PRO</A>
 <br>Plots all GMAG data, in groups of 3 (or anything set by
@@ -1021,9 +1022,9 @@ Written by: Davin Larson,   Dec 2006
                          rather than by network.
  04-Apr-2012, clrussell, Added units to the data_att structure
  
- $LastChangedBy: crussell $
- $LastChangedDate: 2024-02-23 05:59:59 -0800 (Fri, 23 Feb 2024) $
- $LastChangedRevision: 32454 $
+ $LastChangedBy: dcarpenter $
+ $LastChangedDate: 2026-03-18 14:47:03 -0700 (Wed, 18 Mar 2026) $
+ $LastChangedRevision: 34266 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag.pro $
 </PRE><P>
 <STRONG>(See <A href="ground/thm_load_gmag.pro">projects/themis/ground/thm_load_gmag.pro</A>)</STRONG><P>
@@ -1051,9 +1052,9 @@ EXAMPLES:
    thm_load_gmag_networks, gmag_networks=gmag_networks, gmag_stations=gmag_stations, selected_network=['gima', 'autumnx']
 
 HISTORY:
- $LastChangedBy: crussell $
- $LastChangedDate: 2024-02-23 05:59:59 -0800 (Fri, 23 Feb 2024) $
- $LastChangedRevision: 32454 $
+ $LastChangedBy: dcarpenter $
+ $LastChangedDate: 2026-03-18 15:27:24 -0700 (Wed, 18 Mar 2026) $
+ $LastChangedRevision: 34270 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag_networks.pro $
 </PRE><P>
 <STRONG>(See <A href="ground/thm_load_gmag_networks.pro">projects/themis/ground/thm_load_gmag_networks.pro</A>)</STRONG><P>
@@ -1211,7 +1212,7 @@ Examples:
 <A NAME="THM_LOAD_REGO">
 <H2>THM_LOAD_REGO</H2></A>
 <A HREF="#THM_LOAD_PSEUDOAE">[Previous Routine]</A>
-<A HREF="#THM_MAKE_AE">[Next Routine]</A>
+<A HREF="#THM_LOAD_VARIOMETER_GMAG">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure: THM_LOAD_ASI
@@ -1265,9 +1266,87 @@ Written by: Ken Bromund ????,   Jan 5 2007
 <STRONG>(See <A href="ground/thm_load_rego.pro">projects/themis/ground/thm_load_rego.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_LOAD_VARIOMETER_GMAG">
+<H2>THM_LOAD_VARIOMETER_GMAG</H2></A>
+<A HREF="#THM_LOAD_REGO">[Previous Routine]</A>
+<A HREF="#THM_MAKE_AE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure: THM_LOAD_VARIOMETER_GMAG,
+ thm_load_variometer_gmag, site = site, datatype = datatype, trange = trange, $
+                           level = level, verbose = verbose, $
+                           subtract_average = subavg, $
+                           subtract_median = subtract_median, $
+                           varname_out = varname_out, $
+                           subtracted_values = subtracted_values, $
+                           downloadonly = downloadonly, no_download = no_download, $
+                           relpathnames_all = relpathnames_all, $
+                           valid_names = valid_names, $
+                           get_support_data = get_support_data, $
+                           progobj = progobj, files = files, $
+                           suffix=suffix, $
+                           sampling_rate = sampling_rate, $
+                           _extra = _extra
+Keywords:
+  site : station name to load (string,array)--available options include 'all' (default), 
+  anmo casy ccm cola cor dgmt dwpf ecsd eymn e46a e62a goga hrv j47a kbs kevo kono ksu1 
+  k30b k50a mbwa mstx m63a o20a pab p57a qspa rssd r49a sba sfjd spmn sspa s61a t47a 
+  u38b wci whtx wvt 352a
+
+  datatype = The type of data to be loaded, for this case, there is only
+          one option, the default value of 'mag', so this is a
+          placeholder should there be more that one data type. 'all'
+          can be passed in also, to get all variables.
+  TRANGE= (Optional) Time range of interest  (2 element array), if
+          this is not set, the default is to prompt the user. Note
+          that if the input time range is not a full day, a full
+          day's data is loaded
+  level = the level of the data, the default is 'l2', or level-2
+          data. A string (e.g., 'l2') or an integer can be used. 'all'
+          can be passed in also, to get all levels.
+  /VERBOSE : set to output some useful info
+  /SUBTRACT_AVERAGE, if set, then the average values are subtracted
+                     from the loaded variables,
+  /SUBTRACT_MEDIAN, if set, then the median values are subtracted
+                     from the loaded variables,
+  varname_out= a string array containing the tplot variable names for
+               the loaded data, useful for the following keyword:
+  subtracted_values = returns N_elements(varname_out) by 3 array
+                      containing the average or median (or 0) values
+                      subtracted from the data.
+  /downloadonly, if set, then only download the data, do not load it
+                 into variables.
+  no_download: use only files which are online locally.
+  relpathnames_all: named variable in which to return all files that are
+          required for specified timespan, probe, datatype, and level.
+          If present, no files will be downloaded, and no data will be loaded.
+  /valid_names, if set, then this will return the valid site, datatype
+                and/or level options in named variables, for example,
+
+                thm_load_greenland_gmag, site = xxx, /valid_names
+
+                will return the array of valid sites in the
+                variable xxx
+ get_support_data = does nothing.  present only for consistency with other
+                load routines
+ sampling_rate : variometer sampling rate. Only options are 1 (Hz) and 10 (Hz
+Example:
+   thm_init
+   timespan,'2026-02-24/00:00:00',10,/days
+   get_timespan,trange
+   thm_load_variometer_gmag, site=['s61a','anmo'],sampling_rate=10,trange=trange,/subtract_median
+
+ $LastChangedBy: dcarpenter $
+ $LastChangedDate: 2026-03-20 09:26:38 -0700 (Fri, 20 Mar 2026) $
+ $LastChangedRevision: 34283 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_variometer_gmag.pro $
+</PRE><P>
+<STRONG>(See <A href="ground/thm_load_variometer_gmag.pro">projects/themis/ground/thm_load_variometer_gmag.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_MAKE_AE">
 <H2>THM_MAKE_AE</H2></A>
-<A HREF="#THM_LOAD_REGO">[Previous Routine]</A>
+<A HREF="#THM_LOAD_VARIOMETER_GMAG">[Previous Routine]</A>
 <A HREF="#THM_MULT_GMAG_PLOT.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
