@@ -44,8 +44,8 @@
 ;  This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-03-17 17:41:32 -0700 (Tue, 17 Mar 2026) $
-;$LastChangedRevision: 34260 $
+;$LastChangedDate: 2026-03-26 13:01:57 -0700 (Thu, 26 Mar 2026) $
+;$LastChangedRevision: 34293 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -286,7 +286,7 @@ endif else begin
    options, fgs_varname, 'ytitle', 'B FIT!CGSE!C[nT]'
    options, fgs_varname, 'labels', ['Bx', 'By', 'Bz']
    options, fgs_varname, 'labflag', 1
-   options, fgs_name, 'colors', [2, 4, 6]
+   options, fgs_varname, 'colors', [2, 4, 6]
 
   Endelse
 endelse

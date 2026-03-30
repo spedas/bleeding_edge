@@ -12,8 +12,8 @@
 ;       device(optional):switch to 'z' device for cron plotting
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-03-17 17:38:33 -0700 (Tue, 17 Mar 2026) $
-; $LastChangedRevision: 34259 $
+; $LastChangedDate: 2026-03-26 13:01:57 -0700 (Thu, 26 Mar 2026) $
+; $LastChangedRevision: 34293 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fgm_overviews.pro $
 ;-
 
@@ -66,32 +66,46 @@ for i = 0L,n_elements(probe_list)-1L do begin
     
     sc = probe_list[i]          ;load routines can change this to an array
     If(sc Eq 'e' And time_double(date) Ge time_double('2024-05-25')) Then Begin
+      fgs_varname = 'th'+sc+'_fgs_dsl'
+      fgl_varname = 'th'+sc+'_fgl_dsl'
       var_string1 += 'th'+sc+'_fgs_dsl '
       var_string2 += ' sample_rate_'+sc + ' th'+sc+'_fgl_dsl '
     endif else begin
+      fgs_varname = 'th'+sc+'_fgs_gse'
+      fgl_varname = 'th'+sc+'_fgl_gse'
       var_string1 += 'th'+sc+'_fgs_gse '
       var_string2 += ' sample_rate_'+sc + ' th'+sc+'_fgl_gse '
     endelse
 ;Adjust titles
-    options, 'th'+sc+'_fgs_gse', 'ytitle', 'th'+sc+'_fgs_gse'
-    options, 'th'+sc+'_fgl_gse', 'ytitle', 'th'+sc+'_fgl_gse'
+    options, fgs_varname, 'ytitle', fgs_varname
+    options, fgl_varname, 'ytitle', fgl_varname
 ;kill units in ytitles
-    options, 'th'+sc+'_fgs_gse', 'ysubtitle', ''
-    options, 'th'+sc+'_fgl_gse', 'ysubtitle', ''
-;for recent THENIS E FGS data, if there is an estimated Bz, put the Bz curve
+    options, fgs_varname, 'ysubtitle', ''
+    options, fgl_varname, 'ysubtitle', ''
+;for recent THEMIS E FGS data, if there is an estimated Bz, put the Bz curve
 ;behind Bx and By. jmm, 2024-12-12
    If(sc Eq 'e' And time_double(date) Ge time_double('2024-05-25')) Then Begin
       thm_load_fgm, probe = sc, coord = 'dsl', suff = '_dsl', level = 'l1'
       thm_load_fit, probe = sc, coord = 'dsl', suff = '_dsl', level = 'l1' ;level 1 is default
-      ;Adjust titles
-      options, 'th'+sc+'_fgs_dsl', 'ytitle', 'th'+sc+'_fgs_dsl'
-      options, 'th'+sc+'_fgl_dsl', 'ytitle', 'th'+sc+'_fgl_dsl'
-      ;kill units in ytitles
-      options, 'th'+sc+'_fgs_dsl', 'ysubtitle', 'DSL'
-      options, 'th'+sc+'_fgl_dsl', 'ysubtitle', 'DSL'
+      if ~is_string(tnames('th'+sc+'_fgl_dsl')) then begin
+        store_data,'th'+sc+'_fgl_dsl',data={x:time_double(date2)+findgen(2)*86400., y:[!VALUES.D_NAN,!VALUES.D_NAN]}
+      endif
 
-      options, 'th'+sc+'_fgs_dsl', 'indices', [2,0,1]
-      options, 'th'+sc+'_fgl_dsl', 'indices', [2,0,1]
+      if ~is_string(tnames('th'+sc+'_fgs_dsl')) then begin
+        store_data,'th'+sc+'_fgs_dsl',data={x:time_double(date2)+findgen(2)*86400., y:[!VALUES.D_NAN,!VALUES.D_NAN]}
+      endif
+
+
+      ;Adjust titles
+      options, fgs_varname, 'ytitle', fgs_varname
+      options, fgl_varname, 'ytitle', fgl_varname
+      ;kill units in ytitles
+      options, fgs_varname, 'ysubtitle', 'DSL'
+      options, fgl_varname, 'ysubtitle', 'DSL'
+
+      options, fgs_varname, 'indices', [2,0,1]
+      options, fgl_varname, 'indices', [2,0,1]
+
 ;check for l1b data, if there is none yet, set Bz to NaN 
       If(~is_string(thm_l1b_check(date, sc))) Then Begin
          get_data, 'th'+sc+'_fgs_dsl', data = btmp

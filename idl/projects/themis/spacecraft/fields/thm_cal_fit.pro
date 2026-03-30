@@ -31,9 +31,9 @@
 ;   -- time-dependent spinn axis offset implemented Hannes 05/25/2007
 ;   -- fixed trouble reading cal files with extra lines at the end,
 ;      jmm, 8-nov-2007
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2025-01-28 10:25:21 -0800 (Tue, 28 Jan 2025) $
-; $LastChangedRevision: 33100 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-03-26 13:07:55 -0700 (Thu, 26 Mar 2026) $
+; $LastChangedRevision: 34294 $
 ; $URL $
 ;-
 pro thm_cal_fit, probe = probe, datatype = datatype, files = files, trange = trange, $
@@ -372,6 +372,7 @@ pro thm_cal_fit, probe = probe, datatype = datatype, files = files, trange = tra
                                             /yeardir, trange = minmax(fgsx_fixed))
             l1b_files = spd_download(remote_file = l1b_filenames, _extra = !themis)
             cdf2tplot, files = l1b_files, varformat = '*'
+            tdegap,'the_fgl_l1b_bz',dt=600.0,/overwrite
             get_data, 'the_fgl_l1b_bz', data = temp_bz
          Endif
          If(is_struct(temp_bz)) Then Begin

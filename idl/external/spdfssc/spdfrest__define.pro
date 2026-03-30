@@ -111,7 +111,7 @@ function SpdfRest::init, $
         self.proxy_port = proxyComponents.port
         self.proxy_username = proxyComponents.username
 
-        if strlen(proxy_username) gt 0 then begin
+        if strlen(self.proxy_username) gt 0 then begin
 
             self.proxy_authentication = 3
         endif

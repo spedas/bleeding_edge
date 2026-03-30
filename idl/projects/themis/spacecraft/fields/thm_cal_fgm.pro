@@ -78,9 +78,9 @@
 ;Notes: under construction!!
 ;
 ;Written by Hannes Schwarzl.
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2025-01-27 11:54:29 -0800 (Mon, 27 Jan 2025) $
-; $LastChangedRevision: 33093 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-03-26 13:07:55 -0700 (Thu, 26 Mar 2026) $
+; $LastChangedRevision: 34294 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_fgm.pro $
 ;Changes by Edita Georgescu
 ;eg 6/3/2007     - matrix multiplication
@@ -648,6 +648,7 @@ If(use_l1b_bz) Then Begin
                                       /yeardir, trange = minmax(thx_fgx.x))
       l1b_files = spd_download(remote_file = l1b_filenames, _extra = !themis)
       cdf2tplot, files = l1b_files, varformat = '*'
+      tdegap,'the_fgl_l1b_bz',dt=600.0,/overwrite
       get_data, 'the_fgl_l1b_bz', data = temp_bz
    Endif
    If(is_struct(temp_bz)) Then Begin
