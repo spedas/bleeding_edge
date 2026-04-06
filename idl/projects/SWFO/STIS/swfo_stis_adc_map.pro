@@ -2,8 +2,8 @@
 ;
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
-; $LastChangedRevision: 33797 $
+; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -64,8 +64,8 @@ end
 ; map = swfo_stis_adc_map(data_sample={ptcu_bits: [0, 0, 1, 0], detector_bits: [1, 0, 63], sci_resolution: 3, sci_translate: 16})
 ;
 ; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-10-27 11:02:52 -0700 (Mon, 27 Oct 2025) $
-; $LastChangedRevision: 33797 $
+; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -161,8 +161,8 @@ function swfo_stis_adc_map, data_sample=data_sample, cal=cal
   for n= 0,13 do begin
 
     ftoi_n[*,n] = n
-    adc0_n[*,n] = adc0 * adcm[n]
-    dadc_n[*,n] = d_adc0 * adcm[n]
+    adc0_n[*,n] = adc0      ; * adcm[n]
+    dadc_n[*,n] = d_adc0    ; * adcm[n]
     
     conv_n[*,n] = kev_per_adc[coincidence_index[n]] 
     geom_n[*,n] = geomfactor[coincidence_index[n]] * efficiency[*,n]

@@ -64,8 +64,8 @@
 ;   thm_load_variometer_gmag, site=['s61a','anmo'],sampling_rate=10,trange=trange,/subtract_median
 ;
 ; $LastChangedBy: dcarpenter $
-; $LastChangedDate: 2026-03-20 09:26:38 -0700 (Fri, 20 Mar 2026) $
-; $LastChangedRevision: 34283 $
+; $LastChangedDate: 2026-03-30 16:04:03 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34313 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_variometer_gmag.pro $
 ;-
 Function thm_load_variometer_gmag_relpath, sname = sname, $
@@ -217,9 +217,7 @@ Pro thm_load_variometer_gmag, site = site, datatype = datatype, trange = trange,
       sampling_rate=1
 ;      vsnames = 'anmo casy ccm cola cor dgmt dwpf ecsd eymn e46a e62a goga hrv j47a kbs kevo kono ksu1 k30b k50a mbwa mstx m63a o20a pab p57a qspa rssd r49a sba sfjd spmn sspa s61a t47a u38b wci whtx wvt 352a'
   endelse
-  vsnames = 'anmo casy ccm cola cor dgmt dwpf ecsd eymn e46a e62a goga hrv j47a kbs kevo kono ksu1 k30b k50a mbwa mstx m63a o20a pab p57a qspa rssd r49a sba sfjd spmn sspa s61a t47a u38b wci whtx wvt 352a anmo_100ms casy_100ms ccm_100ms cola_100ms cor_100ms dgmt_100ms dwpf_100ms ecsd_100ms eymn_100ms e46a_100ms e62a_100ms goga_100ms hrv_100ms j47a_100ms kbs_100ms kevo_100ms kono_100ms ksu1_100ms k30b_100ms k50a_100ms mbwa_100ms mstx_100ms m63a_100ms o20a_100ms pab_100ms p57a_100ms qspa_100ms rssd_100ms r49a_100ms sba_100ms sfjd_100ms spmn_100ms sspa_100ms s61a_100ms t47a_100ms u38b_100ms wci_100ms whtx_100ms wvt_100ms 352a_100ms'
-  
-  
+  vsnames = '154a 352a 456a anmo bouv casy ccm cola cor dgmt dwpf e46a e62a ecsd eymn goga hrv j47a k30b k50a k62a kbs kevo kono ksu1 m63a mbwa midw mstx n51a n53a o20a p57a pab qspa r49a rssd s39b s61a sba sfjd spmn sspa t47a t57a u38b wci whtx wvt x48a y49a' 
   
   thm_load_xxx,sname=site, datatype=datatype, trange=trange, $
                level=level, verbose=verbose, downloadonly=downloadonly, $

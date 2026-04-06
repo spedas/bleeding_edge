@@ -25,9 +25,9 @@
 ; Cribsheets that demonstrate Level 1a loading:
 ; - swfo_stis_sci_qflag_crib.pro: quality flag demo
 ;
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-02-10 12:41:56 -0800 (Tue, 10 Feb 2026) $
-; $LastChangedRevision: 34136 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -110,6 +110,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     modeled_spacecraft_sun_vxyz_sc: replicate(!values.f_nan,3), $
     modeled_sun_stis_angle_deg: !values.f_nan, $
     measured_sun_stis_angle_deg: !values.f_nan, $
+    reaction_wheel_speed_rpm:  replicate(!values.f_nan,4), $
     quality_bits: 0ULl, $
     sci_resolution: 0b, $
     sci_translate: 0u, $
@@ -381,6 +382,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     ; speed for each reaction wheel are too high (known to cause noise)
     ; - Warning - APID does not exist for calibration datasets
     if sc_info_present ne 0 then begin
+      l1a.reaction_wheel_speed_rpm = l0b.reaction_wheel_speed_rpm
       reax_wheel_flag = abs(l0b.reaction_wheel_speed_rpm) gt cal.reaction_wheel_speed_threshold
       q = q or ishft(reax_wheel_flag[0]*1ull, cal.high_reaction_wheel_speed_qflag_index[0])
       q = q or ishft(reax_wheel_flag[1]*1ull, cal.high_reaction_wheel_speed_qflag_index[1])

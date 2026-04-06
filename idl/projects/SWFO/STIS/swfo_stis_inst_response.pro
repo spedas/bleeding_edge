@@ -1,8 +1,8 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2025-04-28 15:06:46 -0700 (Mon, 28 Apr 2025) $
-; $LastChangedRevision: 33277 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response.pro $
-; $Id: swfo_stis_inst_response.pro 33277 2025-04-28 22:06:46Z rjolitz $
+; $Id: swfo_stis_inst_response.pro 34309 2026-03-30 20:08:46Z davin-mac $
 
 
 
@@ -130,12 +130,12 @@ function swfo_stis_nonlut2map,mapname=mapname,lut=lut ,  sensor=sensor
 
     bmaps.nrg_lost = 0.
     w = where(bmaps.name eq 'O-1' or bmaps.name eq 'O-3', nw,/null)
-    bmaps[w].nrg_lost = calval.proton_O_dl
+    bmaps[w].nrg_lost = 10.   ; place holder calval.proton_O_dl
     func = struct_value(calval.NRGLOST_VS_NRGMEAS,'Proton-O-3')
     if isa(func) then   bmaps[w].nrg_lost = func(param = func, bmaps[w].nrg_meas)   ; overwrite with better values
 
     w = where(bmaps.name eq 'F-1' or bmaps.name eq 'F-3', nw,/null)
-    bmaps[w].nrg_lost = calval.electron_F_dl
+    bmaps[w].nrg_lost = 10. ; place hoder   calval.electron_F_dl
     func = struct_value(calval.NRGLOST_VS_NRGMEAS,'Electron-F-3')
     if isa(func) then   bmaps[w].nrg_lost = func(param = func, bmaps[w].nrg_meas)   ; overwrite with better values
 
@@ -227,6 +227,8 @@ pro swfo_stis_inst_bin_response,simstat,data,new_seed=new_seed,noise_level=noise
     lut = uintarr(2L^15, 2, 8 )   + 680
     map = swfo_stis_adc_map(data_sample=data_sample)
     bin = 0
+    shft = [0,1,1,2,1,2,2,4]      ; 2^(nbits-1)   nbits = number of bits that are set within an FTO pattern
+
     for fto = 1,7 do begin
       for tid=0,1 do begin
         ch = (fto-1)*2 + tid
@@ -239,8 +241,7 @@ pro swfo_stis_inst_bin_response,simstat,data,new_seed=new_seed,noise_level=noise
       endfor
     endfor
 
-    shft = [0,1,1,2,1,2,2,4]      ; 2^(nbits-1)   nbits = number of bits that are set within an FTO pattern
-    adc_scales = calval.adc_scales       ;   replicate(237./59.5,3,2)
+    adc_scales = reform(calval.adc_scales,3,2)       ;   replicate(237./59.5,3,2)
     ; stop   ; not finished  map required here
 
     for side=0,1 do begin

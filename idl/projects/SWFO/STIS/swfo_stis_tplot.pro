@@ -1,6 +1,6 @@
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-02-11 17:05:06 -0800 (Wed, 11 Feb 2026) $
-; $LastChangedRevision: 34138 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_tplot.pro $
 
 ; This routine will set appropriate limits for tplot variables and then make a tplot
@@ -164,7 +164,7 @@ pro swfo_stis_tplot,name,add=add,setlim=setlim,ionlim=ionlim,eleclim=eleclim,pow
     ; variable for both measured/modeled sun-stis angle:
     tplot_names, '*MODELED_SUN_STIS*', names=modeled_vname, /silent
 
-    if modeled_vname ne '' then begin
+    if n_elements(modeled_vname) eq 1  then begin
 
       tplot_names, '*MEASURED_SUN_STIS*', names=meas_vname, /silent
       vname_spl = meas_vname.split("_")

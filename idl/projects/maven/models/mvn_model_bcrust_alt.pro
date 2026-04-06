@@ -33,8 +33,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2023-03-14 08:32:44 -0700 (Tue, 14 Mar 2023) $
-; $LastChangedRevision: 31626 $
+; $LastChangedDate: 2026-04-02 16:40:02 -0700 (Thu, 02 Apr 2026) $
+; $LastChangedRevision: 34324 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust_alt.pro $
 ;
 ;-
@@ -42,7 +42,7 @@ PRO mvn_model_bcrust_alt, alt, result=result, verbose=verbose, resolution=resolu
                           arkani=arkani, purucker=purucker, $
                           cain_2003=cain_2003, cain_2011=cain_2011, $
                           morschhauser=morschhauser, plot=plot, window=window, $
-                          langlais=langlais, _extra=extra, zrange=zrange
+                          langlais=langlais, _extra=extra, zrange=zrange, modeler=modeler
 
   IF SIZE(result, /type) EQ 8 THEN BEGIN
      IF tag_exist(result, 'lat') AND tag_exist(result, 'lon') AND $

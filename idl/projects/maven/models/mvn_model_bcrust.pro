@@ -85,6 +85,16 @@
 ;                A new model of the crustal magnetic field of Mars using MGS and MAVEN, 
 ;                Journal of Geophysical Research: Planets, 124, 1542– 1569. https://doi.org/10.1029/2018JE005854.
 ;
+;          GAO:  Gao, J. W., Z. J. Rong, L. Klinger, X. Z. Li, D. Liu & Y. Wei (2021),
+;                A Spherical Harmonic Martian Crustal Magnetic Field Model Combining Data Sets of MAVEN and MGS,
+;                Earth and Space Science, 8, e2021EA001860. https://doi.org/10.1029/2021EA001860
+;
+; DELCOURT_MITTELHOLZ:
+;
+;                Delcourt, T., & A. Mittelholz (2025),
+;                Modeling the crustal magnetic field of Mars with physics-informed neural networks.
+;                Journal of Geophysical Research: Planets, 130, e2025JE009297. https://doi.org/10.1029/2025JE009297
+;
 ;NOTES:
 ;   1. This routine is based on information from an IDL save file. The name
 ;      of the save file is set as 'martiancrustmodels.sav' in the main procedure. 
@@ -113,8 +123,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2020-07-07 11:33:30 -0700 (Tue, 07 Jul 2020) $
-; $LastChangedRevision: 28857 $
+; $LastChangedDate: 2026-04-02 16:21:40 -0700 (Thu, 02 Apr 2026) $
+; $LastChangedRevision: 34322 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/models/mvn_model_bcrust.pro $
 ;
 ;-
@@ -425,8 +435,10 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
                       silent=sl, verbose=vb, nmax=nmax, $
                       arkani=arkani, purucker=purucker, $
                       cain_2003=cain_2003, cain_2011=cain_2011, $
+                      morschhauser=morschhauser, langlais=langlais, $
+                      gao=gao, delcourt_mittelholz=delcourt_mittelholz, $
                       version=version, tplot=tplot, path=path, spice_list=spice_list, $
-                      morschhauser=morschhauser, pos=pos, no_download=no_download, langlais=langlais, $
+                      pos=pos, no_download=no_download, $
                       fast=fast, ndat=ndat
 
   IF keyword_set(sl) THEN silent = sl ELSE silent = 0
@@ -483,21 +495,23 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
   IF ~keyword_set(path) THEN path = FILE_DIRNAME(ROUTINE_FILEPATH('mvn_model_bcrust'), /mark)
   modelfile = path + 'martiancrustmodels.sav'
 
-  IF keyword_set(morschhauser) THEN mflg = 1 ELSE mflg = 0
-  IF keyword_set(cain_2003) THEN cflg03 = 1 ELSE cflg03 = 0
-  IF keyword_set(cain_2011) THEN cflg11 = 1 ELSE cflg11 = 0
-  IF keyword_set(arkani) THEN aflg = 1 ELSE aflg = 0
-  IF keyword_set(purucker) THEN pflg = 1 ELSE pflg = 0
-  IF keyword_set(langlais) THEN lflg = 1 ELSE lflg = 0
+  IF KEYWORD_SET(morschhauser) THEN mflg = 1 ELSE mflg = 0
+  IF KEYWORD_SET(cain_2003) THEN cflg03 = 1 ELSE cflg03 = 0
+  IF KEYWORD_SET(cain_2011) THEN cflg11 = 1 ELSE cflg11 = 0
+  IF KEYWORD_SET(arkani) THEN aflg = 1 ELSE aflg = 0
+  IF KEYWORD_SET(purucker) THEN pflg = 1 ELSE pflg = 0
+  IF KEYWORD_SET(langlais) THEN lflg = 1 ELSE lflg = 0
+  IF KEYWORD_SET(gao) THEN gflg = 1 ELSE gflg = 0
+  IF KEYWORD_SET(delcourt_mittelholz) THEN dmflg = 1 ELSE dmflg = 0
   
-  IF (mflg + cflg03 + cflg11 + aflg + pflg + lflg EQ 0) THEN BEGIN
+  IF (mflg + cflg03 + cflg11 + aflg + pflg + lflg + gflg + dmflg EQ 0) THEN BEGIN
      IF verbose GE 0 THEN BEGIN
         print, ptrace()
         print, '  The Morschhauser model is used in default.'
      ENDIF 
      mflg = 1
   ENDIF 
-  IF (mflg + cflg03 + cflg11 + aflg + pflg + lflg GT 1) THEN BEGIN
+  IF (mflg + cflg03 + cflg11 + aflg + pflg + lflg + gflg + dmflg GT 1) THEN BEGIN
      dprint, "'mvn_model_bcrust' must be called with only one crustal model selected."
      RETURN
   ENDIF 
@@ -580,7 +594,29 @@ pro mvn_model_bcrust, var, resolution=resolution, data=modelmag, $
         h = h[0:nmax+1, 0:nmax+1]
      ENDIF ELSE nmax = 134
      rplanet = 3393.5D
-  ENDIF 
+  ENDIF
+  IF (gflg) THEN BEGIN
+     modeler = 'gao'
+     mname = 'Gao'
+     g = gg
+     h = hg
+     IF N_ELEMENTS(nmax) EQ 1 THEN BEGIN
+        g = g[0:nmax+1, 0:nmax+1]
+        h = h[0:nmax+1, 0:nmax+1]
+     ENDIF ELSE nmax = 110
+     rplanet = 3393.5D
+  ENDIF
+  IF (dmflg) THEN BEGIN
+     modeler = 'delcourt_mittelholz'
+     mname = 'Delcourt & Mittelholz'
+     g = gdm
+     h = hdm
+     IF N_ELEMENTS(nmax) EQ 1 THEN BEGIN
+        g = g[0:nmax+1, 0:nmax+1]
+        h = h[0:nmax+1, 0:nmax+1]
+     ENDIF ELSE nmax = 139
+     rplanet = 3393.5D
+  ENDIF     
 
   ; Convert pc cartesian coords to pc lon/lat/r
   pcsph = cv_coord( from_rect=TRANSPOSE( [ [eph.x_pc],    $

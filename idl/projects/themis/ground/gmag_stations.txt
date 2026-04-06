@@ -339,6 +339,7 @@ bas|BAS|M87_028|Antarctica
 bas|BAS|M87_068|Antarctica
 bas|BAS|M88_316|Antarctica
 variom|Variometers|anmo|Albuquerque, NM
+variom|Variometers|bouv|Boulder, CO
 variom|Variometers|casy|Casey, Antarctica
 variom|Variometers|ccm|Cathedral Cave, MO
 variom|Variometers|cola|College Outpost, AL
@@ -358,9 +359,13 @@ variom|Variometers|kono|Kongsberg, Norway
 variom|Variometers|ksu1|Konza Prairie, KS
 variom|Variometers|k30b|Basset, NE
 variom|Variometers|k50a|Casco, MI
+variom|Variometers|k62a|Royalston, MA
 variom|Variometers|mbwa|Marble Bar, Western Australia
+variom|Variometers|midw|Midway Island, USA
 variom|Variometers|mstx|Muleshoe, TX
 variom|Variometers|m63a|Gales Ferry, CT
+variom|Variometers|n51a|Ashland, OH
+variom|Variometers|n53a|Lisbon, OH
 variom|Variometers|o20a|White River City, CO
 variom|Variometers|pab|San Pablo, Spain
 variom|Variometers|p57a|Martinsburg, WV
@@ -371,14 +376,21 @@ variom|Variometers|sba|Scott Base, Antarctica
 variom|Variometers|sfjd|Sondre Stromfjord, Greenland
 variom|Variometers|spmn|Marine on St. Croix, MN
 variom|Variometers|sspa|Standing Stone, PA
+variom|Variometers|s39b|Bolivar, MO
 variom|Variometers|s61a|Accomac, VA
 variom|Variometers|t47a|Sharon Grove, KY
+variom|Variometers|t57a|Hurt, VA
 variom|Variometers|u38b|Gravette, AR
 variom|Variometers|wci|Wyandotte Cave, IN
 variom|Variometers|whtx|Meridian, TX
 variom|Variometers|wvt|Waverly, TN
+variom|Variometers|x48a|Hartselle, AL
+variom|Variometers|y49a|Blount Mountain, AL
+variom|Variometers|154a|Montrose, GA
 variom|Variometers|352a|Blakely, GA
+variom|Variometers|456a|Hilliard, FL
 variom_100ms|Variometers (10 Hz)|anmo_100ms|Albuquerque, NM
+variom_100ms|Variometers (10 Hz)|bouv_100ms|Boulder, CO
 variom_100ms|Variometers (10 Hz)|casy_100ms|Casey, Antarctica
 variom_100ms|Variometers (10 Hz)|ccm_100ms|Cathedral Cave, MO
 variom_100ms|Variometers (10 Hz)|cola_100ms|College Outpost, AL
@@ -398,9 +410,13 @@ variom_100ms|Variometers (10 Hz)|kono_100ms|Kongsberg, Norway
 variom_100ms|Variometers (10 Hz)|ksu1_100ms|Konza Prairie, KS
 variom_100ms|Variometers (10 Hz)|k30b_100ms|Basset, NE
 variom_100ms|Variometers (10 Hz)|k50a_100ms|Casco, MI
+variom_100ms|Variometers (10 Hz)|k62a_100ms|Royalston, MA
 variom_100ms|Variometers (10 Hz)|mbwa_100ms|Marble Bar, Western Australia
+variom_100ms|Variometers (10 Hz)|midw_100ms|Midway Island, USA
 variom_100ms|Variometers (10 Hz)|mstx_100ms|Muleshoe, TX
 variom_100ms|Variometers (10 Hz)|m63a_100ms|Gales Ferry, CT
+variom_100ms|Variometers (10 Hz)|n51a_100ms|Ashland, OH
+variom_100ms|Variometers (10 Hz)|n53a_100ms|Lisbon, OH
 variom_100ms|Variometers (10 Hz)|o20a_100ms|White River City, CO
 variom_100ms|Variometers (10 Hz)|pab_100ms|San Pablo, Spain
 variom_100ms|Variometers (10 Hz)|p57a_100ms|Martinsburg, WV
@@ -411,10 +427,16 @@ variom_100ms|Variometers (10 Hz)|sba_100ms|Scott Base, Antarctica
 variom_100ms|Variometers (10 Hz)|sfjd_100ms|Sondre Stromfjord, Greenland
 variom_100ms|Variometers (10 Hz)|spmn_100ms|Marine on St. Croix, MN
 variom_100ms|Variometers (10 Hz)|sspa_100ms|Standing Stone, PA
+variom_100ms|Variometers (10 Hz)|s39b_100ms|Bolivar, MO
 variom_100ms|Variometers (10 Hz)|s61a_100ms|Accomac, VA
 variom_100ms|Variometers (10 Hz)|t47a_100ms|Sharon Grove, KY
+variom_100ms|Variometers (10 Hz)|t57a_100ms|Hurt, VA
 variom_100ms|Variometers (10 Hz)|u38b_100ms|Gravette, AR
 variom_100ms|Variometers (10 Hz)|wci_100ms|Wyandotte Cave, IN
 variom_100ms|Variometers (10 Hz)|whtx_100ms|Meridian, TX
 variom_100ms|Variometers (10 Hz)|wvt_100ms|Waverly, TN
+variom_100ms|Variometers (10 Hz)|x48a_100ms|Hartselle, AL
+variom_100ms|Variometers (10 Hz)|y49a_100ms|Blount Mountain, AL
+variom_100ms|Variometers (10 Hz)|154a_100ms|Montrose, GA
 variom_100ms|Variometers (10 Hz)|352a_100ms|Blakely, GA
+variom_100ms|Variometers (10 Hz)|456a_100ms|Hilliard, FL

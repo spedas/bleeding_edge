@@ -16,11 +16,11 @@
 ;     alt_cal = swfo_ncdf_read(filenames='<NETCDF_FILENAME_HERE>')
 ;     printdat, alt_cal
 ; 
-; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-01-27 16:45:03 -0800 (Tue, 27 Jan 2026) $
-; $LastChangedRevision: 34074 $
+; $LastChangedBy: davin-mac $
+; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34309 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 34074 2026-01-28 00:45:03Z rjolitz $
+; $Id: swfo_stis_inst_response_calval.pro 34309 2026-03-30 20:08:46Z davin-mac $
 
 
 
@@ -46,6 +46,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval = dictionary()
   endif else begin
     calval = swfo_stis_inst_response_calval_dict
+    return,calval
   endelse
 
   ; Path to the ground lut in use:
@@ -54,8 +55,9 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
   groundlut_fname = 'groundlut_20260127.nc'
   groundlut_path = swfo_stis_dir + groundlut_fname
 
+  nan = !values.f_nan
   ; if calval.isempty() then begin
-  if ~keyword_set(save) then begin
+  if  0 && ~keyword_set(save) then begin
     ; 1/27/26: new default behavior is to read the groundlut
     ; in the SWFO/STIS directory:
     groundlut_da = swfo_ncdf_read(filenames=[groundlut_path])
@@ -63,7 +65,6 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval = groundlut_da.to_dict(relabel=relabel)
 
   endif else begin
-    nan = !values.f_nan
 
     calval.instrument_name  = 'SWFO-STIS'
     ; Channel names / detector names:
@@ -87,7 +88,6 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ; calibrated_adc_bins = [234.1  , 228.4 , 232.4, 233.4, 232.7,  232.5]
     detector_keV_per_adc = 59.5 / calibrated_adc_bins   ; for conversion from nrg to adc units 
     calval.detector_keV_per_adc = detector_keV_per_adc
-    ; det_adc_scales = 1/detector_keV_per_adc
 
     ; Indices of the ion (O) and electron (F) in small pixel AR1 (1)
     ; and big pixel AR2 (3) for single coincidences (e.g. 1, 2, 3)
@@ -155,7 +155,11 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.poisson_statistics_criteria = [1e2, 1e4]
     ; calval.poisson_statistics_criteria = [0, 1e4]
     calval.poisson_statistics_power_coefficient = 0.5
+    
+    ;names =  reform(  ['O-1', 'F-1', 'O-2', 'F-2', 'O-12', 'F-12', 'O-3', 'F-3', 'O-13', 'F-13', 'O-23', 'F-23',  'O-123','F-123'],2,7) ;  names = calval.names_fto
 
+
+; calval.nrg_sigmas  =  reform([0.700774, 1.15683, 1.67517, 0.666142, 1.20818, 0.986746],3,2)
     ; Defunct: presumably unused information, left commented out here:
     ; names_fto = strsplit('1 2 12 3 13 23 123',/extract)
     ; names_fto = reform( transpose( [['O-'+names_fto],['F-'+names_fto]]))
@@ -163,7 +167,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     ; dim = [3,2]
     ; det2fto = [0, 1, 2, 1, 3,  1, 3, 1   ]
     ; det2fto = [1, 2, 1, 3,  1, 3, 1   ]
-    ; fto2detmap  = [ [1,4], [2,5],  [1,4],  [3,6],  [3,6], [3,6], [3,6]] 
+    ; fto2detmap  = [ [1,4], [2,5],  [1,4],  [3,6],  [3,6], [3,6], [3,6]]
     ; s = 1/ reform(det_adc_scales,dim)
     ; nrg_scales = fltarr(2,7)
     ; for i=0,1 do  $
@@ -282,7 +286,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34074 2026-01-28 00:45:03Z rjolitz $'
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34309 2026-03-30 20:08:46Z davin-mac $'
     dprint,'Using Revision: '+calval.rev_date
 
 
@@ -379,6 +383,33 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
   qflag_labels[calval.swfo_offpointing_qflag_index] = 's/c offpointing'
   qflag_labels[calval.sun_in_stis_fov_qflag_index] = 'Sun in FOV'
   calval.qflag_labels = qflag_labels
+
+
+  calval.nrg_sigmas  =  reform([0.700774, 1.15683, 1.67517, 0.666142, 1.20818, 0.986746],3,2)
+  calval.nrg_thresholds = calval.nrg_sigmas * 3
+
+  calval.adc_scales = 1/calval.detector_keV_per_adc
+  ; calval.detector_index = [0, 1]
+   dim = [3,2]
+  ; det2fto = [0, 1, 2, 1, 3,  1, 3, 1   ]
+   det2fto = [1, 2, 1, 3,  1, 3, 1   ]
+  ; fto2detmap  = [ [1,4], [2,5],  [1,4],  [3,6],  [3,6], [3,6], [3,6]]
+   s = 1/ reform(calval.adc_scales,dim)
+   nrg_scales = fltarr(2,7)
+   for i=0,1 do  $
+     nrg_scales[i,*] = [ s[0,i]  , s[1,i] , average( s[[0,1],i] )  , s[2,i], average( s[[2,0],i] ),  average( s[[2,1],i] ), average( s[[0,1,2],i] )  ]
+   calval.names_fto        = names_fto
+  ; calval.adc_scales  = reform( det_adc_scales ,dim)
+  calval.nrg_scales  = nrg_scales
+
+  ; calval.adc_sigmas   = reform( [5.02   ,14.42  , 9.65  ,5.695,  13.88, 8.37 ]  ,dim)
+
+  geom_raw = [nan, calval.geometric_factor]
+  calval.geoms         = reform( geom_raw[[1,2,3,1,2,3]] , dim )
+  calval.geoms_tid_fto = [1,1] #  geom_raw[det2fto]
+  names_fto = strsplit('1 2 12 3 13 23 123',/extract)
+  names_fto = reform( transpose( [['O-'+names_fto],['F-'+names_fto]]))
+  calval.names_fto = names_fto
 
   swfo_stis_inst_response_calval_dict  = calval
 

@@ -2,10 +2,10 @@ pro swfo_load_tplot_store,da
 
 
   prefix = 'swfo_'
+  tname = prefix + da.name
 
   case 1 of
     strmatch(da.name,'*_l1a*'): begin
-      tname = prefix + da.name
       dprint,'Making tplot variables: ',tname
       ;   l1a = dynamicarray(swfo_stis_sci_level_1a(l0b.array),name=tname)
       store_data,tname,data = da,tagnames = '*'
@@ -16,11 +16,11 @@ pro swfo_load_tplot_store,da
       options,tname+'_SPEC_???',spec=1, zlog=1, ylog=1, yrange=[5,10000.]
       options,tname+'_SPEC_????',spec=1, zlog=1, ylog=1, yrange=[5,10000.]
       options,tname+'_RATE6',/ylog
+      options,tname+'_QUALITY_BITS', tplot_routine='bitplot'
       ;  options,tname+'_SIGMA',
       ;options,tname+['_RATE','*SIGMA','*BASELINE', /reverse_order, colors ='bgrmcd'
     end
     strmatch(da.name,'*_l1b*'):   begin
-      tname = prefix + da.name
       if 1 then begin    ; create EFLUX 
         str_element,/add,*da.ptr,'HDR_ION_EFLUX', (*da.ptr).HDR_ION_FLUX  * (*da.ptr).ion_energy
         str_element,/add,*da.ptr,'HDR_ELEC_EFLUX', (*da.ptr).HDR_ELEC_FLUX  * (*da.ptr).ELEC_energy
@@ -33,6 +33,7 @@ pro swfo_load_tplot_store,da
       ylim,tname+'*FLUX',10,10000,1,/default
       zlim,tname+'*_FLUX',.0001,1e4,1,/default
       zlim,tname+'*_EFLUX',1,1e4,1,/default
+      options,tname+'_QUALITY_BITS', tplot_routine='bitplot'
       if 1 then begin
         l2 = swfo_stis_sci_level_2(da.array)
         l2_da = dynamicarray(l2,name = str_sub(da.name,'_l1b','_l2'))
@@ -40,7 +41,9 @@ pro swfo_load_tplot_store,da
       endif
     end
     else: begin
-      store_data,prefix+da.name,data=da,tagnames='*'
+      store_data,tname,data=da,tagnames='*'
+      options,tname+'_QUALITY_BITS', tplot_routine='bitplot'
+
     end
   endcase
 

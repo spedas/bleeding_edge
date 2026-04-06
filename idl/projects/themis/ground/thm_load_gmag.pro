@@ -115,8 +115,8 @@
 ; 04-Apr-2012, clrussell, Added units to the data_att structure
 ; 
 ; $LastChangedBy: dcarpenter $
-; $LastChangedDate: 2026-03-18 14:47:03 -0700 (Wed, 18 Mar 2026) $
-; $LastChangedRevision: 34266 $
+; $LastChangedDate: 2026-03-30 15:28:54 -0700 (Mon, 30 Mar 2026) $
+; $LastChangedRevision: 34312 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_gmag.pro $
 ;-
 
@@ -264,21 +264,26 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
     vsnames_b_arr = strsplit(vsnames_b, ' ', /extract)
     vsnames_b_arr_low = strlowcase(vsnames_b_arr)
     vsnames_v_arr = [$
-      'anmo','casy','ccm','cola','cor','dgmt',$
-      'dwpf','ecsd','eymn','e46a','e62a','goga',$
-      'hrv','j47a','kbs','kevo','kono','ksu1',$
-      'k30b','k50a','mbwa','mstx','m63a','o20a',$
-      'pab','p57a','qspa','rssd','r49a','sba',$
-      'sfjd','spmn','sspa','s61a','t47a','u38b',$
-      'wci','whtx','wvt','352a']
+      '154a','352a','456a','anmo','bouv','casy',$
+      'ccm','cola','cor','dgmt','dwpf','e46a',$
+      'e62a','ecsd','eymn','goga','hrv','j47a',$
+      'k30b','k50a','k62a','kbs','kevo','kono',$
+      'ksu1','m63a','mbwa','midw','mstx','n51a',$
+      'n53a','o20a','p57a','pab','qspa','r49a',$
+      'rssd','s39b','s61a','sba','sfjd','spmn',$
+      'sspa','t47a','t57a','u38b','wci','whtx',$
+      'wvt','x48a','y49a']
+
     vsnames_v_10hz_arr = [$
-      'anmo_100ms','casy_100ms','ccm_100ms','cola_100ms','cor_100ms','dgmt_100ms',$
-      'dwpf_100ms','ecsd_100ms','eymn_100ms','e46a_100ms','e62a_100ms','goga_100ms',$
-      'hrv_100ms','j47a_100ms','kbs_100ms','kevo_100ms','kono_100ms','ksu1_100ms',$
-      'k30b_100ms','k50a_100ms','mbwa_100ms','mstx_100ms','m63a_100ms','o20a_100ms',$
-      'pab_100ms','p57a_100ms','qspa_100ms','rssd_100ms','r49a_100ms','sba_100ms',$
-      'sfjd_100ms','spmn_100ms','sspa_100ms','s61a_100ms','t47a_100ms','u38b_100ms',$
-      'wci_100ms','whtx_100ms','wvt_100ms','352a_100ms']
+      '154a_100ms','352a_100ms','456a_100ms','anmo_100ms','bouv_100ms','casy_100ms',$
+      'ccm_100ms','cola_100ms','cor_100ms','dgmt_100ms','dwpf_100ms','e46a_100ms',$
+      'e62a_100ms','ecsd_100ms','eymn_100ms','goga_100ms','hrv_100ms','j47a_100ms',$
+      'k30b_100ms','k50a_100ms','k62a_100ms','kbs_100ms','kevo_100ms','kono_100ms',$
+      'ksu1_100ms','m63a_100ms','mbwa_100ms','midw_100ms','mstx_100ms','n51a_100ms',$
+      'n53a_100ms','o20a_100ms','p57a_100ms','pab_100ms','qspa_100ms','r49a_100ms',$
+      'rssd_100ms','s39b_100ms','s61a_100ms','sba_100ms','sfjd_100ms','spmn_100ms',$
+      'sspa_100ms','t47a_100ms','t57a_100ms','u38b_100ms','wci_100ms','whtx_100ms',$
+      'wvt_100ms','x48a_100ms','y49a_100ms']
     vsnames_all = [vsnames_arr, vsnames_g_arr, vsnames_c_arr, vsnames_b_arr_low, vsnames_m_arr, vsnames_v_arr, vsnames_v_10hz_arr]
   Endelse
   
@@ -370,13 +375,15 @@ Pro thm_load_gmag, site = site, datatype = datatype, trange = trange, $
     
     if keyword_set(variometer_sites) then begin
       site_in = array_concat([$
-        'anmo','casy','ccm','cola','cor','dgmt',$
-        'dwpf','ecsd','eymn','e46a','e62a','goga',$
-        'hrv','j47a','kbs','kevo','kono','ksu1',$
-        'k30b','k50a','mbwa','mstx','m63a','o20a',$
-        'pab','p57a','qspa','rssd','r49a','sba',$
-        'sfjd','spmn','sspa','s61a','t47a','u38b',$
-        'wci','whtx','wvt','352a'],site_in)
+        '154a','352a','456a','anmo','bouv','casy',$
+        'ccm','cola','cor','dgmt','dwpf','e46a',$
+        'e62a','ecsd','eymn','goga','hrv','j47a',$
+        'k30b','k50a','k62a','kbs','kevo','kono',$
+        'ksu1','m63a','mbwa','midw','mstx','n51a',$
+        'n53a','o20a','p57a','pab','qspa','r49a',$
+        'rssd','s39b','s61a','sba','sfjd','spmn',$
+        'sspa','t47a','t57a','u38b','wci','whtx',$
+        'wvt','x48a','y49a'],site_in)
     endif
   endif
   if ~keyword_set(site_in) then begin
