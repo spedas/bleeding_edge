@@ -43,7 +43,7 @@
 ;   background.  Use revvid to toggle between these options.
 ;
 ;   There are many possible color tables, because each table uses only 248 out of more than
-;   16 million available colors.  The standard catalog has table numbers from 0 to 74, while
+;   16 million available colors.  The standard catalog has table numbers from 0 to 75, while
 ;   the CSV catalog has table numbers from 0 to 118.  These ranges overlap, so we need some
 ;   way to separate them.  I chose to add 1000 to the CSV table numbers, so CSV table 78
 ;   becomes 1078, etc.  There is also substantial overlap in the tables themselves:
@@ -53,8 +53,12 @@
 ;            0 - 40           1000 - 1040      identical or nearly so
 ;           41 - 43           1041 - 1043      different
 ;           44 - 74           1044 - 1074      identical
-;             N/A             1075 - 1118      unique to CSV
+;              75*               1075          different
+;             N/A             1076 - 1118      unique to CSV
 ;      ----------------------------------------------------------------
+;         * Table 75 was recently added to the standard catalog.  It appears to be the
+;           reverse of table 74, so I'm not counting it as a unique table, since one
+;           can simply use the REVERSE keyword in initct to achieve the same thing.
 ;
 ;   When tables are "nearly identical", only a few colors are different.  The nearly identical
 ;   tables are: [24, 29, 30, 38, 39, 40] <-> [1024, 1029, 1030, 1038, 1039, 1040].  So, apart
@@ -89,6 +93,19 @@
 ;   which is based on the CET catalog (https://colorcet.com/index.html).  The SPP catalog has 
 ;   the same goals as the CSV catalog, but has a different set of intensity, cross-fade, and 
 ;   cyclical tables.  In particular, the SPP catalog has more cross-fade and cyclical options.
+;   There is also substantial overlap between the SPP and standard catalogs:
+;
+;        Standard Tables      SPP Tables       Note
+;      ----------------------------------------------------------------
+;            0 - 74              0 - 74        identical
+;              75*                 75          different
+;             N/A               76 - 133       unique to SPP
+;      ----------------------------------------------------------------
+;         * see note above
+;
+;   To get the largest number of unique tables, I recommend setting the SPP Fields catalog as
+;   the default.  That way, you can use initct to access all of the standard, SPP, and CSV
+;   tables.
 ;
 ;   As of this writing, there are 12 predefined line color schemes:
 ;
@@ -118,8 +135,8 @@
 ;   and line color schemes for individual tplot variables using options.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-05-25 12:08:33 -0700 (Sun, 25 May 2025) $
-; $LastChangedRevision: 33340 $
+; $LastChangedDate: 2026-04-06 09:47:34 -0700 (Mon, 06 Apr 2026) $
+; $LastChangedRevision: 34330 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 ;
 ; Created by David Mitchell;  February 2023
@@ -134,12 +151,12 @@ pro color_table_crib
 ;; the predefined line color schemes, or completely custom line colors.  This example sets a
 ;; dark background, but many people prefer a light background.
 
-device,decompose=0,retain=2   ; specific to MacOS (settings for other OS's might be different)
-                              ;   decompose=0 --> use color table with TrueColor display
-                              ;   retain=2 --> IDL provides backing store (safest option)
-initct,1074,line=5,/rev,/sup  ; define color table and fixed line colors (suppress error message)
-!p.background = 0             ; use tplot fixed color for background (0 = black by default)
-!p.color = 255                ; use tplot fixed color for foreground (255 = white by default)
+device,decompose=0,retain=2        ; specific to MacOS (settings for other OS's might be different)
+                                   ;   decompose=0 --> use color table with TrueColor display
+                                   ;   retain=2 --> IDL provides backing store (safest option)
+initct,1074,line=5,/rev,/spp,/sup  ; choose color table and line colors, use SPP Fields catalog
+!p.background = 0                  ; use tplot fixed color for background (0 = black by default)
+!p.color = 255                     ; use tplot fixed color for foreground (255 = white by default)
 
 ;; To use color tables with the Z buffer, do the following:
 
@@ -183,9 +200,10 @@ line_colors, mycolors={ind:[1,4], rgb:[[198,83,44],[18,211,61]]}
 
 initct, 1074, /reverse, line=8
 
-;; Choose the SPP Fields color table catalog.  Once you change the color table catalog,
-;; it remains in effect until you use initct to change it.  You can also select the SPP Fields
-;; color tables by setting the environment variable IDL_CT_FILE.
+;; Choose the SPP Fields color table catalog.  Once you change the color table catalog, it
+;; remains in effect until you use initct to change it.  You can also select the SPP Fields
+;; color tables by setting the environment variable IDL_CT_FILE.  The SPP Fields catalog is 
+;; recommended over the standard catalog (see above).
 
 initct, 123, /spp
 

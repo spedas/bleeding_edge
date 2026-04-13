@@ -41,16 +41,22 @@ na = dat.nenergy
 nb = dat.nbins
 nm = dat.nmass
 
-cnt=total(dat.data)/!pi
+;cnt=total(dat.data)/!pi
+; Using the above is not the best way for generating random seeds
+; Use the fix designed by CMF instead 
+seed0 = time_double('2014-01-01')*1E5
+seed = (systime(/seconds)*1E5) - seed0
+
 if not keyword_set(nn) then nn = 13 
 vel = v_4d(dat,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt)
 dvel = vel
 dvel[*] = 0.
 for i=0,nn-1 do begin
 	tmp = dat
-	tmp.data = dat.data + dat.data^.5*randomn(cnt,na,nb,nm)
+	tmp.data = dat.data + dat.data^.5*randomn(seed,na,nb,nm)
+	str_element, tmp, 'cnts', tmp.data, /add_replace ;; if the CNTS tag exists, update that too 
 	dvel = dvel + abs(vel - v_4d(tmp,ENERGY=en,ERANGE=er,EBINS=ebins,ANGLE=an,ARANGE=ar,BINS=bins,MASS=ms,m_int=mi,q=q,mincnt=mincnt))
-	cnt = total(tmp.data)/!pi 
+	;cnt = total(tmp.data)/!pi ;; DON'T update the seed! 
 endfor
 dvelocity = dvel/nn
 

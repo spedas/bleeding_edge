@@ -14,12 +14,29 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-02-27 13:15:38 -0800 (Fri, 27 Feb 2026) $
-; $LastChangedRevision: 34208 $
+; $LastChangedDate: 2026-04-07 12:18:56 -0700 (Tue, 07 Apr 2026) $
+; $LastChangedRevision: 34333 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 ;
 ;-
-PRO esc_iesa_tplot, data, verbose=verbose, tname=tname
+PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
+
+  IF is_struct(data) AND is_struct(limits) THEN BEGIN
+     str_element, data, 'vmin', value=vmin
+     str_element, data, 'vmax', value=vmax
+
+     IF ~undefined(vmin) AND ~undefined(vmax) THEN BEGIN
+        engy = [vmin, vmax]
+        engy = engy[REVERSE(SORT(engy))]
+        cnts = FLTARR(N_ELEMENTS(data.x), N_ELEMENTS(engy))
+        FOR i=0, N_ELEMENTS(engy)-1 DO cnts[*, i] = data.y[*, FLOOR(0.5*i)]
+        str_element, data, 'y', cnts, /add_replace
+        str_element, data, 'v', engy, /add
+     ENDIF
+     IF tag_exist(limits, 'spec', /quiet) THEN specplot, data=data, limits=limits ELSE mplot, data=data, limits=limits
+     RETURN
+  ENDIF 
+  
   tnow = SYSTIME(/sec)
   prod = ['F4D', 'FM', 'FE', 'SW']
   prob = 'ESC-P'
@@ -96,6 +113,60 @@ PRO esc_iesa_tplot, data, verbose=verbose, tname=tname
      undefine, dat
   ENDFOR 
 
+  ; Fine Masses (fm)
+  cvar = 'escp_iesa_fm'
+  FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
+     IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
+     undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_fm_com')")
+
+     IF ~is_struct(dat) THEN CONTINUE
+
+     IF i EQ 1 THEN probe = prob.replace('P', 'B') ELSE probe = prob.replace('P', 'G')
+     ntimes  = N_ELEMENTS(dat.time)
+     nbins   = dat[0].nbins
+     nenergy = dat[0].nenergy
+     nmass   = dat[0].nmass
+
+     energy  = dat.energy
+     emin    = dat[0].energy_min
+     emax    = dat[0].energy_max
+     mass    = dat.mass
+
+     time    = 0.5d0 * (dat.time + dat.end_time)
+     data    = dat.data
+     cnts    = dat.cnts
+
+     mass_arr = dat.mass_arr 
+     mass_arr = INDGEN(64)
+     
+     store_data, prefix + '_M_cnts', data={x: time, y: TRANSPOSE(TOTAL(cnts, 1, /nan)), v: mass_arr}, $
+                 dlim={ytitle: probe + ' ' + prod[1], ysubtitle: 'Mass Bins', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
+                       ztickunits: 'scientific'}
+     ylim, prefix + '_M_cnts', 0., 64., 0, /def
+     zlim, prefix + '_M_cnts', 1., 1., 1, /def
+
+     IF nenergy GT 1 THEN BEGIN ; Fine Masses Prime
+        FOR j=0, 2 DO BEGIN
+           ysubtit = 'Mass Bins'
+           store_data, prefix + '_M_cnts_' + roundst(j), data={x: time, y: TRANSPOSE(REFORM(cnts[j, *, *])), v: mass_arr}, $
+                       dlim={ytitle: probe + ' ' + prod[1], ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
+                             ztickunits: 'scientific'}
+           ylim, prefix + '_M_cnts_' + roundst(j), 0., 64., 0, /def
+           zlim, prefix + '_M_cnts_' + roundst(j), 1., 1., 1, /def
+
+           options, prefix + '_M_cnts_' + roundst(j), ysubtitle=ysubtit + '!C' + STRING(emin[j, 0], '(F0.1)') + ' - ' + STRING(emax[j, 0], '(F0.1)') + ' eV', /def
+        ENDFOR
+        
+        store_data, prefix + '_E_cnts', data={x: time, y: TRANSPOSE(TOTAL(cnts, 2, /nan)), vmin: MEAN(emin, dim=2), vmax: MEAN(emax, dim=2)}, $ 
+                    dlim={ytitle: probe + ' ' + prod[1], ysubtitle: 'Energy [eV]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, $
+                          ytickunits: 'scientific', ztickunits: 'scientific', tplot_routine: 'esc_iesa_tplot'}
+        ylim, prefix + '_E_cnts', 1., 30.e3, 1, /def
+        zlim, prefix + '_E_cnts', 1.e2, 1.e4, 1, /def
+        
+     ENDIF
+     undefine, dat
+  ENDFOR 
+  
   tn = tnames('*', create_time=ctime)
   w = WHERE(ctime GT tnow, nw)
   IF nw GT 0 THEN tname = tn[w]

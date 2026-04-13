@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-02-23 10:10:11 -0800 (Mon, 23 Feb 2026) $
-; $LastChangedRevision: 34179 $
+; $LastChangedDate: 2026-04-06 15:52:33 -0700 (Mon, 06 Apr 2026) $
+; $LastChangedRevision: 34332 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_struct.pro $
 ;
 ;-
@@ -117,6 +117,12 @@ FUNCTION esc_iesa_struct, prod, probe=probe, blue=blue, gold=gold, verbose=verbo
             geom_factor: 1., nmass: mn, mass: 0.0104389, mass_arr: REFORM(FLTARR(en, bn, mn)), charge: 1., sc_pot: nan, magf: FLTARR(3), $
             bkg: REFORM(FLTARR(en, bn, mn)), dead: REFORM(FLTARR(en, bn, mn)), cnts: REFORM(FLTARR(en, bn, mn)), data: REFORM(FLTARR(en, bn, mn))}  
 
+
+  IF abb EQ 'fm' AND en GT 1 THEN BEGIN
+     str_element, format, 'energy_min', REFORM(FLTARR(en, bn, mn)), /add
+     str_element, format, 'energy_max', REFORM(FLTARR(en, bn, mn)), /add
+  ENDIF 
+  
   str = CREATE_STRUCT(name=sname, format)
   RETURN, str
 END

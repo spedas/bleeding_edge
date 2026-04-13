@@ -21,9 +21,9 @@
 ;
 ;       RESULT:   Named variable to hold the result.
 ;
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2015-09-16 15:37:49 -0700 (Wed, 16 Sep 2015) $
-; $LastChangedRevision: 18810 $
+; $LastChangedBy: dmitchell $
+; $LastChangedDate: 2026-04-06 09:48:22 -0700 (Mon, 06 Apr 2026) $
+; $LastChangedRevision: 34331 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_sclk_test.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -115,12 +115,12 @@ pro mvn_sclk_test, ver=ver, trunc=trunc, ylim=yrange, result=result
   ylim,tvar,ymin,ymax,1
   options,tvar,'ytitle','Delta UNIX Time (sec)'
   options,tvar,'colors',cols
-  options,tvar,'labels',string(ver,format='(i2.2)')
+  options,tvar,'labels',string(ver,format='(i3.3)')
   options,tvar,'labflag',1
   options,tvar,'yticklen',1
   options,tvar,'ygridstyle',0
 
-  tplot_options,'title','MVN_SCLKSCET.000??.tsc'
+  tplot_options,'title','MVN_SCLKSCET.00???.tsc'
   timespan,minmax(time,/nan)
   tplot,tvar
 

@@ -1,4 +1,4 @@
-function spp_swp_log_decomp,bdata,ctype,compress=compress
+function spp_swp_log_decomp,bdata,ctype,compress=compress,montecarlo=montecarlo
 
   if n_elements(ctype) eq 0 then ctype = 0
 
@@ -78,6 +78,17 @@ function spp_swp_log_decomp,bdata,ctype,compress=compress
      comp = interp(indgen(256),clog*.99999,bdata,index=i)
      return,fix(i)
   endif
+  
+  if keyword_set(montecarlo) then begin
+    counts = clog[byte(bdata)]
+    dclog =  shift(clog,-1) - clog 
+    dclog[-1] = dclog[-2]
+    rnd = randomu(seed,dimen(bdata))
+    dcounts = floor(rnd * dclog[byte(bdata)] )
+
+    return, counts + dcounts
+  endif
+  
   
   return, clog[byte(bdata)]
 
