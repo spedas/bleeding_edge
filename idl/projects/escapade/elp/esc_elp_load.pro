@@ -22,21 +22,23 @@
 ;
 ;    SOURCE:      Specifies the file source information. Default is esc_file_source().
 ;
-; PRELAUNCH:      If set, the prelaunch data will be loaded.
+; PRELAUNCH:      If set explicitly, the data will be loaded from the prelaunch directory.
 ;
-;COMMISSION:      If set, the commissioning data will be loaded.
+;COMMISSION:      If set explicitly, the data will be loaded from the commissioning directory.
+;
+;   SCIENCE:      If set explicitly, the data will be loaded from the science directory.
 ;
 ;CREATED BY:      Takuya Hara on 2026-01-11.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-01-16 13:57:12 -0800 (Fri, 16 Jan 2026) $
-; $LastChangedRevision: 34033 $
+; $LastChangedDate: 2026-04-18 17:18:28 -0700 (Sat, 18 Apr 2026) $
+; $LastChangedRevision: 34382 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/elp/esc_elp_load.pro $
 ;
 ;-
 PRO esc_elp_load, itime, verbose=verbose, level=level, no_server=no_server, blue=blue, gold=gold, hk=hk, $
-                  source=source, files=files, prelaunch=prelaunch, commissioning=commissioning
+                  source=source, files=files, prelaunch=prelaunch, commissioning=commissioning, science=science
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
   IF is_string(trange) THEN trange = time_double(trange)
 
@@ -52,14 +54,24 @@ PRO esc_elp_load, itime, verbose=verbose, level=level, no_server=no_server, blue
   phases = ['prelaunch', 'commissioning', 'science']
   IF KEYWORD_SET(prelaunch) THEN ip = 0
   IF KEYWORD_SET(commissioning) THEN ip = 1
-  IF undefined(ip) THEN ip = -1 ; science
+  IF KEYWORD_SET(science) THEN ip = 2
+  ;IF undefined(ip) THEN ip = -1 ; science
 
-  rpath = phases[ip] + '/probe/elp/'
+  ;rpath = phases[ip] + '/probe/elp/'
+
+  rpath = 'phase/probe/elp/'
+  IF ~undefined(ip) THEN rpath = rpath.replace('phase', phases[ip])
   FOR i=0, N_ELEMENTS(probes)-1 DO BEGIN
      prefix = fname.replace('esc-p', 'esc-' + (probes[i]).substring(0, 0))
      prefix = prefix.replace('lvl', lvl)
      path = rpath.replace('probe', probes[i]) + lvl + '/'
 
+     IF undefined(ip) THEN BEGIN
+        date = time_intervals(trange=trange, /daily)
+        path = REPLICATE(path, N_ELEMENTS(date))
+        path = path.replace('phase', esc_mission_phase(TEMPORARY(date)))
+     ENDIF 
+     
      IF KEYWORD_SET(hk) THEN append_array, prefix, prefix.replace('data', 'housekeeping')
      FOR j=0, N_ELEMENTS(prefix)-1 DO BEGIN
         afile =  esc_file_retrieve(prefix[j], remote_data_dir=path, trange=trange, /daily, /last_version, /valid_only, no_server=no_server, verbose=verbose, source=src)

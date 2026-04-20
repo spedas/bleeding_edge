@@ -18,9 +18,11 @@
 ;
 ;    SOURCE:      Specifies the file source information. Default is esc_file_source().
 ;
-; PRELAUNCH:      If set, the prelaunch data will be loaded.
+; PRELAUNCH:      If set explicitly, the data will be loaded from the prelaunch directory.
 ;
-;COMMISSION:      If set, the commissioning data will be loaded.
+;COMMISSION:      If set explicitly, the data will be loaded from the commissioning directory.
+;
+;   SCIENCE:      If set explicitly, the data will be loaded from the science directory.
 ;
 ;    FRAMES:      Specifies which frames (i.e., coordinate systems) will be loaded.
 ;                 Default is to load all frames.
@@ -33,13 +35,13 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-20 12:50:31 -0700 (Fri, 20 Mar 2026) $
-; $LastChangedRevision: 34285 $
+; $LastChangedDate: 2026-04-18 19:46:46 -0700 (Sat, 18 Apr 2026) $
+; $LastChangedRevision: 34385 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_eph_load.pro $
 ;
 ;-
 PRO esc_eph_load, itime, verbose=verbose, no_server=no_server, blue=blue, gold=gold, files=afile, source=source, $
-                  prelaunch=prelaunch, commissioning=commissioning, frames=frames, re=re, rm=rm
+                  prelaunch=prelaunch, commissioning=commissioning, science=science, frames=frames, re=re, rm=rm
 
   r_m = 3389.9d0                ; Mars radii [km]
   r_e = !const.r_earth * 1.d-3  ; Earth radii [km]
@@ -68,13 +70,22 @@ PRO esc_eph_load, itime, verbose=verbose, no_server=no_server, blue=blue, gold=g
   phases = ['prelaunch', 'commissioning', 'science']
   IF KEYWORD_SET(prelaunch) THEN ip = 0
   IF KEYWORD_SET(commissioning) THEN ip = 1
-  IF undefined(ip) THEN ip = -1 ; science
+  IF KEYWORD_SET(science) THEN ip = 2
+  ;IF undefined(ip) THEN ip = -1 ; science
 
-  rpath = phases[ip] + '/probe/ancillary/ephemeris/'
+  ;rpath = phases[ip] + '/probe/ancillary/ephemeris/'
+  rpath = 'phase/probe/ancillary/ephemeris/'
+  IF ~undefined(ip) THEN rpath = rpath.replace('phase', phases[ip])
   FOR i=0, N_ELEMENTS(probes)-1 DO BEGIN
      prefix = fname.replace('esc-p', 'esc-' + (probes[i]).substring(0, 0))
      path = rpath.replace('probe', probes[i])
 
+     IF undefined(ip) THEN BEGIN
+        date = time_intervals(trange=trange, /daily)
+        path = REPLICATE(path, N_ELEMENTS(date))
+        path = path.replace('phase', esc_mission_phase(TEMPORARY(date)))
+     ENDIF 
+     
      undefine, files
      files = esc_file_retrieve(prefix, remote_data_dir=path, trange=trange, /daily, /last_version, /valid_only, no_server=no_server, verbose=verbose, source=src)
 

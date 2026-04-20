@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-06 15:52:33 -0700 (Mon, 06 Apr 2026) $
-; $LastChangedRevision: 34332 $
+; $LastChangedDate: 2026-04-16 17:59:10 -0700 (Thu, 16 Apr 2026) $
+; $LastChangedRevision: 34367 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_struct.pro $
 ;
 ;-
@@ -110,7 +110,7 @@ FUNCTION esc_iesa_struct, prod, probe=probe, blue=blue, gold=gold, verbose=verbo
   format = {project_name: 'ESCAPADE', spacecraft: probe.toupper(), data_name: data_name, apid: apid, $
             units_name: 'counts', units_procedure: 'esc_iesa_convert_units', time: dnan, end_time: dnan, $
             delta_t: dnan, integ_t: dnan, quality_flag: 0B, att_state: 0B, spoiler_state: 0B, padding: 0B, $
-            sweep_table: 0B, lut_id: 0B, dp_cadence: 0B, num_accum: 0B, att_ind: 0B, $
+            sweep_table: 0B, lut_id: 0B, dp_cadence: 0B, num_accum: 0B, att_ind: 0B, valid: 0B, $
             nenergy: en, energy: REFORM(FLTARR(en, bn, mn)), denergy: REFORM(FLTARR(en, bn, mn)), $
             nbins: bn, bins: REFORM(FLTARR(en, bn, mn)), ndef: dn, nanode: an, theta: REFORM(FLTARR(en, bn, mn)), dtheta: REFORM(FLTARR(en, bn, mn)), $
             phi: REFORM(FLTARR(en, bn, mn)), dphi: REFORM(FLTARR(en, bn, mn)), domega: REFORM(FLTARR(en, bn, mn)), gf: REFORM(FLTARR(en, bn, mn)), eff: REFORM(FLTARR(en, bn, mn)), $

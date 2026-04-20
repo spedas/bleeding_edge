@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Apr 11 03:17:24 2026.<P>
+<STRONG>Last modified: </STRONG>Sun Apr 19 03:17:10 2026.<P>
  
 <HR>
  
@@ -23,6 +23,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#ESC_FILE_SOURCE">ESC_FILE_SOURCE</A>
 <LI><A HREF="#ESC_GEN_CRIB">ESC_GEN_CRIB</A>
 <LI><A HREF="#ESC_L0_FILE_RETRIEVE">ESC_L0_FILE_RETRIEVE</A>
+<LI><A HREF="#ESC_MISSION_PHASE">ESC_MISSION_PHASE</A>
 <br>
 </UL><P>
 <HR>
@@ -150,6 +151,7 @@ LAST MODIFICATION:
 <A NAME="ESC_L0_FILE_RETRIEVE">
 <H2>ESC_L0_FILE_RETRIEVE</H2></A>
 <A HREF="#ESC_GEN_CRIB">[Previous Routine]</A>
+<A HREF="#ESC_MISSION_PHASE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -173,19 +175,50 @@ KEYWORDS:
 
     SOURCE:      Specifies the file source information. Default is esc_file_source().
 
- PRELAUNCH:      If set, retrieves prelaunch data.
+ PRELAUNCH:      If set explicitly, retrieves files from the prelaunch directory.
 
-COMMISSION:      If set, retrieves commissioning data.
+COMMISSION:      If set explicitly, retrieves files from the commissioning directory.
+
+   SCIENCE:      If set explicitly, retrieves files from the science directory.
 
 CREATED BY:      Takuya Hara on 2026-03-03.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2026-03-03 11:58:58 -0800 (Tue, 03 Mar 2026) $
- $LastChangedRevision: 34222 $
+ $LastChangedDate: 2026-04-18 16:56:24 -0700 (Sat, 18 Apr 2026) $
+ $LastChangedRevision: 34380 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/general/esc_l0_file_retrieve.pro $
 
 </PRE><P>
 <STRONG>(See <A href="general/esc_l0_file_retrieve.pro">projects/escapade/general/esc_l0_file_retrieve.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ESC_MISSION_PHASE">
+<H2>ESC_MISSION_PHASE</H2></A>
+<A HREF="#ESC_L0_FILE_RETRIEVE">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        ESC_MISSION_PHASE
+
+PURPOSE:         Returns the ESCAPADE mission phase names (or indices).
+
+INPUTS:          Time (array) to be determined.
+
+KEYWORDS:
+
+     INDEX:      If set, returns the mission phase indices.
+                 0 = prelaunch, 1 = commissioning, 2 = science.
+
+CREATED BY:      Takuya Hara on 2026-04-17.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-04-17 15:53:30 -0700 (Fri, 17 Apr 2026) $
+ $LastChangedRevision: 34379 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/general/esc_mission_phase.pro $
+
+</PRE><P>
+<STRONG>(See <A href="general/esc_mission_phase.pro">projects/escapade/general/esc_mission_phase.pro</A>)</STRONG><P>
 <HR>
  

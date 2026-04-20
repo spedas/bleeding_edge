@@ -26,21 +26,23 @@
 ;
 ;    SOURCE:      Specifies the file source information. Default is esc_file_source().
 ;
-; PRELAUNCH:      If set, prelaunch data will be loaded.
+; PRELAUNCH:      If set explicitly, the data will be loaded from the prelaunch directory.
 ;
-;COMMISSION:      If set, commissioning data will be loaded.
+;COMMISSION:      If set explicitly, the data will be loaded from the commissioning directory.
+;
+;   SCIENCE:      If set explicitly, the data will be loaded from the science directory.
 ;
 ;CREATED BY:      Takuya Hara on 2026-03-04.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-04 15:34:52 -0800 (Wed, 04 Mar 2026) $
-; $LastChangedRevision: 34230 $
+; $LastChangedDate: 2026-04-18 19:30:56 -0700 (Sat, 18 Apr 2026) $
+; $LastChangedRevision: 34384 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/electron/esc_eesa_load.pro $
 ;
 ;-
 PRO esc_eesa_load, itime, product=product, data=data, verbose=verbose, level=level, blue=blue, gold=gold, files=afile, $
-                   ipath=ipath, source=source, no_server=no_server, prelaunch=prelaunch, commissioning=commissioning
+                   ipath=ipath, source=source, no_server=no_server, prelaunch=prelaunch, commissioning=commissioning, science=science
 
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
   IF is_string(trange) THEN trange = time_double(trange)
@@ -59,10 +61,13 @@ PRO esc_eesa_load, itime, product=product, data=data, verbose=verbose, level=lev
   phases = ['prelaunch', 'commissioning', 'science']
   IF KEYWORD_SET(prelaunch) THEN ip = 0
   IF KEYWORD_SET(commissioning) THEN ip = 1
-  IF undefined(ip) THEN ip = -1 ; science
+  IF KEYWORD_SET(science) THEN ip = 2
+  ;IF undefined(ip) THEN ip = -1 ; science
 
-  rpath = phases[ip] + '/probe/eesae/'
+  ;rpath = phases[ip] + '/probe/eesae/'
 
+  rpath = 'phase/probe/eesae/'
+  IF ~undefined(ip) THEN rpath = rpath.replace('phase', phases[ip])
   IF undefined(product) THEN prod = 'f3d' ELSE prod = product ; Default is currently Full 3D (apid0x140)
   IF ~undefined(ipath) THEN yyyymm = ''
   
@@ -72,6 +77,12 @@ PRO esc_eesa_load, itime, product=product, data=data, verbose=verbose, level=lev
      prefix = prefix.replace('prod', prod[j])
      path = rpath.replace('probe', probes[i]) + lvl + '/'
 
+     IF undefined(ip) THEN BEGIN
+        date = time_intervals(trange=trange, /daily)
+        path = REPLICATE(path, N_ELEMENTS(date))
+        path = path.replace('phase', esc_mission_phase(TEMPORARY(date)))
+     ENDIF 
+     
      undefine, files
      IF undefined(ipath) THEN $
         files = esc_file_retrieve(prefix, remote_data_dir=path, trange=trange, /daily, /last_version, /valid_only, no_server=no_server, verbose=verbose, source=src) $

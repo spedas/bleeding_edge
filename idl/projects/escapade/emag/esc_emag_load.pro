@@ -20,9 +20,11 @@
 ;
 ;    SOURCE:      Specifies the file source information. Default is esc_file_source().
 ;
-; PRELAUNCH:      If set, the prelaunch data will be loaded.
+; PRELAUNCH:      If set explicitly, the data will be loaded from the prelaunch directory.
 ;
-;COMMISSION:      If set, the commissioning data will be loaded.
+;COMMISSION:      If set explicitly, the date will be loaded from the commissioning directory.
+;
+;   SCIENCE:      If set explicitly, the date will be loaded from the science directory.
 ;
 ;    FRAMES:      Specifies which frames (i.e., coordinate systems) will be loaded.
 ;                 Default is to load all frames.
@@ -37,13 +39,13 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-09 16:12:03 -0700 (Mon, 09 Mar 2026) $
-; $LastChangedRevision: 34239 $
+; $LastChangedDate: 2026-04-18 17:09:18 -0700 (Sat, 18 Apr 2026) $
+; $LastChangedRevision: 34381 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/emag/esc_emag_load.pro $
 ;
 ;-
 PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blue=blue, gold=gold, files=afile, source=source, $
-                   prelaunch=prelaunch, commissioning=commissioning, frames=frames, tname=rname, ipath=ipath, hk=hk
+                   prelaunch=prelaunch, commissioning=commissioning, science=science, frames=frames, tname=rname, ipath=ipath, hk=hk
 
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
   IF is_string(trange) THEN trange = time_double(trange)
@@ -61,18 +63,28 @@ PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blu
   phases = ['prelaunch', 'commissioning', 'science']
   IF KEYWORD_SET(prelaunch) THEN ip = 0
   IF KEYWORD_SET(commissioning) THEN ip = 1
-  IF undefined(ip) THEN ip = -1 ; science
+  IF KEYWORD_SET(science) THEN ip =2
+  rpath = 'phase/probe/emag/'
+  ;IF undefined(ip) THEN ip = -1 ; science
 
-  rpath = phases[ip] + '/probe/emag/'
+  ;rpath = phases[ip] + '/probe/emag/'
+
+  IF ~undefined(ip) THEN rpath = rpath.replace('phase', phases[ip])
   prod  = ['']
   IF KEYWORD_SET(hk) THEN append_array, prod, 'housekeeping_'
 
-  FOR i=0, N_ELEMENTS(probes)-1 DO FOR ip=0, N_ELEMENTS(prod)-1 DO BEGIN
+  FOR i=0, N_ELEMENTS(probes)-1 DO FOR pp=0, N_ELEMENTS(prod)-1 DO BEGIN
      prefix = fname.replace('esc-p', 'esc-' + (probes[i]).substring(0, 0))
      prefix = prefix.replace('lvl', lvl)
-     prefix = prefix.replace('prod', prod[ip])
+     prefix = prefix.replace('prod', prod[pp])
      path = rpath.replace('probe', probes[i]) + lvl + '/'
 
+     IF undefined(ip) THEN BEGIN
+        date = time_intervals(trange=trange, /daily)
+        path = REPLICATE(path, N_ELEMENTS(date))
+        path = path.replace('phase', esc_mission_phase(TEMPORARY(date)))
+     ENDIF 
+     
      undefine, files
      
      IF undefined(ipath) THEN $
@@ -89,7 +101,7 @@ PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blu
      ENDIF 
      append_array, afile, files[w]
 
-     CASE ip OF ; products
+     CASE pp OF ; products
         0: BEGIN ; science
            IF ~undefined(frames) THEN varformat = STRJOIN((probes[i]).substring(0, 0) + '_emag_' + frames.tolower(), ' ')
      

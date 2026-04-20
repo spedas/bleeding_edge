@@ -20,22 +20,24 @@
 ;
 ;    SOURCE:      Specifies the file source information. Default is esc_file_source().
 ;
-; PRELAUNCH:      If set, retrieves prelaunch data.
+; PRELAUNCH:      If set explicitly, retrieves files from the prelaunch directory.
 ;
-;COMMISSION:      If set, retrieves commissioning data.
+;COMMISSION:      If set explicitly, retrieves files from the commissioning directory.
+;
+;   SCIENCE:      If set explicitly, retrieves files from the science directory.
 ;
 ;CREATED BY:      Takuya Hara on 2026-03-03.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-03 11:58:58 -0800 (Tue, 03 Mar 2026) $
-; $LastChangedRevision: 34222 $
+; $LastChangedDate: 2026-04-18 16:56:24 -0700 (Sat, 18 Apr 2026) $
+; $LastChangedRevision: 34380 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/general/esc_l0_file_retrieve.pro $
 ;
 ;-
 FUNCTION esc_l0_file_retrieve, trange=itime, apid=apid, verbose=verbose, blue=blue, gold=gold,  $
-                               source=source, prelaunch=prelaunch, commissioning=commissioning, $
-                               no_server=no_server, last_version=last_version
+                               source=source,   no_server=no_server, last_version=last_version, $
+                               prelaunch=prelaunch, commissioning=commissioning, science=science
 
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
   IF is_string(trange) THEN trange = time_double(trange)
@@ -51,8 +53,12 @@ FUNCTION esc_l0_file_retrieve, trange=itime, apid=apid, verbose=verbose, blue=bl
   phases = ['prelaunch', 'commissioning', 'science']
   IF KEYWORD_SET(prelaunch) THEN ip = 0
   IF KEYWORD_SET(commissioning) THEN ip = 1
-  IF undefined(ip) THEN ip = -1 ; science
-  rpath = phases[ip] + '/probe/l0/'
+  IF KEYWORD_SET(science) THEN ip = 2
+  ;IF undefined(ip) THEN ip = -1 ; science
+  ;rpath = phases[ip] + '/probe/l0/'
+
+  rpath = 'phase/probe/l0/'
+  IF ~undefined(ip) THEN rpath = rpath.replace('phase', phases[ip])
   
   IF undefined(apid) THEN BEGIN
      dprint, dlevel=2, verbose=verbose, 'No APID(s) specified for retrieval.'
@@ -60,10 +66,16 @@ FUNCTION esc_l0_file_retrieve, trange=itime, apid=apid, verbose=verbose, blue=bl
   ENDIF ELSE apids = apid
   IF ~is_string(apids) THEN apids = roundst(apids)
   
-  FOR i=0, N_ELEMENTS(probes)-1 DO FOR ip=0, N_ELEMENTS(apids)-1 DO BEGIN
+  FOR i=0, N_ELEMENTS(probes)-1 DO FOR pp=0, N_ELEMENTS(apids)-1 DO BEGIN
      prefix = fname.replace('esc-p', 'esc-' + (probes[i]).substring(0, 0))
-     prefix = prefix.replace('???', apids[ip])
+     prefix = prefix.replace('???', apids[pp])
      path = rpath.replace('probe', probes[i])
+
+     IF undefined(ip) THEN BEGIN
+        date = time_intervals(trange=trange, /daily)
+        path = REPLICATE(path, N_ELEMENTS(date))
+        path = path.replace('phase', esc_mission_phase(TEMPORARY(date)))
+     ENDIF 
 
      undefine, afile
      afile = esc_file_retrieve(yymm + prefix, remote_data_dir=path, trange=trange, /daily, /valid_only,     $
@@ -76,6 +88,7 @@ FUNCTION esc_l0_file_retrieve, trange=itime, apid=apid, verbose=verbose, blue=bl
      ENDIF
      append_array, files, afile[w]
   ENDFOR 
-  
+
+  IF undefined(files) THEN files = ''
   RETURN, files
 END

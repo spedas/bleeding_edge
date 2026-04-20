@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-02-23 14:40:11 -0800 (Mon, 23 Feb 2026) $
-; $LastChangedRevision: 34180 $
+; $LastChangedDate: 2026-04-18 19:13:24 -0700 (Sat, 18 Apr 2026) $
+; $LastChangedRevision: 34383 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_kernels.pro $
 ;
 ;-
@@ -67,24 +67,36 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
   IF (gflg) THEN append_array, probes, 'gold'
 
   tr = timerange(itime)
+  trange = tr + [-1.d0, 1.d0] * oneday * 30.d0
+  dates = time_intervals(trange=trange, /daily_res)
   FOR i=0, N_ELEMENTS(probes)-1 DO BEGIN
      ; SPK & CK
      prefix = 'esc-' + (probes[i]).substring(0, 0)
      bsp   = prefix + '_orb-pre-eph_YYYYMMDD-????????_v??.bsp'
      bc    = prefix + '_orb-pre-ck_YYYYMMDD-????????_v??.bc'
 
-     spath = 'commissioning/' + probes[i] + '/ephemeris/predictive/'
+     ;spath = 'commissioning/' + probes[i] + '/ephemeris/predictive/'
      IF src.no_server EQ 1 THEN BEGIN
-        spath = src.local_data_dir + spath
+        spath = src.local_data_dir; + spath
         urls  = ['', '']
      ENDIF ELSE BEGIN
-        spath = src.remote_data_dir + spath
+        spath = src.remote_data_dir; + spath
         urls  = STRSPLIT(STRING(IDL_BASE64(src.user_pass)), ':', /extract)
      ENDELSE 
 
-     spks = spd_uniq(time_intervals(tformat='YYYY/MM/' + prefix + '*.bsp', trange=tr + [-1.d0, 1.d0] * oneday * 30.d0, /daily_res))
-     cks  = spd_uniq(time_intervals(tformat='YYYY/MM/' + prefix + '*.bc', trange=tr + [-1.d0, 1.d0] * oneday * 30.d0, /daily_res))
+     ;spks = spd_uniq(time_intervals(tformat='YYYY/MM/' + prefix + '*.bsp', trange=tr + [-1.d0, 1.d0] * oneday * 30.d0, /daily_res))
+     ;cks  = spd_uniq(time_intervals(tformat='YYYY/MM/' + prefix + '*.bc', trange=tr + [-1.d0, 1.d0] * oneday * 30.d0, /daily_res))
+     
+     spks = esc_mission_phase(dates) + '/' + probes[i] + '/ephemeris/predictive/' + time_string(dates, tformat='YYYY/MM/' + prefix) + '*.bsp'
+     cks  = esc_mission_phase(dates) + '/' + probes[i] + '/ephemeris/predictive/' + time_string(dates, tformat='YYYY/MM/' + prefix) + '*.bc'
+     spks = spks[UNIQ(spks)]
+     cks  = cks[UNIQ(cks)]
 
+     w = WHERE(STRMATCH(spks, '*prelaunch*') EQ 0, nw)
+     IF nw GT 0 THEN spks = spks[w]
+     w = WHERE(STRMATCH(cks, '*prelaunch*') EQ 0, nw)
+     IF nw GT 0 THEN cks = cks[w]
+     
      ; SPK
      FOR j=0, N_ELEMENTS(spks)-1 DO BEGIN
         aspk = spath + spks[j]
@@ -94,14 +106,20 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
      w = WHERE(spk NE '', nw)
      IF nw GT 0 THEN BEGIN
         spk = spk[w]
-        tspk = time_double(FILE_BASENAME(spk), tformat=bsp)
 
+        arr = FILE_BASENAME(spk)
+        s   = SORT(arr)
+        spk = spk[(s[UNIQ(arr[s])])[SORT(s[UNIQ(arr[s])])]]
+        undefine, arr, s
+        
+        tspk = time_double(FILE_BASENAME(spk), tformat=bsp)
+        
         ; Only using the latest version.
         ispk = UNIQ(tspk)
         spk  = spk[ispk]
         tspk = tspk[ispk]
         
-        w = WHERE(tspk GE tr[0] - 30.d0*oneday AND tspk LE tr[1] + 30.d0*oneday, nw)
+        w = WHERE(tspk GE trange[0] AND tspk LE trange[1], nw)
         IF nw GT 0 THEN BEGIN
            IF src.no_server EQ 1 THEN spk = spk.replace(src.local_data_dir, '') $
            ELSE spk = spk.replace(src.remote_data_dir, '')
@@ -121,6 +139,12 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
      w = WHERE(ck NE '', nw)
      IF nw GT 0 THEN BEGIN
         ck = ck[w]
+
+        arr = FILE_BASENAME(ck)
+        s   = SORT(arr)
+        ck = ck[(s[UNIQ(arr[s])])[SORT(s[UNIQ(arr[s])])]]
+        undefine, arr, s
+
         tck = time_double(FILE_BASENAME(ck), tformat=bc)
         
         ; Only using the latest version.
@@ -128,7 +152,7 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
         ck  = ck[ick]
         tck = tck[ick]
 
-        w = WHERE(tck GE tr[0] - 30.d0*oneday AND tck LE tr[1] + 30.d0*oneday, nw)
+        w = WHERE(tck GE trange[0] AND tck LE trange[1], nw)
         IF nw GT 0 THEN BEGIN
            IF src.no_server EQ 1 THEN ck = ck.replace(src.local_data_dir, '') $
            ELSE ck = ck.replace(src.remote_data_dir, '')

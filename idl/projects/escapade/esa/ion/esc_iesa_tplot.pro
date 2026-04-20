@@ -13,9 +13,9 @@
 ;CREATED BY:      Gwen Hanley & Takuya Hara on 2026-02-22.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-07 12:18:56 -0700 (Tue, 07 Apr 2026) $
-; $LastChangedRevision: 34333 $
+; $LastChangedBy: ghanley $
+; $LastChangedDate: 2026-04-14 16:03:44 -0700 (Tue, 14 Apr 2026) $
+; $LastChangedRevision: 34357 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 ;
 ;-
@@ -70,7 +70,11 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
      
      phi     = REFORM(phi,   nenergy, nanode, ndef, nmass, ntimes)
      theta   = REFORM(theta, nenergy, nanode, ndef, nmass, ntimes)
-     cnts_4d = REFORM(cnts,  nenergy, nanode, ndef, nmass, ntimes) 
+     
+     phi = TRANSPOSE(phi, [0, 2, 1, 3, 4]) ; theta and phi got scrambled so swap them around 
+     theta = TRANSPOSE(theta, [0, 2, 1, 3, 4]) 
+     
+     cnts_4d = REFORM(cnts,  nenergy, ndef, nanode, nmass, ntimes) 
 
      store_data, prefix + '_E_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(cnts, 2, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(energy, dim=2), dim=2))}, $
                  dlim={ytitle: probe + ' ' + prod[0], ysubtitle: 'Energy [eV]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
@@ -78,13 +82,13 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
      ylim, prefix + '_E_cnts', 1., 30.e3, 1, /def
      zlim, prefix + '_E_cnts', 1., 1.e4, 1, /def
      
-     store_data, prefix + '_D_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(TOTAL(cnts_4d, 1, /nan), 1, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(MEAN(theta, dim=1), dim=1), dim=2))}, $
+     store_data, prefix + '_D_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(TOTAL(cnts_4d, 1, /nan), 2, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(MEAN(theta, dim=1), dim=2), dim=2))}, $
                  dlim={ytitle: probe + ' ' + prod[0], ysubtitle: 'Theta [deg]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
                        ztickunits: 'scientific', ytickinterval: 45., yminor: 4}
      ylim, prefix + '_D_cnts', -50., 50., 0, /def
      zlim, prefix + '_D_cnts', 1., 1.e4, 1, /def
 
-     store_data, prefix + '_A_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(TOTAL(cnts_4d, 1, /nan), 2, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(MEAN(phi, dim=1), dim=2), dim=2))}, $
+     store_data, prefix + '_A_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(TOTAL(cnts_4d, 1, /nan), 1, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(MEAN(phi, dim=1), dim=1), dim=2))}, $
                  dlim={ytitle: probe + ' ' + prod[0], ysubtitle: 'Phi [deg]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
                        ztickunits: 'scientific', ytickinterval: 90., yminor: 4}
      ylim, prefix + '_A_cnts', 0., 247.5, 0, /def
@@ -104,11 +108,6 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
      
      store_data, prefix + '_neg_sc_pot', data={x: time, y: -1.*dat.sc_pot} 
                  dlim={ytitle: probe + ' ' + prod[0], ysubtitle: '-S/C Pot [V]'}                    
-
-     ;store_data, 'escb_iesa_f4d_SAbin_cnts', data = {x: time, y: transpose(total(total(cnts,3),1)), v: indgen(nbins) }
-     ;options,'escb_iesa_f4d_SAbin_cnts', no_interp=1., spec=1., ytitle='ESC B f4d!CSA Bin #', ztitle= 'Counts'
-     ;zlim, 'escb_iesa_f4d_SAbin_cnts', 1,10000,1
-     ;ylim, 'escb_iesa_f4d_SAbin_cnts', 0, 87., 0
      
      undefine, dat
   ENDFOR 
