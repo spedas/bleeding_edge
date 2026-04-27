@@ -13,9 +13,9 @@
 ;CREATED BY:      Gwen Hanley & Takuya Hara on 2026-02-22.
 ;
 ;LAST MODIFICATION:
-; $LastChangedBy: ghanley $
-; $LastChangedDate: 2026-04-14 16:03:44 -0700 (Tue, 14 Apr 2026) $
-; $LastChangedRevision: 34357 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2026-04-24 17:07:32 -0700 (Fri, 24 Apr 2026) $
+; $LastChangedRevision: 34395 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 ;
 ;-
@@ -163,6 +163,72 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
         zlim, prefix + '_E_cnts', 1.e2, 1.e4, 1, /def
         
      ENDIF
+     undefine, dat
+  ENDFOR 
+
+  ; Solar Wind (sw)
+  cvar = 'escp_iesa_sw'
+  FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
+     IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
+     undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_sw_com')")
+
+     IF ~is_struct(dat) THEN CONTINUE
+
+     IF i EQ 1 THEN probe = prob.replace('P', 'B') ELSE probe = prob.replace('P', 'G')
+     ntimes  = N_ELEMENTS(dat.time)
+     nbins   = dat[0].nbins
+     nenergy = dat[0].nenergy
+     ndef    = dat[0].ndef
+     nanode  = dat[0].nanode
+     nmass   = dat[0].nmass
+
+     energy  = dat.energy
+     theta   = dat.theta
+     phi     = dat.phi
+     mass    = dat.mass
+
+     time    = 0.5d0 * (dat.time + dat.end_time)
+     data    = dat.data
+     cnts    = dat.cnts
+     mass_arr = dat.mass_arr
+
+     phi     = REFORM(phi,   nenergy, nanode, ndef, nmass, ntimes)
+     theta   = REFORM(theta, nenergy, nanode, ndef, nmass, ntimes)
+
+     phi = TRANSPOSE(phi, [0, 2, 1, 3, 4]) ; theta and phi got scrambled so swap them around
+     theta = TRANSPOSE(theta, [0, 2, 1, 3, 4])
+
+     cnts_4d = REFORM(cnts,  nenergy, ndef, nanode, nmass, ntimes)
+
+     store_data, prefix + '_E_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(cnts, 2, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(energy, dim=2), dim=2))}, $
+                 dlim={ytitle: probe + ' ' + prod[3], ysubtitle: 'Energy [eV]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
+                       ytickunits: 'scientific', ztickunits: 'scientific'}
+     ylim, prefix + '_E_cnts', 1., 30.e3, 1, /def
+     zlim, prefix + '_E_cnts', 1., 1.e4, 1, /def
+
+     store_data, prefix + '_E_cnts_proton', data={x: time, y: TRANSPOSE(TOTAL(REFORM(cnts[*, *, 0, *]), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(energy, dim=2), dim=2))}, $
+                 dlim={ytitle: probe + ' ' + prod[3], ysubtitle: 'H!E+!N!CEnergy [eV]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
+                       ytickunits: 'scientific', ztickunits: 'scientific'}
+     ylim, prefix + '_E_cnts_proton', 1., 30.e3, 1, /def
+     zlim, prefix + '_E_cnts_proton', 1., 1.e4, 1, /def
+     store_data, prefix + '_E_cnts_alpha', data={x: time, y: TRANSPOSE(TOTAL(REFORM(cnts[*, *, 1, *]), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(energy, dim=2), dim=2))}, $
+                 dlim={ytitle: probe + ' ' + prod[3], ysubtitle: 'He!E++!N!CEnergy [eV]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
+                       ytickunits: 'scientific', ztickunits: 'scientific'}
+     ylim, prefix + '_E_cnts_alpha', 1., 30.e3, 1, /def
+     zlim, prefix + '_E_cnts_alpha', 1., 1.e4, 1, /def
+     
+     store_data, prefix + '_D_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(TOTAL(cnts_4d, 1, /nan), 2, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(MEAN(theta, dim=1), dim=2), dim=2))}, $
+                 dlim={ytitle: probe + ' ' + prod[3], ysubtitle: 'Theta [deg]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
+                       ztickunits: 'scientific', ytickinterval: 45., yminor: 4}
+     ylim, prefix + '_D_cnts', -50., 50., 0, /def
+     zlim, prefix + '_D_cnts', 1., 1.e4, 1, /def
+     
+     store_data, prefix + '_A_cnts', data={x: time, y: TRANSPOSE(TOTAL(TOTAL(TOTAL(cnts_4d, 1, /nan), 1, /nan), 2, /nan)), v: TRANSPOSE(MEAN(MEAN(MEAN(phi, dim=1), dim=1), dim=2))}, $
+                 dlim={ytitle: probe + ' ' + prod[3], ysubtitle: 'Phi [deg]', ztitle: 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $
+                       ztickunits: 'scientific', ytickinterval: 90., yminor: 4}
+     ylim, prefix + '_A_cnts', 0., 247.5, 0, /def
+     zlim, prefix + '_A_cnts', 1., 1.e4, 1, /def
+     
      undefine, dat
   ENDFOR 
   

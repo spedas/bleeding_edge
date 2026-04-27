@@ -10,8 +10,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-19 18:18:47 -0700 (Thu, 19 Mar 2026) $
-; $LastChangedRevision: 34281 $
+; $LastChangedDate: 2026-04-20 11:49:44 -0700 (Mon, 20 Apr 2026) $
+; $LastChangedRevision: 34390 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/general/esc_gen_crib.pro $
 ;
 ;-
@@ -21,7 +21,20 @@
 ; Loading procedures
 
 
-; Note: Please keep in mind using /commissioning keyword!  
+; Note:
+; YYYY-MM-DD:
+; 2026-03-12: Please keep in mind using /commissioning keyword! 
+; 2026-04-20: NO LONGER need to use /commissioning keyword, 
+;             because the latest routines can automatically determine
+;             where to retrieve the science data.
+;
+
+; Determines the mission phases.
+
+times = ['2024-10', '2025-11-14', '2026-02-26']
+phases = esc_mission_phase(times)
+print, phases
+
 
 ; Loading the s/c position in the GSE frame. The output unit should be
 ; R_E (Earth Radii).
@@ -40,13 +53,13 @@ esc_spice_load, info=info
 ; Loading the EMAG L1 CDF data.
 
 timespan, '2026-03-05'
-esc_emag_load, /commissioning, frame=['GSE', 'RTN']
+esc_emag_load, frame=['GSE', 'RTN']
 
 
 ; Loading the ELP L1 CDF data.
 
 timespan, '2026-02-25'
-esc_elp_load, /blue, /commissioning 
+esc_elp_load, /blue 
 
 
 ; Loading the EESA-e L1 CDF data.
@@ -54,7 +67,7 @@ esc_elp_load, /blue, /commissioning
 ; The routine prefix should be 'esc_eesa_'. 
 
 timespan, '2026-03-05'
-esc_eesa_load, prod='f3d', /blue, /commissioning, data=data ; 'f3d' = Full 3D (APID 0x140)
+esc_eesa_load, prod='f3d', /blue, data=data ; 'f3d' = Full 3D (APID 0x140)
 esc_eesa_tplot, /mean
 
 
@@ -75,7 +88,7 @@ esc_iesa_tplot
 
 timespan, '2026-03-05'
 get_timespan, trange
-files = esc_l0_file_retrieve(trange=trange, apid='125', /commissioning)
+files = esc_l0_file_retrieve(trange=trange, apid='125')
 
 
 ;-------------------------------------------------------------------------------------------------------------------

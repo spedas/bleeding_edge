@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-16 17:59:10 -0700 (Thu, 16 Apr 2026) $
-; $LastChangedRevision: 34367 $
+; $LastChangedDate: 2026-04-24 16:30:43 -0700 (Fri, 24 Apr 2026) $
+; $LastChangedRevision: 34394 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_struct.pro $
 ;
 ;-
@@ -47,13 +47,13 @@ FUNCTION esc_iesa_struct, prod, probe=probe, blue=blue, gold=gold, verbose=verbo
         dname = 'Fine Energies'
         sname = 'esc_eesai_fe' 
         nbins = [64, 1, 1, 3]
-        apid  = ''
+        apid  = '0x134'
      END 
      'fm': BEGIN
         dname = 'Fine Masses'
         sname = 'esc_eesai_fm'
         nbins = [1, 1, 1, 64]
-        apid  = ''
+        apid  = '0x147'
      END 
      'f4d': BEGIN
         dname = 'Fine 4D'       ; or Distribution Function
@@ -65,7 +65,7 @@ FUNCTION esc_iesa_struct, prod, probe=probe, blue=blue, gold=gold, verbose=verbo
         dname = 'Solar Wind'
         sname = 'esc_eesai_sw'
         nbins = [32, 8, 4, 2]
-        apid  = '' 
+        apid  = '0x139' 
      END 
      'fd': BEGIN
         ; Obsolete
