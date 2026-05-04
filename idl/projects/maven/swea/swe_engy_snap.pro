@@ -152,6 +152,9 @@ end
 ;                      halo density, which is defined as the high energy residual
 ;                      after subtracting the best-fit Maxwell-Boltzmann.
 ;
+;       EMIN_MB:       Minimum energy for fitting a Maxwellian.  Default is the
+;                      spacecraft potential.
+;
 ;       KAP:           Instead of the halo moment calculation, fit the halo with
 ;                      a kappa function to estimate halo density.
 ;
@@ -256,8 +259,8 @@ end
 ;                             for "good" spectra.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-08-20 09:34:00 -0700 (Wed, 20 Aug 2025) $
-; $LastChangedRevision: 33559 $
+; $LastChangedDate: 2026-04-28 08:42:33 -0700 (Tue, 28 Apr 2026) $
+; $LastChangedRevision: 34399 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_engy_snap.pro $
 ;
 ;CREATED BY:    David L. Mitchell  07-24-12
@@ -275,7 +278,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
                    showdead=showdead, dead=dead, monitor=monitor, der=der, color_table=color_table, $
                    reverse_color_table=reverse_color_table, line_colors=line_colors, noraw=noraw, $
                    qlevel=qlevel, result=result, background=background, tmark=tmark, $
-                   mkpng=mkpng,figname=figname
+                   mkpng=mkpng,figname=figname, EMIN_MB=EMIN_MB
 
   @mvn_swe_com
   @mvn_scpot_com
@@ -307,7 +310,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
            'POPEN','TIMES','FLEV','PYLIM','K_E','PEREF','ERROR_BARS','TRANGE', $
            'TSMO','WSCALE','CSCALE','VOFFSET','ENDX','TWOT','RCOLORS','CUII', $
            'FMFIT','NOLAB','SHOWDEAD','DEAD','MONITOR','COLOR_TABLE','REVERSE_COLOR_TABLE', $
-           'LINE_COLORS','NORAW','QLEVEL','RESULT','BACKGROUND','TMARK']
+           'LINE_COLORS','NORAW','QLEVEL','RESULT','BACKGROUND','TMARK','EMIN_MB']
   for j=0,(n_elements(ktag)-1) do begin
     i = strmatch(tlist, ktag[j]+'*', /fold)
     case (total(i)) of
@@ -350,6 +353,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
   doraw = ~keyword_set(noraw) or ~dosec
   qlevel = (n_elements(qlevel) gt 0) ? byte(qlevel[0]) < 2B : 0B
   tmark = keyword_set(tmark)
+  EMIN_MB = (n_elements(EMIN_MB) gt 0) ? float(EMIN_MB[0]) : 0.
 
   spflg = keyword_set(shiftpot)
   if (n_elements(xrange) ne 2) then xrange = [1.,1.e4]
@@ -962,7 +966,7 @@ pro swe_engy_snap, units=units, keepwins=keepwins, archive=archive, spec=spec, d
       p = swe_maxbol()
       p.pot = spec.sc_pot
 
-      indx = where(E1 gt p.pot, count)
+      indx = where(E1 gt (p.pot > EMIN_MB), count)
       indx = indx[0:(count-2)]
 
       Fpeak = max(F1[indx],k,/nan)

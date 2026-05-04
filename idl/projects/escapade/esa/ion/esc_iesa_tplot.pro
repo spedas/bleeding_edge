@@ -14,8 +14,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-24 17:07:32 -0700 (Fri, 24 Apr 2026) $
-; $LastChangedRevision: 34395 $
+; $LastChangedDate: 2026-05-02 16:19:25 -0700 (Sat, 02 May 2026) $
+; $LastChangedRevision: 34422 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 ;
 ;-
@@ -40,7 +40,8 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   tnow = SYSTIME(/sec)
   prod = ['F4D', 'FM', 'FE', 'SW']
   prob = 'ESC-P'
-
+  p = ['b', 'g']
+  
   ; Fine 4D (f4d)
   cvar = 'escp_iesa_f4d'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
@@ -170,6 +171,7 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   cvar = 'escp_iesa_sw'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
+     IF i EQ 1 THEN probe = prob.replace('P', 'B') ELSE probe = prob.replace('P', 'G')
      undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_sw_com')")
 
      IF ~is_struct(dat) THEN CONTINUE
@@ -231,7 +233,35 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
      
      undefine, dat
   ENDFOR 
-  
+
+  tn = tnames('*', create_time=ctime)
+  w = WHERE(ctime GT tnow, nw)
+  IF nw GT 0 THEN tname = tn[w] $
+  ELSE BEGIN
+     dprint, dlevel=2, verbose=verbose, 'No tplot(s) newly created.'
+     RETURN
+  ENDELSE 
+  undefine, ctime
+
+  cvar = 'escp_iesa_'
+  type = ['E', 'D', 'A']
+  FOR i=0, 1 DO BEGIN
+     prefix = cvar.replace('p', p[i])
+     probe  = prob.replace('P', (p[i]).toupper())
+     FOR j=0, 2 DO BEGIN
+        undefine, iname 
+        iname = strfilter(tname, prefix + ['sw', 'f4d'] + '_' + type[j] + '_cnts', count=ntplot)
+        IF TEMPORARY(ntplot) EQ 0 THEN CONTINUE
+        
+        iname = REVERSE(iname)  ; The order must be ['sw', 'f4d'].
+        get_data, iname[0], alim=alim
+        extract_tags, ilim, alim, tags=['yrange', 'ylog', 'yticks', 'yminor', 'constant', 'ytitle', 'ysubtitle', 'ytickunits']
+        store_data, prefix + type[j] + '_cnts', data=iname, dlim=ilim
+        options, prefix + type[j] + '_cnts', ytitle=probe + '!CEESA-i', /def
+        undefine, alim, ilim
+     ENDFOR
+  ENDFOR 
+
   tn = tnames('*', create_time=ctime)
   w = WHERE(ctime GT tnow, nw)
   IF nw GT 0 THEN tname = tn[w]

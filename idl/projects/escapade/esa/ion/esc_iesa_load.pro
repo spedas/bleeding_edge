@@ -30,18 +30,32 @@
 ;
 ;COMMISSION:      If set, commissioning data will be loaded.
 ;
+;     CLEAR:      If set, clears the EESA-i common blocks.
+;
 ;CREATED BY:      Takuya Hara on 2026-02-07.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-07 16:03:30 -0700 (Tue, 07 Apr 2026) $
-; $LastChangedRevision: 34335 $
+; $LastChangedDate: 2026-04-30 15:39:35 -0700 (Thu, 30 Apr 2026) $
+; $LastChangedRevision: 34406 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_load.pro $
 ;
 ;-
 PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=level, blue=blue, gold=gold, files=afile, $
-                   ipath=ipath, source=source, no_server=no_server, prelaunch=prelaunch, commissioning=commissioning
+                   ipath=ipath, source=source, no_server=no_server, prelaunch=prelaunch, commissioning=commissioning, clear=clear
 
+  COMMON esc_iesa_fe_com, escb_iesa_fe, escg_iesa_fe    ; Fine Energies (0x134)
+  COMMON esc_iesa_fm_com, escb_iesa_fm, escg_iesa_fm    ; Fine Masses   (0x147)
+  COMMON esc_iesa_f4d_com, escb_iesa_f4d, escg_iesa_f4d ; Fine 4D       (0x125)
+  COMMON esc_iesa_sw_com, escb_iesa_sw, escg_iesa_sw    ; Solar Wind    (0x139)
+
+  IF KEYWORD_SET(clear) THEN BEGIN
+     undefine, escb_iesa_fe,  escg_iesa_fe
+     undefine, escb_iesa_fm,  escg_iesa_fm
+     undefine, escb_iesa_f4d, escg_iesa_f4d
+     undefine, escb_iesa_sw,  escg_iesa_sw
+  ENDIF 
+  
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
   IF is_string(trange) THEN trange = time_double(trange)
 
@@ -134,19 +148,15 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
 
      CASE (prod[j]).toupper() OF
         'FE': BEGIN             ; Fine Energies
-           COMMON esc_iesa_fe_com, escb_iesa_fe, escg_iesa_fe
            IF probes[i] EQ 'blue' THEN escb_iesa_fe = data ELSE escg_iesa_fe = data
         END
         'FM': BEGIN             ; Fine Masses
-           COMMON esc_iesa_fm_com, escb_iesa_fm, escg_iesa_fm
            IF probes[i] EQ 'blue' THEN escb_iesa_fm = data ELSE escg_iesa_fm = data
         END
         'F4D': BEGIN            ; Fine 4D
-           COMMON esc_iesa_f4d_com, escb_iesa_f4d, escg_iesa_f4d
            IF probes[i] EQ 'blue' THEN escb_iesa_f4d = data ELSE escg_iesa_f4d = data
         END
         'SW': BEGIN             ; Solar Wind
-           COMMON esc_iesa_sw_com, escb_iesa_sw, escg_iesa_sw
            IF probes[i] EQ 'blue' THEN escb_iesa_sw = data ELSE escg_iesa_sw = data
         END
         ELSE: dprint, dlevel=2, verbose=verbose, 'No EESA-i science products matched.'

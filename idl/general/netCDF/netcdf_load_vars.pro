@@ -13,13 +13,14 @@
 ;         loaded from the netCDF file
 ;         
 ; 
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2017-10-20 11:55:06 -0700 (Fri, 20 Oct 2017) $
-; $LastChangedRevision: 24198 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-04-29 16:37:21 -0700 (Wed, 29 Apr 2026) $
+; $LastChangedRevision: 34405 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/netCDF/netcdf_load_vars.pro $
 ;-
 
-function netcdf_load_vars, ncfile
+function netcdf_load_vars, ncfile, temporal_dim = temporal_dim
+  if not keyword_set(temporal_dim) then temporal_dim = 'record'
   for fileindex = 0, n_elements(ncfile)-1 do begin
     if file_test(ncfile[fileindex]) eq 0 then begin
         dprint, 'Invalid netCDF file found in netCDF_load_vars -- file not found: ' + ncfile[fileindex]
@@ -37,7 +38,7 @@ function netcdf_load_vars, ncfile
     ; the dimension where the temporal data is stored
     id_unlimited_dim = inquire.recdim
     ; check that the data dimension is greater than zero
-    dimensionid = ncdf_dimid(file, 'record')
+    dimensionid = ncdf_dimid(file, temporal_dim)
     ncdf_diminq, file, dimensionid, name, size
     if size eq 0 then continue
     

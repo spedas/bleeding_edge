@@ -103,9 +103,16 @@
 ;      ----------------------------------------------------------------
 ;         * see note above
 ;
-;   To get the largest number of unique tables, I recommend setting the SPP Fields catalog as
-;   the default.  That way, you can use initct to access all of the standard, SPP, and CSV
-;   tables.
+;   I recommend setting the SPP Fields catalog as the default (see below).  Initct then 
+;   provides access to all of the standard, SPP and CSV tables:
+;
+;                                    Color Table Catalog
+;
+;     |          standard           |         SPP          |        empty       |  CSV ->
+;     |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |  . . .  |   |   |   |
+;     0      20      40      60      80      100     120     140              1000    1020
+;
+;                                    Initct Table Number
 ;
 ;   As of this writing, there are 12 predefined line color schemes:
 ;
@@ -135,8 +142,8 @@
 ;   and line color schemes for individual tplot variables using options.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-04-06 09:47:34 -0700 (Mon, 06 Apr 2026) $
-; $LastChangedRevision: 34330 $
+; $LastChangedDate: 2026-04-28 08:39:55 -0700 (Tue, 28 Apr 2026) $
+; $LastChangedRevision: 34398 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 ;
 ; Created by David Mitchell;  February 2023
@@ -246,7 +253,9 @@ options, var2, 'color_table', 1078
 options, var2, 'reverse_color_table', 0
 options, var2, 'line_colors', 5
 
-;; Set a custom line color scheme for a tplot variable.
+;; Set a custom line color scheme for a tplot variable.  This example also sets a gray
+;; background, which can be useful for color spectrograms where you want to distinguish
+;; zero from NaN.
 
 mylines = get_line_colors(5, /graybkg, mycolors={ind:3, rgb:[211,0,211]})
 options, var1, 'line_colors', mylines

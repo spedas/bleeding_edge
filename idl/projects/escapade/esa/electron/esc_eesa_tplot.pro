@@ -12,16 +12,18 @@
 ;
 ;      MEAN:      If set, calculates the mean counts instead of the total counts.
 ;
+;    ENERGY:      If set, specifies the energy range to be used for angular tplots.
+;
 ;CREATED BY:      Takuya Hara on 2026-03-04.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-05 13:17:40 -0800 (Thu, 05 Mar 2026) $
-; $LastChangedRevision: 34232 $
+; $LastChangedDate: 2026-04-28 15:42:30 -0700 (Tue, 28 Apr 2026) $
+; $LastChangedRevision: 34403 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/electron/esc_eesa_tplot.pro $
 ;
 ;-
-PRO esc_eesa_tplot, data, verbose=verbose, tname=tname, mean=avg
+PRO esc_eesa_tplot, data, verbose=verbose, tname=tname, mean=avg, energy=erange
   tnow = SYSTIME(/sec)
   prod = ['F3D', 'SPEC', 'PAD', 'POT']
   prob = 'ESC-P'
@@ -50,11 +52,17 @@ PRO esc_eesa_tplot, data, verbose=verbose, tname=tname, mean=avg
      time    = 0.5d0 * (dat.time + dat.end_time)
      data    = dat.data
      cnts    = dat.cnts
-     
+
      phi     = REFORM(phi,   nenergy, nanode, ndef, ntimes)
      theta   = REFORM(theta, nenergy, nanode, ndef, ntimes)
      cnts_3d = REFORM(cnts,  nenergy, nanode, ndef, ntimes) 
 
+     IF ~undefined(erange) THEN BEGIN
+        engy_3d = REFORM(energy,  nenergy, nanode, ndef, ntimes) 
+        w = WHERE(engy_3d LT MIN(erange) OR engy_3d GT MAX(erange), nw)
+        IF nw GT 0 THEN cnts_3d[w] = 0.
+     ENDIF 
+     
      IF (aflg) THEN ydat = TRANSPOSE(MEAN(cnts, dim=2, /nan)) ELSE ydat = TRANSPOSE(TOTAL(cnts, 2, /nan)) 
      store_data, prefix + '_E_cnts', data={x: time, y: TEMPORARY(ydat), v: TRANSPOSE(MEAN(energy, dim=2))}, $
                  dlim={ytitle: probe + ' ' + prod[0], ysubtitle: 'Energy [eV]', ztitle: ztit + 'Counts [#]', spec: 1, no_interp: 1, extend_y_edges: 1, $

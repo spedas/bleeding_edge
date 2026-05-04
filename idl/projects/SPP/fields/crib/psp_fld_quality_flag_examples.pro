@@ -34,19 +34,20 @@
 ;   IDL> psp_fld_quality_flag_examples, 'THRUSTER'
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2020-11-12 22:39:16 -0800 (Thu, 12 Nov 2020) $
-; $LastChangedRevision: 29352 $
+; $LastChangedDate: 2026-04-27 11:00:07 -0700 (Mon, 27 Apr 2026) $
+; $LastChangedRevision: 34396 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/crib/psp_fld_quality_flag_examples.pro $
 ;
 ;-
 
 pro psp_fld_quality_flag_examples, qf_type, $
-  no_pause = no_pause
+  no_pause = no_pause, make_pdf = make_pdf
+  compile_opt idl2
 
-  if n_elements(no_pause) EQ 0 then pause = 1 else pause = 0
+  if n_elements(no_pause) eq 0 then pause = 1 else pause = 0
+  if n_elements(make_pdf) eq 0 then make_pdf = 0 else make_pdf = 1
 
-  if n_elements(qf_type) EQ 0 then begin
-
+  if n_elements(qf_type) eq 0 then begin
     print, ""
     print, "syntax: psp_fld_quality_flag_examples, qf_type"
     print, ""
@@ -54,39 +55,41 @@ pro psp_fld_quality_flag_examples, qf_type, $
     print, ""
 
     return
-
   endif
 
-  example_mag_roll    = 0
-  example_mag_cal     = 0
+  example_mag_roll = 0
+  example_mag_cal = 0
   example_bias_sweep1 = 0
   example_bias_sweep2 = 0
-  example_spc_emode   = 0
-  example_sls_test    = 0
-  example_thruster    = 0
-  example_scm_cal     = 0
-  example_off_umbra   = 0
-  example_overall     = 0
+  example_spc_emode = 0
+  example_sls_test = 0
+  example_thruster = 0
+  example_scm_cal = 0
+  example_off_umbra = 0
+  example_hf_noise = 0
+  example_ant_rails = 0
+  example_anom_bias = 0
+  example_overall = 0
 
   foreach type, qf_type do begin
-
-    if type EQ 'ALL' or type EQ 'MAG_ROLL'  then example_mag_roll    = 1
-    if type EQ 'ALL' or type EQ 'MAG_CAL'   then example_mag_cal     = 1
-    if type EQ 'ALL' or type EQ 'BIAS_SWP' or type EQ 'BIAS_SWP1' then $
+    if type eq 'ALL' or type eq 'MAG_ROLL' then example_mag_roll = 1
+    if type eq 'ALL' or type eq 'MAG_CAL' then example_mag_cal = 1
+    if type eq 'ALL' or type eq 'BIAS_SWP' or type eq 'BIAS_SWP1' then $
       example_bias_sweep1 = 1
-    if type EQ 'ALL' or type EQ 'BIAS_SWP' or type EQ 'BIAS_SWP2' then $
+    if type eq 'ALL' or type eq 'BIAS_SWP' or type eq 'BIAS_SWP2' then $
       example_bias_sweep2 = 1
-    if type EQ 'ALL' or type EQ 'SPC_EMODE' then example_spc_emode   = 1
-    if type EQ 'ALL' or type EQ 'SLS_CAL'   then example_sls_test    = 1
-    if type EQ 'ALL' or type EQ 'THRUSTER'  then example_thruster    = 1
-    if type EQ 'ALL' or type EQ 'SCM_CAL'   then example_scm_cal     = 1
-    if type EQ 'ALL' or type EQ 'OFF_UMBRA' then example_off_umbra   = 1
-    if type EQ 'ALL' or type EQ 'OVERALL'   then example_overall     = 1
-
+    if type eq 'ALL' or type eq 'SPC_EMODE' then example_spc_emode = 1
+    if type eq 'ALL' or type eq 'SLS_CAL' then example_sls_test = 1
+    if type eq 'ALL' or type eq 'THRUSTER' then example_thruster = 1
+    if type eq 'ALL' or type eq 'SCM_CAL' then example_scm_cal = 1
+    if type eq 'ALL' or type eq 'OFF_UMBRA' then example_off_umbra = 1
+    if type eq 'ALL' or type eq 'HF_NOISE' then example_hf_noise = 1
+    if type eq 'ALL' or type eq 'ANT_RAILS' then example_ant_rails = 1
+    if type eq 'ALL' or type eq 'ANOM_BIAS' then example_anom_bias = 1
+    if type eq 'ALL' or type eq 'OVERALL' then example_overall = 1
   endforeach
 
   if example_mag_roll or example_mag_cal then begin
-
     ;
     ; Magnetometer roll quality flag
     ; ------------------------------
@@ -97,9 +100,9 @@ pro psp_fld_quality_flag_examples, qf_type, $
     ; PSP instruments use the rotations for calibrations.
     ;
     ; Typically, rotations are performed three times per orbit:
-    ;   once prior to Encounter entry (0.25 au inbound)
-    ;   once after Encounter exit (0.25 au outbound)
-    ;   once near aphelion
+    ; once prior to Encounter entry (0.25 au inbound)
+    ; once after Encounter exit (0.25 au outbound)
+    ; once near aphelion
     ;
     ; The pre- and post-Encounter rolls are performed with the spacecraft
     ; -Z axis aligned with the Sun-spacecraft line, as is the case during
@@ -141,31 +144,31 @@ pro psp_fld_quality_flag_examples, qf_type, $
     psp_fld_load, type = 'mag_RTN_4_Sa_per_Cyc'
 
     if example_mag_roll then begin
-
       tplot_options, 'title', 'PSP/FIELDS MAG Roll + MAG Cal Quality Flag'
 
       tplot, ['psp_fld_l2_mag_*_4_Sa_per_Cyc', 'psp_fld_l2_quality_flags'], $
-        trange = ['2018-12-17/00:00:00','2018-12-19/00:00:00']
+        trange = ['2018-12-17/00:00:00', '2018-12-19/00:00:00']
 
       if pause then stop
 
+      if make_pdf then $
+        psp_fld_tplot_pdf, '~/Desktop/psp_fld_quality_flag_examples_mag_roll'
     endif
 
     if example_mag_cal then begin
-
       tplot_options, 'title', 'PSP/FIELDS MAG Cal Quality Flag'
 
       tplot, ['psp_fld_l2_mag_*_4_Sa_per_Cyc', 'psp_fld_l2_quality_flags'], $
-        trange = ['2018-12-18/12:00:00','2018-12-18/12:40:00']
+        trange = ['2018-12-18/12:00:00', '2018-12-18/12:40:00']
 
       if pause then stop
 
+      if make_pdf then $
+        psp_fld_tplot_pdf, '~/Desktop/psp_fld_quality_flag_examples_mag_cal'
     endif
-
   end
 
   if example_bias_sweep1 then begin
-
     ;
     ; Bias sweep flag
     ; ---------------
@@ -203,9 +206,9 @@ pro psp_fld_quality_flag_examples, qf_type, $
     ; are held constant. Post-Encounter 1, the bias sweeps
     ; typically contain several phases:
     ;
-    ;   - bias current of the V1 and V2 whips is swept at the same time
-    ;   - bias current of the V3 and V4 whips is swept at the same time
-    ;   - bias current of V5 is swept individually
+    ; - bias current of the V1 and V2 whips is swept at the same time
+    ; - bias current of the V3 and V4 whips is swept at the same time
+    ; - bias current of V5 is swept individually
     ;
     ; During the V1, V2 and V5 bias sweeps, the bias current on V3, V4 is zero.
     ; During the V3, V4 and V5 bias sweeps, the bias current on V1, V2 is zero.
@@ -218,7 +221,7 @@ pro psp_fld_quality_flag_examples, qf_type, $
     ; sweeps are apparent in all electric field data products.
     ;
 
-    timespan, '2018-11-06/12:00:00', 1./2
+    timespan, '2018-11-06/12:00:00', 1. / 2
 
     psp_fld_load, type = 'rfs_lfr'
     psp_fld_load, type = 'dfb_wf_vdc'
@@ -231,20 +234,21 @@ pro psp_fld_quality_flag_examples, qf_type, $
 
     options, 'psp_fld_l2_rfs_lfr_auto_averages_ch?_V?V?', 'panel_size', 1.
 
-    tplot, ['psp_fld_l2_rfs_lfr_auto_averages_ch0_V1V2',  $
-      'psp_fld_l2_rfs_lfr_auto_averages_ch1_V3V4',  $
+    tplot, ['psp_fld_l2_rfs_lfr_auto_averages_ch0_V1V2', $
+      'psp_fld_l2_rfs_lfr_auto_averages_ch1_V3V4', $
       'psp_fld_l2_dfb_wf_V1dc', $
       'psp_fld_l2_dfb_wf_V3dc', $
       'psp_fld_l2_dfb_wf_V5dc', $
       'psp_fld_l2_quality_flags'], $
-      trange = ['2018-11-06/17:45:00','2018-11-06/18:30:00']
+      trange = ['2018-11-06/17:45:00', '2018-11-06/18:30:00']
 
     if pause then stop
 
+    if make_pdf then $
+      psp_fld_tplot_pdf, '~/Desktop/psp_fld_quality_flag_examples_bias_sweep1'
   endif
 
   if example_bias_sweep2 then begin
-
     ;
     ; The plot below shows a typical bias sweep post-Encounter 1.
     ;
@@ -262,20 +266,18 @@ pro psp_fld_quality_flag_examples, qf_type, $
 
     tplot_options, 'title', 'PSP/FIELDS Bias Sweep (Encounter 2) Quality Flag'
 
-    tplot, ['psp_fld_l2_rfs_lfr_auto_averages_ch0_V1V2',  $
-      'psp_fld_l2_rfs_lfr_auto_averages_ch1_V3V4',  $
+    tplot, ['psp_fld_l2_rfs_lfr_auto_averages_ch0_V1V2', $
+      'psp_fld_l2_rfs_lfr_auto_averages_ch1_V3V4', $
       'psp_fld_l2_dfb_wf_V1dc', $
       'psp_fld_l2_dfb_wf_V3dc', $
       'psp_fld_l2_dfb_wf_V5dc', $
       'psp_fld_l2_quality_flags'], $
-      trange = ['2019-04-06/23:00:00','2019-04-06/23:30:00']
+      trange = ['2019-04-06/23:00:00', '2019-04-06/23:30:00']
 
     if pause then stop
-
   endif
 
   if example_spc_emode then begin
-
     ;
     ; Solar Probe Cup (SPC) Electron Mode quality flag
     ; ------------------------------------------------
@@ -317,20 +319,18 @@ pro psp_fld_quality_flag_examples, qf_type, $
 
     tplot_options, 'title', 'PSP/FIELDS SPC Electron Mode Quality Flag'
 
-    tplot, ['psp_fld_l2_rfs_lfr_auto_averages_ch0_V1V2',  $
-      'psp_fld_l2_rfs_lfr_auto_averages_ch1_V3V4',  $
+    tplot, ['psp_fld_l2_rfs_lfr_auto_averages_ch0_V1V2', $
+      'psp_fld_l2_rfs_lfr_auto_averages_ch1_V3V4', $
       'psp_fld_l2_dfb_wf_V1dc', $
       'psp_fld_l2_dfb_wf_V3dc', $
       'psp_fld_l2_dfb_wf_V5dc', $
       'psp_fld_l2_quality_flags'], $
-      trange = ['2019-04-06/11:40:00','2019-04-06/12:10:00']
+      trange = ['2019-04-06/11:40:00', '2019-04-06/12:10:00']
 
     if pause then stop
-
   endif
 
   if example_sls_test then begin
-
     ;
     ; Solar Limb Sensor test quality flag
     ; -----------------------------------
@@ -372,14 +372,12 @@ pro psp_fld_quality_flag_examples, qf_type, $
     tplot, ['psp_fld_l2_dfb_wf_V1dc', $
       'psp_fld_l2_dfb_wf_V5dc', $
       'psp_fld_l2_quality_flags'], $
-      trange = ['2019-03-03/13:00:00','2019-03-03/15:00:00']
+      trange = ['2019-03-03/13:00:00', '2019-03-03/15:00:00']
 
     if pause then stop
-
   endif
 
   if example_overall then begin
-
     ;
     ; Overall summary plot of quality flags
     ; -------------------------------------
@@ -390,33 +388,33 @@ pro psp_fld_quality_flag_examples, qf_type, $
     ; each orbit is defined by the interval when the spacecraft is at
     ; a radial distance from the Sun of <0.25 au.
     ;
-    ;   BIAS_SWEEP flags occur throughout Encounter (typically for 2 intervals
-    ;     per day)
+    ; BIAS_SWEEP flags occur throughout Encounter (typically for 2 intervals
+    ; per day)
     ;
-    ;   THRUSTER flags can occur at any point in the orbit. Typically an
-    ;     encounter includes several thruster events.
+    ; THRUSTER flags can occur at any point in the orbit. Typically an
+    ; encounter includes several thruster events.
     ;
-    ;   SCM_CAL always occurs near the start and end of the encounter period.
-    ;     On occasion, additional SCM_CAL sequences are commanded for
-    ;     diagnostic purposes.
+    ; SCM_CAL always occurs near the start and end of the encounter period.
+    ; On occasion, additional SCM_CAL sequences are commanded for
+    ; diagnostic purposes.
     ;
-    ;   MAG_ROLL and MAG_CAL events typically occur together (with the CAL
-    ;     shortly after the ROLL). Each orbit includes a rotation/cal before
-    ;     and after encounter, and most orbits also include a rotation/cal
-    ;     near aphelion.
+    ; MAG_ROLL and MAG_CAL events typically occur together (with the CAL
+    ; shortly after the ROLL). Each orbit includes a rotation/cal before
+    ; and after encounter, and most orbits also include a rotation/cal
+    ; near aphelion.
     ;
-    ;   SPC_EMODE intervals are commanded by the SWEAP SPC, and typically
-    ;     occur during encounter.
+    ; SPC_EMODE intervals are commanded by the SWEAP SPC, and typically
+    ; occur during encounter.
     ;
-    ;   SLS_CAL sequences are commanded by the spacecraft, and always occur
-    ;     outside of encounter.
+    ; SLS_CAL sequences are commanded by the spacecraft, and always occur
+    ; outside of encounter.
     ;
-    ;   The OFF_UMBRA flag is set when the spacecraft is not in umbra
-    ;     orientation, with the SC -Z axis aligned with the Sun-spacecraft
-    ;     line. Beyond 0.79 au, the spacecraft is always in OFF_UMBRA
-    ;     attitude. Closer than 0.70 au, the spacecraft is always in umbra
-    ;     orientation. In between these distances, the spacecraft attitude
-    ;     can vary.
+    ; The OFF_UMBRA flag is set when the spacecraft is not in umbra
+    ; orientation, with the SC -Z axis aligned with the Sun-spacecraft
+    ; line. Beyond 0.79 au, the spacecraft is always in OFF_UMBRA
+    ; attitude. Closer than 0.70 au, the spacecraft is always in umbra
+    ; orientation. In between these distances, the spacecraft attitude
+    ; can vary.
     ;
 
     timespan, '2019-07-01', 275
@@ -432,11 +430,9 @@ pro psp_fld_quality_flag_examples, qf_type, $
       'psp_fld_l2_quality_flags']
 
     if pause then stop
-
   end
 
   if example_thruster then begin
-
     ;
     ; Thruster Firing quality flag
     ; ----------------------------
@@ -465,7 +461,7 @@ pro psp_fld_quality_flag_examples, qf_type, $
     ; visible in the MAG data (particularly the Bz component).
     ;
 
-    timespan, '2019-04-07', 1./4
+    timespan, '2019-04-07', 1. / 4
 
     psp_fld_load, type = 'dfb_dc_spec'
     psp_fld_load, type = 'dfb_wf_dvdc'
@@ -475,17 +471,15 @@ pro psp_fld_quality_flag_examples, qf_type, $
 
     options, 'psp_fld_l2_dfb_dc_spec_dV12hg', 'ytitle', 'DC SC SPEC!CdV12'
 
-    tplot, ['psp_fld_l2_dfb_dc_spec_dV12hg',$
-      'psp_fld_l2_dfb_wf_dVdc_sensor',$
-      'psp_fld_l2_mag_SC','psp_fld_l2_quality_flags'], $
-      trange = ['2019-04-07/04:04:55','2019-04-07/04:05:25']
+    tplot, ['psp_fld_l2_dfb_dc_spec_dV12hg', $
+      'psp_fld_l2_dfb_wf_dVdc_sensor', $
+      'psp_fld_l2_mag_SC', 'psp_fld_l2_quality_flags'], $
+      trange = ['2019-04-07/04:04:55', '2019-04-07/04:05:25']
 
     if pause then stop
-
   end
 
   if example_scm_cal then begin
-
     ;
     ; Search Coil Magnetometer calibration quality flag
     ; -------------------------------------------------
@@ -526,7 +520,7 @@ pro psp_fld_quality_flag_examples, qf_type, $
     ; waves visible in the DFB burst waveform data.
     ;
 
-    timespan, '2018-10-31/06:00:00', 1./4
+    timespan, '2018-10-31/06:00:00', 1. / 4
 
     psp_fld_load, type = 'dfb_dc_spec'
     psp_fld_load, type = 'dfb_wf_scm'
@@ -537,13 +531,13 @@ pro psp_fld_quality_flag_examples, qf_type, $
     options, 'psp_fld_l2_dfb_dc_spec_SCMdlfhg', 'ytitle', 'DC SC SPEC!CSCM d hg'
 
     tplot, ['psp_fld_l2_dfb_dc_spec_SCMdlfhg', $
-      'psp_fld_l2_dfb_wf_scm_hg_sensor','psp_fld_l2_quality_flags'], $
-      trange = ['2018-10-31/10:35:00','2018-10-31/10:45:00']
+      'psp_fld_l2_dfb_wf_scm_hg_sensor', 'psp_fld_l2_quality_flags'], $
+      trange = ['2018-10-31/10:35:00', '2018-10-31/10:45:00']
 
     if pause then stop
 
-    tplot, ['psp_fld_l2_dfb_wf_scm_hg_sensor','psp_fld_l2_quality_flags'], $
-      trange = ['2018-10-31/10:39:59','2018-10-31/10:40:09']
+    tplot, ['psp_fld_l2_dfb_wf_scm_hg_sensor', 'psp_fld_l2_quality_flags'], $
+      trange = ['2018-10-31/10:39:59', '2018-10-31/10:40:09']
 
     if pause then stop
 
@@ -551,8 +545,8 @@ pro psp_fld_quality_flag_examples, qf_type, $
     get_data, 'psp_fld_l2_dfb_dbm_scmlgu', data = d_dbm_scmlgu
 
     store_data, 'psp_fld_l2_dfb_dbm_scmhgu_scm_cal', $
-      data = {x:d_dbm_scmhgu.x[9] + reform(d_dbm_scmhgu.v[9,*]), $
-      y:reform(d_dbm_scmhgu.y[9,*])}
+      data = {x: d_dbm_scmhgu.x[9] + reform(d_dbm_scmhgu.v[9, *]), $
+        y: reform(d_dbm_scmhgu.y[9, *])}
 
     options, 'psp_fld_l2_dfb_dbm_scmhgu_scm_cal', 'ytitle', $
       'DFB DBM SCM u'
@@ -561,15 +555,13 @@ pro psp_fld_quality_flag_examples, qf_type, $
       '[nT]'
 
     tplot, ['psp_fld_l2_dfb_dbm_scmhgu_scm_cal', $
-      'psp_fld_l2_dfb_wf_scm_hg_sensor','psp_fld_l2_quality_flags'], $
-      trange = ['2018-10-31/10:39:59.5','2018-10-31/10:40:05.5']
+      'psp_fld_l2_dfb_wf_scm_hg_sensor', 'psp_fld_l2_quality_flags'], $
+      trange = ['2018-10-31/10:39:59.5', '2018-10-31/10:40:05.5']
 
     if pause then stop
-
   end
 
   if example_off_umbra then begin
-
     ;
     ; Off Umbra quality flag
     ; ----------------------
@@ -580,14 +572,14 @@ pro psp_fld_quality_flag_examples, qf_type, $
     ; attitude. Closer than 0.70 au, the spacecraft is always in umbra
     ; orientation. In between these distances, the spacecraft attitude
     ; can vary.
-    ; 
+    ;
     ; The example plot below shows several days during the outbound
     ; section of Encounter 3, when the spacecraft crosses the 0.79 au
     ; threshold and transitioned to off umbra orientation.
-    ; 
-    ; The spacecraft often has the opportunity to transmit Ka band 
-    ; data to Earth at these solar distances--and during those Ka 
-    ; contacts the FIELDS instrument is turned off. Therefore data 
+    ;
+    ; The spacecraft often has the opportunity to transmit Ka band
+    ; data to Earth at these solar distances--and during those Ka
+    ; contacts the FIELDS instrument is turned off. Therefore data
     ; coverage is often intermittent at or near OFF_UMBRA periods.
     ;
 
@@ -602,7 +594,5 @@ pro psp_fld_quality_flag_examples, qf_type, $
     tplot, ['psp_fld_l2_mag_RTN_1min', 'psp_fld_l2_quality_flags']
 
     if pause then stop
-
   endif
-
 end

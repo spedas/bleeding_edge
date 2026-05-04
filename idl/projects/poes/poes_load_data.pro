@@ -35,9 +35,9 @@
 ;             ncei_server:   When set, use NOAA NCEI server instead of SPDF. Some older data is only available on the NOAA server.
 ;             /downloadonly: Download the file but don't read it  
 ; 
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2024-09-05 08:04:54 -0700 (Thu, 05 Sep 2024) $
-; $LastChangedRevision: 32807 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-04-29 16:37:21 -0700 (Wed, 29 Apr 2026) $
+; $LastChangedRevision: 34405 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_load_data.pro $
 ;-
  
@@ -293,13 +293,37 @@ pro poes_fix_metadata, tplotnames, prefix = prefix
 end
 
 pro poes_load_data, trange = trange, datatype = datatype, probes = probes, suffix = suffix, $
-                    downloadonly = downloadonly, verbose = verbose, noephem = noephem, ncei_server=ncei_server
+                    downloadonly = downloadonly, verbose = verbose, noephem = noephem, ncei_server=ncei_server, remote_source = remote_source
     compile_opt idl2
 
     poes_init
     if undefined(suffix) then suffix = ''
     if undefined(prefix) then prefix = ''
-    if undefined(ncei_server) then ncei_server=0 else ncei_server=1
+    if undefined(ncei_server) then begin
+      ncei_server=0 
+      if not keyword_set(remote_source) then begin
+        remote_source = 'spdf'
+        ncei_server=0 
+      endif 
+    endif else begin
+      ncei_server=1
+      remote_source = 'ncei_l2'
+    endelse
+    
+    case remote_source of
+      'spdf': begin 
+        ncei_server=0
+        ncei_server_l1b = 0
+        end
+      'ncei_l2': begin
+        ncei_server=1
+        ncei_server_l1b = 0
+        end
+      'ncei_l1b': begin
+        ncei_server = 0
+        ncei_server_l1b = 1
+        end 
+    endcase
     
     ; handle possible server errors
     catch, errstats
@@ -308,7 +332,7 @@ pro poes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
         catch, /cancel
         return
     endif
-
+    
     if not keyword_set(datatype) then datatype = '*'
     if not keyword_set(probes) then probes = ['noaa19'] 
     if not keyword_set(source) then source = !poes
@@ -326,7 +350,7 @@ pro poes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
     for probe_idx = 0, n_elements(probes)-1 do begin
         dprint, dlevel = 2, verbose=source.verbose, 'Loading ', strupcase(probes[probe_idx]), ' data'
 
-        pathformat[probe_idx] = '/noaa/'+probes[probe_idx]+'/sem2_fluxes-2sec/YYYY/'+probes[probe_idx]+'_poes-sem2_fluxes-2sec_YYYYMMDD_v01.cdf'
+        pathformat[probe_idx] = 'noaa/'+probes[probe_idx]+'/sem2_fluxes-2sec/YYYY/'+probes[probe_idx]+'_poes-sem2_fluxes-2sec_YYYYMMDD_v01.cdf'
         prefix_array[probe_idx] = prefix + probes[probe_idx]
         
         nmlen = strlen(probes[probe_idx])
@@ -334,6 +358,12 @@ pro poes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
           num = strmid(probes[probe_idx], nmlen-2, 2)
           pathformat[probe_idx] = "YYYY/" + probes[probe_idx] + "/poes_n" + num + "_YYYYMMDD.cdf"
         endif
+        if ncei_server_l1b eq 1 && nmlen gt 1 then begin
+          probe_num = STRMID((STRSPLIT(probes[probe_idx], '[^0-9]+', /REGEX, /EXTRACT))[-1], 1, /REVERSE_OFFSET)
+          probename = STRSPLIT(probes[probe_idx],probe_num,/EXTRACT)
+          pathformat[probe_idx] = "YYYY/"+ probename + string(probe_num,format='(I02)') + "/poes_" + strmid(probes[probe_idx],0,1) + string(probe_num,format='(I02)') + "_YYYYMMDD_proc.nc"
+        endif
+        
     endfor
     
     for j = 0, n_elements(datatype)-1 do begin
@@ -400,10 +430,12 @@ pro poes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
     
     for j = 0, n_elements(pathformat)-1 do begin
         relpathnames = file_dailynames(file_format=pathformat[j], trange=tr, /unique)
-
+        
         ;files = file_retrieve(relpathnames, _extra=source, /last_version)
         if ncei_server eq 1 then begin
           remote_server = 'https://www.ncei.noaa.gov/data/poes-metop-space-environment-monitor/access/l2/v01r00/cdf/'
+        endif else if ncei_server_l1b eq 1 then begin 
+          remote_server = 'https://www.ncei.noaa.gov/data/poes-metop-space-environment-monitor/access/l1b/v01r00/'
         endif else begin
           remote_server = source.remote_data_dir
         endelse
@@ -412,8 +444,18 @@ pro poes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
         
         if keyword_set(downloadonly) then continue
         ; warning: using /get_support_data with cdf2tplot will cause cdf2tplot to ignore the varformat keyword
-        poes_cdf2tplot, files, prefix = prefix_array[j]+'_', suffix = suffix, verbose = verbose, $
+        if ncei_server_l1b eq 1 then begin
+          ; need to load from netcdf (.nc) files
+          netCDFi = netcdf_load_vars(files,temporal_dim='time')
+          ; borrowing from GOESstruct_to_cdfstruct:
+          cdf_struct = poes_netcdfstruct_to_cdfstruct(netCDFi)
+          cdf_info_to_tplot, cdf_struct, verbose = verbose, prefix=prefix_array[j]+'_', suffix=suffix, tplotnames=tplotnames, /load_labels
+        endif else begin
+          poes_cdf2tplot, files, prefix = prefix_array[j]+'_', suffix = suffix, verbose = verbose, $
             tplotnames=tplotnames, varformat = varformat, /load_labels
+        endelse
+        
+        
         
         ; check for data types with data for multiple telescopes in a single tplot variable. 
         mep_telescopes = ['0', '90']
