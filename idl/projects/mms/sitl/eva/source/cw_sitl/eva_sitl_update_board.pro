@@ -3,8 +3,8 @@
 ; activate = 2; sensitive (initialize)
 ; 
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2023-08-21 20:46:44 -0700 (Mon, 21 Aug 2023) $
-; $LastChangedRevision: 32050 $
+; $LastChangedDate: 2026-05-06 14:22:55 -0700 (Wed, 06 May 2026) $
+; $LastChangedRevision: 34440 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl_update_board.pro $
 ;
 PRO eva_sitl_update_board, state, activate
@@ -258,8 +258,8 @@ PRO eva_sitl_update_board, state, activate
           mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
           header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
           vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
-          r = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, header=header, /quiet, vcase=vcase,$
-            valstruct=state.val)
+          r = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, header=header, /quiet, vcase=vcase);,$
+            ;valstruct=state.val)
           terr = r.error.COUNT
         endelse
         

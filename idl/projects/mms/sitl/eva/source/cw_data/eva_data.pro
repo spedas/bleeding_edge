@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2024-09-18 16:43:59 -0700 (Wed, 18 Sep 2024) $
-; $LastChangedRevision: 32846 $
+; $LastChangedDate: 2026-05-06 14:22:55 -0700 (Wed, 06 May 2026) $
+; $LastChangedRevision: 34440 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ; PRO eva_data_update_date, state, update=update
@@ -330,7 +330,8 @@ end
 ;-
 function eva_data_login, state, evTop
   compile_opt idl2
-
+  COMMON SESSION_DATA, gFomValidation
+  
   print, 'EVA: accessing MMS SDC...'
 
   ; ---------------------
@@ -350,6 +351,8 @@ function eva_data_login, state, evTop
   FAILED = 1
 
   if connected then begin
+    gFomValidation = mms_load_fom_validation()
+    
     ; ---------------------
     ; Update DATA MODULE
     ; ---------------------
@@ -409,7 +412,9 @@ function eva_data_login, state, evTop
       str_element, /add, sitl_state, 'user_flag', user_flag ; synchronize user_flag/userType
       str_element, /add, sitl_state, 'userType', state.userType ;
       ; widget_control, sitl_state.btnSplit, SENSITIVE= (user_flag ne 4); disable "split" if FPI-cal
-      val = mms_load_fom_validation() ; Add/update validation structure
+      
+      val = gFomValidation ; Add/update validation structure
+      
       if n_tags(val) eq 0 then begin
         message, 'Failed to load validation structure.'
       endif

@@ -64,10 +64,100 @@ tt04s,'circle_magpoles_5re_2024_km',pdyn=2.0,dsti=-30.0,yimf=0.0,zimf=-5.0,w1=8.
 tt04s,'circle_magpoles_5re_2019_km',pdyn=2.0,dsti=-30.0,yimf=0.0,zimf=-5.0,w1=8.0,w2=5.0,w3=9.5,w4=30.0,w5=18.5,w6=60.0,/exact_tilt_times,newname='tst5re_2019_bts04'
 tt04s,'circle_magpoles_5re_2014_km',pdyn=2.0,dsti=-30.0,yimf=0.0,zimf=-5.0,w1=8.0,w2=5.0,w3=9.5,w4=30.0,w5=18.5,w6=60.0,/exact_tilt_times,newname='tst5re_2014_bts04'
 
+; Repeat with actual solar wind parameters
+
+; Expand support timerange by 30 minutes each side
+
+timespan,'2007-03-22/23:30',25,/hours
+
+kyoto_load_dst
+omni_load_data
+noaa_load_kp
+
+; Use Geopack routines to calculate g1, g2  and w1-w6 parameters for T01 and TS04 models
+
+vsw_tvar = 'OMNI_HRO_1min_flow_speed'
+yimf_tvar = 'OMNI_HRO_1min_BY_GSM'
+zimf_tvar = 'OMNI_HRO_1min_BZ_GSM'
+dens_tvar = 'OMNI_HRO_1min_proton_density'
+
+get_data, 'OMNI_HRO_1min_flow_speed', data=vsw
+trange = minmax(vsw.x)
+n = fix(trange[1]-trange[0],type=3)/300 +1
+;the geopack parameter generating functions only work on 5 minute intervals
+
+;construct a time array
+ntimes=dindgen(n)*300+trange[0]
+
+; Interpolate input variables to 5-minute grid, ensuring no NaNs in output
+tinterpol_mxn,yimf_tvar,ntimes,/ignore_nans,out=yimf_tvar+'_interp'
+tinterpol_mxn,zimf_tvar,ntimes,/ignore_nans,out=zimf_tvar+'_interp'
+tinterpol_mxn,vsw_tvar,ntimes,/ignore_nans,out=vsw_tvar + '_interp'
+tinterpol_mxn,dens_tvar,ntimes,/ignore_nans,out=dens_tvar + '_interp'
+
+get_data, 'OMNI_HRO_1min_flow_speed_interp', data=vsw
+get_data, 'OMNI_HRO_1min_BY_GSM_interp', data=bygsm
+get_data, 'OMNI_HRO_1min_BZ_GSM_interp', data=bzgsm
+get_data, 'OMNI_HRO_1min_proton_density_interp', data=dens
+
+geopack_getg, vsw.y, bygsm.y, bzgsm.y, g
+
+g1=g[*,0]
+g2=g[*,1]
+
+store_data,'g1',data={x:vsw.x, y:g1}
+store_data,'g2',data={x:vsw.x, y:g2}
+
+tplot,'OMNI_HRO_1min_BY_GSM OMNI_HRO_1min_BZ_GSM OMNI_HRO_1min_flow_speed g1 g2'
+
+geopack_getw, dens.y, vsw.y, bzgsm.y, w
+
+w1 = w[*,0]
+w2 = w[*,1]
+w3 = w[*,2]
+w4 = w[*,3]
+w5 = w[*,4]
+w6 = w[*,5]
+store_data,'w1',data={x:vsw.x, y:w1}
+store_data,'w2',data={x:vsw.x, y:w2}
+store_data,'w3',data={x:vsw.x, y:w3}
+store_data,'w4',data={x:vsw.x, y:w4}
+store_data,'w5',data={x:vsw.x, y:w5}
+store_data,'w6',data={x:vsw.x, y:w6}
+tplot,'OMNI_HRO_1min_proton_density OMNI_HRO_1min_BZ_GSM OMNI_HRO_1min_flow_speed w1 w2 w3 w4 w5 w6'
+
+
+
+; iopt values to check
+; 
+iopt = kp2iopt('Kp',varname='tha_state_pos_gsm')
+get_data,'tha_state_pos_gsm',data=d
+store_data,'iopt_interp',data={x: d.x, y:iopt}
+
+; T89
+tt89,'tha_state_pos_gsm',kp='Kp',/exact_tilt_times,newname='bt89_actual',get_tilt='bt89_tilt'
+tt89,'tha_state_pos_gsm',kp='Kp',/exact_tilt_times,/igrf_only,newname='bt89_igrf_actual'
+
+
+; T96
+tt96,'tha_state_pos_gsm',pdyn='OMNI_HRO_1min_Pressure',dsti='kyoto_dst',yimf='OMNI_HRO_1min_BY_GSM',zimf='OMNI_HRO_1min_BZ_GSM',/exact_tilt_times,newname='bt96_actual'
+
+; T01
+tt01,'tha_state_pos_gsm',pdyn='OMNI_HRO_1min_Pressure',dsti='kyoto_dst',yimf='OMNI_HRO_1min_BY_GSM',zimf='OMNI_HRO_1min_BZ_GSM',g1='g1',g2='g2',/exact_tilt_times,newname='bt01_actual'
+;tt01,'tha_state_pos_gsm',pdyn=2.0,dsti=-30,yimf='OMNI_HRO_1min_BY_GSM',zimf='OMNI_HRO_1min_BZ_GSM',g1=6.0,g2=10.0,/exact_tilt_times,newname='bt01_actual'
+
+; TS04
+
+tt04s,'tha_state_pos_gsm',pdyn='OMNI_HRO_1min_Pressure',dsti='kyoto_dst',yimf='OMNI_HRO_1min_BY_GSM',zimf='OMNI_HRO_1min_BZ_GSM',w1='w1',w2='w2',w3='w3',w4='w4',w5='w5',w6='w6',/exact_tilt_times,newname='bts04_actual'
+
+
 ;timespan,'2024-01-01/06:31:00',10,/min
 ;tplot,['circle_magpoles_5re_km','tst5re_bt01','tst5re_bt96','tst5re_bts04']
 varlist=['tha_state_pos_gsm','bt89_tilt','bt89','bt89_igrf',$
-  'bt96','bt01','bts04',$
+  'bt96','bt01','bts04','kyoto_dst','OMNI_HRO_1min_BY_GSM',  $
+  'Kp', 'iopt_interp','OMNI_HRO_1min_Pressure', 'OMNI_HRO_1min_BZ_GSM', $
+  'bt89_actual', 'bt89_igrf_actual', 'bt96_actual', 'bt01_actual', 'bts04_actual', 'g1', 'g2', $
+  'w1','w2','w3','w4','w5','w6',$
   'circle_magpoles_5re_2026_km', 'circle_magpoles_5re_2026',$
   'circle_magpoles_5re_2024_km', 'circle_magpoles_5re_2024',$
   'circle_magpoles_5re_2019_km', 'circle_magpoles_5re_2019',$

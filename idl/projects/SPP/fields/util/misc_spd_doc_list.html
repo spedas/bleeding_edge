@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May  2 18:17:20 2026.<P>
+<STRONG>Last modified: </STRONG>Sat May  9 03:15:46 2026.<P>
  
 <HR>
  
@@ -105,28 +105,28 @@ CREATED BY: Ayris Narock (ADNET/GSFC) 2020
 NAME: PSP_FLD_QF_FILTER
 
 DESCRIPTION:
- Removed flagged values from PSP FIELDS magnetometer tplot variables based 
- on selected quality flags.  See usage notes and available flag definitions 
+ Removed flagged values from PSP FIELDS magnetometer tplot variables based
+ on selected quality flags.  See usage notes and available flag definitions
  by calling with the /HELP keyword.
 
- For each TVAR passed in a new tplot variable is created with the filtered 
- data.  The new name is of the form:  &lt;tvarname&gt;_XXXXXX 
+ For each TVAR passed in a new tplot variable is created with the filtered
+ data.  The new name is of the form:  &lt;tvarname&gt;_XXXXXX
  where each 'XXX' is a 0 padded flag indicator sorted from lowest to highest.
- 
+
  So, psp_fld_qf_filter,'mag_RTN_1min_x',[4,16] results in tvar named &quot;mag_RTN_1min_x_004016&quot;
  Or, psp_fld_qf_filter,'mag_RTN_1min',0 results in tvar named &quot;mag_RTN_1min_000&quot;
- 
+
  Valid for variables of type:
     '...psp_fld_l2_mag_...' (full res, 1 minute, or 4 Sa per cycle)
-    '...psp_fld_l2_rfs_...' (lfr and hfr) 
-  
+    '...psp_fld_l2_rfs_...' (lfr and hfr)
+
 INPUT:
  TVARS:    (string/strarr) Elements are data handle names
              OR (int/intarr) tplot variable reference numbers
  DQFLAG:   (int/intarr) Elements indicate which of the data quality flags
-             to filter on. From the set {0,1,2,4,8,16,32,64,128}   
+             to filter on. From the set {0,1,2,4,8,16,32,64,128}
              Note: if using 0 or -1, no other flags should be selected for filter
-             -1: Keep cases with no set flags or only the 128 flag set 
+             -1: Keep cases with no set flags or only the 128 flag set
              0: No set flags. (default)
              1: FIELDS antenna bias sweep
              2: PSP thruster firing
@@ -135,27 +135,27 @@ INPUT:
              16: FIELDS MAG calibration sequence
              32: SWEAP SPC in electron mode
              64: PSP Solar limb sensor (SLS) test
-             128: PSP spacecraft is off umbra pointing     
+             128: PSP spacecraft is off umbra pointing
 
 KEYWORDS:
- HELP:   If set, print a listing of the available data quality flags and 
+ HELP:   If set, print a listing of the available data quality flags and
          their meaning.
  VERBOSE:     Integer indicating the desired verbosity level. Default = 2
- 
+
 OUTPUTS:
- NAMES_OUT:  Named variable holding the tplot variable names created 
+ NAMES_OUT:  Named variable holding the tplot variable names created
              from this filter. Order corresponds to the input array of tvar
              names, so that tvar[i] filtered is in names_out[i]
 
 EXAMPLE:
    psp_fld_qf_filter,'psp_fld_l2_mag_RTN_1min',0
    psp_fld_qf_filter,'psp_fld_l2_mag_RTN_1min',[16,32]
-   
+
 CREATED BY: Ayris Narock (ADNET/GSFC) 2020
 
- $LastChangedBy: anarock $
- $LastChangedDate: 2021-01-29 11:52:15 -0800 (Fri, 29 Jan 2021) $
- $LastChangedRevision: 29636 $
+ $LastChangedBy: pulupalap $
+ $LastChangedDate: 2026-05-08 10:59:53 -0700 (Fri, 08 May 2026) $
+ $LastChangedRevision: 34446 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/misc/psp_fld_qf_filter.pro $
 </PRE><P>
 <STRONG>(See <A href="misc/psp_fld_qf_filter.pro">projects/SPP/fields/util/misc/psp_fld_qf_filter.pro</A>)</STRONG><P>

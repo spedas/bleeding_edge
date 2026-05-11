@@ -77,7 +77,8 @@ END
 
 FUNCTION eva_sitlsubmit_event, ev
   compile_opt idl2
-
+  COMMON SESSION_DATA, gFomValidation
+  
   catch, error_status
   if error_status ne 0 then begin
     catch, /cancel
@@ -92,8 +93,8 @@ FUNCTION eva_sitlsubmit_event, ev
   WIDGET_CONTROL, stash, GET_UVALUE=state, /NO_COPY
   exitcode=0
 
-  val = mms_load_fom_validation()
-  str_element,/add,state,'val',val
+  ;val = mms_load_fom_validation()
+  str_element,/add,state,'val',gFomValidation
   
   ;-----
   case ev.id of
@@ -122,9 +123,9 @@ FUNCTION eva_sitlsubmit_event, ev
   
           vsp = '////////////////////////////'
           header = [header, vsp+' VALIDATION RESTULT (NEW SEGMENTS) '+vsp]
-          r = eva_sitl_validate(tai_BAKStr_mod, -1, vcase=1, header=header, /quiet, valstruct=state.val); Validate New Segs
+          r = eva_sitl_validate(tai_BAKStr_mod, -1, vcase=1, header=header, /quiet);, valstruct=state.val); Validate New Segs
           header = [r.msg,' ', vsp+' VALIDATION RESULT (MODIFIED SEGMENTS) '+vsp]
-          r2 = eva_sitl_validate(tai_BAKStr_mod, tai_BAKStr_org, vcase=2, header=header, valstruct=state.val); Validate Modified Seg
+          r2 = eva_sitl_validate(tai_BAKStr_mod, tai_BAKStr_org, vcase=2, header=header);, valstruct=state.val); Validate Modified Seg
           
           
         endelse; if ct eq 0
@@ -135,7 +136,7 @@ FUNCTION eva_sitlsubmit_event, ev
         mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
         header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
         vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
-        r  = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, vcase=vcase, header=header, valstruct=state.val)
+        r  = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, vcase=vcase, header=header);, valstruct=state.val)
         if(lmod.UNIX_FOMSTR_MOD.UPLINKFLAG eq 1) then begin
           r2 = eva_sitluplink_validateFOM(lmod.UNIX_FOMSTR_MOD)
         endif

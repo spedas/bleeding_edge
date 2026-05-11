@@ -31,7 +31,7 @@ hdfnames=['ACEepoch','Bgse_x','Bgse_y','Bgse_z','dBrms','sigma_B',$
 if not keyword_set(source) then begin
    source = file_retrieve(/struct)
    source.local_data_dir = root_data_dir() + 'ace/'
-   source.remote_data_dir = 'http://www.srl.caltech.edu/ACE/ASC/DATA/'
+   source.remote_data_dir = 'http://ace.srl.caltech.edu/ASC/DATA/'
 endif
 
 tr = timerange( trange ) ;+ 3600d*[-6,6]

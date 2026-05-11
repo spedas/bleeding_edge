@@ -30,9 +30,9 @@
 ;           directories, if they are not there
 ;           cg, 2008-5-6, reset default default directory
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2024-11-13 13:45:30 -0800 (Wed, 13 Nov 2024) $
-; $LastChangedRevision: 32962 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-05-07 15:44:23 -0700 (Thu, 07 May 2026) $
+; $LastChangedRevision: 34445 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_config.pro $
 ;
 ;-
@@ -172,6 +172,7 @@ tplot_options,'no_interp',1       ; prevents interpolation in spectrograms (reco
 ;!warn.OBS_SYSVARS = 1
 ;!warn.PARENS = 1
 ;!warn.TRUNCATED_FILENAME = 1
+
 
 
 

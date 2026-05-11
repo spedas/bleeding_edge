@@ -3,8 +3,8 @@
 ; ESC_IESA_SWEEP_TABLE
 ;
 ; $LastChangedBy: rlivi04 $
-; $LastChangedDate: 2024-06-04 23:23:44 -0700 (Tue, 04 Jun 2024) $
-; $LastChangedRevision: 32687 $
+; $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $
+; $LastChangedRevision: 34425 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro $
 ;
 ;-
@@ -28,6 +28,11 @@ FUNCTION esc_iesa_sweep_table_crc16, data
          databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
       END
       3: BEGIN
+         a1 = byte(ishft(uint(data),-8))
+         a2 = byte(uint(data) OR '0xFF')
+         databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
+      END
+      12: BEGIN
          a1 = byte(ishft(uint(data),-8))
          a2 = byte(uint(data) OR '0xFF')
          databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
@@ -173,8 +178,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2024-06-04 23:23:44 -0700 (Tue, 04 Jun 2024) $'
-      printf, 1, '# Revision: $LastChangedRevision: 32687 $'
+      printf, 1, '# Date:     $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $'
+      printf, 1, '# Revision: $LastChangedRevision: 34425 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -202,10 +207,11 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A5, F20.10)', '# P5:', table.const.poly_val[5]
       printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
-      printf, 1, format='(A21, F7.2)',     '# K-Factor:           ', table.const.k
-      printf, 1, format='(A21, F7.2)',     '# High Voltage Gain:  ', table.const.hv_gain
-      printf, 1, format='(A21, F7.2)',     '# Deflector DAC Gain: ', table.const.def_gain
-      printf, 1, format='(A21, F7.2)',     '# Spoiler Gain:       ', table.const.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# K-Factor:              ', table.constants.k
+      printf, 1, format='(A19, F7.2)',      '# Hemisphere Gain:       ', table.constants.hem_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Gain:        ', table.constants.def_gain
+      printf, 1, format='(A19, F7.2)',      '# Spoiler Gain:          ', table.constants.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Multiplier:  ', table.constants.def_multi
       printf, 1, '# '
       printf, 1, '# ID_Msg_Bin  ', $
               'ENERGY [eV]', 'DEF1 [DEG]','DEF2 [DEG]','SPOILER', $
@@ -239,8 +245,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2024-06-04 23:23:44 -0700 (Tue, 04 Jun 2024) $'
-      printf, 1, '# Revision: $LastChangedRevision: 32687 $'
+      printf, 1, '# Date:     $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $'
+      printf, 1, '# Revision: $LastChangedRevision: 34425 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -268,10 +274,11 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A5, F20.10)', '# P5:', table.const.poly_val[5]
       printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
-      printf, 1, format='(A21, F7.2)',     '# K-Factor:           ', table.const.k
-      printf, 1, format='(A21, F7.2)',     '# High Voltage Gain:  ', table.const.hv_gain
-      printf, 1, format='(A21, F7.2)',     '# Deflector DAC Gain: ', table.const.def_gain
-      printf, 1, format='(A21, F7.2)',     '# Spoiler Gain:       ', table.const.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# K-Factor:              ', table.constants.k
+      printf, 1, format='(A19, F7.2)',      '# Hemisphere Gain:       ', table.constants.hem_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Gain:        ', table.constants.def_gain
+      printf, 1, format='(A19, F7.2)',      '# Spoiler Gain:          ', table.constants.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Multiplier:  ', table.constants.def_multi
       printf, 1, '# '
       printf, 1, '# ','HEM_DAC', 'DEF1_DAC','DEF2_DAC','SPOILER_DAC', format='(A2,A12,3A14)'
       printf, 1, '# '+strjoin(replicate('-',14*4-2))
@@ -291,14 +298,13 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       folder_dir = 'sci/'
       file_mkdir, main_dir + folder_dir      
       openw, 1, main_dir + folder_dir + table.title + '.txt'
-      ;;openw, 1,'~/Desktop/'+table.title+'.txt'
       printf, 1, '# ESCAPADE EESA Ion Sweep Table'
       printf, 1, '# '
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2024-06-04 23:23:44 -0700 (Tue, 04 Jun 2024) $'
-      printf, 1, '# Revision: $LastChangedRevision: 32687 $'
+      printf, 1, '# Date:     $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $'
+      printf, 1, '# Revision: $LastChangedRevision: 34425 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -326,16 +332,17 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A5, F20.10)', '# P5:', table.const.poly_val[5]
       printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
-      printf, 1, format='(A21, F7.2)',      '# K-Factor:           ', table.const.k
-      printf, 1, format='(A21, F7.2)',      '# High Voltage Gain:  ', table.const.hv_gain
-      printf, 1, format='(A21, F7.2)',      '# Deflector DAC Gain: ', table.const.def_gain
-      printf, 1, format='(A21, F7.2)',      '# Spoiler Gain:       ', table.const.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# K-Factor:              ', table.const.k
+      printf, 1, format='(A19, F7.2)',      '# Hemisphere Gain:       ', table.const.hem_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Gain:        ', table.const.def_gain
+      printf, 1, format='(A19, F7.2)',      '# Spoiler Gain:          ', table.const.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Multiplier:  ', table.const.def_multi
       printf, 1, '# '
       printf, 1, '# ','Science Bin', $
               'Energy Bin', 'ENERGY [eV]', 'dEnergy',$
-              'Def. Bin', 'DEF [DEG]', 'dTheta', 'SPOILER', $
+              'Def Bin', 'DEF [DEG]', 'dTheta', 'SPOILER', $
               format='(A2,A12,9A14)'
-      printf, 1, strjoin(replicate('-',14*8))
+      printf, 1, '# ' + strjoin(replicate('-',14*8))
       FOR i=0l, 511 DO BEGIN
          printf, 1, table.sci_bin[i], $
                  table.sci_hem_bin[i], table.sci_hem_energy[i], table.sci_hem_denergy[i],$
@@ -345,6 +352,7 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       ENDFOR
 
       close, 1      
+
    ENDIF
    
    
@@ -362,12 +370,15 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    ;; Analyzer Constant
    k = 7.8
 
-   ;; Deflector DAC Gain Relative to Hemisphere DAC
-   def_gain = 8.
+   ;; Deflector DAC Multiplier
+   def_multi = 8.
 
-   ;; High Voltage Multiplier (for both Hemisphere and Deflectors)
-   hv_gain = 1000
-
+   ;; Hemisphere Gain
+   hem_gain = 1000.
+   
+   ;; Deflector Gain
+   def_gain = 1000.
+   
    ;; Spoiler Gain
    spl_gain = 20.12
 
@@ -438,7 +449,6 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    ;; ESCAPADE iESA FM2 Calibration - 2023-09-13/21:00:00
    IF poly EQ 'ESC_iESA_FM2' THEN $
     poly_val = [ -289.7713928223, -1304.4713134766, 1.4805048704, 0.1967162639, -0.0008549984, -0.0000669929]
-
    
    ;; ESCAPADE iESA FM2 Calibration
    ;;IF poly EQ 'ESC_FM2_B' THEN $
@@ -466,7 +476,8 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    hem_energy = hem_volts * k
 
    ;; Double DAC Hemisphere Values (Same value for both DACs, hence sqrt())
-   hem_dacs = round(sqrt(long64('ffff'x)^2 * hem_volts / (4 * hv_gain)))
+   ;;hem_dacs = round(sqrt(long64('ffff'x)^2 * hem_volts / (4 * hv_gain)))
+   hem_dacs = round(sqrt(long64('ffff'x)^2 * hem_volts / (4 * hem_gain)))   
    
    ;; ### Hemisphere Science Product Values ###
    sci_hem_bin = reverse(indgen(nenr))
@@ -501,8 +512,10 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    def2_dacs = ABS(def_dacs < 0)
    
    ;;### Adjust For Maximum Deflector Voltage ###
-   def1_volts_tmp = hem_volts * def_gain * (1.*def1_dacs / 'ffff'x)
-   def2_volts_tmp = hem_volts * def_gain * (1.*def2_dacs / 'ffff'x)
+   ;;def1_volts_tmp = hem_volts * def_gain * (1.*def1_dacs / 'ffff'x)
+   ;;def2_volts_tmp = hem_volts * def_gain * (1.*def2_dacs / 'ffff'x)
+   def1_volts_tmp = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def1_dacs / 'ffff'x)
+   def2_volts_tmp = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def2_dacs / 'ffff'x)
 
    def1_max = max(reform(def1_dacs,nang,tot_bins/nang),dim=1)
    def2_max = max(reform(def2_dacs,nang,tot_bins/nang),dim=1)
@@ -528,9 +541,11 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    def2_angs[where(def2_dacs EQ 0)] =  0
    
    ;; Deflector Voltages
-   def1_volts = (1.*def1_dacs/'ffff'x) * def_gain * hem_volts
-   def2_volts = (1.*def2_dacs/'ffff'x) * def_gain * hem_volts
-
+   ;;def1_volts = (1.*def1_dacs/'ffff'x) * def_gain * hem_volts
+   ;;def2_volts = (1.*def2_dacs/'ffff'x) * def_gain * hem_volts
+   def1_volts = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def1_dacs / 'ffff'x)
+   def2_volts = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def2_dacs / 'ffff'x)
+   
    ;; ### Deflector Science Product Values ###
    sci_def_bin = [reverse(indgen(nang/2)),indgen(nang/2)]
    sci_def_bin = reform(rebin(sci_def_bin,nang,tot_bins/mbins/nang),tot_bins/mbins)
@@ -587,7 +602,8 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
                   nang:nang,$
                   emin:emin,$
                   emax:emax,$
-                  hv_gain:hv_gain,$
+                  def_multi:def_multi,$                  
+                  hem_gain:hem_gain,$
                   def_gain:def_gain,$
                   spl_gain:spl_gain,$          
                   spl_max_en:spl_max_en,$
@@ -637,7 +653,7 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
            }
 
    ;; Write Table to CSV
-   write_csv = 1
+   write_csv = 0
    IF keyword_set(write_csv) THEN tmp = esc_iesa_sweep_table_write(table)
 
    ;; Plot table contents
@@ -656,13 +672,13 @@ END
 
 PRO esc_iesa_sweep_table, tables
 
-
-
+   ;; Compile Options
+   COMPILE_OPT IDL2 , LOGICAL_PREDICATE
 
    esc_iesa_crs = 1
    esc_iesa_fm1 = 1
    esc_iesa_fm2 = 1
-   esc_iesa_cal = 0
+   esc_iesa_cal = 1
 
 
 
@@ -680,7 +696,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_cruise'
       note = 'Cruise - Solar Wind Sweep - Log - FM1'      
-      esc_iesa_sweep_table_generate, ts0_fm1_cruise, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts0, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Cruise Table (2kV limit on RAW) - No Spoiler
       emin = 100.
@@ -689,7 +705,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_cruise_ns'
       note = 'Cruise - Solar Wind Sweep - Log - FM1 - No Spoiler'      
-      esc_iesa_sweep_table_generate, ts0_fm1_cruise, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts0_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
       
       ;; iESA - FM2 - Blue - Cruise Table (2kV limit on RAW)
       emin = 100.
@@ -698,7 +714,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_cruise'
       note = 'Cruise - Solar Wind Sweep - Log - FM2'
-      esc_iesa_sweep_table_generate, ts0_fm2_cruise, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts0, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Blue - Cruise Table (2kV limit on RAW) - No Spoiler
       emin = 100.
@@ -707,7 +723,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_cruise_ns'
       note = 'Cruise - Solar Wind Sweep - Log - FM2 - No Spoiler'
-      esc_iesa_sweep_table_generate, ts0_fm2_cruise, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts0_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
       
    ENDIF
 
@@ -726,7 +742,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_1'
       note = 'Science Sweep 1 - Above 1000km - Regular Apoapsis - Log - dE/E 16.7'
-      esc_iesa_sweep_table_generate, ts1, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts1, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 2      
       emin = 200.
@@ -735,7 +751,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'      
       title = 'esc_iesa_fm1_sweep_sci_2'
       note = 'Science Sweep 2 - Above 1000km - Solar Wind - Log'
-      esc_iesa_sweep_table_generate, ts2, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts2, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 3            
       emin = 0.5
@@ -744,7 +760,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_3'      
       note = 'Science Sweep 3 - Below 1000km - Regular - Log'
-      esc_iesa_sweep_table_generate, ts3, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts3, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 4            
       emin = 0.5
@@ -753,7 +769,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_4'      
       note = 'Science Sweep 4 - Below 1000km - Cold Ion Outflow - Log'
-      esc_iesa_sweep_table_generate, ts4, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts4, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 5            
       emin = 1
@@ -762,7 +778,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_5'      
       note = 'Science Sweep 5 - Below 1000km - Wind Mode - Log'
-      esc_iesa_sweep_table_generate, ts5, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts5, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 6      
       emin = 0.5
@@ -771,10 +787,13 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'      
       title = 'esc_iesa_fm1_sweep_sci_6'
       note = 'Science Sweep 6 - Below 1000km - Backup - Log'
-      esc_iesa_sweep_table_generate, ts6, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts6, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
 
-      
+
+      ;; SKIPPING NO SPOILER
+      IF 0 THEN BEGIN
+         
       ;; --- Flight Tables without Spoiler ---
 
 
@@ -786,7 +805,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_1_ns'
       note = 'Science Sweep 1 - Above 1000km - Regular Apoapsis - Log - dE/E 16.7 - No Spoiler'
-      esc_iesa_sweep_table_generate, ts1_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts1_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 2 - Np Spoiler
       emin = 200.
@@ -795,7 +814,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'      
       title = 'esc_iesa_fm1_sweep_sci_2_ns'
       note = 'Science Sweep 2 - Above 1000km - Solar Wind - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts2_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts2_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 3 - Np Spoiler
       emin = 0.5
@@ -804,7 +823,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_3_ns'      
       note = 'Science Sweep 3 - Below 1000km - Regular - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts3_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts3_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 4 - Np Spoiler
       emin = 0.5
@@ -813,7 +832,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_4_ns'      
       note = 'Science Sweep 4 - Below 1000km - Cold Ion Outflow - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts4_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts4_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 5 - Np Spoiler
       emin = 1
@@ -822,7 +841,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'
       title = 'esc_iesa_fm1_sweep_sci_5_ns'      
       note = 'Science Sweep 5 - Below 1000km - Wind Mode - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts5_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts5_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM1 - Blue - Science Sweep Table 6 - Np Spoiler
       emin = 0.5
@@ -831,12 +850,10 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM1'      
       title = 'esc_iesa_fm1_sweep_sci_6_ns'
       note = 'Science Sweep 6 - Below 1000km - Backup - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts6_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm1_ts6_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
-      iesa_fm1_tables = { ts1:ts1, ts1_ns:ts1_ns, ts2:ts2, ts2_ns:ts2_ns, $
-                          ts3:ts3, ts3_ns:ts3_ns, ts4:ts4, ts4_ns:ts4_ns, $
-                          ts5:ts5, ts5_ns:ts5_ns}
-      
+      ENDIF
+
    ENDIF
 
 
@@ -850,7 +867,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_1'
       note = 'Science Sweep 1 - Above 1000km - Regular Apoapsis - Log - dE/E 16.7'
-      esc_iesa_sweep_table_generate, ts1, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts1, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 2      
       emin = 200.
@@ -859,7 +876,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'      
       title = 'esc_iesa_fm2_sweep_sci_2'
       note = 'Science Sweep 2 - Above 1000km - Solar Wind - Log'
-      esc_iesa_sweep_table_generate, ts2, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts2, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 3            
       emin = 0.5
@@ -868,7 +885,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_3'      
       note = 'Science Sweep 3 - Below 1000km - Regular - Log'
-      esc_iesa_sweep_table_generate, ts3, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts3, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 4            
       emin = 0.5
@@ -877,7 +894,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_4'      
       note = 'Science Sweep 4 - Below 1000km - Cold Ion Outflow - Log'
-      esc_iesa_sweep_table_generate, ts4, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts4, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 5            
       emin = 1
@@ -886,7 +903,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_5'      
       note = 'Science Sweep 5 - Below 1000km - Wind Mode - Log'
-      esc_iesa_sweep_table_generate, ts5, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts5, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 6      
       emin = 0.5
@@ -895,10 +912,12 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'      
       title = 'esc_iesa_fm2_sweep_sci_6'
       note = 'Science Sweep 6 - Below 1000km - Backup - Log'
-      esc_iesa_sweep_table_generate, ts6, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts6, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
 
-      
+      ;; SKIPPING NO SPOILER
+      IF 0 THEN BEGIN
+         
       ;; --- Flight Tables without Spoiler ---
 
 
@@ -910,7 +929,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_1_ns'
       note = 'Science Sweep 1 - Above 1000km - Regular Apoapsis - Log - dE/E 16.7 - No Spoiler'
-      esc_iesa_sweep_table_generate, ts1_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts1_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 2 - Np Spoiler
       emin = 200.
@@ -919,7 +938,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'      
       title = 'esc_iesa_fm2_sweep_sci_2_ns'
       note = 'Science Sweep 2 - Above 1000km - Solar Wind - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts2_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts2_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 3 - Np Spoiler
       emin = 0.5
@@ -928,7 +947,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_3_ns'      
       note = 'Science Sweep 3 - Below 1000km - Regular - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts3_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts3_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 4 - Np Spoiler
       emin = 0.5
@@ -937,7 +956,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_4_ns'      
       note = 'Science Sweep 4 - Below 1000km - Cold Ion Outflow - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts4_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts4_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 5 - Np Spoiler
       emin = 1
@@ -946,7 +965,7 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'
       title = 'esc_iesa_fm2_sweep_sci_5_ns'      
       note = 'Science Sweep 5 - Below 1000km - Wind Mode - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts5_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts5_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
       ;; iESA - FM2 - Gold - Science Sweep Table 6 - Np Spoiler
       emin = 0.5
@@ -955,35 +974,15 @@ PRO esc_iesa_sweep_table, tables
       poly = 'ESC_iESA_FM2'      
       title = 'esc_iesa_fm2_sweep_sci_6_ns'
       note = 'Science Sweep 6 - Below 1000km - Backup - Log - No Spoiler'
-      esc_iesa_sweep_table_generate, ts6_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
+      esc_iesa_sweep_table_generate, fm2_ts6_ns, emin=emin,emax=emax,title=title,note=note,spl_ratio=spl_ratio, poly=poly
 
-      iesa_fm2_tables = { ts1:ts1, ts1_ns:ts1_ns, ts2:ts2, ts2_ns:ts2_ns, $
-                          ts3:ts3, ts3_ns:ts3_ns, ts4:ts4, ts4_ns:ts4_ns, $
-                          ts5:ts5, ts5_ns:ts5_ns}
+      ENDIF
       
    ENDIF
 
 
 
    
-
-
-
-
-
-
-
-
-
-
-
-
-   
-
-
-
-   
-
    IF esc_iesa_cal THEN BEGIN 
 
       ;; --- CALIBRATION TABLES ---
@@ -1151,4 +1150,37 @@ PRO esc_iesa_sweep_table, tables
    ENDIF
    
 
+   
+
+
+
+
+   tables = { $
+
+            fm1_ts0:fm1_ts0, $
+            fm1_ts1:fm1_ts1, $
+            fm1_ts2:fm1_ts2, $
+            fm1_ts3:fm1_ts3, $
+            fm1_ts4:fm1_ts4, $
+            fm1_ts5:fm1_ts5, $
+            fm1_ts6:fm1_ts6, $
+
+            fm2_ts0:fm2_ts0, $
+            fm2_ts1:fm2_ts1, $
+            fm2_ts2:fm2_ts2, $
+            fm2_ts3:fm2_ts3, $
+            fm2_ts4:fm2_ts4, $
+            fm2_ts5:fm2_ts5, $
+            fm2_ts6:fm2_ts6, $
+
+            tc1:tc1, tc2:tc2,   tc3:tc3,   tc4:tc4,   tc5:tc5,   tc6:tc6,   tc7:tc7,   tc8:tc8,  $
+            tc9:tc9, tc10:tc10, tc11:tc11, tc12:tc12, tc13:tc13, tc14:tc14, tc15:tc15, tc16:tc16 $ 
+
+            }
+
+
+   
+
+
+   
 END

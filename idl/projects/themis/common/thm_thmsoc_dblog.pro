@@ -35,8 +35,8 @@
 ;HISTORY:
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2025-08-27 12:28:20 -0700 (Wed, 27 Aug 2025) $
-;$LastChangedRevision: 33582 $
+;$LastChangedDate: 2026-05-06 15:51:12 -0700 (Wed, 06 May 2026) $
+;$LastChangedRevision: 34442 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_thmsoc_dblog.pro $
 ;-----------------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May  2 18:17:20 2026.<P>
+<STRONG>Last modified: </STRONG>Sat May  9 03:15:46 2026.<P>
  
 <HR>
  
@@ -20,6 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/escapade/esa/common</H1>
 <LI><A HREF="#ESC_APDAT_INIT">ESC_APDAT_INIT</A>
+<LI><A HREF="#ESC_ESA_HK_LOAD">ESC_ESA_HK_LOAD</A>
 <LI><A HREF="#ESC_GEN_APDAT__DEFINE">ESC_GEN_APDAT__DEFINE</A>
 <LI><A HREF="#ESC_GEN_RAWDAT__DEFINE">ESC_GEN_RAWDAT__DEFINE</A>
 <LI><A HREF="#ESC_RAW_FILE_READ">ESC_RAW_FILE_READ</A>
@@ -36,7 +37,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="ESC_APDAT_INIT">
 <H2>ESC_APDAT_INIT</H2></A>
-<A HREF="#ESC_GEN_APDAT__DEFINE">[Next Routine]</A>
+<A HREF="#ESC_ESA_HK_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -51,9 +52,66 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="common/esc_apdat_init.pro">projects/escapade/esa/common/esc_apdat_init.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ESC_ESA_HK_LOAD">
+<H2>ESC_ESA_HK_LOAD</H2></A>
+<A HREF="#ESC_APDAT_INIT">[Previous Routine]</A>
+<A HREF="#ESC_GEN_APDAT__DEFINE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       ESC_ESA_HK_LOAD
+
+PURPOSE:         Loads the ESCAPADE EESA Housekeeping CDF file(s).
+
+INPUTS:          Time range to be loaded.
+
+KEYWORDS:
+
+   PRODUCT:      Specifies the science products abbreviation(s) to be loaded. 
+
+      DATA:      If set, returns the output data as a structure.
+
+     IPATH:      Explicitly specifies the input path for loading the CDF file(s) (e.g., for testing purposes).
+
+     LEVEL:      Specifies the data level. Default is L1.
+
+ NO_SERVER:      If set, prevents any contact with a remote server.
+
+      BLUE:      If set, loads only BLUE spacecraft data.
+
+      GOLD:      If set, loads only GOLD spacecraft data.
+
+     FILES:      If set, returns the file name(s) to be loaded.
+
+    SOURCE:      Specifies the file source information. Default is esc_file_source().
+
+ PRELAUNCH:      If set explicitly, the data will be loaded from the prelaunch directory.
+
+COMMISSION:      If set explicitly, the data will be loaded from the commissioning directory.
+
+   SCIENCE:      If set explicitly, the data will be loaded from the science directory.
+
+     CLEAR:      If set, clears the EESA housekeeping common blocks.
+
+     TPLOT:      If set, creates tplot variables.
+
+  VARNAMES:      If set, specifies the variable name(s) to be created tplot variable(s).
+
+CREATED BY:      Takuya Hara on 2026-05-06.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-05-07 13:34:55 -0700 (Thu, 07 May 2026) $
+ $LastChangedRevision: 34444 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/common/esc_esa_hk_load.pro $
+
+</PRE><P>
+<STRONG>(See <A href="common/esc_esa_hk_load.pro">projects/escapade/esa/common/esc_esa_hk_load.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ESC_GEN_APDAT__DEFINE">
 <H2>ESC_GEN_APDAT__DEFINE</H2></A>
-<A HREF="#ESC_APDAT_INIT">[Previous Routine]</A>
+<A HREF="#ESC_ESA_HK_LOAD">[Previous Routine]</A>
 <A HREF="#ESC_GEN_RAWDAT__DEFINE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

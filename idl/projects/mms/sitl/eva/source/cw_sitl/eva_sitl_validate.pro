@@ -19,9 +19,10 @@ FUNCTION eva_sitl_validate_msg, title, flags, msg, times, indices
 END
 
 FUNCTION eva_sitl_validate, tai_FOMstr_mod, tai_FOMstr_org, header=header, $
-  quiet=quiet, vcase=vcase, valstruct=valstruct
+  quiet=quiet, vcase=vcase;, valstruct=valstruct
   compile_opt idl2
-
+  COMMON SESSION_DATA, gFomValidation
+  
   if n_elements(vcase) eq 0 then vcase = 0
   
   ;---------------------
@@ -35,7 +36,7 @@ FUNCTION eva_sitl_validate, tai_FOMstr_mod, tai_FOMstr_org, header=header, $
         error_msg,    orange_warning_msg,    yellow_warning_msg,  $; Error Messages
         error_times,  orange_warning_times,  yellow_warning_times,$; Erroneous Segments (ptr_arr)
         error_indices,orange_warning_indices,yellow_warning_indices, $; Error Indices (ptr_arr)
-        valstruct=valstruct
+        valstruct=gFomValidation
       end
     1: begin
       mms_back_structure_check_new_segments, tai_FOMStr_mod, new_seg, $
@@ -43,7 +44,7 @@ FUNCTION eva_sitl_validate, tai_FOMstr_mod, tai_FOMstr_org, header=header, $
         error_msg,   orange_warning_msg,   yellow_warning_msg, $
         error_times, orange_warning_times, yellow_warning_times, $
         error_indices, orange_warning_indices, yellow_warning_indices, $
-        valstruct=valstruct
+        valstruct=gFomValidation
       end
     2: begin
       mms_back_structure_check_modifications, tai_FOMStr_mod, tai_FOMStr_org, $
@@ -51,63 +52,10 @@ FUNCTION eva_sitl_validate, tai_FOMstr_mod, tai_FOMstr_org, header=header, $
         error_msg,    yellow_warning_msg,   orange_warning_msg, $
         error_times,  yellow_warning_times, orange_warning_times, $
         error_indices,yellow_warning_indices,orange_warning_indices, $
-        valstruct=valstruct
+        valstruct=gFomValidation
       end
     3: begin
       result=dialog_message('Something is wrong. Please contact Super-SITL',/center)
-;      s = tai_FOMstr_mod
-;      idx = where(strmatch(tag_names(s),'FPICAL'),ct)
-;      if(ct eq 1)then begin; Make sure the FPICAL tag exists
-;        nmax = n_elements(s.FOM)
-;        ;if nmax ne 1 then message,'Something is wrong'
-;        sourceid = eva_sourceid()
-;        tai_start = s.TIMESTAMPS[s.START[0]]
-;        tai_stop = s.TIMESTAMPS[s.STOP[0]]
-;        if (tai_start eq s.CYCLESTART) and (s.FOM[0] eq 0.) then begin
-;          msg = 'Please define a segment.'
-;          ct_error=1
-;          if ~keyword_set(quiet) then res=dialog_message(msg,/center)
-;          error = {message:msg, count:ct_error}
-;          return, {error:error}
-;        endif
-;        if nmax ge 2 then begin
-;          msg = 'Please define only 1 segment.'
-;          ct_error=1
-;          if ~keyword_set(quiet) then res=dialog_message(msg,/center)
-;          error = {message:msg, count:ct_error}
-;          return, {error:error}
-;        endif
-;        mms_check_fpi_calibration_segment, tai_start,tai_stop, s.FOM[0], sourceid, $
-;          error_flags, error_msg, $
-;          yellow_warning_flags, yellow_warning_msg, $
-;          orange_warning_flags, orange_warning_msg, $
-;          valstruct=valstruct
-;        
-;        ct = n_elements(error_flags);.......... dummy times/indices
-;        error_times = ptrarr(ct, /allocate_heap)
-;        error_indices = ptrarr(ct, /allocate_heap)
-;        convert_time_stamp, s.cyclestart, replicate(s.START[0],ct), temp_times
-;        for c=0,ct-1 do begin
-;          (*error_times[c]) = temp_times[c]
-;          (*error_indices[c]) = 1L;replicate(1L,ct)
-;        endfor
-;        ct = n_elements(yellow_warning_flags);.......... dummy times/indices
-;        yellow_warning_times = ptrarr(ct, /allocate_heap)
-;        yellow_warning_indices = ptrarr(ct, /allocate_heap)
-;        convert_time_stamp, s.cyclestart, replicate(s.START[0],ct), temp_times
-;        for c=0,ct-1 do begin
-;          (*yellow_warning_times[c]) = temp_times[c]
-;          (*yellow_warning_indices[c]) = 1L;replicate(1L,ct)
-;        endfor
-;        ct = n_elements(orange_warning_flags);.......... dummy times/indices
-;        orange_warning_times = ptrarr(ct, /allocate_heap)
-;        orange_warning_indices = ptrarr(ct, /allocate_heap)
-;        convert_time_stamp, s.cyclestart, replicate(s.START[0],ct), temp_times
-;        for c=0,ct-1 do begin
-;          (*orange_warning_times[c]) = temp_times[c]
-;          (*orange_warning_indices[c]) = 1L;replicate(1L,ct)
-;        endfor
-;      endif else message,'Something is wrong!'; ct eq 1
       end
     else: message,'Something is wrong!!'
   endcase

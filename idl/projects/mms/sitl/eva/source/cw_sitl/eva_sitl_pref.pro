@@ -23,6 +23,7 @@ END
 FUNCTION eva_sitl_pref_event, ev
   compile_opt idl2
   @eva_sitl_com
+  COMMON SESSION_DATA, gFomValidation
   
   catch, error_status
   if error_status ne 0 then begin
@@ -74,14 +75,12 @@ FUNCTION eva_sitl_pref_event, ev
       end
     state.btnSplitNominal: begin
       r = get_mms_sitl_connection(group_leader=ev.TOP)
-      val = mms_load_fom_validation()
-      pref.EVA_SPLIT_SIZE = val.NOMINAL_SEG_RANGE[1]
+      pref.EVA_SPLIT_SIZE = gFomValidation.NOMINAL_SEG_RANGE[1]
       widget_control, state.fldSplit, SET_VALUE=strtrim(string(pref.EVA_SPLIT_SIZE),2)
       end
     state.btnSplitMaximum: begin
       r = get_mms_sitl_connection(group_leader=ev.TOP)
-      val = mms_load_fom_validation()
-      pref.EVA_SPLIT_SIZE = val.SEG_BOUNDS[1]
+      pref.EVA_SPLIT_SIZE = gFomValidation.SEG_BOUNDS[1]
       widget_control, state.fldSplit, SET_VALUE=strtrim(string(pref.EVA_SPLIT_SIZE),2)
       end
     state.fldSplit: begin

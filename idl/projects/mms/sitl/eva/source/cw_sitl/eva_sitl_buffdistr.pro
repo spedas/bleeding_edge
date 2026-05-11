@@ -3,7 +3,7 @@
 
 FUNCTION eva_sitl_buffdistr, console=console, msg=msg, observatoryID=observatoryID
   compile_opt idl2
-  
+  COMMON SESSION_DATA, gFomValidation
 
   ;------------------
   ; LOAD FOM
@@ -29,8 +29,15 @@ FUNCTION eva_sitl_buffdistr, console=console, msg=msg, observatoryID=observatory
   wNbuffs = lonarr(pmax)
   wTmin = dblarr(pmax)
   wstrTlast = strarr(pmax)
-  val = mms_load_fom_validation()
 
+
+  ;##### Temporary Fix 2026.05.05 #####
+  ;val = mms_load_fom_validation()
+  val = gFomValidation
+;  val = {TYPE1_RANGE:[150L, 199L],TYPE2_RANGE:[100L, 149L], TYPE3_RANGE:[50L,99L], TYPE4_RANGE:[0L,49L]}
+  ;####################################
+  
+    
   fomrng = fltarr(pmax,2)
   fomrng[0,0] = float(val.TYPE1_RANGE[1]+1L) & fomrng[0,1] = 256L
   fomrng[1,0] = float(val.TYPE1_RANGE[0])    & fomrng[1,1] = float(val.TYPE1_RANGE[1]+1L)

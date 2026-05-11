@@ -26,7 +26,10 @@ mms_part_getspec, instrument='hpca', data_rate='brst', output=['energy', 'phi', 
 mms_part_getspec, /subtract_bulk, instrument='hpca', data_rate='brst', output=['energy', 'phi', 'theta', 'moments'], trange=trange, species='hplus',probe=1, /center, units='eflux',suffix='_bulk_subtract'
 mms_part_getspec, instrument='hpca', data_rate='brst', output=['pa', 'gyro', 'fac_moments'], /no_regrid, trange=trange, species='hplus',probe=1, /center, units='eflux',suffix='_no_bulk_subtract'
 mms_part_getspec, /subtract_bulk, instrument='hpca', data_rate='brst', output=['pa','gyro', 'fac_moments'], /no_regrid,trange=trange, species='hplus',probe=1, /center, units='eflux',suffix='_bulk_subtract'
-tplot_names,'*hpca*'
+; HPCA heplusplus energy spectra and moments (to test q=2)
+mms_part_getspec, instrument='hpca', data_rate='brst', output=['energy', 'moments'], trange=trange, species='heplusplus',probe=1, /center, units='eflux',suffix='_no_bulk_subtract'
+
+; tplot_names,'*hpca*'
 testvars=[$
   ; FPI Spectra
   'mms1_dis_dist_brst_energy_no_bulk_subtract','mms1_dis_dist_brst_energy_bulk_subtract',$
@@ -36,15 +39,11 @@ testvars=[$
   'mms1_dis_dist_brst_pa_no_bulk_subtract','mms1_dis_dist_brst_pa_bulk_subtract',$
   'mms1_dis_dist_brst_gyro_no_bulk_subtract','mms1_dis_dist_brst_gyro_bulk_subtract',$
   
-  ; HPCA Spectra
-  'mms1_hpca_hplus_phase_space_density_energy_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_energy_bulk_subtract',$
-  'mms1_hpca_hplus_phase_space_density_phi_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_phi_bulk_subtract',$
-  'mms1_hpca_hplus_phase_space_density_theta_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_theta_bulk_subtract',$
-  'mms1_hpca_hplus_phase_space_density_energy_mag_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_energy_mag_bulk_subtract',$
-  'mms1_hpca_hplus_phase_space_density_pa_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_pa_bulk_subtract',$
-  'mms1_hpca_hplus_phase_space_density_gyro_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_gyro_bulk_subtract',$
 
-  ; FPI Moments  
+  ; HPCA heplusplus eflux
+  'mms1_hpca_heplusplus_phase_space_density_energy_no_bulk_subtract',$
+ 
+   ; FPI Moments  
   'mms1_dis_dist_brst_avgtemp_no_bulk_subtract','mms1_dis_dist_brst_avgtemp_bulk_subtract',$
   'mms1_dis_dist_brst_density_no_bulk_subtract','mms1_dis_dist_brst_density_bulk_subtract',$
   'mms1_dis_dist_brst_eflux_no_bulk_subtract','mms1_dis_dist_brst_eflux_bulk_subtract',$
@@ -106,6 +105,14 @@ testvars=[$
   ;'mms1_dis_dist_brst_symm_theta_mag_no_bulk_subtract','mms1_dis_dist_brst_symm_theta_mag_bulk_subtract',$
   ;'mms1_dis_dist_brst_symm_phi_mag_no_bulk_subtract','mms1_dis_dist_brst_symm_phi_mag_bulk_subtract',$
   ;'mms1_dis_dist_brst_symm_ang_mag_no_bulk_subtract','mms1_dis_dist_brst_symm_ang_mag_bulk_subtract'
+
+  ; HPCA Spectra
+  'mms1_hpca_hplus_phase_space_density_energy_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_energy_bulk_subtract',$
+  'mms1_hpca_hplus_phase_space_density_phi_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_phi_bulk_subtract',$
+  'mms1_hpca_hplus_phase_space_density_theta_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_theta_bulk_subtract',$
+  'mms1_hpca_hplus_phase_space_density_energy_mag_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_energy_mag_bulk_subtract',$
+  'mms1_hpca_hplus_phase_space_density_pa_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_pa_bulk_subtract',$
+  'mms1_hpca_hplus_phase_space_density_gyro_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_gyro_bulk_subtract',$
   
   ; HPCA Moments
   'mms1_hpca_hplus_phase_space_density_avgtemp_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_avgtemp_bulk_subtract',$
@@ -126,6 +133,26 @@ testvars=[$
   'mms1_hpca_hplus_phase_space_density_symm_theta_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_symm_theta_bulk_subtract',$
   'mms1_hpca_hplus_phase_space_density_symm_phi_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_symm_phi_bulk_subtract',$
   'mms1_hpca_hplus_phase_space_density_symm_ang_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_symm_ang_bulk_subtract',$
+  
+  ; HPCA heplusplus moments
+  'mms1_hpca_heplusplus_phase_space_density_avgtemp_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_density_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_eflux_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_qflux_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_flux_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_mftens_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_ptens_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_sc_current_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_velocity_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_vthermal_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_magf_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_magt3_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_t3_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_symm_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_symm_theta_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_symm_phi_no_bulk_subtract',$
+  'mms1_hpca_heplusplus_phase_space_density_symm_ang_no_bulk_subtract',$
+
 
   ; HPCA Field-aligned moments
   'mms1_hpca_hplus_phase_space_density_avgtemp_mag_no_bulk_subtract','mms1_hpca_hplus_phase_space_density_avgtemp_mag_bulk_subtract',$

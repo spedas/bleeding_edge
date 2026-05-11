@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2024-07-13 23:42:39 -0700 (Sat, 13 Jul 2024) $
-; $LastChangedRevision: 32743 $
+; $LastChangedDate: 2026-05-06 14:22:55 -0700 (Wed, 06 May 2026) $
+; $LastChangedRevision: 34440 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_sitl/eva_sitl.pro $
 pro eva_sitl_cleanup, parent = parent
   compile_opt idl2
@@ -261,6 +261,8 @@ end
 ; to eva_sitl_FOMedit for editing
 pro eva_sitl_seg_edit, t, state = state, var = var, delete = delete, split = split
   compile_opt idl2
+  COMMON SESSION_DATA, gFomValidation
+  
   catch, error_status
   if error_status ne 0 then begin
     eva_error_message, error_status
@@ -335,7 +337,7 @@ pro eva_sitl_seg_edit, t, state = state, var = var, delete = delete, split = spl
         gTmax = segSelect.te
         ; gTdel = double((mms_load_fom_validation()).NOMINAL_SEG_RANGE[1]*10.)
         if (state.pref.eva_split_size eq 0) then begin
-          val = mms_load_fom_validation()
+          val = gFomValidation
           str_element, /add, state, 'pref.EVA_SPLIT_SIZE', floor(val.nominal_seg_range[1] * 0.5)
         endif
         gTdel = double(state.pref.eva_split_size * 10.)
@@ -420,7 +422,8 @@ function eva_sitl_event, ev
   compile_opt idl2
   @xtplot_com.pro
   @tplot_com
-
+  COMMON SESSION_DATA, gFomValidation
+  
   parent = ev.handler
   stash = widget_info(parent, /child)
   widget_control, stash, get_uvalue = state, /no_copy
@@ -516,70 +519,6 @@ function eva_sitl_event, ev
       print, 'EVA: ***** EVENT: btnAllAuto *****'
       eva_sitl_fom_recover, 'rvrt'
     end
-    ; state.btnValidate: begin
-    ; save = 0
-    ; print,'EVA: ***** EVENT: btnValidate *****'
-    ; title = 'Validation'
-    ; if state.PREF.EVA_BAKSTRUCT then begin
-    ; tn = tnames()
-    ; idx = where(strmatch(tn,'mms_stlm_bakstr'),ct)
-    ; if ct eq 0 then begin
-    ; msg = 'Back-Structure not found. If you wish to'
-    ; msg = [msg, 'submit a FOM structure, please disable the back-']
-    ; msg = [msg, 'structure mode.']
-    ; rst = dialog_message(msg,/error,/center,title=title)
-    ; endif else begin
-    ; get_data,'mms_stlm_bakstr',data=Dmod, lim=lmod,dl=dlmod
-    ; get_data,'mms_soca_bakstr',data=Dorg, lim=lorg,dl=dlorg
-    ; tai_BAKStr_org = lorg.unix_BAKStr_org
-    ; str_element,/add,tai_BAKStr_org,'START', mms_unix2tai(lorg.unix_BAKStr_org.START); LONG
-    ; str_element,/add,tai_BAKStr_org,'STOP',  mms_unix2tai(lorg.unix_BAKStr_org.STOP) ; LONG
-    ; tai_BAKStr_mod = lmod.unix_BAKStr_mod
-    ; str_element,/add,tai_BAKStr_mod,'START', mms_unix2tai(lmod.unix_BAKStr_mod.START); LONG
-    ; str_element,/add,tai_BAKStr_mod,'STOP',  mms_unix2tai(lmod.unix_BAKStr_mod.STOP) ; LONG
-    ;
-    ; header = eva_sitl_text_selection(lmod.unix_BAKStr_mod,/bak)
-    ;
-    ; vsp = '////////////////////////////'
-    ; header = [header, vsp+' VALIDATION RESTULT (NEW SEGMENTS) '+vsp]
-    ; r = eva_sitl_validate(tai_BAKStr_mod, -1, vcase=1, header=header, /quiet, valstruct=state.val); Validate New Segs
-    ; header = [r.msg,' ', vsp+' VALIDATION RESULT (MODIFIED SEGMENTS) '+vsp]
-    ; r2 = eva_sitl_validate(tai_BAKStr_mod, tai_BAKStr_org, vcase=2, header=header, valstruct=state.val); Validate Modified Seg
-    ; endelse; if ct eq 0
-    ; endif else begin
-    ; get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dlmod
-    ; get_data,'mms_soca_fomstr',data=Dorg, lim=lorg,dl=dlorg
-    ; mms_convert_fom_unix2tai, lmod.unix_FOMStr_mod, tai_FOMstr_mod; Modified FOM to be checked
-    ; mms_convert_fom_unix2tai, lorg.unix_FOMStr_org, tai_FOMstr_org; Original FOM for reference
-    ; header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
-    ; vcase = 0;(state.USER_FLAG eq 4) ? 3 : 0
-    ; r = eva_sitl_validate(tai_FOMstr_mod, tai_FOMstr_org, vcase=vcase, header=header, valstruct=state.val)
-    ; endelse
-    ; end
-    ; state.btnEmail: begin
-    ; print,'EVA: ***** EVENT: btnEmail *****'
-    ; if state.PREF.EVA_BAKSTRUCT then begin
-    ; msg = 'Email for Back Structure Mode is under construction.'
-    ; result = dialog_message(msg,/center)
-    ; endif else begin
-    ; get_data,'mms_stlm_fomstr',data=Dmod, lim=lmod,dl=dmod
-    ; mms_convert_fom_unix2tai, lmod.unix_FOMStr_mod, tai_FOMstr_mod; Modified FOM to be checked
-    ; header = eva_sitl_text_selection(lmod.unix_FOMstr_mod)
-    ; body = ''
-    ; nmax = n_elements(header)
-    ; for n=0,nmax-1 do begin
-    ; body += header[n] + 'rtn'
-    ; endfor
-    ; email_address = 'mitsuo.oka@gmail.com'
-    ; syst = systime(/utc)
-    ; oUrl = obj_new('IDLnetUrl')
-    ; txturl = 'http://www.ssl.berkeley.edu/~moka/evasendmail.php?email='$
-    ;          +email_address+'&fomstr='+body+'&time='+syst
-    ;        ok = oUrl->Get(URL=txturl,/STRING_ARRAY)
-    ;        obj_destroy, oUrl
-    ;        result=dialog_message('Email sent to '+email_address,/center,/info)
-    ;      endelse
-    ;      end
     state.drpHighlight: begin
       save = 0
       print, 'EVA: ***** EVENT: drpHighlight *****'
@@ -713,7 +652,8 @@ function eva_sitl_event, ev
   ; refresh the information. Technically, we could update validation structure within
   ; the dashboard refreshing process, but this will cause numerous access to SDC.
   if ~refresh_dash then begin
-    val = mms_load_fom_validation()
+    ;val = mms_load_fom_validation()
+    val = gFomValidation
     str_element, /add, state, 'val', val
   endif
 

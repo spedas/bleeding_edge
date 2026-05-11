@@ -29,8 +29,8 @@
 ;   spp_fld_timespan, 1, /venus
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-11-04 11:26:44 -0800 (Tue, 04 Nov 2025) $
-; $LastChangedRevision: 33821 $
+; $LastChangedDate: 2026-05-08 23:27:42 -0700 (Fri, 08 May 2026) $
+; $LastChangedRevision: 34451 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/spp_fld_timespan.pro $
 ;-
 
@@ -82,6 +82,7 @@ pro spp_fld_timespan, orbit, days = days, encounter = encounter, venus = venus, 
 
       start = orbit_info['start_t']
       stop = orbit_info['stop_t']
+      peri = orbit_info['Perihelion']
 
       if n_elements(encounter) eq 1 then begin
         start = orbit_info['Solar Encounter Start']
@@ -99,8 +100,6 @@ pro spp_fld_timespan, orbit, days = days, encounter = encounter, venus = venus, 
       endelse
 
       if n_elements(days) eq 1 or n_elements(days) eq 2 then begin
-        peri = orbit_info['Perihelion']
-
         print, 'Perihelion ' + string(orbit, format = '(I02)'), $
           ':  ', time_string(peri)
 
