@@ -36,8 +36,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-30 15:39:35 -0700 (Thu, 30 Apr 2026) $
-; $LastChangedRevision: 34406 $
+; $LastChangedDate: 2026-05-13 14:45:03 -0700 (Wed, 13 May 2026) $
+; $LastChangedRevision: 34454 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_load.pro $
 ;
 ;-
@@ -128,7 +128,9 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
 
      is = WHERE(vname EQ prefix + 'spoiler_state', n_is)
      ip = WHERE(vname EQ prefix + 'sweep_table', n_ip)
-     IF (n_is + n_ip) EQ 2 THEN mode = 7B * (*cdfi.vars[is].dataptr) + (*cdfi.vars[ip].dataptr)
+     IF (n_is + n_ip) EQ 2 THEN emode = 7B * (*cdfi.vars[is].dataptr) + (*cdfi.vars[ip].dataptr)
+     ia = WHERE(vname EQ prefix + 'lut_phi_ind', n_ia)
+     IF n_ia GT 0 THEN amode = *cdfi.vars[ia].dataptr
      
      FOR k=1L, cdfi.nv-1 DO BEGIN
         it = WHERE(prefix + tags.tolower() EQ vname[k], nt)
@@ -136,7 +138,20 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
 
         IF (*(cdfi.vars[k].attrptr)).var_type EQ 'metadata' THEN BEGIN
            IF cdfi.vars[k].d[0] EQ 14 THEN BEGIN
-              data.(it) = TRANSPOSE((*(cdfi.vars[k].dataptr))[mode, *, *, *], SHIFT([0:ndimen(*(cdfi.vars[k].dataptr))-1], -1))
+              IF undefined(amode) OR (cdfi.vars[k].d[2] NE 128) THEN data.(it) = TRANSPOSE((*(cdfi.vars[k].dataptr))[emode, *, *, *], SHIFT([0:ndimen(*(cdfi.vars[k].dataptr))-1], -1)) $
+              ELSE BEGIN
+                 aidx = INTARR(data[0].nbins, 8)
+                 FOR ia=0, 7 DO aidx[*, ia] = REFORM(TRANSPOSE(amode[*, ia] ## REPLICATE(1L, 8) + 16L * REPLICATE(1L, data[0].nanode) ## INDGEN(data[0].ndef)), data[0].nbins)
+                 aidx = REBIN(TRANSPOSE(aidx[*, data.lut_id]), ndat, data[0].nbins, /sample)
+                 eidx = REBIN(emode, ndat, data[0].nbins, /sample)
+
+                 tdata = REFORM(TRANSPOSE(*(cdfi.vars[k].dataptr), [0, 2, 1, 3]), cdfi.vars[k].d[0]*cdfi.vars[k].d[2], cdfi.vars[k].d[1], cdfi.vars[k].d[3])
+                 idx = eidx + LONG(cdfi.vars[k].d[0]) * aidx
+                 tdata = TRANSPOSE(REFORM(tdata[idx, *, *], ndat, data[0].nbins, cdfi.vars[k].d[1], cdfi.vars[k].d[3]), [2, 1, 3, 0])
+                 data.(it) = TEMPORARY(tdata)
+
+                 undefine, aidx, eidx, idx
+              ENDELSE 
            ENDIF ELSE BEGIN
               IF ndimen(*(cdfi.vars[k].dataptr)) LE 1 THEN data.(it) = REPLICATE(*(cdfi.vars[k].dataptr), ndat) $
               ELSE data.(it) = REBIN(*(cdfi.vars[k].dataptr), [(SIZE(*(cdfi.vars[k].dataptr)))[1:-3], ndat], /sample)

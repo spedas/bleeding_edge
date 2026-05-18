@@ -90,7 +90,10 @@
 ;   SWIA:      Resample PAD in the plasma rest frame, where electron
 ;              angular distributions are typically gyrotropic. Plasma bulk
 ;              velocity is taken from SWIA Course data.  This keyword only
-;              works after loading (restoring) SWIA data.  
+;              works after loading (restoring) SWIA data.
+;
+;   NOSPICE:   If keyword SWIA is set, then do not attempt to initialize
+;              SPICE.  The user is then responsible for managing SPICE.
 ;
 ;   HIRES:     Calculate a separate pitch angle map for each energy step 
 ;              within a sweep using 32-Hz MAG data.
@@ -137,8 +140,8 @@
 ;CREATED BY:      Takuya Hara on 2014-09-24.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-08-17 14:34:37 -0700 (Sun, 17 Aug 2025) $
-; $LastChangedRevision: 33552 $
+; $LastChangedDate: 2026-05-11 10:40:47 -0700 (Mon, 11 May 2026) $
+; $LastChangedRevision: 34452 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 ;
 ;-
@@ -374,7 +377,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
                           mbins=mbins, sc_pot=sc_pot, symdir=symdir, interpolate=interpolate, $
                           cut=cut, spec=spec, pstyle=pstyle, silent=sil, verbose=vb, $
                           hires=hires, fbdata=fbdata, tabnum=tabnum, burst=burst, $
-                          success=success
+                          success=success, nospice=nospice
   COMPILE_OPT idl2
   @mvn_swe_com
   nan = !values.f_nan 
@@ -387,6 +390,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
   delta_t = 1.95D/2D  ; start time to center time for PAD and 3D
   if (not keyword_set(tabnum)) then tabnum = 5B
   if keyword_set(burst) then archive = 1
+  dospice = ~keyword_set(nospice)
 
 ;  IF SIZE(mvn_swe_engy, /type) NE 8 THEN BEGIN
 ;     print, ptrace()
@@ -541,7 +545,7 @@ PRO mvn_swe_pad_resample, var, mask=mask, stow=stow, ddd=ddd, pad=pad,  $
 ; Process keywords and set options
 
   if (size(tplot,/type) eq 0) then tplot = 1
-  IF keyword_set(swia) THEN mvn_swe_spice_init, trange=trange
+  IF (keyword_set(swia) and dospice) THEN mvn_swe_spice_init, trange=trange
   IF NOT keyword_set(units) THEN units = 'eflux'
   IF NOT keyword_set(nbins) THEN nbins = 128.
   IF NOT keyword_set(wi) THEN wnum = -1 ELSE wnum = wi

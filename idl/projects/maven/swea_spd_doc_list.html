@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May  9 03:15:46 2026.<P>
+<STRONG>Last modified: </STRONG>Sat May 16 03:16:16 2026.<P>
  
 <HR>
  
@@ -5399,7 +5399,10 @@ KEYWORDS:
    SWIA:      Resample PAD in the plasma rest frame, where electron
               angular distributions are typically gyrotropic. Plasma bulk
               velocity is taken from SWIA Course data.  This keyword only
-              works after loading (restoring) SWIA data.  
+              works after loading (restoring) SWIA data.
+
+   NOSPICE:   If keyword SWIA is set, then do not attempt to initialize
+              SPICE.  The user is then responsible for managing SPICE.
 
    HIRES:     Calculate a separate pitch angle map for each energy step 
               within a sweep using 32-Hz MAG data.
@@ -5446,8 +5449,8 @@ KEYWORDS:
 CREATED BY:      Takuya Hara on 2014-09-24.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-08-17 14:34:37 -0700 (Sun, 17 Aug 2025) $
- $LastChangedRevision: 33552 $
+ $LastChangedDate: 2026-05-11 10:40:47 -0700 (Mon, 11 May 2026) $
+ $LastChangedRevision: 34452 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_pad_resample.pro $
 
 </PRE><P>
