@@ -1,4 +1,151 @@
-function poes_netcdfstruct_to_cdfstruct, netCDFi
+;function cdf_struct2cdf_info_struct,cdf_struct
+;    ; omits 'compression', 'gzip_level', and 'g_att_names', since 
+;    ; those attributes aren't used.
+;    cdf_info_struct = create_struct($
+;      'filename',cdf_struct.filename,$
+;      'inq',cdf_struct.inq,$
+;      'g_attributes',cdf_struct.g_attributes,$
+;      'nv',cdf_struct.nv,$
+;      'vars',cdf_struct.vars)
+;    return cdf_info_struct
+;end
+
+;function get_formatted_vars,cdf_info_struct,varformat=varformat,spdf_dependencies=spdf_dependencies
+;    ; take optional list of variable formats and optional 
+;    ; spdf_dependencies keyword and return list of variables which must be 
+;    ; extracted from the netcdf file
+;    if ~keyword_set(varformat) then begin
+;        dprint,verbose=verbose,'Variable format list required! Returning original structure...'
+;        return,cdf_info_struct
+;    endif else begin
+;        vars_filtered=''
+;        vars_filtered = [vars_filtered, strfilter(cdf_info_struct.vars.name,varformat,delimiter=' ')]
+;        vars_filtered = vars_filtered[1:*]
+;        if keyword_set(spdf_dependencies) then begin
+;            depnames = ''
+;            for i=0,n_elements(vars_filtered)-1 do begin
+;                vnum = where(vars_filtered[i] eq cdf_info_struct.vars.name,nvnum)
+;                if nvnum eq 0 then message,'This should never happen, report error to D. Larson: davin@ssl.berkeley.edu'
+;                vi = cdf_info_struct.vars[vnum]
+;                depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_TIME',default='')]   ;bpif vars[i] eq 'tha_fgl'
+;                depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_0',default='')]
+;                ndim = vi.ndimen
+;                for j=1,ndim do begin
+;                    depnames = [depnames, cdf_var_atts(id,vi.num,zvar=vi.is_zvar,'DEPEND_'+strtrim(j,2),default='')]
+;                endfor
+;            endfor
+;            if keyword_set(depnames) then depnames=depnames[[where(depnames)]]
+;            depnames = depnames[uniq(depnames,sort(depnames))]
+;            vars_filtered = [vars_filtered,depnames]
+;            vars_filtered = vars_filtered[uniq(vars_filtered,sort(vars_filtered))]
+;            vars_filtered = vars_filtered[where(vars_filtered)]
+;        endif
+;        return vars_filtered
+;    endelse
+;end
+;
+;function extract_var_list,cdf_info_struct,var_list
+;    ; copy input structure into one which can be modified:
+;    reformatted_struct = cdf_info_struct
+;    ; Loop over the input variable list:
+;    for j=0,n_elements(var_list)-1 do begin
+;        ; nw seems to hold a count of occurrences of the 
+;        ; current variable in the input structure's 
+;        ; variable names attribute
+;        ;  
+;        ; w is the first subscript/index of that instance 
+;        ; where the current variable is found in the input 
+;        ; structure's variable names attribute
+;        w = (where( strcmp(reformatted_struct.vars.name, var_list[j]) , nw))[0]
+;        ; if the current variable appears at least once, continue. Otherwise, print warning:
+;        if nw ne 0 then begin
+;            ; set vi as the variable structure belonging to the current variable name:
+;            vi = reformatted_struct.vars[w]
+;            dprint,verbose=verbose,dlevel=7,vi.name
+;            
+;;            vars = create_struct('name', 'default')
+;;            str_element, vars, 'num', 0, /add
+;;            str_element, vars, 'is_zvar', 1, /add
+;;            str_element, vars, 'datatype', 'CDF_REAL', /add
+;;            str_element, vars, 'type', 5, /add ;;;;;;;;;;;;;;;;;;;;;;;;;; double
+;;            str_element, vars, 'numattr', -1, /add
+;;            str_element, vars, 'numelem', 1, /add
+;;            str_element, vars, 'recvary', byte(1), /add
+;;            str_element, vars, 'numrec', 1, /add
+;;            str_element, vars, 'ndimen', 0, /add
+;;            str_element, vars, 'd', 0, /add
+;;            str_element, vars, 'dataptr', ptr_new(0), /add
+;;            str_element, vars, 'attrptr', ptr_new(0), /add                        
+;            ; Determine the number of records associated with the current variable:
+;            ; TODO: get from reformatted structure:
+;;            q=!quiet & !quiet=1 & cdf_control,id,variable=vi.name,get_var_info=vinfo & !quiet=q
+;;            numrec = vinfo.maxrec+1
+;            numrec = vi.numrec
+;            ; Check if the current variable has more than one record:
+;            if numrec gt 0 then begin
+;                ;q = !quiet
+;                value = 0
+;                ; If so, check if a variable is a zvar:
+;                if vi.is_zvar then begin
+;                    ; TODO: get from reformatted structure:
+;                    cdf_varget,id,vi.name,value=value,/string,rec_count=numrec
+;                endif else begin
+;                    ; TODO: get from reformatted structure:
+;                    vinq = cdf_varinq(id,vi.num,zvar=vi.is_zvar)
+;                    dimc = vinq.dimvar * info.inq.dim
+;                    dimw = where(dimc eq 0,c)
+;                    if c ne 0 then dimc[dimw] = 1
+;                    
+;                    ; TODO: get from reformatted structure:
+;                    CDF_varget,id,vi.num,zvar=0,value=value,/string,COUNT=dimc,REC_COUNT=numrec
+;                    
+;                    value = reform(value,/overwrite)
+;                    dprint,phelp=2,dlevel=5,vi,dimc,value
+;                endelse
+;                
+;                
+;                ;!quiet = q
+;                ;Check if the record varies:
+;                if vi.recvary then begin
+;                    ; If it does, check if the number of dimensions is greater than one:
+;                    if (vi.ndimen ge 1) then begin
+;                        ; If they are, check if the variable only has a single record:
+;                        if numrec eq 1 then begin
+;                          ; If it does, throw a warning and define value as 1:
+;                          dprint,dlevel=3,'Warning: Single record! ',vi.name,vi.ndimen,vi.d
+;                          value = reform(/overwrite,value, [1,size(/dimensions,value)] )  ; Special case for variables with a single record
+;                        endif else begin
+;                          
+;                          transshift = shift(indgen(vi.ndimen+1),1)
+;                          value=transpose(value,transshift)
+;                        endelse
+;                    endif else value = reform(value,/overwrite)
+;                    
+;                    if not keyword_set(vi.dataptr) then begin
+;                        vi.dataptr = ptr_new(value,/no_copy)
+;                    endif else begin
+;                        *vi.dataptr = [*vi.dataptr,temporary(value)]
+;                    endelse
+;                    
+;                endif else begin
+;                    if not keyword_set(vi.dataptr) then vi.dataptr = ptr_new(value,/no_copy)
+;                endelse
+;            endif
+;            
+;            if not keyword_set(vi.attrptr) then begin
+;                ; TODO: get from reformatted structure:
+;                vi.attrptr = ptr_new( cdf_var_atts(id,vi.name) )
+;            endif
+;            
+;            ; replace the current variable in the output structure with the modified variable:
+;            reformatted_struct.vars[w] = vi
+;            
+;        endif else dprint,dlevel=1,verbose=verbose,'WARNING: Variable "'+var_list[j]+'" not found!'
+;    endfor
+;    return reformatted_struct
+;end
+
+function poes_netcdfstruct_to_cdfstruct, netCDFi, varformat=varformat
   compile_opt idl2
     if ~is_struct(netCDFi) then begin
         dprint, dlevel=1, 'Must provide a netCDF structure'
@@ -21,20 +168,9 @@ function poes_netcdfstruct_to_cdfstruct, netCDFi
         probename = STRSPLIT(satellite_id,probe_num,/EXTRACT)
         prefix=strmid(probename,0,1) + string(probe_num,format='(I02)')
         
-        ; note: don't appear to have instrument. skipping...
-;        case netCDFi.g_attributes.instrument of
-;          'Magnetometer': instru = 'fgm'
-;          'Electron,Proton,Alpha Detector': instru = 'epead'
-;          'Energetic Particle Sensor': instru = 'eps'
-;          'Magnetospheric Electron Detector': instru = 'maged'
-;          'Magnetospheric Proton Detector': instru = 'magpd'
-;          'High energy Proton and Alpha Detector': instru = 'hepad'
-;          'X-ray Sensor': instru = 'xray'
-;        endcase
         process_level = netCDFi.g_attributes.PROCESSING_LEVEL
         title = netCDFi.g_attributes.title
         
-        ; note: don't appear to have sample__time and sample_units. skipping...
         sample_timeresolution = netCDFi.g_attributes.TIME_COVERAGE_RESOLUTION
         sample_timeresolution_numval = STRSPLIT(sample_timeresolution, '[^0-9]+', /REGEX, /EXTRACT)
         if n_elements(sample_timeresolution_numval) eq 2 then begin
@@ -148,7 +284,6 @@ function poes_netcdfstruct_to_cdfstruct, netCDFi
           
           variables[i].dataptr = ptr_new(data)
           variables[i].attrptr = ptr_new(attr)
-
           variables[i].name = netCDFi.vars.(i).name
         endfor
         ; construct the structure in a format similar to that returned by cdf_load_vars
@@ -165,5 +300,18 @@ function poes_netcdfstruct_to_cdfstruct, netCDFi
       return, -1
     endelse
     
+    ; pass newstruct to helper functions to extract variables according to 
+    ; varformat and spdf_dependencies:
+    ; newstuct should already include proper variables for the info struct 
+    ; required by helper functions, and the functions return new 
+    ; structures, so it the newstruct may be passed directly
+;    new_formatted_struct = extract_var_list($
+;        newstruct,$
+;        get_formatted_vars($
+;            newstruct,$
+;            varformat=varformat,$
+;            spdf_dependencies=spdf_dependencies)$
+;        )
     return, newstruct
+    ;return, new_formatted_struct
 end

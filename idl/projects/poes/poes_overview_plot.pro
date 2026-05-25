@@ -20,15 +20,15 @@
 ;       
 ;       
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
-; $LastChangedRevision: 30691 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
+; $LastChangedRevision: 34465 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 ;-
 
 pro poes_overview_plot, date = date, probe = probe_in, duration = duration, error = error, makepng = makepng,$
                         gui_overplot = gui_overplot, oplot_calls = oplot_calls, directory = directory, $
-                        device = device, import_only=import_only, _extra = _extra
+                        device = device, import_only=import_only, remote_source = remote_source, _extra = _extra
     compile_opt idl2
     
     ; Catch errors and return
@@ -60,13 +60,22 @@ pro poes_overview_plot, date = date, probe = probe_in, duration = duration, erro
     
     timespan, date, duration, /day
     
-    poes_load_data, probes = probe_in
-
-    poes_plots = probe_in+['_ted_ele_flux_tel0_fixed', '_ted_ele_flux_tel30_fixed', $
-        '_ted_pro_flux_tel0_fixed', '_ted_pro_flux_tel30_fixed', $
-        '_mep_ele_flux_tel?', '_mep_ele_flux_tel??', $
-        '_mep_pro_flux_tel?', '_mep_pro_flux_tel??']
-
+    if keyword_set(remote_source) then begin
+      poes_load_data, trange = [date,date], probes = probe_in, remote_source = remote_source
+    endif else begin
+      poes_load_data, probes = probe_in
+    endelse
+    
+    poes_plots = probe_in+[$
+      '_ted_ele_flux_tel0_fixed', $
+      '_ted_ele_flux_tel30_fixed', $
+      '_ted_pro_flux_tel0_fixed', $
+      '_ted_pro_flux_tel30_fixed', $
+      '_mep_ele_flux_tel?', $
+      '_mep_ele_flux_tel??', $
+      '_mep_pro_flux_tel?', $
+      '_mep_pro_flux_tel??']
+        
     ; make sure the data was loaded
     poes_data_loaded = tnames(poes_plots)
 

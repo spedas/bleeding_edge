@@ -58,9 +58,9 @@
 ;  2021 15,18,19
 ;
 ;HISTORY:
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-03-18 12:52:44 -0700 (Fri, 18 Mar 2022) $
-;$LastChangedRevision: 30691 $
+;$LastChangedBy: dcarpenter $
+;$LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
+;$LastChangedRevision: 34465 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot_wrapper.pro $
 ;----------
 
@@ -141,7 +141,7 @@ end
 pro poes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
   date_mod = date_mod, probes = probes, base_dir = base_dir, makepng=makepng,$
   server_run = server_run, themis_dir = themis_dir, poes_dir = poes_dir, $
-  reprocess = reprocess
+  reprocess = reprocess, remote_source = remote_source
   compile_opt idl2
   
   dprint, dlevel = 2, 'START POES overview plot. Date: ' + SYSTIME()
@@ -224,22 +224,38 @@ pro poes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     month03 = STRMID(date, 5, 2)
     day03 = STRMID(date, 8, 2)
     directory = base_dir + year03 + path_sep() + month03 + path_sep() + day03 + path_sep()
-    remote_dir = 'cdaweb.gsfc.nasa.gov/istp_public/data/noaa/'  
-   ; remote directory: http://satdat.ngdc.noaa.gov/sem/poes/data/avg/cdf/2014/noaa18/ 
-    for j=0, n_elements(probes)-1 do begin
-      probe = probes[j]
-      ; check if dir exists, eg: http://satdat.ngdc.noaa.gov/sem/poes/data/new_avg/2011/08/poes13/netcdf/
-      remote_http_dir = remote_dir + 'noaa' + probe + '/sem2_fluxes-2sec/' + year03
-      if check_poes_noaa_dir(base_dir, remote_http_dir) then begin
+    
+    if keyword_set(remote_source) then begin
+      ; VERIFY: does load routine handle missing data dir?
+      for j=0, n_elements(probes)-1 do begin
+        probe = probes[j]
         dprint, dlevel=1, "====================================================="
         msgstr = "POES OVERVIEW PLOT: Probe= " + string(probe) + ", date= " + date
         dprint, dlevel = 1, msgstr
         heap_gc
         poes_overview_plot, date = date, probe = probe, directory = directory, $
-                            device = device , duration = 1, makepng=makepng
-        if ~keyword_set(reprocess) then poes_write_lastdate, lastdate_file, date ;jmm, 2019-12-12
-      endif
-    endfor
+          device = device , duration = 1, makepng=makepng, remote_source=remote_source
+        if ~keyword_set(reprocess) then poes_write_lastdate, lastdate_file, date 
+      endfor
+    endif else begin
+      remote_dir = 'cdaweb.gsfc.nasa.gov/istp_public/data/noaa/'
+      ; remote directory: http://satdat.ngdc.noaa.gov/sem/poes/data/avg/cdf/2014/noaa18/
+      for j=0, n_elements(probes)-1 do begin
+        probe = probes[j]
+        ; check if dir exists, eg: http://satdat.ngdc.noaa.gov/sem/poes/data/new_avg/2011/08/poes13/netcdf/
+        remote_http_dir = remote_dir + 'noaa' + probe + '/sem2_fluxes-2sec/' + year03
+        if check_poes_noaa_dir(base_dir, remote_http_dir) then begin
+          dprint, dlevel=1, "====================================================="
+          msgstr = "POES OVERVIEW PLOT: Probe= " + string(probe) + ", date= " + date
+          dprint, dlevel = 1, msgstr
+          heap_gc
+          poes_overview_plot, date = date, probe = probe, directory = directory, $
+            device = device , duration = 1, makepng=makepng
+          if ~keyword_set(reprocess) then poes_write_lastdate, lastdate_file, date ;jmm, 2019-12-12
+        endif
+      endfor
+    endelse
+    
   endfor
   
   dprint, dlevel = 2, 'END POES overview plot. Date: ' + SYSTIME()

@@ -3,8 +3,8 @@
 ; ESC_IESA_SWEEP_TABLE
 ;
 ; $LastChangedBy: rlivi04 $
-; $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $
-; $LastChangedRevision: 34425 $
+; $LastChangedDate: 2026-05-18 11:51:43 -0700 (Mon, 18 May 2026) $
+; $LastChangedRevision: 34464 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro $
 ;
 ;-
@@ -13,44 +13,33 @@
 ;; CRC16 Checksum
 ;;   data -> byte array
 FUNCTION esc_iesa_sweep_table_crc16, data
-   
+
+   ;; Create Initial CRC value
    init_crc = uint('FFFF'x)
 
    ;; Find Data Type
    dt = (size(data))[1+(size(data))[0]]
-
+   
    ;; Turn data into byte array
    CASE dt OF
       1: databyte = data
       2: BEGIN
          a1 = byte(ishft(uint(data),-8))
-         a2 = byte(uint(data) OR '0xFF')
+         a2 = byte(uint(data) AND 'FF'x)
          databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
       END
       3: BEGIN
          a1 = byte(ishft(uint(data),-8))
-         a2 = byte(uint(data) OR '0xFF')
+         a2 = byte(uint(data) AND 'FF'x)
          databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
       END
       12: BEGIN
          a1 = byte(ishft(uint(data),-8))
-         a2 = byte(uint(data) OR '0xFF')
+         a2 = byte(uint(data) AND 'FF'x)
          databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
-      END
-
+      END      
       ELSE: stop, 'Must provide bytearr or uintarr.'
    ENDCASE
-   
-   
-   ;; Byte Array
-   ;;IF isa(data,'byte') THEN databyte = data
-   
-   ;; Convert uint to bytarr if necessary
-   ;;IF isa(data, 'uint') THEN BEGIN 
-   ;;   a1 = byte(ishft(uint(data),-8))
-   ;;   a2 = byte(uint(data) OR '0xFF')
-   ;;   databyte = reform(transpose([[a1],[a2]]),n_elements(data)*2)
-   ;;ENDIF
       
    crc = init_crc
    FOR i=0, n_elements(databyte)-1 DO BEGIN
@@ -178,8 +167,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $'
-      printf, 1, '# Revision: $LastChangedRevision: 34425 $'
+      printf, 1, '# Date:     $LastChangedDate: 2026-05-18 11:51:43 -0700 (Mon, 18 May 2026) $'
+      printf, 1, '# Revision: $LastChangedRevision: 34464 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -207,11 +196,11 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A5, F20.10)', '# P5:', table.const.poly_val[5]
       printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
-      printf, 1, format='(A19, F7.2)',      '# K-Factor:              ', table.constants.k
-      printf, 1, format='(A19, F7.2)',      '# Hemisphere Gain:       ', table.constants.hem_gain
-      printf, 1, format='(A19, F7.2)',      '# Deflector Gain:        ', table.constants.def_gain
-      printf, 1, format='(A19, F7.2)',      '# Spoiler Gain:          ', table.constants.spl_gain
-      printf, 1, format='(A19, F7.2)',      '# Deflector Multiplier:  ', table.constants.def_multi
+      printf, 1, format='(A19, F7.2)',      '# K-Factor:              ', table.const.k
+      printf, 1, format='(A19, F7.2)',      '# Hemisphere Gain:       ', table.const.hem_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Gain:        ', table.const.def_gain
+      printf, 1, format='(A19, F7.2)',      '# Spoiler Gain:          ', table.const.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Multiplier:  ', table.const.def_multi
       printf, 1, '# '
       printf, 1, '# ID_Msg_Bin  ', $
               'ENERGY [eV]', 'DEF1 [DEG]','DEF2 [DEG]','SPOILER', $
@@ -245,8 +234,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $'
-      printf, 1, '# Revision: $LastChangedRevision: 34425 $'
+      printf, 1, '# Date:     $LastChangedDate: 2026-05-18 11:51:43 -0700 (Mon, 18 May 2026) $'
+      printf, 1, '# Revision: $LastChangedRevision: 34464 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -274,11 +263,11 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, format='(A5, F20.10)', '# P5:', table.const.poly_val[5]
       printf, 1, '# '
       printf, 1, '# --- Instrument Characteristics ---'
-      printf, 1, format='(A19, F7.2)',      '# K-Factor:              ', table.constants.k
-      printf, 1, format='(A19, F7.2)',      '# Hemisphere Gain:       ', table.constants.hem_gain
-      printf, 1, format='(A19, F7.2)',      '# Deflector Gain:        ', table.constants.def_gain
-      printf, 1, format='(A19, F7.2)',      '# Spoiler Gain:          ', table.constants.spl_gain
-      printf, 1, format='(A19, F7.2)',      '# Deflector Multiplier:  ', table.constants.def_multi
+      printf, 1, format='(A19, F7.2)',      '# K-Factor:              ', table.const.k
+      printf, 1, format='(A19, F7.2)',      '# Hemisphere Gain:       ', table.const.hem_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Gain:        ', table.const.def_gain
+      printf, 1, format='(A19, F7.2)',      '# Spoiler Gain:          ', table.const.spl_gain
+      printf, 1, format='(A19, F7.2)',      '# Deflector Multiplier:  ', table.const.def_multi
       printf, 1, '# '
       printf, 1, '# ','HEM_DAC', 'DEF1_DAC','DEF2_DAC','SPOILER_DAC', format='(A2,A12,3A14)'
       printf, 1, '# '+strjoin(replicate('-',14*4-2))
@@ -303,8 +292,8 @@ FUNCTION esc_iesa_sweep_table_write, table, mram=mram
       printf, 1, '# '+table.note
       printf, 1, '# '
       printf, 1, '# Source:   spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_sweep_table.pro'
-      printf, 1, '# Date:     $LastChangedDate: 2026-05-04 13:16:52 -0700 (Mon, 04 May 2026) $'
-      printf, 1, '# Revision: $LastChangedRevision: 34425 $'
+      printf, 1, '# Date:     $LastChangedDate: 2026-05-18 11:51:43 -0700 (Mon, 18 May 2026) $'
+      printf, 1, '# Revision: $LastChangedRevision: 34464 $'
       printf, 1, '# '
       printf, 1, '# --- Sweep Parameters ---'
       printf, 1, format='(A21, F7.1, A5)', '# Energy Min:         ', table.const.emin, ' [eV]'
@@ -476,7 +465,6 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    hem_energy = hem_volts * k
 
    ;; Double DAC Hemisphere Values (Same value for both DACs, hence sqrt())
-   ;;hem_dacs = round(sqrt(long64('ffff'x)^2 * hem_volts / (4 * hv_gain)))
    hem_dacs = round(sqrt(long64('ffff'x)^2 * hem_volts / (4 * hem_gain)))   
    
    ;; ### Hemisphere Science Product Values ###
@@ -512,10 +500,11 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    def2_dacs = ABS(def_dacs < 0)
    
    ;;### Adjust For Maximum Deflector Voltage ###
-   ;;def1_volts_tmp = hem_volts * def_gain * (1.*def1_dacs / 'ffff'x)
-   ;;def2_volts_tmp = hem_volts * def_gain * (1.*def2_dacs / 'ffff'x)
-   def1_volts_tmp = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def1_dacs / 'ffff'x)
-   def2_volts_tmp = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def2_dacs / 'ffff'x)
+   dd1 = hem_volts * def_multi * (1.*def1_dacs / 'ffff'x)
+   dd2 = hem_volts * def_multi * (1.*def2_dacs / 'ffff'x)
+
+   def1_volts_tmp = (hem_volts / hem_gain) * def_gain * def_multi * (1. * def1_dacs / 'ffff'x)
+   def2_volts_tmp = (hem_volts / hem_gain) * def_gain * def_multi * (1. * def2_dacs / 'ffff'x)
 
    def1_max = max(reform(def1_dacs,nang,tot_bins/nang),dim=1)
    def2_max = max(reform(def2_dacs,nang,tot_bins/nang),dim=1)
@@ -541,10 +530,8 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    def2_angs[where(def2_dacs EQ 0)] =  0
    
    ;; Deflector Voltages
-   ;;def1_volts = (1.*def1_dacs/'ffff'x) * def_gain * hem_volts
-   ;;def2_volts = (1.*def2_dacs/'ffff'x) * def_gain * hem_volts
-   def1_volts = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def1_dacs / 'ffff'x)
-   def2_volts = 4. * (1. * hem_dacs^2/long64('ffff'x)^2) * def_gain * def_multi * (1. * def2_dacs / 'ffff'x)
+   def1_volts = (hem_volts / hem_gain) * def_gain * def_multi * (1. * def1_dacs / 'ffff'x)
+   def2_volts = (hem_volts / hem_gain) * def_gain * def_multi * (1. * def2_dacs / 'ffff'x)
    
    ;; ### Deflector Science Product Values ###
    sci_def_bin = [reverse(indgen(nang/2)),indgen(nang/2)]
@@ -575,10 +562,21 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
    ;; ### Spoiler Science Products ###
    sci_spl_rat = mean(reform(spl_rat,mbins,tot_bins/mbins),dim=1)
 
-   ;; ################
+
+
+   ;; #########################
+   ;; ### CONVERT TO 16 BIT ###
+   ;; #########################
+   hem_dacs  = uint(hem_dacs  AND 'FFFF'x)
+   def1_dacs = uint(def1_dacs AND 'FFFF'x)
+   def2_dacs = uint(def2_dacs AND 'FFFF'x)
+   spl_dacs  = uint(spl_dacs  AND 'FFFF'x)
+
+
+   
+   ;; ################   
    ;; ### Checksum ###
    ;; ################
-
    hem_chk  = esc_iesa_sweep_table_crc16(hem_dacs)
    def1_chk = esc_iesa_sweep_table_crc16(def1_dacs)
    def2_chk = esc_iesa_sweep_table_crc16(def2_dacs)
@@ -653,7 +651,7 @@ PRO esc_iesa_sweep_table_generate, table, emin=emin, emax=emax, title=title, $
            }
 
    ;; Write Table to CSV
-   write_csv = 0
+   write_csv = 1
    IF keyword_set(write_csv) THEN tmp = esc_iesa_sweep_table_write(table)
 
    ;; Plot table contents
@@ -675,11 +673,11 @@ PRO esc_iesa_sweep_table, tables
    ;; Compile Options
    COMPILE_OPT IDL2 , LOGICAL_PREDICATE
 
+   ;; Select which tables to produce
    esc_iesa_crs = 1
    esc_iesa_fm1 = 1
    esc_iesa_fm2 = 1
    esc_iesa_cal = 1
-
 
 
    
@@ -1148,13 +1146,9 @@ PRO esc_iesa_sweep_table, tables
       esc_iesa_sweep_table_generate, tc16, emin=emin,emax=emax,dmin=dmin,dmax=dmax,title=title,note=note, spl_ratio=spl_ratio
 
    ENDIF
+
+
    
-
-   
-
-
-
-
    tables = { $
 
             fm1_ts0:fm1_ts0, $
@@ -1177,9 +1171,6 @@ PRO esc_iesa_sweep_table, tables
             tc9:tc9, tc10:tc10, tc11:tc11, tc12:tc12, tc13:tc13, tc14:tc14, tc15:tc15, tc16:tc16 $ 
 
             }
-
-
-   
 
 
    

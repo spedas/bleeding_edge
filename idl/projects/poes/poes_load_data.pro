@@ -36,10 +36,74 @@
 ;             /downloadonly: Download the file but don't read it  
 ; 
 ; $LastChangedBy: dcarpenter $
-; $LastChangedDate: 2026-04-29 16:37:21 -0700 (Wed, 29 Apr 2026) $
-; $LastChangedRevision: 34405 $
+; $LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
+; $LastChangedRevision: 34465 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_load_data.pro $
 ;-
+
+pro poes_horizontal_concat, combined_tplot_name, tplotnames_varformats, tplotnames = tplotnames
+    ; take tplotnames_to_concat (should be subset of all_current_tplot_names), 
+    ; combine their data into a data single structure which shares its longest 
+    ; dimesion, and create a new tplot variable using the new_tplot_name, and 
+    ; append the new tplot variable name to all_current_tplot_names return 
+    ; all_current_tplot_names, which can then be used as the new variable 
+    ; containing all of the tplot_names
+    
+    ; check if variables matching formats are current tplot variables
+    tplotnames_to_concat = tnames(tplotnames_varformats)
+    if n_elements(tplotnames_to_concat) eq 0 then begin
+        dprint, dlevel=0, 'ERROR! No tplot variable names match varformats'
+    endif else begin
+        ; concat each tplot variable returned as a match to the tplotnames_varformats:
+        for tplotnames_to_concat_idx = 0, n_elements(tplotnames_to_concat)-1 do begin
+            tplotnames_to_concat_element = tplotnames_to_concat[tplotnames_to_concat_idx]
+            get_data, tplotnames_to_concat_element, data=data_toconcat, dlimits=dlimits_toconcat
+            if is_struct(data_toconcat) && is_struct(dlimits_toconcat) then begin
+                ; concat tplotnames_to_concat_element_data to new_tplot_data:
+                ;     > data is a struct which takes the form:
+                ;     > {x: x axis data array, y: y axis data array }
+                ; Assert that x axis data array is the same for all tplot variables (retrieved by using tplotnames_to_concat_element_data.X)
+                ; Assert that the y axis data has same dimensionality as other y axis data
+                data_toconcat_x = data_toconcat.X
+                data_toconcat_y = data_toconcat.Y
+                ; assign the x data as the x of the first element and initialize array to hold y data
+                if tplotnames_to_concat_idx eq 0 then begin
+                    concat_data_x = data_toconcat_x
+                    concat_data_y = MAKE_ARRAY(data_toconcat_x.length, n_elements(tplotnames_to_concat), /FLOAT, VALUE = -9999.0)
+                endif 
+                ; assert that the x data of each subsequent tplot variable matches the first one
+                if ~ARRAY_EQUAL(data_toconcat_x, concat_data_x) then begin
+                    dprint, dlevel=0, 'ERROR! X data components do not match!'
+                endif else begin
+                    ; concat the y component to the concatenated data y components
+                    concat_data_y[0:-1,tplotnames_to_concat_idx] = data_toconcat_y
+                    concat_data_dlimits = dlimits_toconcat
+                    
+                    ; delete replaced data and variables:
+                    del_data, tplotnames_to_concat_element
+                    tplot_names_idx = where(tplotnames eq tplotnames_to_concat_element)
+                    if tplot_names_idx ne -1 then begin
+                        if tplot_names_idx eq 0 then begin
+                            tplotnames = tplotnames[1:-1]
+                        endif else begin
+                            if tplot_names_idx eq n_elements(tplotnames)-1 then begin
+                                tplotnames = tplotnames[0:-2]
+                            endif else begin
+                                tplotnames = [tplotnames[0:tplot_names_idx-1],tplotnames[tplot_names_idx+1:-1]]
+                            endelse
+                        endelse
+                    endif
+                    
+                endelse
+            endif else begin
+                dprint, dlevel=0, 'ERROR! Tplot variable does not contain requested structures'
+            endelse
+        endfor
+        ; store data of new tplot variable with concatenated data:
+        store_data,combined_tplot_name,data={x: concat_data_x, y: concat_data_y}, dlimits = concat_data_dlimits
+        append_array, tplotnames, combined_tplot_name
+    endelse
+end
  
 ; split tplot variable containing data for two telescopes into 
 ; two tplot variables - one for each telescope
@@ -258,18 +322,27 @@ pro poes_fix_metadata, tplotnames, prefix = prefix
             prefix + '_' + 'mep_pro_flux_tel0': begin
                 options, /def, tplot_name, 'ylog', 1
                 options, /def, tplot_name, 'labflag', 1
-                options, /def, tplot_name, 'colors', [2,4,6,8,1]
-                options, /def, tplot_name, 'labels', ['30-80 keV', '80-240 keV', '240-800 keV', '2500-6900 keV', '> 6900 keV']
                 options, /def, tplot_name, 'ytitle', 'MEPED!CProton Flux!C0deg telescope'
-            
+                if where(['metop01','metop02','metop03'] eq prefix) ne -1 then begin
+                    options, /def, tplot_name, 'colors', [2,4,6,8,1,3]
+                    options, /def, tplot_name, 'labels', ['~39 keV', '~115 keV', '~332 keV', '~1105 keV', '~2723 keV', '~6174 keV']
+                endif else begin
+                    options, /def, tplot_name, 'colors', [2,4,6,8,1]
+                    options, /def, tplot_name, 'labels', ['30-80 keV', '80-240 keV', '240-800 keV', '2500-6900 keV', '> 6900 keV']
+                endelse
             end
             prefix + '_' + 'mep_pro_flux_tel90': begin
                 options, /def, tplot_name, 'ylog', 1
                 options, /def, tplot_name, 'labflag', 1
-                options, /def, tplot_name, 'colors', [2,4,6,8,1]
-                options, /def, tplot_name, 'labels', ['30-80 keV', '80-240 keV', '240-800 keV', '2500-6900 keV', '> 6900 keV']
                 options, /def, tplot_name, 'ytitle', 'MEPED!CProton Flux!C90deg telescope'
-            
+                if where(['metop01','metop02','metop03'] eq prefix) ne -1 then begin
+                    options, /def, tplot_name, 'colors', [2,4,6,8,1,3]
+                    options, /def, tplot_name, 'labels', ['~39 keV', '~115 keV', '~332 keV', '~1105 keV', '~2723 keV', '~6174 keV']
+                endif else begin
+                    options, /def, tplot_name, 'colors', [2,4,6,8,1]
+                    options, /def, tplot_name, 'labels', ['30-80 keV', '80-240 keV', '240-800 keV', '2500-6900 keV', '> 6900 keV']
+                endelse
+                
             end
             prefix + '_' + 'meped_alpha_0_sat': begin ; pitch angles at the satellite, 0 deg detector
                 options, /def, tplot_name, 'ytitle', 'MEPED_pitch angle_satellite'
@@ -283,12 +356,58 @@ pro poes_fix_metadata, tplotnames, prefix = prefix
                 options, /def, tplot_name, 'ytitle', 'MEPED_pitch angle_footprint'
                 options, /def, tplot_name, 'ysubtitle', '[degrees]'
             end
-            prefix + '_' + 'meped_alpha_90_foot': begin ; pitch angles at teh field foot print, 90 deg detector
+            prefix + '_' + 'meped_alpha_90_foot': begin ; pitch angles at the field foot print, 90 deg detector
                 options, /def, tplot_name, 'ytitle', 'MEPED_pitch angle_footprint'
                 options, /def, tplot_name, 'ysubtitle', '[degrees]'
             end
-        else: ; don't complain if this isn't a POES variable that needs its metadata fixed
+            ; for metop "_tel0_flux_n" endings, n is the energy band!
+            ; from: https://www.ngdc.noaa.gov/stp/satellite/poes/docs/NGDC/TED%20processing%20ATBD_V1.pdf:
+            ; Energy Band   Low-Energy edge (eV)   Center energy (eV)   High-energy edge (eV)   Total Energy Band Width (eV)
+            ;      4               154                    189                    224                         70 
+            ;      8               688                    844                   1000                        312
+            ;     11              2115                   2595                   3075                        961
+            ;     14              6503                   7980                   9457                       2954
+            ;
+            ; the POES 'ted_ele_flux_tel0', 'ted_ele_flux_tel30', 'ted_pro_flux_tel0', 'ted_pro_flux_tel30' 
+            ; variables are associated with these 4 channels, based on the center energy; however, in the 
+            ; METOP data, they are split into separate variables, subscripted by their energy band 
+            else: ; don't complain if this isn't a POES variable that needs its metadata fixed
         endcase
+    endfor
+end
+
+pro poes_fix_metop_tplotnames, tplotnames, prefix = prefix
+    if undefined(prefix) then prefix = ''
+    ; loop through each tplot name, set the metadata for variables based on their name
+    for name_idx = 0, n_elements(tplotnames)-1 do begin
+        tplot_name = tplotnames[name_idx]
+        tplot_name_split = STRSPLIT(tplot_name, '_', /REGEX, /EXTRACT)
+        if n_elements(tplot_name_split) ge 5 then begin
+            if tplot_name_split[4] eq 'flux' and strcmp(tplot_name_split[3],'tel',3,/FOLD_CASE) then begin
+                ; probe instrument? electron/proton
+                tplot_var_newname = tplot_name_split[0] + "_" + $
+                    tplot_name_split[1] + "_" + $
+                    tplot_name_split[2] + "_" + $
+                    tplot_name_split[4] + "_" + $
+                    tplot_name_split[3]
+                if n_elements(tplot_name_split) gt 5 then begin
+                    for tplot_name_split_idx = 5, n_elements(tplot_name_split)-1 do begin
+                        tplot_var_newname = tplot_var_newname + "_" + tplot_name_split[tplot_name_split_idx]
+                    endfor
+                endif
+                ; rename tplot variable:
+                tplot_rename, tplot_name, tplot_var_newname
+                ; rename tplot variable name in tplotnames
+                append_array, tplotnames, tplot_var_newname
+            endif
+        endif
+        if n_elements(tplot_name_split) eq 2 and tplot_name_split[1] eq "MLT" then begin
+            tplot_var_newname = tplot_name_split[0] + "_mlt"
+            ; rename tplot variable:
+            tplot_rename, tplot_name, tplot_var_newname
+            ; rename tplot variable name in tplotnames
+            append_array, tplotnames, tplot_var_newname
+        endif
     endfor
 end
 
@@ -447,9 +566,46 @@ pro poes_load_data, trange = trange, datatype = datatype, probes = probes, suffi
         if ncei_server_l1b eq 1 then begin
           ; need to load from netcdf (.nc) files
           netCDFi = netcdf_load_vars(files,temporal_dim='time')
-          ; borrowing from GOESstruct_to_cdfstruct:
           cdf_struct = poes_netcdfstruct_to_cdfstruct(netCDFi)
           cdf_info_to_tplot, cdf_struct, verbose = verbose, prefix=prefix_array[j]+'_', suffix=suffix, tplotnames=tplotnames, /load_labels
+          ; testarray[where(strmid(testarray,0,strlen('mep_pro_tel0_flux_p')) eq 'mep_pro_tel0_flux_p',/NULL)]
+          ; if
+          
+          if where(['metop01','metop02','metop03'] eq prefix_array[j]) ne -1 then begin
+              ; ted ele flux tel0
+              metop_varname = prefix_array[j] + '_' + 'ted_ele_tel0_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_?',metop_varname + '_??'], tplotnames = tplotnames
+              ; ted ele flux tel30
+              metop_varname = prefix_array[j] + '_' + 'ted_ele_tel30_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_?',metop_varname + '_??'], tplotnames = tplotnames
+              ; ted pro flux tel0
+              metop_varname = prefix_array[j] + '_' + 'ted_pro_tel0_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_?',metop_varname + '_??'], tplotnames = tplotnames
+              ; ted pro flux tel30
+              metop_varname = prefix_array[j] + '_' + 'ted_pro_tel30_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_?',metop_varname + '_??'], tplotnames = tplotnames
+              
+              ; mep_omni_flux
+              metop_varname = prefix_array[j] + '_' + 'mep_omni_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_p?'], tplotnames = tplotnames
+              
+              ; mep_ele_tel0_flux
+              metop_varname = prefix_array[j] + '_' + 'mep_ele_tel0_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_e?'], tplotnames = tplotnames
+              ; mep_ele_tel90_flux
+              metop_varname = prefix_array[j] + '_' + 'mep_ele_tel90_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_e?'], tplotnames = tplotnames
+              ; mep_pro_tel0_flux
+              metop_varname = prefix_array[j] + '_' + 'mep_pro_tel0_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_p?'], tplotnames = tplotnames
+              ; mep_pro_tel90_flux
+              metop_varname = prefix_array[j] + '_' + 'mep_pro_tel90_flux'
+              poes_horizontal_concat, metop_varname, [metop_varname + '_p?'], tplotnames = tplotnames
+              
+              ; QUESTION: do we need to use tplot_rename to rename tplot variables in-place?
+              poes_fix_metop_tplotnames, tplotnames, prefix = prefix_array[j]
+          endif
+          
         endif else begin
           poes_cdf2tplot, files, prefix = prefix_array[j]+'_', suffix = suffix, verbose = verbose, $
             tplotnames=tplotnames, varformat = varformat, /load_labels
