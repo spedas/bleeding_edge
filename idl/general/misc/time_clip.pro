@@ -37,9 +37,9 @@
 ;                 time_clip,'thb_peem_velocity','thb_fgs_gsm',thb_fgs_gsm',/tvar
 ;
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-; $LastChangedRevision: 33563 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-05-27 09:44:03 -0700 (Wed, 27 May 2026) $
+; $LastChangedRevision: 34497 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time_clip.pro $
 ;-
 
@@ -84,17 +84,17 @@ if keyword_set(tvar) then begin
 
    get_data,tn1,data=d
 
-   stime = d.x[0]
+   stime_double = d.x[0]
 
    get_data,tn2,data=d
 
-   etime = d.x[n_elements(d.x)-1]
+   etime_double = d.x[n_elements(d.x)-1]
 
 endif else begin
 
-   if size(start_time,/type) eq 7 then stime = time_double(start_time) else stime=start_time
+   if size(start_time,/type) eq 7 then stime_double = time_double(start_time) else stime_double=start_time
 
-   if size(end_time,/type) eq 7 then etime = time_double(end_time) else etime = end_time
+   if size(end_time,/type) eq 7 then etime_double = time_double(end_time) else etime_double = end_time
 
 endelse
 
@@ -107,7 +107,7 @@ for i=0,n_elements(nm)-1 do begin
      continue
    endif
    
-   idx = where(d.x ge stime and d.x le etime,complement=cidx)
+   idx = where(d.x ge stime_double and d.x le etime_double,complement=cidx)
    
    if keyword_set(nan_replace) then begin
       tmp = idx

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat May 23 15:46:29 2026.<P>
+<STRONG>Last modified: </STRONG>Sat May 30 03:16:28 2026.<P>
  
 <HR>
  
@@ -24,6 +24,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#POES_CONTAMINATION_REMOVAL">POES_CONTAMINATION_REMOVAL</A>
 <LI><A HREF="#POES_INIT">POES_INIT</A>
 <LI><A HREF="#POES_LOAD_DATA">POES_LOAD_DATA</A>
+<LI><A HREF="#POES_NETCDF2TPLOT">POES_NETCDF2TPLOT</A>
 <LI><A HREF="#POES_OVERVIEW_PLOT">POES_OVERVIEW_PLOT</A>
 <LI><A HREF="#POES_OVERVIEW_PLOT_WRAPPER">POES_OVERVIEW_PLOT_WRAPPER</A>
 <br>Generates daily overview plots for POES data - wrapper for poes_overview_plot
@@ -162,7 +163,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/po
 <A NAME="POES_LOAD_DATA">
 <H2>POES_LOAD_DATA</H2></A>
 <A HREF="#POES_INIT">[Previous Routine]</A>
-<A HREF="#POES_OVERVIEW_PLOT">[Next Routine]</A>
+<A HREF="#POES_NETCDF2TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Procedure: poes_load_data
@@ -202,16 +203,92 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/po
              /downloadonly: Download the file but don't read it  
  
  $LastChangedBy: dcarpenter $
- $LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
- $LastChangedRevision: 34465 $
+ $LastChangedDate: 2026-05-27 09:52:38 -0700 (Wed, 27 May 2026) $
+ $LastChangedRevision: 34498 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_load_data.pro $
 </PRE><P>
 <STRONG>(See <A href="poes/poes_load_data.pro">projects/poes/poes_load_data.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="POES_NETCDF2TPLOT">
+<H2>POES_NETCDF2TPLOT</H2></A>
+<A HREF="#POES_LOAD_DATA">[Previous Routine]</A>
+<A HREF="#POES_OVERVIEW_PLOT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+Procedure: poes_netcdf2tplot.pro
+
+Purpose:
+   Load NETCDF variables into tplot variables from POES/METOP data files
+     
+Keywords:
+   files        : Filepath to NETCDF file (string) 
+   temporal_dim : Name of expected NETCDF variable where temporal data is stored (string, default: 'record')
+   verbose      : For cdf_info_to_tplot; prints more statements
+   prefix       : For cdf_info_to_tplot; modifies tplot variable names
+   suffix       : For cdf_info_to_tplot; modifies tplot variable names
+   tplotnames   : Returned array of tplot variable names
+   load_labels  : keyword to copy labels from labl_ptr_1 in attributes into dlimits
+   
+ Output structure will have the following fields:
+     filename     : netCDFi.filename
+     nv           : netCDFi.nv (maybe update if skipping non-epoch variables?)
+     g_attributes (only one structure)
+     inq          (only one structure--essentially output of cdf_inquire())
+         nzvars   : default netCDFi.nv         (number of zvariables in structure)
+         ndims    : default 0                  (The longword integer specifying the number of dimensions in the rVariables in the current CDF)
+         DECODING : default 'HOST_DECODING'
+         ENCODING : default 'NETWORK_ENCODING'
+         MAJORITY : default 'ROW_MAJOR'
+         MAXREC   : default -1                 (integer specifying highest record number written in the rVariables in the current CDF. The MAXREC field will contain the value -1 if no rVariables have yet been written to the CDF.)
+         nvars    : default 0                  (integer specifying number of rVariables (regular variables) in the CDF.)
+         natts    : default netCDFi.nv         (integer specifying number of attributes in the CDF. includes both global and variable attributes. You can use the GET_NUMATTR keyword to the CDF_CONTROL routine to determine the number of each. why set to nv?)
+         dim      : default 0                  (A vector where each element contains the corresponding dimension size for the rVariables in the current CDF. For 0-dimensional CDF’s, this argument contains a single element (a zero). )
+     vars         (one for each variable)
+         name     : variable name
+         num      : variable index in structure
+         datatype : variable data type
+         type     : default 5       (variable type, see cdf_var_type in cdf_info)
+         is_zvar  : default 1       (designates zvariable)
+         numattr  : default -1      (update using attrptr)
+         numelem  : default 1       (number of elements???)
+         recvary  : default byte(1) (designates if variable is record-varying)
+         numrec   : default 1       (number of records?)
+         ndimen   : default 0       (number of dimensions?)
+         d        : default 0       (???)
+         dataptr
+         attrptr
+             CATDESC
+             DEPEND_0
+             DEPEND_1
+             DEPEND_2
+             DEPEND_3
+             DISPLAY_TYPE
+             FIELDNAM
+             FILLVAL
+             FORMAT (all not using FORM_PTR)
+             FORM_PTR (1D data, support_data, and metadata not using FORMAT)
+             LABLAXIS
+             LABL_PTR_1
+             LABL_PTR_2
+             LABL_PTR_3
+             UNITS (data and support_data not using UNIT_PTR)
+             UNIT_PTR (1D data and support_data not using UNITS)
+             VALIDMIN
+             VALIDMAX
+             VAR_TYPE
+             VAR_NOTES
+             MONOTON (Epoch)
+             TIME_BASE (for Epoch-- fixed (0AD, 1900, 1970 (POSIX), J2000 (used by CDF_TIME_TT2000), 4714 BC (Julian)) or flexible (provider-defined))
+             TIME_SCALE (for Epoch--TT (same as TDT, used by CDF_TIME_TT2000), TAI (same as IAT, TT-32.184s), UTC (includes leap seconds), TDB (same as SPICE ET), EME1950 [default: UTC] )
+             LEAP_SECONDS_INCLUDED (for Epoch--Recommended for UTC only)
+</PRE><P>
+<STRONG>(See <A href="poes/poes_netcdf2tplot.pro">projects/poes/poes_netcdf2tplot.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="POES_OVERVIEW_PLOT">
 <H2>POES_OVERVIEW_PLOT</H2></A>
-<A HREF="#POES_LOAD_DATA">[Previous Routine]</A>
+<A HREF="#POES_NETCDF2TPLOT">[Previous Routine]</A>
 <A HREF="#POES_OVERVIEW_PLOT_WRAPPER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -237,8 +314,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/po
        
 
  $LastChangedBy: dcarpenter $
- $LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
- $LastChangedRevision: 34465 $
+ $LastChangedDate: 2026-05-27 12:06:51 -0700 (Wed, 27 May 2026) $
+ $LastChangedRevision: 34500 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 </PRE><P>
 <STRONG>(See <A href="poes/poes_overview_plot.pro">projects/poes/poes_overview_plot.pro</A>)</STRONG><P>
@@ -310,8 +387,8 @@ NOTES:
 
 HISTORY:
 $LastChangedBy: dcarpenter $
-$LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
-$LastChangedRevision: 34465 $
+$LastChangedDate: 2026-05-27 12:06:51 -0700 (Wed, 27 May 2026) $
+$LastChangedRevision: 34500 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot_wrapper.pro $
 </PRE><P>
 <STRONG>(See <A href="poes/poes_overview_plot_wrapper.pro">projects/poes/poes_overview_plot_wrapper.pro</A>)</STRONG><P>

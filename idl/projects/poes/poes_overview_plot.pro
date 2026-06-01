@@ -21,8 +21,8 @@
 ;       
 ;
 ; $LastChangedBy: dcarpenter $
-; $LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
-; $LastChangedRevision: 34465 $
+; $LastChangedDate: 2026-05-27 12:06:51 -0700 (Wed, 27 May 2026) $
+; $LastChangedRevision: 34500 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot.pro $
 ;-
 
@@ -60,11 +60,7 @@ pro poes_overview_plot, date = date, probe = probe_in, duration = duration, erro
     
     timespan, date, duration, /day
     
-    if keyword_set(remote_source) then begin
-      poes_load_data, trange = [date,date], probes = probe_in, remote_source = remote_source
-    endif else begin
-      poes_load_data, probes = probe_in
-    endelse
+    poes_load_data, probes = probe_in, remote_source = remote_source
     
     poes_plots = probe_in+[$
       '_ted_ele_flux_tel0_fixed', $

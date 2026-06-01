@@ -142,8 +142,8 @@
 ;   and line color schemes for individual tplot variables using options.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-04-28 08:39:55 -0700 (Tue, 28 Apr 2026) $
-; $LastChangedRevision: 34398 $
+; $LastChangedDate: 2026-05-28 10:40:27 -0700 (Thu, 28 May 2026) $
+; $LastChangedRevision: 34502 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 ;
 ; Created by David Mitchell;  February 2023
@@ -158,12 +158,12 @@ pro color_table_crib
 ;; the predefined line color schemes, or completely custom line colors.  This example sets a
 ;; dark background, but many people prefer a light background.
 
-device,decompose=0,retain=2        ; specific to MacOS (settings for other OS's might be different)
-                                   ;   decompose=0 --> use color table with TrueColor display
-                                   ;   retain=2 --> IDL provides backing store (safest option)
-initct,1074,line=5,/rev,/spp,/sup  ; choose color table and line colors, use SPP Fields catalog
-!p.background = 0                  ; use tplot fixed color for background (0 = black by default)
-!p.color = 255                     ; use tplot fixed color for foreground (255 = white by default)
+device,decompose=0,retain=2      ; specific to MacOS (settings for other OS's might be different)
+                                 ;   decompose=0 --> use color table with TrueColor display
+                                 ;   retain=2 --> IDL provides backing store (safest option)
+initct,74,line=5,/rev,/spp,/sup  ; choose color table and line colors, use SPP Fields catalog
+!p.background = 0                ; use tplot fixed color for background (0 = black by default)
+!p.color = 255                   ; use tplot fixed color for foreground (255 = white by default)
 
 ;; To use color tables with the Z buffer, do the following:
 
@@ -241,6 +241,20 @@ showct, 123, /i, /cat, /spp
 
 showct, 125, /i, /spp
 showct, 84, /reverse, /i, /spp
+
+;; You can use initct and line_colors inside routines to temporarily change the color table
+;; and line colors for a particular plot, then restore the previous settings.  You can do this
+;; as many times as you like.  (This is how it's done in tplot.)
+
+initct, 74, /reverse, previous_ct=pct, previous_reverse=prev
+line_colors, 11, previous_lines=plines
+
+;; Make your plot(s), then ...
+
+initct, pct, reverse=prev
+line_colors, plines
+
+;; ... and the configuration will be the same as when you started.
 
 ;; Set a custom color table and line color scheme for any tplot variable.  This allows you
 ;; to use multiple color tables and/or line color schemes within a single multi-panel plot.

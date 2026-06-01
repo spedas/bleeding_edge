@@ -59,8 +59,8 @@
 ;
 ;HISTORY:
 ;$LastChangedBy: dcarpenter $
-;$LastChangedDate: 2026-05-18 12:57:52 -0700 (Mon, 18 May 2026) $
-;$LastChangedRevision: 34465 $
+;$LastChangedDate: 2026-05-27 12:06:51 -0700 (Wed, 27 May 2026) $
+;$LastChangedRevision: 34500 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/poes/poes_overview_plot_wrapper.pro $
 ;----------
 
@@ -226,7 +226,6 @@ pro poes_overview_plot_wrapper, date_start = date_start, date_end = date_end, $
     directory = base_dir + year03 + path_sep() + month03 + path_sep() + day03 + path_sep()
     
     if keyword_set(remote_source) then begin
-      ; VERIFY: does load routine handle missing data dir?
       for j=0, n_elements(probes)-1 do begin
         probe = probes[j]
         dprint, dlevel=1, "====================================================="

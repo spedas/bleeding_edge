@@ -70,9 +70,9 @@
 ;    15 (unsigned long64) 18446744073709551615
 ;HISTORY:
 ; 26-nov-2013, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2023-03-07 15:07:03 -0800 (Tue, 07 Mar 2023) $
-; $LastChangedRevision: 31598 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-05-27 09:42:37 -0700 (Wed, 27 May 2026) $
+; $LastChangedRevision: 34496 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/idl2cdftype.pro $
 ;-
 Function idl2cdftype, var, format_out=format_out, fillval_out=fillval_out, $
@@ -147,9 +147,11 @@ Case(size(var, /type)) Of        ;text code for type
     15: Begin
        otp = 'CDF_UINT8'
        format_out = 'I21'
-       fillval_out = 18446744073709551615
+       ;fillval_out = 18446744073709551615
+       fillval_out = 18446744073709551615ull
        validmin_out = 0
-       validmax_out = 18446744073709551615
+       ;validmax_out = 18446744073709551615
+       validmax_out = 18446744073709551615ull
     End
     Else: otp = ''
 Endcase
