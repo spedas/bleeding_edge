@@ -25,9 +25,9 @@
 ; Cribsheets that demonstrate Level 1a loading:
 ; - swfo_stis_sci_qflag_crib.pro: quality flag demo
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
-; $LastChangedRevision: 34309 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-06-03 10:25:50 -0700 (Wed, 03 Jun 2026) $
+; $LastChangedRevision: 34526 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -111,6 +111,7 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     modeled_sun_stis_angle_deg: !values.f_nan, $
     measured_sun_stis_angle_deg: !values.f_nan, $
     reaction_wheel_speed_rpm:  replicate(!values.f_nan,4), $
+    iru_bits: 0b,$
     quality_bits: 0ULl, $
     sci_resolution: 0b, $
     sci_translate: 0u, $
@@ -383,7 +384,19 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
     ; - Warning - APID does not exist for calibration datasets
     if sc_info_present ne 0 then begin
       l1a.reaction_wheel_speed_rpm = l0b.reaction_wheel_speed_rpm
-      reax_wheel_flag = abs(l0b.reaction_wheel_speed_rpm) gt cal.reaction_wheel_speed_threshold
+      l1a.iru_bits = l0b.iru_bits
+      if 0 then begin
+        reax_wheel_flag = abs(l0b.reaction_wheel_speed_rpm) gt cal.reaction_wheel_speed_threshold        
+      endif else begin
+        ;dprint
+        rw_min = cal.reaction_wheel_resonance_center - cal.reaction_wheel_resonance_width
+        rw_max = cal.reaction_wheel_resonance_center + cal.reaction_wheel_resonance_width
+        rw_dim = size(/dimen,rw_min)
+        wheel_speed = replicate(1,rw_dim[0]) # l0b.reaction_wheel_speed_rpm
+        reax_wheel_flag = wheel_speed gt rw_min and wheel_speed lt rw_max
+        reax_wheel_flag = total(reax_wheel_flag,1,/preserve) ne 0
+        
+      endelse
       q = q or ishft(reax_wheel_flag[0]*1ull, cal.high_reaction_wheel_speed_qflag_index[0])
       q = q or ishft(reax_wheel_flag[1]*1ull, cal.high_reaction_wheel_speed_qflag_index[1])
       q = q or ishft(reax_wheel_flag[2]*1ull, cal.high_reaction_wheel_speed_qflag_index[2])

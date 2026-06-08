@@ -1,9 +1,9 @@
 ;+
 ;
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
-; $LastChangedRevision: 34309 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-06-03 10:24:44 -0700 (Wed, 03 Jun 2026) $
+; $LastChangedRevision: 34525 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -63,9 +63,9 @@ end
 ; Test the function using :
 ; map = swfo_stis_adc_map(data_sample={ptcu_bits: [0, 0, 1, 0], detector_bits: [1, 0, 63], sci_resolution: 3, sci_translate: 16})
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
-; $LastChangedRevision: 34309 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-06-03 10:24:44 -0700 (Wed, 03 Jun 2026) $
+; $LastChangedRevision: 34525 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_adc_map.pro $
 ; $ID: $
 ;-
@@ -79,6 +79,12 @@ function swfo_stis_adc_map, data_sample=data_sample, cal=cal
     adcmap = dictionary()
     adcmap.codes = 0
   endif
+  
+  if ~keyword_set(data_sample) then begin
+    data_sample={ptcu_bits: [0, 0, 1, 0], detector_bits: [1, 0, 63], sci_resolution: 3, sci_translate: 16}
+    dprint,'data_sample set to default    
+  endif
+  
   ; adcmap.codes = 0
   
   ; These are the old struct value commands that returned a default

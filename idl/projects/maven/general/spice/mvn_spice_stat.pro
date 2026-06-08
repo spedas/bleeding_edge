@@ -52,8 +52,8 @@
 ;    SILENT:        Shhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-07-14 11:38:38 -0700 (Mon, 14 Jul 2025) $
-; $LastChangedRevision: 33462 $
+; $LastChangedDate: 2026-06-05 14:56:19 -0700 (Fri, 05 Jun 2026) $
+; $LastChangedRevision: 34551 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/general/spice/mvn_spice_stat.pro $
 ;
 ;CREATED BY:    David L. Mitchell  09/14/18
@@ -82,6 +82,8 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
              ck_sc_check   : 0       , $
              ck_app_check  : 0       , $
              all_check     : 0          }
+
+  los = time_double('2025-12-06/01:40:00')
 
   if (blab) then print,''
 
@@ -330,6 +332,11 @@ pro mvn_spice_stat, list=list, info=info, tplot=tplot, summary=summary, check=ch
     if (blab) then print,"    No APP CK coverage!"
     if (dobar) then y[*] = 1
   endelse
+
+  if (blab and summary.spk_trange[1] gt los) then begin
+    print,''
+    print,"  WARNING: SPK ephemeris is highly uncertain after 2025-12-06/01:40:00."
+  endif
 
   if (blab) then print,''
 

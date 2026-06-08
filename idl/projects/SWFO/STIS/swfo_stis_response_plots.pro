@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2024-01-03 22:37:44 -0800 (Wed, 03 Jan 2024) $
-; $LastChangedRevision: 32333 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-06-03 10:24:44 -0700 (Wed, 03 Jun 2026) $
+; $LastChangedRevision: 34525 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_response_plots.pro $
 ; $ID: $
 
@@ -10,7 +10,7 @@
 
  
 
-pro swfo_stis_response_plots,resp  ;,simstat,data,filter=f,window=win ,response=resp            ;,mapnum=mapnum,noise_level=noise_level,seed=seed
+pro swfo_stis_response_plots  ,simstat,data,filter=f,window=win ,response=resp            ;,mapnum=mapnum,noise_level=noise_level,seed=seed
   ;if ~ keyword_set(simstat) || ~ keyword_set(data) then return
   if not keyword_set(win) then win=1
   binscale=3

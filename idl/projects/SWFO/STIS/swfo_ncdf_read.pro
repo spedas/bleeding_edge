@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-02-17 22:04:16 -0800 (Tue, 17 Feb 2026) $
-; $LastChangedRevision: 34166 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-06-03 09:57:26 -0700 (Wed, 03 Jun 2026) $
+; $LastChangedRevision: 34524 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_read.pro $
 ; $ID: $
 
@@ -67,7 +67,7 @@ function swfo_ncdf_read,  dynarray=dynarray, filenames=filenames $
       ncdf_diminq,id,did,name,dimsize
       dim_sizes[did] = dimsize
       dim_names[did] = name
-      dprint,dlevel=3,verbose=verbose,did,"  ",name,dimsize
+      dprint,dlevel=4,verbose=verbose,did,"  ",name,dimsize
     endfor
 
     w = where(strlowcase(dim_names) eq recdimname,/null)

@@ -20,8 +20,8 @@
 ; - Mask keyword for errant data
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-02-20 17:03:51 -0800 (Fri, 20 Feb 2026) $
-; $LastChangedRevision: 34178 $
+; $LastChangedDate: 2026-06-05 15:21:55 -0700 (Fri, 05 Jun 2026) $
+; $LastChangedRevision: 34553 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/ace_load.pro $
 
 function ace_struct_template, instrument
@@ -137,8 +137,10 @@ end
 ; end
 
 ;
-; Downloads and stores preliminary ACE data from the ACE Real time Solar Wind (RTSW)
-; data archive on the ACE Science Center.
+; Downloads and stores real time solar wind data from
+; the ACE spacecraft from either the ACE Real time Solar Wind (RTSW)
+; data archive on the ACE Science Center, or the SOHOFTP NASCOM
+; archive (releases sooner than Ace Science Center).
 ; Available instrument + cadences:
 ; - EPAM: 5 min, 1 hr
 ; - SWEPAM: 1 min, 1 hr
@@ -146,11 +148,21 @@ end
 ; - SIS: 5 min, 1 hr
 ;
 
-pro ace_rtsw_load, instrument, data_struct, trange=trange, cadence=cadence, ext=ext, download=download
+pro ace_rtsw_load, instrument, data_struct, use_nascom=use_nascom,$
+  trange=trange, cadence=cadence, ext=ext, download=download
 
 
   if ~keyword_set(ext) then ext = 'txt'
   if ~keyword_set(cadence) then cadence = '1h'
+
+  ; RTSW lags 12 hours behind the data at
+  ; NASCOM SOHOFTP, which is what NOAA SWPC uses,
+  ; so if you are looking at sameday
+  ; data, pull from sohoftp instead.
+  ; Files are identical, so can use same load routine.
+  if ~keyword_set(use_nascom) then use_nascom = 0
+  if n_elements(trange) ne 2 then trange=timerange(trange)
+  if (trange[1] gt (systime(1)) - 60*60*24) then use_nascom = 1
 
   ; All lower case the instrument name:
   instrument = instrument.tolower()
@@ -172,13 +184,23 @@ pro ace_rtsw_load, instrument, data_struct, trange=trange, cadence=cadence, ext=
   endelse
 
   ; Construct the file names for the time range:
-  fname_daily = file_dailynames(file_format=fname,trange=tr,addmaster=addmaster, /unique)
+  fname_daily = file_dailynames(file_format=fname,trange=trange,addmaster=addmaster, /unique)
   ; Download file.
-  remote_path = "https://izw1.caltech.edu/ACE/ASC/DATA/RTSW/"
+
   psource = file_retrieve(/default_structure,local_data_dir=local_data_dir)
-  files = spd_download_plus(remote_file=fname_daily, remote_path=remote_path,$
-                            local_path=local_data_dir + 'ace/rtsw/',$
-                            url_username='SRL', url_password='ForthRules', /last_version)
+
+  if use_nascom then begin
+    remote_path = 'https://sohoftp.nascom.nasa.gov/sdb/goes/ace/daily/'
+    files = spd_download_plus(remote_file=fname_daily, remote_path=remote_path,$
+                              local_path=local_data_dir + 'ace/rtsw/', /last_version)
+  endif else begin
+    remote_path = "https://izw1.caltech.edu/ACE/ASC/DATA/RTSW/"
+    files = spd_download_plus(remote_file=fname_daily, remote_path=remote_path,$
+                              local_path=local_data_dir + 'ace/rtsw/',$
+                              url_username='SRL', url_password='ForthRules', /last_version)
+  endelse
+
+
   nfiles = n_elements(files)
   ; print, files
 
@@ -357,15 +379,20 @@ pro ace_quicklook_read, epam_struct
 end
 
 
-pro ace_rtsw_tplot, data_struct, instrument, prefix=prefix
+pro ace_rtsw_tplot, data_struct, instrument, prefix=prefix, spec=spec
 
   if ~keyword_set(prefix) then prefix = 'ace'
   prefix = prefix + '_' + instrument + '_'
 
   ; Parameters for a spectra plot with a logarithmic y and z axes
   ; with a spec range of 10^-2 to 10^3 and y range of 10-600 keV
-  dl = {spec: 1, ylog: 1, zrange: [1e-2, 1e3], zlog: 1}
-  l = {ystyle: 1, ylog: 1, yrange: [10, 6000]}
+  if keyword_set(spec) then begin
+    dl = {spec: 1, ylog: 1, zrange: [1e-2, 1e3], zlog: 1}
+    l = {ystyle: 1, ylog: 1, yrange: [10, 6000]}
+  endif else begin
+    dl = {ylog:1,ystyle:1}
+    l = {yrange:[1e-5,1e5]}
+  endelse
   time = data_struct.time_unix
 
   xyz_dl = {labflag: -1, labels:['Bx','By','Bz'],colors:'bgr'}
@@ -409,9 +436,12 @@ pro ace_rtsw_tplot, data_struct, instrument, prefix=prefix
   endif
 
 end
+;;;;;
+;
+; defaults: download on, tplot on, no quicklook
+;;;;
 
-
-pro ace_load, download=download, tplot=tplot, quicklook=quicklook,$
+pro ace_load, download=download, notplot=notplot, quicklook=quicklook,$
    trange=trange, cadence=cadence, ext=ext
 
   instruments = ['mag', 'sis', 'epam', 'swepam']
@@ -422,7 +452,7 @@ pro ace_load, download=download, tplot=tplot, quicklook=quicklook,$
     ace_rtsw_load, instruments[i], struct_rtsw, trange=trange,$
       cadence=cadence[i], ext=ext, download=download
 
-    if keyword_set(tplot) then ace_rtsw_tplot, struct_rtsw, instruments[i], prefix='ace_rtsw'
+    if ~keyword_set(notplot) then ace_rtsw_tplot, struct_rtsw, instruments[i], prefix='ace_rtsw'
 
   endfor
 
@@ -430,7 +460,7 @@ pro ace_load, download=download, tplot=tplot, quicklook=quicklook,$
   ; to be fixed for non epam:
   if keyword_set(quicklook) then begin
     ace_quicklook_read, epam_ql
-    if keyword_set(tplot) then ace_rtsw_tplot, epam_ql, 'epam', prefix='ace_ql'
+    if ~keyword_set(notplot) then ace_rtsw_tplot, epam_ql, 'epam', prefix='ace_ql'
   endif
 
 

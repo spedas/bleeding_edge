@@ -192,7 +192,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
 
           endforeach
 
-          if l0b_filetime lt l0a_filetime then begin
+          if  l0b_filetime lt l0a_filetime then begin
             dprint,'Reprocessing files for '+l0b_filename
 
             foreach type,types do begin
@@ -213,7 +213,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
             append = 0
             dprint,'Computing L0b',dlevel=2
             l0b = swfo_stis_sci_level_0b(datahash=datahash)
-            l0b_da = dynamicarray(l0b,name='stis_l0b',/nocopy)
+            l0b_da = dynamicarray(l0b,name='stis_l0b',/no_copy)
             datahash['stis_l0b'] = l0b_da
             l0b_da.ncdf_make_file,resolution = 24*3600d      ,pathformat=pathname0,  append=append
 
@@ -228,7 +228,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
 
             dprint,'Computing L1a',dlevel=2
             l1a =swfo_stis_sci_level_1a(l0b_da.array)
-            l1a_da =  dynamicarray(name='stis_l1a', l1a ,/nocopy )
+            l1a_da =  dynamicarray(name='stis_l1a', l1a ,/no_copy )
             datahash['stis_l1a'] = l1a_da
             l1a_da.ncdf_make_file,resolution = 24*3600d  ,pathformat=pathname0,  append=append
 
@@ -240,7 +240,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
 
             dprint,'Computing L1b',dlevel=2
             l1b = swfo_stis_sci_level_1b(l1a_da.array)
-            l1b_da =  dynamicarray(name='stis_l1b',l1b,/nocopy )
+            l1b_da =  dynamicarray(name='stis_l1b',l1b,/no_copy )
             datahash['stis_l1b'] = l1b_da
             l1b_da.ncdf_make_file,resolution = 24*3600d   ,pathformat=pathname0,  append=append
 
@@ -298,7 +298,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
   ;  Start of load
 
   store=1
-  if ~isa(lowres) then lowres = 0
+  if ~isa(lowres) then lowres = 1
   if n_elements(trange) ne 2 then trange=timerange(trange)   ;systime(1) + [-1,0]*3600d*24*current
 
   if ~isa(types) then begin

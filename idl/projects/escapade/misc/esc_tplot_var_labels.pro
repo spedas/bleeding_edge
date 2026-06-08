@@ -11,8 +11,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-02-18 12:18:56 -0800 (Wed, 18 Feb 2026) $
-; $LastChangedRevision: 34172 $
+; $LastChangedDate: 2026-06-05 14:28:39 -0700 (Fri, 05 Jun 2026) $
+; $LastChangedRevision: 34550 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/misc/esc_tplot_var_labels.pro $
 ;
 ;-
@@ -25,7 +25,9 @@ PRO esc_tplot_var_labels, data=data, limits=limits
   str_element, tlim, 'xstyle', 5, /add
   IF tag_exist(tlim, 'ytitle', /quiet) THEN str_element, tlim, 'ytitle', /delete
   IF tag_exist(tlim, 'constant', /quiet) THEN str_element, tlim, 'constant', /delete
+  IF tag_exist(tlim, 'labels', /quiet) THEN str_element, tlim, 'labels', /delete
   data.y[*] = !values.f_nan
+  
   mplot, data=data, limits=TEMPORARY(tlim)
 
   chsize = limits.charsize

@@ -16,11 +16,11 @@
 ;     alt_cal = swfo_ncdf_read(filenames='<NETCDF_FILENAME_HERE>')
 ;     printdat, alt_cal
 ; 
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-03-30 13:08:46 -0700 (Mon, 30 Mar 2026) $
-; $LastChangedRevision: 34309 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-06-05 00:50:33 -0700 (Fri, 05 Jun 2026) $
+; $LastChangedRevision: 34537 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 34309 2026-03-30 20:08:46Z davin-mac $
+; $Id: swfo_stis_inst_response_calval.pro 34537 2026-06-05 07:50:33Z davin $
 
 
 
@@ -57,7 +57,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
 
   nan = !values.f_nan
   ; if calval.isempty() then begin
-  if  0 && ~keyword_set(save) then begin
+  if  1 && ~keyword_set(save) then begin
     ; 1/27/26: new default behavior is to read the groundlut
     ; in the SWFO/STIS directory:
     groundlut_da = swfo_ncdf_read(filenames=[groundlut_path])
@@ -185,6 +185,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.noise_sigma_threshold = [0.84, 1.4, 1.05, 0.84, 1.4, 1.05]
     calval.count_rate_threshold = [10e3, 10e3, 10e3, 10e3, 10e3, 10e3]
     calval.reaction_wheel_speed_threshold = [2000, 2000, 2000, 2000]
+    
     calval.dap_temperature_range = [-35., 50.]
     calval.sensor_1_temperature_range = [-50., 45.]
     calval.sensor_2_temperature_range = [-50., 45.]
@@ -286,7 +287,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34309 2026-03-30 20:08:46Z davin-mac $'
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34537 2026-06-05 07:50:33Z davin $'
     dprint,'Using Revision: '+calval.rev_date
 
 
@@ -410,6 +411,21 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
   names_fto = strsplit('1 2 12 3 13 23 123',/extract)
   names_fto = reform( transpose( [['O-'+names_fto],['F-'+names_fto]]))
   calval.names_fto = names_fto
+  
+  calval.reaction_wheel_resonance_center =  [ $
+    [ -4000., -2700, -2300, -1174.,  1174., 2300, 2700, 4000, 9999, 9999, 9999, 9999 ]  ,  $      ; Wheel 1
+    [ -4000, -2700, -2300, -1174.,  1174., 2300, 2700, 4000, 9999, 9999, 9999, 9999 ]  ,  $      ; Wheel 2
+    [ -4000, -2700, -2300, -1174.,  1174., 2300, 2700, 4000, 9999, 9999, 9999, 9999 ]  ,  $      ; Wheel 3
+    [ -4000, -2700, -2300, -1174.,  1174., 2300, 2700, 4000, 9999, 9999, 9999, 9999 ]  ]         ; Wheel 4
+
+
+  calval.reaction_wheel_resonance_width =  [ $
+    [  1000.,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 1
+    [  1000,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 2
+    [  1000,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 3
+    [  1000,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ]         ; Wheel 4
+
+
 
   swfo_stis_inst_response_calval_dict  = calval
 
