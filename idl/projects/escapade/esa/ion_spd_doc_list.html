@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jun  6 15:45:59 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jun 13 03:17:56 2026.<P>
  
 <HR>
  
@@ -30,6 +30,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#ESC_IESA_FM1_ANO">ESC_IESA_FM1_ANO</A>
 <LI><A HREF="#ESC_IESA_FM1_SCI">ESC_IESA_FM1_SCI</A>
 <LI><A HREF="#ESC_IESA_FM1_TOF">ESC_IESA_FM1_TOF</A>
+<LI><A HREF="#ESC_IESA_GET_F4D">ESC_IESA_GET_F4D</A>
+<LI><A HREF="#ESC_IESA_GET_FM">ESC_IESA_GET_FM</A>
+<LI><A HREF="#ESC_IESA_GET_SW">ESC_IESA_GET_SW</A>
 <LI><A HREF="#ESC_IESA_LOAD">ESC_IESA_LOAD</A>
 <LI><A HREF="#ESC_IESA_SCI_LUTS">ESC_IESA_SCI_LUTS</A>
 <LI><A HREF="#ESC_IESA_STRUCT">ESC_IESA_STRUCT</A>
@@ -224,7 +227,7 @@ This page was created by the IDL library routine
 <A NAME="ESC_IESA_FM1_TOF">
 <H2>ESC_IESA_FM1_TOF</H2></A>
 <A HREF="#ESC_IESA_FM1_SCI">[Previous Routine]</A>
-<A HREF="#ESC_IESA_LOAD">[Next Routine]</A>
+<A HREF="#ESC_IESA_GET_F4D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -243,9 +246,120 @@ This page was created by the IDL library routine
 <STRONG>(See <A href="ion/esc_iesa_fm1_tof.pro">projects/escapade/esa/ion/esc_iesa_fm1_tof.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="ESC_IESA_GET_F4D">
+<H2>ESC_IESA_GET_F4D</H2></A>
+<A HREF="#ESC_IESA_FM1_TOF">[Previous Routine]</A>
+<A HREF="#ESC_IESA_GET_FM">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        ESC_IESA_GET_F4D
+
+PURPOSE:         Returns EESA-i Fine 4D (F4D) data stored in common blocks.
+
+INPUTS:          The spacecraft is specified via the /blue or /gold keyword.
+
+KEYWORDS:
+
+      BLUE:      Specifies the BLUE spacecraft.
+
+      GOLD:      Specifies the GOLD spacecraft.
+
+     INDEX:      Returns the data structure corresponding to the specified index stored in common blocks.
+
+     TIMES:      Returns an array of times for all available data.
+
+   DYNAMIC:      If set, returns the data structure as a dynamic array.
+
+CREATED BY:      Takuya Hara on 2026-06-08.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-06-10 15:08:38 -0700 (Wed, 10 Jun 2026) $
+ $LastChangedRevision: 34567 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_get_f4d.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ion/esc_iesa_get_f4d.pro">projects/escapade/esa/ion/esc_iesa_get_f4d.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ESC_IESA_GET_FM">
+<H2>ESC_IESA_GET_FM</H2></A>
+<A HREF="#ESC_IESA_GET_F4D">[Previous Routine]</A>
+<A HREF="#ESC_IESA_GET_SW">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        ESC_IESA_GET_FM
+
+PURPOSE:         Returns EESA-i Fine Masses (FM) data stored in common blocks.
+
+INPUTS:          The spacecraft is specified via the /blue or /gold keyword.
+
+KEYWORDS:
+
+      BLUE:      Specifies the BLUE spacecraft.
+
+      GOLD:      Specifies the GOLD spacecraft.
+
+     INDEX:      Returns the data structure corresponding to the specified index stored in common blocks.
+
+     TIMES:      Returns an array of times for all available data.
+
+   DYNAMIC:      If set, returns the data structure as a dynamic array.
+
+CREATED BY:      Takuya Hara on 2026-06-08.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-06-10 15:08:38 -0700 (Wed, 10 Jun 2026) $
+ $LastChangedRevision: 34567 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_get_fm.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ion/esc_iesa_get_fm.pro">projects/escapade/esa/ion/esc_iesa_get_fm.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="ESC_IESA_GET_SW">
+<H2>ESC_IESA_GET_SW</H2></A>
+<A HREF="#ESC_IESA_GET_FM">[Previous Routine]</A>
+<A HREF="#ESC_IESA_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+FUNCTION:        ESC_IESA_GET_SW
+
+PURPOSE:         Returns EESA-i Solar Wind (SW) data stored in common blocks.
+
+INPUTS:          The spacecraft is specified via the /blue or /gold keyword.
+
+KEYWORDS:
+
+      BLUE:      Specifies the BLUE spacecraft.
+
+      GOLD:      Specifies the GOLD spacecraft.
+
+     INDEX:      Returns the data structure corresponding to the specified index stored in common blocks.
+
+     TIMES:      Returns an array of times for all available data.
+
+   DYNAMIC:      If set, returns the data structure as a dynamic array.
+
+CREATED BY:      Takuya Hara on 2026-06-08.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-06-10 15:08:38 -0700 (Wed, 10 Jun 2026) $
+ $LastChangedRevision: 34567 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_get_sw.pro $
+
+</PRE><P>
+<STRONG>(See <A href="ion/esc_iesa_get_sw.pro">projects/escapade/esa/ion/esc_iesa_get_sw.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ESC_IESA_LOAD">
 <H2>ESC_IESA_LOAD</H2></A>
-<A HREF="#ESC_IESA_FM1_TOF">[Previous Routine]</A>
+<A HREF="#ESC_IESA_GET_SW">[Previous Routine]</A>
 <A HREF="#ESC_IESA_SCI_LUTS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -286,8 +400,8 @@ CREATED BY:      Takuya Hara on 2026-02-07.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2026-05-13 14:45:03 -0700 (Wed, 13 May 2026) $
- $LastChangedRevision: 34454 $
+ $LastChangedDate: 2026-06-11 12:10:14 -0700 (Thu, 11 Jun 2026) $
+ $LastChangedRevision: 34575 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_load.pro $
 
 </PRE><P>
@@ -391,8 +505,8 @@ CREATED BY:      Gwen Hanley &amp; Takuya Hara on 2026-02-22.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2026-05-02 16:19:25 -0700 (Sat, 02 May 2026) $
- $LastChangedRevision: 34422 $
+ $LastChangedDate: 2026-06-08 17:13:48 -0700 (Mon, 08 Jun 2026) $
+ $LastChangedRevision: 34561 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 
 </PRE><P>

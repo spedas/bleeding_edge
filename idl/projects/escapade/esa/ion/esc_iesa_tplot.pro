@@ -14,8 +14,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-05-02 16:19:25 -0700 (Sat, 02 May 2026) $
-; $LastChangedRevision: 34422 $
+; $LastChangedDate: 2026-06-08 17:13:48 -0700 (Mon, 08 Jun 2026) $
+; $LastChangedRevision: 34561 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 ;
 ;-
@@ -45,9 +45,11 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   ; Fine 4D (f4d)
   cvar = 'escp_iesa_f4d'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
-     ;COMMON esc_iesa_f4d_com, escb_iesa_f4d, escg_iesa_f4d
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
-     undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_f4d_com')")
+
+     IF SIZE(SCOPE_VARFETCH(prefix + '_par', common='esc_iesa_f4d_com'), /type) EQ 8 THEN $
+        dat = esc_iesa_get_f4d(minmax(esc_iesa_get_f4d(/times, blue=2-i, gold=i-1)), blue=2-i, gold=i-1) $
+     ELSE undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_f4d_com')")
 
      IF ~is_struct(dat) THEN CONTINUE
 
@@ -117,7 +119,9 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   cvar = 'escp_iesa_fm'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
-     undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_fm_com')")
+     IF SIZE(SCOPE_VARFETCH(prefix + '_par', common='esc_iesa_fm_com'), /type) EQ 8 THEN $
+        dat = esc_iesa_get_fm(minmax(esc_iesa_get_fm(/times, blue=2-i, gold=i-1)), blue=2-i, gold=i-1) $
+     ELSE undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_fm_com')")
 
      IF ~is_struct(dat) THEN CONTINUE
 
@@ -172,7 +176,10 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
      IF i EQ 1 THEN probe = prob.replace('P', 'B') ELSE probe = prob.replace('P', 'G')
-     undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_sw_com')")
+
+     IF SIZE(SCOPE_VARFETCH(prefix + '_par', common='esc_iesa_sw_com'), /type) EQ 8 THEN $
+        dat = esc_iesa_get_sw(minmax(esc_iesa_get_sw(/times, blue=2-i, gold=i-1)), blue=2-i, gold=i-1) $
+     ELSE undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_sw_com')")
 
      IF ~is_struct(dat) THEN CONTINUE
 
