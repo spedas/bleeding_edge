@@ -19,9 +19,11 @@
 ;   type: type of calibrated data cps, nflux, eflux
 ;   probe:  name of probe 'a' or 'b'
 ;   nodownload: set this flag to force routine to use local files 
-;   deadtime_corr: set this flag to zero to not correct for deadtime, or to your preferred deadtime (default = 8.e-6 seconds)
+;   deadtime_corr: Deprecated, but left in place to prevent older codes from crashing
+;   apply_deadtime_corr: Flag to apply the paralyzable detector correction for count rate saturation
 ;   
 ;AUTHOR:
+; 2026-02-23 (CW) added in the paralyzable detector correction for count rate saturation. deadtime_corr keyword is now deprecated; apply_deadtime_corr flag added to make use of it
 ; 2021-03-21 (VA) added capability for summed spins [normalizes cps etc. accordingly]
 ;                        also vectorized dt (accumulation time) division, avoiding do-loops (faster)
 ; 2021-02-19 (VA) fixed: dt to median over spin (does not falter if it includes gaps)
@@ -34,7 +36,7 @@
 ;-
 
 PRO elf_cal_epd, tplotname=tplotname, trange=trange, type=type, probe=probe, $
-    no_download=no_download, deadtime_corr=my_deadtime, nspinsinsum=my_nspinsinsum
+    no_download=no_download, deadtime_corr=my_deadtime, nspinsinsum=my_nspinsinsum, apply_deadtime_corr=apply_deadtime_corr
 
   if undefined(probe) then probe = strmid(tplotname, 2, 1) else probe = probe
   sc='el'+probe
@@ -78,6 +80,8 @@ PRO elf_cal_epd, tplotname=tplotname, trange=trange, type=type, probe=probe, $
      dprint, dlevel = 1, 'EPD calibration data was not retrieved. Unable to calibrate the data.'
      return
   endif
+  
+  if undefined(apply_deadtime_corr) then apply_deadtime_corr = !false
   ;
   ; setup variables
   num_samples = (size(d.x))[1]
@@ -94,21 +98,41 @@ PRO elf_cal_epd, tplotname=tplotname, trange=trange, type=type, probe=probe, $
   n_energies=n_elements(ebins)
   mynrgyra=make_array(n_energies,/float,value=1.)
   ;
-  ; ... for dead time correction
-  if ~keyword_set(my_deadtime) then begin $
-    my_deadtime = 1./(1.02*1.25e5) ; [default ~ 2% above ~max cps in data (after overaccum. corr.) of 125Kcps corresponds to 8.e-6 us peak hold in front preamp] 
-    print, 'Deadtime correction applied with default deadtime; to not apply set deadtime_corr= 0. or a tiny value, e.g. 1.e-9'
+
+  ; New paralyzable detector dead time correction
+  ; -- old deadtime_corr is now deprecated; warn if used
+  
+  if (keyword_set(my_deadtime) && (my_deadtime ne 0.)) then begin
+    print,'Warning: deadtime_corr keyword is now deprecated! Please use /apply_deadtime_corr flag instead (see elf_cal_epd_old.pro for reference)'
   endif
-  ;
+  max_cps_para = 1.02/(2.4e-6) ; this is the paralyzable detector time constant from the 2.4us rise time of the preamp pulse-shaper, scaled by 1/e (from the maximum of w*e^{-w}) -- it a fixed property of the instrument, resulting in a max rate 1/e times lower
   dt= (my_nspinsinsum*(dspinper.y/n_sectors)*overint_factors[dsectnum.y]) # mynrgyra ; accumulation time
   ;
   ; Perform calibration
+  if apply_deadtime_corr then begin
+    print, 'Applying paralyzable detector model count rate correction'
+  endif else begin
+    print, 'No detector deadtime correction applied (use /apply_deadtime_corr to enable)'
+  endelse
   Case type of
     'raw': store_data, tplotname, data={x:d.x, y:d.y, v:findgen(n_energies) }, dlimits=dl, limits=l
     'cps': begin
       d.y=d.y/dt ; this is cps now
-      totcps=total(d.y,2,/NaN)#mynrgyra 
-      d.y=d.y/(1.0 -totcps*my_deadtime) ; deadtime correction
+      if (apply_deadtime_corr) then begin
+        ; each energy channel's counts are summed downward from the top to compute the effective argument to lambert W function for that particular channel
+        ; form the channel count summing matrix (16x16) for efficient vectorized adding
+        ch_summing_mat = fltarr(16,16)
+        for i = 0, 15, 1 do begin
+          for j = 0, 15, 1 do begin
+            if (j ge i) then ch_summing_mat[i,j]=1.
+          endfor
+        endfor
+        d_y_cpy = d.y ; copy this to preserve 0-count channels
+        ch_summing_mat = transpose(ch_summing_mat) ; transpose to follow tplot row/column ordering
+        d.y = -1.*max_cps_para*lambertw(-1.*d.y#ch_summing_mat/max_cps_para) ; corrected cps via lambert W inversion on the real branch closest to 0
+        d.y[where(d_y_cpy eq 0.)] = 0. ; if a channel had no counts, assume 0 counts is the true total (replacing lambert sum value)
+      endif
+      
       ineg=where(total(d.y,2,/NaN) lt 0,jneg) ; only reason for negatives is deadtime corr.
       if jneg gt 0 then begin
         d.y[ineg,*]=0
@@ -120,8 +144,20 @@ PRO elf_cal_epd, tplotname=tplotname, trange=trange, type=type, probe=probe, $
     end
     'nflux': begin
       d.y=d.y/dt ; this is cps now
-      totcps=total(d.y,2,/NaN)#mynrgyra 
-      d.y=d.y/(1.0 -totcps*my_deadtime) ; deadtime correction
+      if (apply_deadtime_corr) then begin
+        ; each energy channel's counts are summed downward from the top to compute the effective argument to lambert W function for that particular channel
+        ; form the channel count summing matrix (16x16) for efficient vectorized adding
+        ch_summing_mat = fltarr(16,16)
+        for i = 0, 15, 1 do begin
+          for j = 0, 15, 1 do begin
+            if (j ge i) then ch_summing_mat[i,j]=1.
+          endfor
+        endfor
+        d_y_cpy = d.y ; copy this to preserve 0-count channels
+        ch_summing_mat = transpose(ch_summing_mat) ; transpose to follow tplot row/column ordering
+        d.y = -1.*max_cps_para*lambertw(-1.*d.y#ch_summing_mat/max_cps_para) ; corrected cps via lambert W inversion on the real branch closest to 0
+        d.y[where(d_y_cpy eq 0.)] = 0. ; if a channel had no counts, assume 0 counts is the true total (replacing lambert sum value)
+      endif
       d.y=d.y*(mytimesra#(cal_ch_factors/dE)) ; relative energy calibration and division by dE
       ineg=where(total(d.y,2,/NaN) lt 0,jneg) ; only reason for negatives is deadtime cor.
       if jneg gt 0 then begin
@@ -134,8 +170,20 @@ PRO elf_cal_epd, tplotname=tplotname, trange=trange, type=type, probe=probe, $
     end
     'eflux': begin
       d.y=d.y/dt ; this is cps now
-      totcps=total(d.y,2,/NaN)#mynrgyra 
-      d.y=d.y/(1.0 -totcps*my_deadtime) ; deadtime correction
+      if (apply_deadtime_corr) then begin
+        ; each energy channel's counts are summed downward from the top to compute the effective argument to lambert W function for that particular channel
+        ; form the channel count summing matrix (16x16) for efficient vectorized adding
+        ch_summing_mat = fltarr(16,16)
+        for i = 0, 15, 1 do begin
+          for j = 0, 15, 1 do begin
+            if (j ge i) then ch_summing_mat[i,j]=1.
+          endfor
+        endfor
+        d_y_cpy = d.y ; copy this to preserve 0-count channels
+        ch_summing_mat = transpose(ch_summing_mat) ; transpose to follow tplot row/column ordering
+        d.y = -1.*max_cps_para*lambertw(-1.*d.y#ch_summing_mat/max_cps_para) ; corrected cps via lambert W inversion on the real branch closest to 0
+        d.y[where(d_y_cpy eq 0.)] = 0. ; if a channel had no counts, assume 0 counts is the true total (replacing lambert sum value)
+      endif
       d.y=d.y*(mytimesra#(ebins_logmean*cal_ch_factors/dE)) ; relative energy calibration and division by dE
       ineg=where(total(d.y,2,/NaN) lt 0,jneg) ; only reason for negatives is deadtime cor.
       if jneg gt 0 then begin

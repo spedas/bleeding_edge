@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jun 13 03:17:56 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jun 20 03:16:18 2026.<P>
  
 <HR>
  
@@ -67,9 +67,11 @@ KEYWORDS:
    type: type of calibrated data cps, nflux, eflux
    probe:  name of probe 'a' or 'b'
    nodownload: set this flag to force routine to use local files 
-   deadtime_corr: set this flag to zero to not correct for deadtime, or to your preferred deadtime (default = 8.e-6 seconds)
+   deadtime_corr: Deprecated, but left in place to prevent older codes from crashing
+   apply_deadtime_corr: Flag to apply the paralyzable detector correction for count rate saturation
    
 AUTHOR:
+ 2026-02-23 (CW) added in the paralyzable detector correction for count rate saturation. deadtime_corr keyword is now deprecated; apply_deadtime_corr flag added to make use of it
  2021-03-21 (VA) added capability for summed spins [normalizes cps etc. accordingly]
                         also vectorized dt (accumulation time) division, avoiding do-loops (faster)
  2021-02-19 (VA) fixed: dt to median over spin (does not falter if it includes gaps)

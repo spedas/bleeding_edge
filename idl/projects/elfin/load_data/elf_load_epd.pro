@@ -50,6 +50,7 @@
 ;         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
 ;                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
 ;         no_spec:      flag to set tplot options to linear rather than the default of spec
+;         apply_deadtime_corr: apply the paralyzable detector correction (deprecated deadtime_corr keyword)
 ;
 ; EXAMPLES:
 ;         to load/plot the EPD data for probe a on 2/20/2019:
@@ -73,7 +74,7 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   varformat = varformat, cdf_filenames = cdf_filenames, no_download=no_download, $
   cdf_version = cdf_version, cdf_records = cdf_records, $
   spdf = spdf, versions = versions, tt2000=tt2000, $
-  nspinsinsum=my_nspinsinsum
+  nspinsinsum=my_nspinsinsum, apply_deadtime_corr=apply_deadtime_corr
 ;stop  
   if (~undefined(trange) && n_elements(trange) eq 2) && (time_double(trange[1]) lt time_double(trange[0])) then begin
     dprint, dlevel = 0, 'Error, endtime is before starttime; trange should be: [starttime, endtime]'
@@ -135,6 +136,8 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
     endif
   endif
   
+  if undefined(apply_deadtime_corr) then apply_deadtime_corr = !false
+  
   Case type of
     'raw': unit = 'counts/sector'
     'cps': unit = 'counts/s'
@@ -162,7 +165,7 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
 
   ; Level 1 Post processing - calibration and fix meta data 
   if level eq 'l1' then elf_epd_l1_postproc, tplotnames, trange=trange, type=type, suffix=suffix, $
-    my_nspinsinsum=my_nspinsinsum, unit=unit, no_spec=no_spec, no_download=no_download
+    my_nspinsinsum=my_nspinsinsum, unit=unit, no_spec=no_spec, no_download=no_download, apply_deadtime_corr=apply_deadtime_corr
 
   ; Level 2 Post processing - calibration and fix meta data
   if level eq 'l2' then begin

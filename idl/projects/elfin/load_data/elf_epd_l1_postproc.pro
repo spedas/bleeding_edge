@@ -16,6 +16,7 @@
 ;                       preserving original tplot variable.
 ;         no_download:  specify this keyword to load only data available on the local disk
 ;         mynspinsinsum: number of spins in sum which is needed by the calibration routine 
+;         apply_deadtime_corr: apply the paralyzable detector dead time correction (deprecates deadtime_corr)
 ;
 ; NOTES:  This routine is called when loading epd level 1 data
 ;
@@ -25,7 +26,8 @@
 ;$LastChangedRevision: 25588 $
 ;-
 pro elf_epd_l1_postproc, tplotnames, trange=trange, type=type, suffix=suffix, $
-    my_nspinsinsum=my_nspinsinsum, unit=unit, no_spec=no_spec, no_download=no_download
+    my_nspinsinsum=my_nspinsinsum, unit=unit, no_spec=no_spec, no_download=no_download, $
+    apply_deadtime_corr=apply_deadtime_corr
 
   ; Post processing - calibration and fix meta data
   ; first calibrate spinper to turn it to seconds
@@ -83,7 +85,7 @@ pro elf_epd_l1_postproc, tplotnames, trange=trange, type=type, suffix=suffix, $
     if undefined(my_nspinsinsum) then my_nspinsinsum=1
     ; calibrate data
     elf_cal_epd, tplotname=tplotnames[i], trange=trange, type=type, no_download=no_download, $
-      nspinsinsum=my_nspinsinsum
+      nspinsinsum=my_nspinsinsum,apply_deadtime_corr=apply_deadtime_corr
     get_data, tplotnames[i], data=d, dlimits=dl, limits=l
     if size(d, /type) EQ 8 then begin
       dl.ysubtitle=unit

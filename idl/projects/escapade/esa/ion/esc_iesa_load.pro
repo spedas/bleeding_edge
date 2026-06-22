@@ -36,8 +36,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-06-11 12:10:14 -0700 (Thu, 11 Jun 2026) $
-; $LastChangedRevision: 34575 $
+; $LastChangedDate: 2026-06-15 15:43:47 -0700 (Mon, 15 Jun 2026) $
+; $LastChangedRevision: 34585 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_load.pro $
 ;
 ;-
@@ -78,6 +78,7 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
   rpath = phases[ip] + '/probe/eesai/'
 
   IF undefined(product) THEN prod = 'f4d' ELSE prod = product
+  prod = prod.tolower()
   IF ~undefined(ipath) THEN yyyymm = ''
 
   IF KEYWORD_SET(all) THEN aflg = 1 ELSE aflg = 0

@@ -26,9 +26,9 @@
 ;         By default output will be called: input_name+'_RE'
 ;
 ;
-;$LastChangedBy: adrozdov $
-;$LastChangedDate: 2019-03-26 12:08:00 -0700 (Tue, 26 Mar 2019) $
-;$LastChangedRevision: 26907 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-06-20 01:49:27 -0700 (Sat, 20 Jun 2026) $
+;$LastChangedRevision: 34594 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tkm2re.pro $
 ;-
 
@@ -110,7 +110,10 @@ for i = 0,n_elements(names)-1 do begin
      endif
      
    endif
-
+   ; For some reason data_att.units units isn't getting updated above if they already exist. (IDL 9.0/Mac/arm64)
+   ; str_element ensures that data_att.units now exists, so we'll just do an assignment here.
+   ; jwl 2026-06-20
+   dl.data_att.units=label
    store_data,newnames[i],data=d,dlimits=dl,limits=l
 
 endfor
