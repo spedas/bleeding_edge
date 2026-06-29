@@ -40,7 +40,10 @@
 ;
 ;   Colors 0 and 255 are usually associated with !p.background and !p.color.  For a light
 ;   background, set !p.background = 255 and !p.color = 0.  Do the opposite for a dark
-;   background.  Use revvid to toggle between these options.
+;   background.  Use revvid to toggle between these options.  Bottom_c and top_c are common
+;   block parameters (colors_com) that allow tplot and many related routines to correctly 
+;   interpret the 3x256-element array.  (This is the main source of incompatibility between
+;   loadcsv and loadct2.)
 ;
 ;   There are many possible color tables, because each table uses only 248 out of more than
 ;   16 million available colors.  The standard catalog has table numbers from 0 to 75, while
@@ -142,8 +145,8 @@
 ;   and line color schemes for individual tplot variables using options.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-05-28 10:40:27 -0700 (Thu, 28 May 2026) $
-; $LastChangedRevision: 34502 $
+; $LastChangedDate: 2026-06-25 15:17:24 -0700 (Thu, 25 Jun 2026) $
+; $LastChangedRevision: 34606 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 ;
 ; Created by David Mitchell;  February 2023
@@ -161,7 +164,7 @@ pro color_table_crib
 device,decompose=0,retain=2      ; specific to MacOS (settings for other OS's might be different)
                                  ;   decompose=0 --> use color table with TrueColor display
                                  ;   retain=2 --> IDL provides backing store (safest option)
-initct,74,line=5,/rev,/spp,/sup  ; choose color table and line colors, use SPP Fields catalog
+initct,74,/rev,line=5,/spp,/sup  ; choose color table and line colors, use SPP Fields catalog
 !p.background = 0                ; use tplot fixed color for background (0 = black by default)
 !p.color = 255                   ; use tplot fixed color for foreground (255 = white by default)
 
@@ -201,6 +204,10 @@ line_colors, 5, graybkg=[198,198,198]
 ;; Poke arbitrary RGB colors into indices 1 and 4 of the current line color scheme.
 
 line_colors, mycolors={ind:[1,4], rgb:[[198,83,44],[18,211,61]]}
+
+;; Show an annotated catalog of the pre-defined line color schemes in a separate window.
+
+line_colors, /cat
 
 ;; Use an intensity-based, rainbow-like color table (1074).  Reverse the table, so that blue is
 ;; low and red is high.  Use line colors suitable for the color blind.

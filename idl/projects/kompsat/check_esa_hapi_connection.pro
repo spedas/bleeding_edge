@@ -15,8 +15,8 @@
 ;
 ;
 ;$LastChangedBy: nikos $
-;$LastChangedDate: 2026-03-19 10:51:14 -0700 (Thu, 19 Mar 2026) $
-;$LastChangedRevision: 34275 $
+;$LastChangedDate: 2026-06-25 11:08:07 -0700 (Thu, 25 Jun 2026) $
+;$LastChangedRevision: 34599 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/kompsat/check_esa_hapi_connection.pro $
 ;-
 
@@ -117,7 +117,7 @@ FUNCTION esa_hapi__http_request, url, METHOD=method, HEADER=header, POST_FIELDS=
 
   output = ''
   exit_status = 1L
-  SPAWN, cmd, output, /SH, EXIT_STATUS=exit_status
+  SPAWN, cmd, output, EXIT_STATUS=exit_status
 
   status_code = 0L
   IF exit_status NE 0 THEN RETURN, ''

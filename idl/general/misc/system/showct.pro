@@ -62,8 +62,8 @@
 ;              more functionality, but only for the current color table.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-02-03 13:34:12 -0800 (Mon, 03 Feb 2025) $
-; $LastChangedRevision: 33110 $
+; $LastChangedDate: 2026-06-25 12:26:44 -0700 (Thu, 25 Jun 2026) $
+; $LastChangedRevision: 34601 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/showct.pro $
 ;-
 pro showct, color_table, reverse=color_reverse, line_clrs=lines, mycolors=mycolors, $
@@ -295,5 +295,7 @@ pro showct, color_table, reverse=color_reverse, line_clrs=lines, mycolors=mycolo
   wset, wnum
   if (vswap) then revvid
   initct, pct, rev=prev, line=plines, file=ct_file
+
+  i = check_math()  ; suppress divide-by-zero error
 
 end

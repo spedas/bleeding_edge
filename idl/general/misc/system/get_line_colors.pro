@@ -8,7 +8,7 @@
 ;
 ;   To set custom line colors for any tplot panel do one of the following:
 ;
-;       lines = n  ; where 0 <= n <= 10
+;       lines = n  ; where 0 <= n <= 11
 ;       options, varname, 'line_colors', lines
 ;
 ;       lines = get_line_colors(line_clrs, KEYWORD=value, ...)
@@ -49,6 +49,9 @@
 ;           8  : see https://www.nature.com/articles/nmeth.1618, except no yellow
 ;           9  : same as 8 but permuted so vector defaults are blue, orange, reddish purple
 ;          10  : Chaffin's CSV line colors, suitable for colorblind vision
+;          11  : same as 5, except tweaks for blue and green for better contrast on white
+;
+;        For a visual display of the line color schemes: line_colors, /cat
 ;
 ;   If there is no input and no keywords are set, this routine returns the current
 ;   line colors.
@@ -86,8 +89,8 @@
 ;   colors_com:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-12-31 18:28:15 -0800 (Tue, 31 Dec 2024) $
-; $LastChangedRevision: 33023 $
+; $LastChangedDate: 2026-06-25 15:17:24 -0700 (Thu, 25 Jun 2026) $
+; $LastChangedRevision: 34606 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/get_line_colors.pro $
 ;
 ;Created by David Mitchell;  February 2023

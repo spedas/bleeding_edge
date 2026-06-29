@@ -1,23 +1,29 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2023-12-18 16:02:04 -0800 (Mon, 18 Dec 2023) $
-; $LastChangedRevision: 32305 $
+; $LastChangedDate: 2026-06-26 16:33:12 -0700 (Fri, 26 Jun 2026) $
+; $LastChangedRevision: 34608 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l2/load/psp_fld_rfs_load_l2.pro $
 ;
 ;-
 
 pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
-  varformat = vars_fmt, level = level
+  varformat = vars_fmt, level = level, prefix = prefix, suffix = suffix, $
+  tplotnames = tn
   compile_opt idl2
+
+  if n_elements(prefix) eq 0 then prefix = ''
+  if n_elements(suffix) eq 0 then suffix = ''
 
   if n_elements(level) eq 0 then level = 2
 
   if strpos(files[0], '_l3_') gt -1 then level = 3
 
   if n_elements(files) eq 0 and n_elements(hfr_only) eq 0 and n_elements(lfr_only) eq 0 then begin
-    psp_fld_rfs_load_l2, /hfr_only
-    psp_fld_rfs_load_l2, /lfr_only
+    psp_fld_rfs_load_l2, /hfr_only, prefix = prefix, suffix = suffix, $
+      tplotnames = tn
+    psp_fld_rfs_load_l2, /lfr_only, prefix = prefix, suffix = suffix, $
+      tplotnames = tn
 
     return
   endif else if n_elements(files) eq 0 then begin
@@ -29,7 +35,8 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
 
     if valid_count gt 0 then begin
       filenames = files[valid_files]
-      psp_fld_rfs_load_l2, filenames
+      psp_fld_rfs_load_l2, filenames, prefix = prefix, suffix = suffix, $
+        tplotnames = tn
     end
 
     return
@@ -57,7 +64,8 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
     endfor
   endif
 
-  cdf2tplot, files, varformat = vars_fmt, varnames = varnames, tplotnames = tn
+  cdf2tplot, files, varformat = vars_fmt, varnames = varnames, tplotnames = tn, $
+    prefix = prefix, suffix = suffix
 
   meta_end = ['averages', 'peaks', 'ch0', 'ch1', 'string', $
     'nsum', 'gain', 'hl', 'J2000', 'RTN', 'JUPITER', 'bias']
@@ -75,7 +83,7 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
     if (strpos(var, 'position') eq -1) and $
       (strpos(var, 'temperature') eq -1) and $
       (strpos(var, 'distance') eq -1) then begin
-      if tnames(var) eq var and var ne 'psp_fld_l2_quality_flags' $
+      if tnames(prefix + var + suffix) eq prefix + var + suffix and var ne 'psp_fld_l2_quality_flags' $
         and var ne 'psp_fld_l3_quality_flags' then begin
         split = strsplit(var, '_', /extract)
 
@@ -86,6 +94,8 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
         if strpos(var, '_lfr_') gt 0 then rec = 'LFR'
 
         if rec eq 'HFR' then colors = [2] else colors = [6]
+
+        var = prefix + var + suffix
 
         is_meta = (where(meta_end eq split[-1]) gt -1)
 
@@ -288,8 +298,8 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
   endfor
 
   if level eq 3 then begin
-    l3_new_names = tnames('psp_fld_l3_rfs_' + strlowcase(rec) + '_' + $
-      ['PSD_FLUX', 'PSD_SFU', 'STOKES_V'])
+    l3_new_names = tnames(prefix + 'psp_fld_l3_rfs_' + strlowcase(rec) + '_' + $
+      ['PSD_FLUX', 'PSD_SFU', 'STOKES_V'] + suffix)
 
     foreach name, l3_new_names do begin
       ytitle = strjoin(strupcase((strsplit(name, '_', /ex))[-3 : -1]), '!C')
@@ -308,7 +318,7 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
       endelse
     endforeach
 
-    l3_pos_tnames = tnames('psp_fld_l3_rfs_?fr_position*')
+    l3_pos_tnames = tnames(prefix + 'psp_fld_l3_rfs_?fr_position*' + suffix)
 
     foreach name, l3_pos_tnames do begin
       frame = name.remove(0, 27)
@@ -334,10 +344,10 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
       options, name, 'panel_size'
     endforeach
 
-    l3_temp_tnames = tnames('psp_fld_l3_rfs_' + strlowcase(rec) + '_temperature_*')
+    l3_temp_tnames = tnames(prefix + 'psp_fld_l3_rfs_' + strlowcase(rec) + '_temperature_*' + suffix)
 
     foreach name, l3_temp_tnames, l3_temp_tnames_i do begin
-      sensor = name.remove(0, 30)
+      sensor = name.remove(strlen(prefix) + 0, strlen(prefix) + 30)
 
       options, name, 'ytitle', sensor + ' Temp'
       options, name, 'ysubtitle', '[C]'
@@ -360,9 +370,9 @@ pro psp_fld_rfs_load_l2, files, hfr_only = hfr_only, lfr_only = lfr_only, $
       options, name, 'panel_size'
     endforeach
 
-    store_data, l3_temp_tnames[0].subString(0, 29), data = l3_temp_tnames
+    store_data, prefix + l3_temp_tnames[0].subString(strlen(prefix) + 0, strlen(prefix) + 29) + suffix, data = l3_temp_tnames
 
-    options, l3_temp_tnames[0].subString(0, 29), 'ytitle', 'Temp'
+    options, prefix + l3_temp_tnames[0].subString(strlen(prefix) + 0, strlen(prefix) + 29) + suffix, 'ytitle', 'Temp'
   endif
 
   ; For quality flag filtering support

@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2023
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2026-06-11 15:56:52 -0700 (Thu, 11 Jun 2026) $
-; $LastChangedRevision: 34576 $
+; $LastChangedDate: 2026-06-26 16:33:12 -0700 (Fri, 26 Jun 2026) $
+; $LastChangedRevision: 34608 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -527,7 +527,8 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
       ;
 
       if strmatch(type, 'rfs_?fr') then begin
-        psp_fld_rfs_load_l2, files, varformat = varformat
+        psp_fld_rfs_load_l2, files, varformat = varformat, $
+          prefix = tname_prefix, suffix = tname_suffix, tplotnames = tn
       endif else if strmatch(type, 'tds_wf') then begin
         psp_fld_tds_wf_load_l2, files, varformat = varformat, $
           prefix = tname_prefix, suffix = tname_suffix, $

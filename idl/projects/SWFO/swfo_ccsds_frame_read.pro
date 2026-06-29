@@ -129,10 +129,12 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
 
 
   if ~isa(station,'string') then  station = 'WCD'
+  
+  object_dir = 'ops'
 
   case station of
     'WCD': begin
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/mth/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
+      pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFOWCD/YYYY/mth/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
       rdr.source_dict.station = 1
       source.resolution = 3600
       if ~keyword_set(files) then begin
@@ -151,7 +153,7 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
       frames_name = 'swfo_frame_data'
     end
     'RXWCD': begin
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFORXWCD/YYYY/mth/YYYYMMDD/OR_SWFORXWCD-L0_SL1_sYYYYDOYhh'
+      pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFORXWCD/YYYY/mth/YYYYMMDD/OR_SWFORXWCD-L0_SL1_sYYYYDOYhh'
       rdr.source_dict.station = 3
       source.resolution = 3600
       allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
@@ -168,7 +170,7 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
       frames_name = 'swfo_frame_data'
     end
     'CBU': begin
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOCBU/YYYY/mth/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh'
+      pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFOCBU/YYYY/mth/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh'
       rdr.source_dict.station = 2
       source.resolution = 3600
       allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
@@ -185,7 +187,7 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
       frames_name = 'swfo_frame_data'
     end
     'RXCBU': begin
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFORXCBU/YYYY/mth/YYYYMMDD/OR_SWFORXCBU-L0_SL1_sYYYYDOYhh'
+      pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFORXCBU/YYYY/mth/YYYYMMDD/OR_SWFORXCBU-L0_SL1_sYYYYDOYhh'
       rdr.source_dict.station = 4
       source.resolution = 3600
       allfiles = file_retrieve(pathname+'*.nc',_extra=source,trange=trange,verbose=2)  ; get All the files first
@@ -251,7 +253,7 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
     end
     2: begin
       pathname = 'swfo/aws/L0/SWFOWCD/YYYY/MM/DD/OR_SWFOWCD-L0_SL1_s*.nc'
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/jan/YYYYMMDD/OR_SWFOWCD-L0_SL1_s*.nc'
+      pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFOWCD/YYYY/jan/YYYYMMDD/OR_SWFOWCD-L0_SL1_s*.nc'
       source.resolution = 24L*3600
       allfiles = file_retrieve(pathname,_extra=source,trange=trange)  ; get All the files first
       fileformat =  file_basename(str_sub(pathname,'*.nc','YYYYDOYhhmm'))
@@ -261,8 +263,8 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
       frames_name = 'swfo_frame_data'
     end
     2.5: begin
-      ;pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/jan/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh*.nc'
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOWCD/YYYY/MM/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh*.nc'
+      ;pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFOWCD/YYYY/jan/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh*.nc'
+      pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFOWCD/YYYY/MM/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh*.nc'
       source.resolution = 3600
       allfiles = file_retrieve(pathname,_extra=source,trange=trange,verbose=2)  ; get All the files first
       fileformat =  file_basename(str_sub(pathname,'*.nc',''))
@@ -279,7 +281,7 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
     end
     3: begin
       pathname = 'swfo/aws/L0/SWFOCBU/YYYY/MM/DD/OR_SWFOCBU-L0_SL1_s*.nc'
-      pathname = 'swfo/aws/preplt/SWFO-L1/l0/SWFOCBU/YYYY/MM/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh*.nc'
+      pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFOCBU/YYYY/MM/YYYYMMDD/OR_SWFOCBU-L0_SL1_sYYYYDOYhh*.nc'
       source.resolution = 3600
       allfiles = file_retrieve(pathname,_extra=source,trange=trange)  ; get All the files first
       fileformat =  file_basename(str_sub(pathname,'*.nc',''))

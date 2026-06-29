@@ -34,8 +34,8 @@
 ;       Use 'mvn_ngi_read_csv' to load ql data
 ;
 ; $LastChangedBy: haraday $
-; $LastChangedDate: 2024-01-03 16:19:22 -0800 (Wed, 03 Jan 2024) $
-; $LastChangedRevision: 32331 $
+; $LastChangedDate: 2026-06-25 18:11:05 -0700 (Thu, 25 Jun 2026) $
+; $LastChangedRevision: 34607 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/ngi/mvn_ngi_load.pro $
 ;-
 
@@ -116,6 +116,8 @@ pro mvn_ngi_load, mspec=mspec, trange=trange, filetype=filetype, verbose=verbose
      ;;; read in files and store data into structures
      for i_file=0,n_elements(f)-1 do begin
         dprint,dlevel=1,verbose=verbose,'reading in '+f[i_file]
+        info = file_info(f[i_file])
+        if info.size eq 0 then continue ;- skip 0B files
         if float(!version.release) lt 8. then begin
            if i_file eq 0 then d = read_csv(f[i_file],header=dh) else begin
               dold = d
