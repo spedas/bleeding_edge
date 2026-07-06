@@ -6,9 +6,9 @@
 ; 
 ; In the future this will include instructions for looking at flight data:  IN PROG 
 ; 
-; $LastChangedBy: phyllisw3 $
-; $LastChangedDate: 2024-03-25 15:00:30 -0700 (Mon, 25 Mar 2024) $
-; $LastChangedRevision: 32503 $
+; $LastChangedBy: phyllisw $
+; $LastChangedDate: 2026-07-01 11:58:12 -0700 (Wed, 01 Jul 2026) $
+; $LastChangedRevision: 34614 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/sweap/SPAN/electron/spp_swp_spane_crib.pro $
 ;--------------------------------------------------------------------
 
@@ -87,6 +87,16 @@ trange = '2020 ' + ['09 12/01:11:53', '10 03/13:03:54']   ;;-- ENCOUNTER 6 --;;
 trange = '2021 ' + ['01 09/14:48:06', '01 28/02:13:59']   ;;-- ENCOUNTER 7 --;;
 trange = '2021 ' + ['04 20/05:48:37', '05 05/05:05:06']   ;;-- ENCOUNTER 8 --;;
 trange = '2021 ' + ['08 02/00:21:18', '08 15/14:19:09']   ;;-- ENCOUNTER 9 --;;
+trange = '2021 ' + ['11 14/00:00:38', '11 30/11:20:54']   ;;-- ENCOUNTER 10 -;;
+trange = '2022 ' + ['02 13/21:59:29', '03 03/02:02:39']   ;;-- ENCOUNTER 11 -;;
+trange = '2022 ' + ['05 20/16:29:37', '06 11/10:03:52']   ;;-- ENCOUNTER 12 -;;
+trange = '2022 ' + ['08 28/05:07:06', '09 11/23:47:12']   ;;-- ENCOUNTER 13 -;;
+trange = '2022 ' + ['11 27/23:59:09', '12 28/21:10:03']   ;;-- ENCOUNTER 14 -;;
+trange = '2023 ' + ['03 09/20:25:59', '03 20/09:38:43']   ;;-- ENCOUNTER 15 -;; # something weird with this one.
+trange = '2023 ' + ['06 13/03:45:26', '06 30/15:02:00']   ;;-- ENCOUNTER 16 -;;
+trange = '2023 ' + ['09 21/16:59:27', '10 04/22:20:06']   ;;-- ENCOUNTER 17 -;;
+trange = ['2023 12 23/09:55:05', '2024 01 04/06:00:47']   ;;-- ENCOUNTER 18 -;;
+trange = '2024 ' + ['03 20/23:49:58', '04 08/04:25:47']   ;;-- ENCOUNTER 19 -;;
 
 ;;----SPAN-E Flight Commissioning Data----;;
 trange = '2018 09 ' + ['05/20','06/18'] ; first light / first HV ramp up, table 10-10 or 5-5

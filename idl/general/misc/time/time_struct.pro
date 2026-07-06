@@ -54,8 +54,8 @@
 ;CREATED BY:    Davin Larson  Oct 1996
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-; $LastChangedRevision: 33563 $
+; $LastChangedDate: 2026-07-02 19:10:38 -0700 (Thu, 02 Jul 2026) $
+; $LastChangedRevision: 34618 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/time_struct.pro $
 ;-
 function time_struct,time,epoch=epoch,no_clean=no_clean,$
@@ -103,7 +103,7 @@ if ndim eq 0 then tsts =tst0 else tsts = make_array(value=tst0,dim=dim)
 if keyword_set(epoch) then return,time_struct(time_double(time,epoch=epoch),timezone=timezone)
 
 
-if dt eq 5 or dt eq 4 or dt eq 3 or dt eq 14 then begin         ; input is a double or integer
+if dt eq 5 or dt eq 4 or dt eq 3 or dt eq 14 or dt eq 13 then begin         ; input is a double or integer
     good = where(finite(time),ngood)
     if  ngood gt 0 then begin
         ltime = time[good]

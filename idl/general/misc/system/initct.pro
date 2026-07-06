@@ -110,6 +110,8 @@
 ;
 ;       SHOW:         Show the color table in a separate window after loading.
 ;
+;       RGB_TABLE:    Returns the color table as a 256x3 array.
+;
 ;       The next three keywords are mutually exclusive.  You can only set one.  They
 ;       are listed in order of precedence: the first one set disables the others.
 ;
@@ -133,8 +135,8 @@
 ;       SUCCESS:      Returns 1 if the routine finishes normally, 0 otherwise.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-02-03 13:34:12 -0800 (Mon, 03 Feb 2025) $
-; $LastChangedRevision: 33110 $
+; $LastChangedDate: 2026-07-01 11:02:08 -0700 (Wed, 01 Jul 2026) $
+; $LastChangedRevision: 34612 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/initct.pro $
 ;
 ;Created by David L. Mitchell (February 2023)
@@ -142,7 +144,8 @@
 
 pro initct, ctab, reverse=rv, line_clrs=ln, mycolors=mc, color_names=cn, graybkg=gb, $
                   previous_ct=previous_ct, previous_rev=previous_rev, show=show, $
-                  std=std, spp=spp, file=file, suppress=suppress, success=ok
+                  std=std, spp=spp, file=file, suppress=suppress, rgb_table=rgb_table, $
+                  success=ok
 
   @colors_com
   ok = 0
@@ -192,10 +195,13 @@ pro initct, ctab, reverse=rv, line_clrs=ln, mycolors=mc, color_names=cn, graybkg
 
   if (ct lt 1000) then begin
     loadct2, ct, reverse=rv, line_clrs=ln, mycolors=mc, line_color_names=cn, $
-                 graybkg=gb, previous_ct=previous_ct, previous_rev=previous_rev
+                 graybkg=gb, previous_ct=previous_ct, previous_rev=previous_rev, $
+                 rgb_table=rgb_table
   endif else begin
     loadcsv, ct, reverse=rv, line_clrs=ln, mycolors=mc, line_color_names=cn, $
-                 graybkg=gb, previous_ct=previous_ct, previous_rev=previous_rev, /silent
+                 graybkg=gb, previous_ct=previous_ct, previous_rev=previous_rev, $
+                 rgb_table=rgb_table, /silent
+    rgb_table = transpose(rgb_table)
   endelse
 
   if keyword_set(show) then showct

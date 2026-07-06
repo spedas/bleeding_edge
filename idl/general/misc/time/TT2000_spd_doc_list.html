@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jun 27 03:17:07 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Jul  3 03:17:37 2026.<P>
  
 <HR>
  
@@ -22,6 +22,10 @@ This page was created by the IDL library routine
 <LI><A HREF="#ADD_TT2000_OFFSET">ADD_TT2000_OFFSET</A>
 <LI><A HREF="#CDF_LEAP_SECOND_INIT">CDF_LEAP_SECOND_INIT</A>
 <LI><A HREF="#CRIB_TT2000">CRIB_TT2000</A>
+<LI><A HREF="#SPD_TAI2UNIX">SPD_TAI2UNIX</A>
+<br>Converts TAI times (epoch 1958, leap seconds included) to unix times.
+<LI><A HREF="#SPD_UNIX2TAI">SPD_UNIX2TAI</A>
+<br>Converts Unix times (epoch 1970, no leap seconds) to TAI times (epoch 1958, leap seconds included)
 <LI><A HREF="#TEST_UNIX_TO_TT2000_VECT">TEST_UNIX_TO_TT2000_VECT</A>
 <LI><A HREF="#TT2000_2_UNIX">TT2000_2_UNIX</A>
 <br>Converts TT2000 times to unix times. This function converts the input time
@@ -126,7 +130,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <A NAME="CRIB_TT2000">
 <H2>CRIB_TT2000</H2></A>
 <A HREF="#CDF_LEAP_SECOND_INIT">[Previous Routine]</A>
-<A HREF="#TEST_UNIX_TO_TT2000_VECT">[Next Routine]</A>
+<A HREF="#SPD_TAI2UNIX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -144,9 +148,67 @@ Notes: Requires CDF 3.4.0 or newer
 <STRONG>(See <A href="TT2000/crib_tt2000.pro">general/misc/time/TT2000/crib_tt2000.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_TAI2UNIX">
+<H2>SPD_TAI2UNIX</H2></A>
+<A HREF="#CRIB_TT2000">[Previous Routine]</A>
+<A HREF="#SPD_UNIX2TAI">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION:
+         spd_tai2unix
+
+ PURPOSE:
+         Converts TAI times (epoch 1958, leap seconds included) to unix times. 
+
+ INPUT:
+         time: time values in TT2000
+
+ EXAMPLE:
+         IDL&gt; unix_time = spd_tai2unix(0.0d)
+         IDL&gt; unix_time
+               -378691200.00000000
+         IDL&gt; time_string(unix_time)
+         1958-01-01/00:00:00
+
+$LastChangedBy: jwl $
+$LastChangedDate: 2026-07-02 19:09:32 -0700 (Thu, 02 Jul 2026) $
+$LastChangedRevision: 34617 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/spd_tai2unix.pro $
+</PRE><P>
+<STRONG>(See <A href="TT2000/spd_tai2unix.pro">general/misc/time/TT2000/spd_tai2unix.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPD_UNIX2TAI">
+<H2>SPD_UNIX2TAI</H2></A>
+<A HREF="#SPD_TAI2UNIX">[Previous Routine]</A>
+<A HREF="#TEST_UNIX_TO_TT2000_VECT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ FUNCTION:
+         spd_unix2tai
+
+ PURPOSE:
+         Converts Unix times (epoch 1970, no leap seconds) to TAI times (epoch 1958, leap seconds included)
+ INPUT:
+         tinput: Unix time values 
+
+ EXAMPLE:
+         IDL&gt; tai_time = spd_unix2tai(0.0d)
+         IDL&gt; tai_time
+                378691208.00137800
+
+
+$LastChangedBy: jwl $
+$LastChangedDate: 2026-07-02 19:09:32 -0700 (Thu, 02 Jul 2026) $
+$LastChangedRevision: 34617 $
+$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/spd_unix2tai.pro $
+</PRE><P>
+<STRONG>(See <A href="TT2000/spd_unix2tai.pro">general/misc/time/TT2000/spd_unix2tai.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TEST_UNIX_TO_TT2000_VECT">
 <H2>TEST_UNIX_TO_TT2000_VECT</H2></A>
-<A HREF="#CRIB_TT2000">[Previous Routine]</A>
+<A HREF="#SPD_UNIX2TAI">[Previous Routine]</A>
 <A HREF="#TT2000_2_UNIX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

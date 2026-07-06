@@ -138,8 +138,8 @@
 ;   "initct","line_colors","get_line_colors","loadcsv","get_colors","colors_com","bytescale"
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-03-05 09:49:05 -0800 (Sun, 05 Mar 2023) $
-; $LastChangedRevision: 31584 $
+; $LastChangedDate: 2026-07-01 11:01:47 -0700 (Wed, 01 Jul 2026) $
+; $LastChangedRevision: 34611 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/CSV_Color_Tables/loadcsv.pro $
 ;
 ;CSV color table code: Mike Chaffin
@@ -148,7 +148,7 @@
 pro loadcsv, colortbl, reset=reset, previous_ct=previous_ct, previous_rev=previous_rev, $
                        reverse=crev, catalog=catalog, mycolors=mycolors, line_clrs=line_clrs, $
                        line_color_names=line_color_names, color_names=color_names, graybkg=graybkg, $
-                       _EXTRA = ex
+                       rgb_table=rgb_table, _EXTRA = ex
 
   @colors_com  ; allows loadcsv to communicate with loadct2
   common qualcolors_com, qualcolors
@@ -233,7 +233,7 @@ pro loadcsv, colortbl, reset=reset, previous_ct=previous_ct, previous_rev=previo
   qualcolors.color_table = ctab                ; external table number for tplot
   qualcolors.color_reverse = crev              ; color reverse flag
   ctab -= 1000                                 ; internal table number for loadcsvcolorbar2
-  loadcsvcolorbar2, ctab, reverse=crev, _EXTRA = ex
+  loadcsvcolorbar2, ctab, reverse=crev, rgb_table=rgb_table, _EXTRA = ex
   qualcolors.table_name = file_basename(ctab)  ; corresponding filename
 
 ; Tell tplot and loadct2 what happened

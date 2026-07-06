@@ -21,6 +21,12 @@
 ;               for which you want the indices of the nearest neighbors in
 ;               time1.
 ;
+;   Note: If time1 or time2 is a string, then it must be in the default
+;         format: "YYYY-MM-DD/hh:mm:ss".  See time_double for details.
+;         If you are using a custom format, or if your time(s) are TT2000,
+;         PB5 or Epoch, or when in doubt, convert to time_double yourself 
+;         before using this routine.
+;
 ;OUTPUTS:
 ;   i:          Indices of the nearest neighbors in time1 to the elements of
 ;               time2.  Note that i indexes time1 and has the same number of
@@ -50,8 +56,8 @@
 ;               the complement of VINDEX.  Only works when VALID is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-08-06 08:29:17 -0700 (Tue, 06 Aug 2024) $
-; $LastChangedRevision: 32779 $
+; $LastChangedDate: 2026-07-01 11:03:05 -0700 (Wed, 01 Jul 2026) $
+; $LastChangedRevision: 34613 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/nn2.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2018-08-23
