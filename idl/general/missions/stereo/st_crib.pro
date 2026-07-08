@@ -142,7 +142,7 @@ endif
    probe = 'b'
    dopad = 1
    if dopad then begin
-   st_mag_load,type=magres
+   st_mag_load,resolution='8hz'
 ;   xyz_to_polar,'st?_B_'+magres+'_SC'
 ;   xyz_to_polar,'st?_B_'+magres+'_RTN'
    options,'st?_B_*_inst_th',constant=[-60,60.],yrange=[-90,90],/ystyle
