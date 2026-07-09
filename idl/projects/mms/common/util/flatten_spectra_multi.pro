@@ -12,8 +12,8 @@
 ;       [XY]LOG:   [XY] axis in log format
 ;       [XY]RANGE: 2 element vector that sets [XY] axis range
 ;       NOLEGEND:  Disable legend display
-;       COLORS:    n element vector that sets the colors of the line in order that they are in tplot_vars.options.varnames
-;                  n is number of tplot variables in tplot_vars.options.varnames
+;       COLORS:    n element vector that sets the colors of the spectra in order of the selected times
+;                  n is the number of selected times/spectra
 ;             
 ;       PNG:         save png from the displayed windows (cannot be used with /POSTRSCRIPT keyword)
 ;       POSTRSCRIPT: create postscript files instead of displaying the plot
@@ -23,6 +23,7 @@
 ;       
 ;       TIME:        if the keyword is specified the time is determined from the variable, not from the cursor pick.
 ;       TRANGE:      Two-element time range over which data will be averaged. 
+;                    If TIME and TRANGE are both supplied, TRANGE is used and the representative time is the range midpoint.
 ;       SAMPLES:     Number of nearest samples to time to average. Override trange.      
 ;       WINDOW:      Length in seconds over which data will be averaged. Override trange.
 ;       CENTER_TIME: Flag denoting that time should be midpoint for window instead of beginning.
@@ -136,11 +137,6 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
   leg_y = 0.04
   leg_dy = 0.04
   
-  ; user defined plot options
-  if ~KEYWORD_SET(colors) then begin
-    colors = indgen(num_spec,start=0,increment=2)
-  endif
-  
   if ~undefined(thick) && n_elements(thick) ne num_spec && n_elements(thick) ne 1 then begin
     dprint, dlevel=0, 'Error, the number of elements in thick keyword should match the number of times'
     undefine, thick
@@ -154,11 +150,16 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
   if n_elements(thick) eq 1 then thick = replicate(thick, num_spec)
   if n_elements(linestyle) eq 1 then linestyle = replicate(linestyle, num_spec)
   
-  if keyword_set(time_in) then begin
-    selected_times = time_double(time_in)
-    colors = indgen(n_elements(selected_times),start=0,increment=2)
+  if ~undefined(trange_in) then begin
+    trange = minmax(time_double(trange_in))
+    selected_times = trange[0] + (trange[1] - trange[0]) / 2.
     store_data, 'flatten_spectra_time_multi', data={x: selected_times, y: 1}
-  endif
+  endif else begin
+    if keyword_set(time_in) then begin
+      selected_times = time_double(time_in)
+      store_data, 'flatten_spectra_time_multi', data={x: selected_times, y: 1}
+    endif
+  endelse
   
   if undefined(selected_times) then begin
     for time_idx=0, num_spec-1 do begin
@@ -170,6 +171,11 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
     store_data, 'flatten_spectra_time_multi', data={x: selected_times, y: 1}
   endif 
   
+  ; user defined plot options; color index 0 is valid, so do not use KEYWORD_SET here
+  if undefined(colors) || n_elements(colors) lt n_elements(selected_times) then begin
+    colors = indgen(n_elements(selected_times),start=0,increment=2)
+  endif
+
   ;
   ; Plot or save to the file
   ;
