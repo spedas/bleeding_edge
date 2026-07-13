@@ -10,6 +10,7 @@
 ;  However, it also works on signed integers, which introduces an
 ;  ambiguity, for example:
 ;
+;                   MSB                             LSB
 ;    65533 = FF FD = 1 1 1 1 1 1 1 1 - 1 1 1 1 1 1 0 1
 ;       -3 = FF FD = 1 1 1 1 1 1 1 1 - 1 1 1 1 1 1 0 1
 ;
@@ -30,8 +31,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2023-08-11 09:09:54 -0700 (Fri, 11 Aug 2023) $
-; $LastChangedRevision: 31985 $
+; $LastChangedDate: 2026-07-10 13:06:17 -0700 (Fri, 10 Jul 2026) $
+; $LastChangedRevision: 34633 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/nibble.pro $
 ;
 ;CREATED BY:	David L. Mitchell,  January 1998
@@ -52,6 +53,6 @@ function nibble, i
            end
   endcase
 
-  return, byte(ishft(i,-indgen(nbits)) mod 2B)
+  return, byte(ishft(i,-indgen(nbits))) mod 2B
 
 end
