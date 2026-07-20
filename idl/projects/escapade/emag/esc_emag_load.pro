@@ -39,8 +39,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-18 17:09:18 -0700 (Sat, 18 Apr 2026) $
-; $LastChangedRevision: 34381 $
+; $LastChangedDate: 2026-07-15 15:02:11 -0700 (Wed, 15 Jul 2026) $
+; $LastChangedRevision: 34643 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/emag/esc_emag_load.pro $
 ;
 ;-
@@ -110,7 +110,11 @@ PRO esc_emag_load, itime, verbose=verbose, level=level, no_server=no_server, blu
               options, tname, /def, labels=['X', 'Y', 'Z'], labflag=-1, constant=0., colors='bgr'
               suffix = STRSPLIT(tname, '_', /extract)
               IF is_string(suffix) THEN suffix = suffix[-1] ELSE suffix = (suffix.toarray())[*, -1]
-              FOR j=0, N_ELEMENTS(tname)-1 DO options, tname[j], /def, ytitle=(probes[i]).toupper() + '!CB' + suffix[j]
+              FOR j=0, N_ELEMENTS(tname)-1 DO BEGIN
+                 get_data, tname[j], dl=dl
+                 options, tname[j], /def, ytitle=(probes[i]).toupper() + '!CB' + suffix[j], spice_frame=dl.cdf.vatt.spice_frame
+                 undefine, dl
+              ENDFOR 
               append_array, rname, tname
            ENDIF
            get_data, tname[0], data=d

@@ -25,8 +25,8 @@
 ;  
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-02-13 11:10:00 -0800 (Fri, 13 Feb 2026) $
-;$LastChangedRevision: 34146 $
+;$LastChangedDate: 2026-07-13 10:03:36 -0700 (Mon, 13 Jul 2026) $
+;$LastChangedRevision: 34634 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/particles/mms_convert_flux_units.pro $
 ;-
 pro mms_convert_flux_units,dist,units=units,output=output
@@ -53,21 +53,22 @@ endif
 if units_in eq 'psd' then units_in = 'df_km'
 if units_out eq 'psd' then units_out = 'df_km'
 
-;get mass of species
+;get mass/charge ratio of species
 case species_lc of
-   'i': A=1;H+
-   'proton': A=1;H+
-   'hplus': A=1;H+
-   'heplus': A=4;He+
-   'heplusplus': A=4;He++
-   'oplus': A=16;O+
-   'oplusplus': A=16;O++
-   'e': A=1d/1836;e-
+   'i':         a_over_q=1.0
+   'proton':    a_over_q=1.0
+   'hplus':     a_over_q=1.0
+   'heplus':    a_over_q=4.0
+   'heplusplus': a_over_q=2.0
+   'oplus':      a_over_q=16.0
+   'oplusplus':  a_over_q=8.0
+   'e':          a_over_q=1.0/1836.0
+
    else: message, 'Unknown species: '+species_lc
 endcase
 
 ;scaling factor between df and flux units
-flux_to_df = A^2 * 0.5447d * 1d6
+flux_to_df = (a_over_q)^2 * 0.5447d * 1d6
 
 ;convert between km^6 and cm^6 for df_km
 cm_to_km = 1d30

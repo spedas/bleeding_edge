@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 10 15:47:02 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jul 18 03:16:59 2026.<P>
  
 <HR>
  
@@ -383,19 +383,58 @@ data must contain at least two real numbers.
 <A HREF="#MVN_STA_CHECKFILESAVE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-Routine uses c6 and c8 data to produce two tplot variable products. The routine finds the peak eflux bin at each timestep, and produces:
+2026-04-24: CMF added extra functionality: code will extract counts at each timestamp, and determine the % of counts in the 
+peak count bin +-4 energy bins. This is the same as done in nbc, to determine if the IDF is a beam or not (in energy space).
 
-mvn_sta_ca_anode_perc: three rows: top: the % of eflux in the peak eflux bin; middle: the % of eflux in the top two eflux bins; 
-                       bottom: the % of eflux in the top three eflux bins. This is a function of energy only, eflux is summed over all masses.
+OUTPUTS:
 
-mvn_sta_c6_energypeak: the energy (in eV) that the peak eflux lies in at each timestep. Again, eflux is summed over all masses.
+Routine uses c6 and ca data to produce two tplot variable products. The routine finds the peak eflux bin at each timestep, and produces:
 
-mvn_sta_ca_anode_peak: the anode INDEX that the peak energy flux lies in. I believe STATIC anodes start at zero as well.
+mvn_sta_ca_anode_cnts: two rows: top: the counts in the peak count anode; bottom: the counts in the peak anode+- one anode
+                       (summed).
+
+mvn_sta_ca_anode_perc: two rows: top: the % of counts in the peak count anode; bottom: % of counts in the peak anode+- one anode
+                       (summed).
+
+mvn_sta_ca_panode_index: single number, the anode index that the peak counts lie in. 7 is nominal pointing at periapsis.
+
+mvn_sta_c6_energypeak: the energy (in eV) that the peak counts lie in at each timestep. Counts are summed over all masses.
+
+mvn_sta_c6_peak_counts_energy: counts that lie within the energy bin with peak counts, +-4 bins as well. This is the
+                                   same method as used in nbc_4d.
+
+mvn_sta_c6_peak_counts_perc_total: % of counts that lie within the energy bin with peak counts, +-4 bins as well. This is the
+                                   same method as used in nbc_4d. 
+
+
+:
+INPUTS:
 
 trange: [a,b]: UNIX double start and stop times to calculate parameters over. If not set, entire time range available is used.
 
-Routine requires ca and c6 data to be loaded into tplot (mvn_sta_ca_A and mvn_sta_c6_E).
+species: 'h', 'he', 'o', 'o2', 'co2': if set will calculate the added functionality for L3 for this mass range. Note - the 
+        original three outputs are not affected by this keyword. 
 
+mass_range: output that contains the mass range used to address the species keyword if set. If not set, mass_range=[0., 120.],
+         all ions. Can be used to check the correct mass range was used.
+
+Routine requires ca and c6 data to be loaded into tplot (mvn_sta_ca_A and mvn_sta_c6_E), and c6 L2 data in the IDL common block.
+
+/energywidth: if set, routine will use c6 data to calculate the energy width characteristics, and will output the tplot variables
+              above that are related to c6.
+
+/angularwidth: if set, routine will use ca data to calculate the angular (anode) wide characteristics, and will output the tplot 
+               variables above that are related to ca.
+
+tnameadd: string: this will be added onto the end of any tplot variables output. eg tnameadd='_v1' will add this string to the
+                  end of the tplot variables output (based on energywidth and angularwidth keywords).
+
+NOTES:
+when using the species or mass_range keywords, note that, eg stragglers, may impact your results. For example, in the solar
+     wind, if using species='O2', if there is no pickup O2+, the results may track the solar wind protons, as the H+ 
+     stragglers may dominate. Using the iv_level='4' keyword when using L2 data should minimize this (by removing the background
+     counts in all products). But it may not be perfect- be careful! Perhaps check a significant density exists if you want to
+     trust these results.
 
 EG:
 timespan, '2019-01-01', 1.

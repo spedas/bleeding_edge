@@ -19,40 +19,49 @@
 ;       containing your login information. 
 ; 
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-05-30 12:46:17 -0700 (Fri, 30 May 2025) $
-; $LastChangedRevision: 33353 $
+; $LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
+; $LastChangedRevision: 34654 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_fast_intervals.pro $
 ;-
 
-pro mms_update_fast_intervals
+pro mms_update_fast_intervals, trange=trange, nodownload=nodownload, unix_start=my_unix_start, unix_end=my_unix_end
     mms_init
     
-    start_date = '2015-01-01'
-    end_date = time_string(systime(/seconds), tformat='YYYY-MM-DD')
+    start_date = time_string(trange[0],tformat="YYYY-MM-DD")
+    end_date = time_string(trange[1], tformat='YYYY-MM-DD')
     
     ; login first
     status = mms_login_lasp(login_info = 'mms_auth_info.sav')
     
     filenames = mms_get_abs_file_names(start_date=start_date, end_date=end_date)
+    ; The SDC query returns them in reverse chronological order, so sort before loading
+    idx=bsort(filenames)
+    filenames=filenames[idx]
 
     file_mkdir2, spd_addslash(!mms.local_data_dir) + 'abs/'
     for file_idx = 0, n_elements(filenames)-1 do begin
         this_file = (strsplit(filenames[file_idx], '/', /extract))[-1]
+        print,'Downloading ',this_file
         status = get_mms_abs_selections(filename = this_file, local_dir = spd_addslash(!mms.local_data_dir) + 'abs/')
         append_array, sav_files, this_file
     endfor
     
     for sav_file_idx = 0, n_elements(sav_files)-1 do begin
-        restore, spd_addslash(!mms.local_data_dir) + 'abs/' + sav_files[sav_file_idx]
-        if is_struct(fomstr) then begin
-          if tag_exist(fomstr, 'timestamps') then begin
-            append_array, start_times, mms_tai2unix(fomstr.timestamps[0])
-            append_array, end_times, mms_tai2unix(fomstr.timestamps[n_elements(fomstr.timestamps)-1])
-          endif
-        endif
+        abs_get_start_end,filename=spd_addslash(!mms.local_data_dir)+'abs/' + sav_files[sav_file_idx], unix_starts=unix_starts, unix_ends=unix_ends
+        append_array, start_times, unix_starts
+        append_array, end_times, unix_ends
+        ;restore, spd_addslash(!mms.local_data_dir) + 'abs/' + sav_files[sav_file_idx]
+        ;if is_struct(fomstr) then begin
+        ;  if tag_exist(fomstr, 'timestamps') then begin
+        ;    append_array, start_times, mms_tai2unix(fomstr.timestamps[0])
+        ;    append_array, end_times, mms_tai2unix(fomstr.timestamps[n_elements(fomstr.timestamps)-1])
+        ;  endif
+        ; endif
     endfor
     
     fast_intervals = {start_times: start_times, end_times: end_times}
+    my_unix_start=start_times
+    my_unix_end=end_times
     save, fast_intervals, filename=spd_addslash(!mms.local_data_dir) + 'abs/' + 'mms_fast_intervals.sav'
     dprint, dlevel = 0, 'Fast survey intervals updated! Last interval in the file: ' + time_string(start_times[0]) + ' to ' + time_string(end_times[0])
 end

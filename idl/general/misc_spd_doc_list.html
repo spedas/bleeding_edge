@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 10 15:47:01 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jul 18 03:16:59 2026.<P>
  
 <HR>
  
@@ -174,6 +174,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPACE_BAR">SPACE_BAR</A>
 <LI><A HREF="#SPD_DEFAULT_LOCAL_DATA_DIR">SPD_DEFAULT_LOCAL_DATA_DIR</A>
 <br>Returns the default data directory for file downloads for varius projects.
+<LI><A HREF="#SPD_MONTH_INTERVALS">SPD_MONTH_INTERVALS</A>
+<br>Return calendar-month intervals sufficient to cover an input
 <LI><A HREF="#SSL_CHECK_VALID_NAME">SSL_CHECK_VALID_NAME</A>
 <br>Checks a string or array input against another array to find matches.
 <LI><A HREF="#SSL_CORRELATE_TPLOT">SSL_CORRELATE_TPLOT</A>
@@ -4156,7 +4158,7 @@ HISTORY:
 <A NAME="SPD_DEFAULT_LOCAL_DATA_DIR">
 <H2>SPD_DEFAULT_LOCAL_DATA_DIR</H2></A>
 <A HREF="#SPACE_BAR">[Previous Routine]</A>
-<A HREF="#SSL_CHECK_VALID_NAME">[Next Routine]</A>
+<A HREF="#SPD_MONTH_INTERVALS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -4186,9 +4188,70 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/mis
 <STRONG>(See <A href="misc/spd_default_local_data_dir.pro">general/misc/spd_default_local_data_dir.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_MONTH_INTERVALS">
+<H2>SPD_MONTH_INTERVALS</H2></A>
+<A HREF="#SPD_DEFAULT_LOCAL_DATA_DIR">[Previous Routine]</A>
+<A HREF="#SSL_CHECK_VALID_NAME">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+   SPD_MONTH_INTERVALS
+
+ PURPOSE:
+   Return calendar-month intervals sufficient to cover an input
+   Unix-time interval.
+
+ CALLING SEQUENCE:
+   intervals = spd_month_intervals(start_time, end_time)
+
+ INPUTS:
+   start_time:
+     Scalar Unix timestamp marking the beginning of the requested
+     interval.
+
+   end_time:
+     Scalar Unix timestamp marking the end of the requested interval.
+     Must be greater than or equal to START_TIME.
+
+ RETURN VALUE:
+   A DOUBLE array with dimensions [2, N_MONTHS].
+
+   For interval I:
+
+     intervals[0, i] = beginning of the calendar month
+     intervals[1, i] = beginning of the following calendar month
+
+   The returned intervals therefore use half-open semantics:
+
+     [month_start, next_month_start)
+
+   If END_TIME falls exactly on a calendar-month boundary, the month
+   beginning at END_TIME is not included, unless START_TIME and
+   END_TIME are identical.
+
+ EXAMPLE:
+   start_time = time_double('2024-01-15/12:00:00')
+   end_time   = time_double('2024-04-01/00:00:00')
+
+   intervals = spd_month_intervals(start_time, end_time)
+
+   for i = 0L, n_elements(intervals[0, *]) - 1L do begin
+     print, time_string(intervals[0, i]), '  ', $
+            time_string(intervals[1, i])
+   endfor
+
+   This produces intervals equivalent to:
+
+     2024-01-01 -&gt; 2024-02-01
+     2024-02-01 -&gt; 2024-03-01
+     2024-03-01 -&gt; 2024-04-01
+</PRE><P>
+<STRONG>(See <A href="misc/spd_month_intervals.pro">general/misc/spd_month_intervals.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SSL_CHECK_VALID_NAME">
 <H2>SSL_CHECK_VALID_NAME</H2></A>
-<A HREF="#SPD_DEFAULT_LOCAL_DATA_DIR">[Previous Routine]</A>
+<A HREF="#SPD_MONTH_INTERVALS">[Previous Routine]</A>
 <A HREF="#SSL_CORRELATE_TPLOT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

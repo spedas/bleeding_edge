@@ -12,19 +12,27 @@
 ;
 ;      MEAN:      If set, calculates the mean counts instead of the total counts.
 ;
-;    ENERGY:      If set, specifies the energy range to be used for angular tplots.
+;    ENERGY:      Specifies the energy range to be used for angular tplots.
+;
+;      BLUE:      Explicitly specifies the BLUE spacecraft (1=on / 0=off).
+;
+;      GOLD:      Explicitly specifies the GOLD spacecraft (1=on / 0=off).
 ;
 ;CREATED BY:      Takuya Hara on 2026-03-04.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-28 15:42:30 -0700 (Tue, 28 Apr 2026) $
-; $LastChangedRevision: 34403 $
+; $LastChangedDate: 2026-07-13 11:35:00 -0700 (Mon, 13 Jul 2026) $
+; $LastChangedRevision: 34635 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/electron/esc_eesa_tplot.pro $
 ;
 ;-
-PRO esc_eesa_tplot, data, verbose=verbose, tname=tname, mean=avg, energy=erange
+PRO esc_eesa_tplot, data, verbose=verbose, tname=tname, mean=avg, energy=erange, blue=blue, gold=gold
   tnow = SYSTIME(/sec)
+
+  IF undefined(blue) THEN bflg = 1 ELSE bflg = FIX(blue)
+  IF undefined(gold) THEN gflg = 1 ELSE gflg = FIX(gold)
+  
   prod = ['F3D', 'SPEC', 'PAD', 'POT']
   prob = 'ESC-P'
   IF KEYWORD_SET(avg) THEN aflg = 1 ELSE aflg = 0
@@ -33,6 +41,8 @@ PRO esc_eesa_tplot, data, verbose=verbose, tname=tname, mean=avg, energy=erange
   ; Full 3D (f3d)
   cvar = 'escp_eesa_f3d'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
+     IF i EQ 1 THEN IF ~(bflg) THEN CONTINUE
+     IF i EQ 2 THEN IF ~(gflg) THEN CONTINUE
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
      undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_eesa_f3d_com')")
 

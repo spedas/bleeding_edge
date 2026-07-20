@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Jul 10 15:47:02 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jul 18 03:16:59 2026.<P>
  
 <HR>
  
@@ -23,6 +23,8 @@ This page was created by the IDL library routine
 <br>Bins a 2D data set and calculates moments for each bin: mean, standard
 <LI><A HREF="#BINDATA2D">BINDATA2D</A>
 <br>Bins a 3D data set and calculates moments for each bin: mean, standard
+<LI><A HREF="#BINHEX">BINHEX</A>
+<br>Takes a signed or unsigned integer or an array of bits and displays it
 <LI><A HREF="#CTIME2[1]">CTIME2[1]</A>
 <br>A version of ctime.  May become obsolete.
 <LI><A HREF="#CTIME_GET_EXACT_DATA2">CTIME_GET_EXACT_DATA2</A>
@@ -387,7 +389,7 @@ CREATED BY:	David L. Mitchell
 <A NAME="BINDATA2D">
 <H2>BINDATA2D</H2></A>
 <A HREF="#BINDATA">[Previous Routine]</A>
-<A HREF="#CTIME2[1]">[Next Routine]</A>
+<A HREF="#BINHEX">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   bindata2d
@@ -449,9 +451,97 @@ CREATED BY:	David L. Mitchell
 <STRONG>(See <A href="swea/bindata2d.pro">projects/maven/swea/bindata2d.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="BINHEX">
+<H2>BINHEX</H2></A>
+<A HREF="#BINDATA2D">[Previous Routine]</A>
+<A HREF="#CTIME2[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   binhex
+PURPOSE:
+  Takes a signed or unsigned integer or an array of bits and displays it
+  as binary, hex, and decimal. 
+
+USAGE:
+  binhex, i
+
+INPUTS:
+       i:         An integer scalar of any type up to 32 bits (signed or 
+                  unsigned).  The correct binary and hex will be displayed
+                  for both positive and negative integers.
+
+                  The input can also be an array of up to 32 bits (0 or 1),
+                  with MSB at index 0.  This allows you to type an array of
+                  bits in the same order that they would appear on a page.
+                  For example:
+
+                        binhex, [1,1,0,1,0,1,0,1]
+
+                  produces the following output (with MSB on the left):
+
+                          213 = D5 = 1 1 0 1 0 1 0 1
+
+                  Note that nibble.pro returns an array of bits with LSB at
+                  index 0, so you must reverse the output of nibble as an
+                  input to binhex:
+
+                        binhex, reverse(nibble('D5'x))
+                          213 = D5 = 1 1 0 1 0 1 0 1
+
+                  When an array of bits represents a signed integer, there
+                  is an ambiguity since binhex does not know the data type.
+                  For example:
+
+                                     MSB                             LSB
+                      65533 = FF FD = 1 1 1 1 1 1 1 1 - 1 1 1 1 1 1 0 1
+                         -3 = FF FD = 1 1 1 1 1 1 1 1 - 1 1 1 1 1 1 0 1
+
+                  Use keyword SIGNED to interpret the array of bits as a
+                  signed integer (INT, LONG).  Otherwise, it will be 
+                  interpreted as an unsigned integer (BYTE, UINT, ULONG).
+                  See explanation of SIGNED below.
+
+KEYWORDS:
+    SIGNED:       Set this keyword if the input array of bits represents a
+                  signed integer.  The number of bits determines whether
+                  the data type is INT (&lt;= 16 bits) or LONG (&gt; 16 bits).
+
+                  Any unspecified bits are assumed to be zero, which means
+                  that MSB will be zero, and the result will be positive.
+                  For example:
+
+                     i = [1,0,1,1]  ; interpreted as [0,0,0,0,1,0,1,1]
+                     binhex, i
+                       11 = 0B = 0 0 0 0 1 0 1 1
+                     binhex, i, /signed
+                       11 = 0B = 0 0 0 0 1 0 1 1
+
+                     i = [1,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1]
+                     binhex, i
+                       32779 = 80 0B = 1 0 0 0 0 0 0 0 - 0 0 0 0 1 0 1 1
+                     binhex, i, /signed
+                      -32757 = 80 0B = 1 0 0 0 0 0 0 0 - 0 0 0 0 1 0 1 1
+
+                  If not set, the input is assumed to be unsigned.
+
+SEE ALSO:
+    nibble:       Converts an integer into an N-element byte array where the
+                  elements are the individual bits (0 or 1).  LSB is stored 
+                  in element 0, and MSB is stored in element N-1.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-07-15 15:57:23 -0700 (Wed, 15 Jul 2026) $
+ $LastChangedRevision: 34644 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/binhex.pro $
+
+CREATED BY:	David L. Mitchell  June 2011
+</PRE><P>
+<STRONG>(See <A href="swea/binhex.pro">projects/maven/swea/binhex.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CTIME2[1]">
 <H2>CTIME2[1]</H2></A>
-<A HREF="#BINDATA2D">[Previous Routine]</A>
+<A HREF="#BINHEX">[Previous Routine]</A>
 <A HREF="#CTIME2[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -7631,15 +7721,21 @@ PURPOSE:
   elements are the individual bits (0 or 1).  LSB is stored in 
   element 0 and MSB is in element 32.  No error checking for maximum 
   speed.
+
+  DEPRECIATED: Use nibble instead.
+
 USAGE:
   bits = nibble_long(lword)
 INPUTS:
        lword : A unsigned long scalar.
 KEYWORDS:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-07-15 16:04:00 -0700 (Wed, 15 Jul 2026) $
+ $LastChangedRevision: 34645 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/nibble_long.pro $
+
 CREATED BY:	David L. Mitchell  02-06-11
-FILE:  nibble_long.pro
-VERSION:  1.0
-LAST MODIFICATION:  06-02-11
 </PRE><P>
 <STRONG>(See <A href="swea/nibble_long.pro">projects/maven/swea/nibble_long.pro</A>)</STRONG><P>
 <HR>
@@ -7657,15 +7753,21 @@ PURPOSE:
   element 0 and MSB is in element 15.  Note: if this function is 
   fed a long, then it processes only the least significant word 
   without crashing.  No error checking for maximum speed.
+
+  DEPRECIATED: Use nibble instead.
+
 USAGE:
   bits = nibble_word(word)
 INPUTS:
        word : A unsigned integer scalar.
 KEYWORDS:
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-07-15 16:04:00 -0700 (Wed, 15 Jul 2026) $
+ $LastChangedRevision: 34645 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/nibble_word.pro $
+
 CREATED BY:	David L. Mitchell  01-15-98
-FILE:  nibble.pro
-VERSION:  1.2
-LAST MODIFICATION:  01-31-98
 </PRE><P>
 <STRONG>(See <A href="swea/nibble_word.pro">projects/maven/swea/nibble_word.pro</A>)</STRONG><P>
 <HR>

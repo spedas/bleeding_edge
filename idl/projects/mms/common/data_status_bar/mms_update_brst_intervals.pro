@@ -15,19 +15,30 @@
 ;     http://spedas.org/mms/mms_brst_intervals.sav
 ;
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2023-03-09 13:47:54 -0800 (Thu, 09 Mar 2023) $
-; $LastChangedRevision: 31614 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
+; $LastChangedRevision: 34654 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_brst_intervals.pro $
 ;-
 
-pro mms_update_brst_intervals
+pro mms_update_brst_intervals, trange=trange, start_times=start_times, end_times=end_times
 
   mms_init
 
-  ; grab ~6 months of burst intervals at a time
-  start_interval = '2015-03-01'
-  end_interval = time_double(start_interval) + 6.*30*24*60*60
+  padding=2*86400
+  tr_dbl = time_double(trange)
+  tr_padded = [tr_dbl[0] - padding, tr_dbl[1] + padding]
+  
+  ; Get a set of 1 calendar month time ranges covering the padded time range
+  
+  monthly_intervals = spd_month_intervals(tr_padded[0], tr_padded[1])
+  
+  if n_elements(monthly_intervals) lt 2 then begin
+    dprint,dlevel=0,'Unable to compute monthly intervals for input trange: ', trange
+    return
+  endif
+
+  n_months = n_elements(monthly_intervals)/2
   
   status = mms_login_lasp(username=username, password=password)
 
@@ -46,38 +57,34 @@ pro mms_update_brst_intervals
     FIELDGROUPS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  $
   }
   
-  while time_double(start_interval) le time_double(systime(/seconds)) do begin
-    start_str = time_string(start_interval, tformat='DD-MTH-YYYY')
-    end_str = time_string(end_interval, tformat='DD-MTH-YYYY')
+  my_start_times=[]
+  my_end_times=[]
+  for i=0, n_months-1 do begin
+    ; Get interval times and save to monthly files
+    start_unix = monthly_intervals[0,i]
+    end_unix = monthly_intervals[1,i]
+    start_tai = mms_unix2tai(start_unix)
+    end_tai = mms_unix2tai(end_unix)
+    start_str = time_string(start_unix, tformat='YYYY_MM_DD')
+    end_str = time_string(end_unix, tformat='YYYY_MM_DD')
+    local_filename = 'segments_'+start_str+'_'+end_str+'.csv'
     print, '*** now grabbing updates for ' + start_str + ' - ' +  end_str
-    ;remote_path = 'https://lasp.colorado.edu/mms/sdc/sitl/latis/dap/'
+    local_filename=spd_addslash(!mms.local_data_dir)+'burst_segs/segments_'+start_str+'_'+end_str+".csv"
     remote_path = 'https://lasp.colorado.edu/mms/sdc/public/service/latis/'
-    remote_file = 'mms_burst_data_segment.csv?FINISHTIME>='+start_str+'&FINISHTIME<'+end_str
-    
+    remote_file = 'mms_burst_data_segment.csv?TAIENDTIME%3E='+strtrim(string(start_tai),2)+'&TAISTARTTIME%3C'+strtrim(string(end_tai),2)
+
     brst_file = spd_download(remote_path=remote_path, remote_file=remote_file, $
-      local_file=!mms.local_data_dir+'mms_burst_data_segment.csv', /no_wildcards, $
+      local_file=local_filename, /no_wildcards, $
       SSL_VERIFY_HOST=0, SSL_VERIFY_PEER=0, url_username=username, url_password=password)
-
-    brst_data = read_ascii(brst_file, template=brst_seg_temp, count=num_items)
+    ; Read this file and accumulate merge its start/end times into the master list
+    seg_csv_get_start_end,filename=local_filename, unix_starts=this_start, unix_ends=this_end
+    append_array,my_start_times,this_start
+    append_array,my_end_times,this_end
+  endfor
   
-    if ~is_struct(brst_data) then break
-    
-    complete_idxs = where(brst_data.status eq 'COMPLETE+FINISHED', c_count)
-    if c_count ne 0 then begin
-      tai_start = brst_data.TAISTARTTIME[complete_idxs]
-      tai_end = brst_data.TAIENDTIME[complete_idxs]
+  start_times=my_start_times
+  end_times=my_end_times
+  return
   
-      append_array, unix_start, mms_tai2unix(tai_start)
-      append_array, unix_end, mms_tai2unix(tai_end)
-    endif
-
-    print, '*** done grabbing updates for ' + start_str + ' - ' +  end_str
-    start_interval = end_interval
-    end_interval = time_double(start_interval) + 6.*30*24*60*60
-  endwhile
-
-  brst_intervals = {start_times: unix_start, end_times: unix_end}
-  save, brst_intervals, filename=!mms.local_data_dir + '/mms_brst_intervals.sav'
-  dprint, dlevel = 0, 'Brst intervals updated! Last interval in the file: ' + time_string(unix_start[n_elements(unix_start)-1]) + ' to ' + time_string(unix_end[n_elements(unix_end)-1])
 
 end

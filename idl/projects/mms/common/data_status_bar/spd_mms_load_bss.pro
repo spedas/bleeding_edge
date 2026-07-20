@@ -38,14 +38,16 @@
 ;      bars routine returns incorrect segments for later in the mission, but the SRoI routine doesn't work 
 ;      for dates before 6Nov15)
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-11-22 12:26:03 -0800 (Mon, 22 Nov 2021) $
-;$LastChangedRevision: 30433 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
+;$LastChangedRevision: 34654 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/spd_mms_load_bss.pro $
 ;-
 
 PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_labels, probe=probe, nodownload=nodownload
   compile_opt idl2
+  
+  mms_init
 
   if undefined(trange) then trange = timerange() else trange = timerange(trange)
   if undefined(probe) then probe = '1' else probe = strcompress(string(probe), /rem)

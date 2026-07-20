@@ -22,61 +22,95 @@
 ;                  use the wrapper: spd_mms_load_bss, which switches between this routine (for dates 
 ;                  before 6Nov15) and the new SRoI code (mms_load_sroi_segments) for dates on and after 6Nov15 
 ; 
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-11-22 12:28:34 -0800 (Mon, 22 Nov 2021) $
-;$LastChangedRevision: 30434 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
+;$LastChangedRevision: 34654 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_fast_segments.pro $
 ;-
 
-pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_times, end_times=end_times, nodownload=nodownload, sdc=sdc
+pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_times, end_times=end_times, nodownload=nodownload
   if undefined(suffix) then suffix = ''
   if (keyword_set(trange) && n_elements(trange) eq 2) $
     then tr = timerange(trange) $
   else tr = timerange()
   
   mms_init
-
-  ; SDC option is the default as of 27 Oct 2021
-  if undefined(sdc) then sdc = 1
   
-  if undefined(nodownload) and sdc eq 0 then begin
-    fast_file = spd_download(remote_file='http://www.spedas.org/mms/mms_fast_intervals.sav', $
-      local_file=!mms.local_data_dir+'mms_fast_intervals.sav', $
-      SSL_VERIFY_HOST=0, SSL_VERIFY_PEER=0) ; these keywords ignore certificate warnings
-  endif else fast_file = spd_addslash(!mms.local_data_dir) + 'abs/' + 'mms_fast_intervals.sav'
-
-  if undefined(nodownload) and sdc eq 1  then mms_update_fast_intervals
+  padding = 14*86400
   
-  restore, fast_file
-  
-  if is_struct(fast_intervals) then begin
-    unix_start = reverse(fast_intervals.start_times)
-    unix_end = reverse(fast_intervals.end_times)
-    
-    times_in_range = where(unix_start ge tr[0]-2*86400.0 and unix_start le tr[1]+2*86400.0, t_count)
+  tr_padded = [tr[0]-padding, tr[1]+padding]
 
-    if t_count ne 0 then begin
-      unix_start = unix_start[times_in_range]
-      unix_end = unix_end[times_in_range]
-      
-      for idx = 0, n_elements(unix_start)-1 do begin
-        if unix_end[idx] ge tr[0] and unix_start[idx] le tr[1] then begin
-          append_array, bar_x, [unix_start[idx], unix_start[idx], unix_end[idx], unix_end[idx]]
-          append_array, bar_y, [!values.f_nan, 0.,0., !values.f_nan]
-        endif
-      endfor
-      
-      if undefined(bar_x) then return
-      
-      store_data,'mms_bss_fast'+suffix,data={x:bar_x, y:bar_y}
-      options,'mms_bss_fast'+suffix,thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
-        ticklen=0,panel_size=0.09,colors=4, labels=['Fast'], charsize=2.
-      start_times = unix_start
-      end_times = unix_end
-    endif else begin
-      dprint, dlevel = 0, 'Error, no fast segments found in this time interval: ' + time_string(tr[0]) + ' to ' + time_string(tr[1])
-    endelse
+
+  if undefined(nodownload) then begin
+    ; Get fast survey intervals from the SDC
+    mms_update_fast_intervals, trange=tr_padded, unix_start=unix_start, unix_end=unix_end
+    ; Check for empty arrays
+    if n_elements(unix_start) eq 0 then begin
+      dprint, dlevel = 0, 'Error, no fast segments returned from SDC in this time interval: ' + time_string(tr_padded[0]) + ' to ' + time_string(tr_padded[1])     
+    endif
   endif else begin
-    dprint, dlevel = 0, 'Error, couldn''t find the fast intervals save file'
+    ; Read fast survey intervals from cached abs files
+    ; Instead of restoring a combined file, iterate through the abs directory and accumulate unix_start and unix_end arrays.
+    dir_path = spd_addslash(!mms.local_data_dir) + 'abs/'
+    file_list = file_search(dir_path + 'abs_selections_*.sav')
+    if n_elements(file_list) eq 0 then begin
+      dprint,dlevel=0,'mms_load_fast_segments: No local files found"
+      return
+    endif
+    for i=0, n_elements(file_list)-1 do begin
+      print,'Loading local file ', file_list[i]
+      bn = file_basename(file_list[i])
+      yyyy=strmid(bn,15,4)
+      mon=strmid(bn,20,2)
+      day=strmid(bn,23,2)
+      hr=strmid(bn,26,2)
+      mm=strmid(bn,29,2)
+      sec=strmid(bn,32,2)
+      file_timestamp=yyyy+'-'+mon+'-'+day+'/'+hr+':'+mm+':'+sec
+      file_timestamp_dbl=time_double(file_timestamp)
+      abs_get_start_end,filename=file_list[i], unix_start=this_start, unix_end=this_end
+      
+      append_array, unix_start, this_start
+      append_array, unix_end, this_end
+      
+      ; Can we stop reading files yet?  The choice of timestamps in the file names are a little weird. The individual files can contain
+      ; start times before the filename time, or after the filename time (by several days!)   So far, 1 week of padding seems to be
+      ; enough to guarantee that there won't be more segments found in later files.  For safety, we'll double that, and quit once
+      ; the file timestamps are two weeks past the end of the requested time range.
+
+      if file_timestamp_dbl gt tr_padded[1] then begin
+        dprint,dlevel=0,"Current file timestamp: "+ file_timestamp+" , end of unpadded time range: "+time_string(tr[1])+" , stopping search."
+        break
+      endif
+
+    endfor
+    
+    if n_elements(unix_start) eq 0 then begin
+      dprint,dlevel=0,'mms_load_fast_segments: No time intervals found in local files'
+    endif
+  endelse
+  
+  ; Sort start and end time arrays (maybe not needed now?)
+  ; The search time range was padded by 2 days on either side; now we'll time clip to the exact interval requested
+  times_in_range = where(unix_end ge tr[0] and unix_start le tr[1], t_count)
+
+  if t_count ne 0 then begin
+    unix_start_clipped = unix_start[times_in_range]
+    unix_end_clipped = unix_end[times_in_range]
+    
+    for idx = 0, n_elements(unix_start_clipped)-1 do begin
+        append_array, bar_x, [unix_start_clipped[idx], unix_start_clipped[idx], unix_end_clipped[idx], unix_end_clipped[idx]]
+        append_array, bar_y, [!values.f_nan, 0.,0., !values.f_nan]
+    endfor
+    
+    if undefined(bar_x) then return
+    
+    store_data,'mms_bss_fast'+suffix,data={x:bar_x, y:bar_y}
+    options,'mms_bss_fast'+suffix,thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
+      ticklen=0,panel_size=0.09,colors=4, labels=['Fast'], charsize=2.
+    start_times = unix_start
+    end_times = unix_end
+  endif else begin
+    dprint, dlevel = 0, 'No fast segments found in this time interval: ' + time_string(tr[0]) + ' to ' + time_string(tr[1])
   endelse
 end

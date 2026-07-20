@@ -15,9 +15,9 @@
 ;                       to manually update the file from the data at the SDC, and set this flag to load your local file
 ;         sdc:          flag to load the brst intervals directly from the SDC; set this flag to 0 to load the data from spedas.org (may be out of date)
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2021-11-22 12:26:03 -0800 (Mon, 22 Nov 2021) $
-;$LastChangedRevision: 30433 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
+;$LastChangedRevision: 34654 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_brst_segments.pro $
 ;-
 
@@ -28,48 +28,49 @@ pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_time
   else tr = timerange()
   
   mms_init
+  padding = 2*86400
+  
+  tr_padded = [tr[0]-padding, tr[1]+padding]
   
   undefine, start_times
   undefine, end_times
   
-  ; SDC option is the default as of 27 Oct 2021
-  if undefined(sdc) then sdc = 1
-  
-  if undefined(nodownload) and sdc eq 0 then begin
-    brst_file = spd_download(remote_file='http://www.spedas.org/mms/mms_brst_intervals.sav', $
-      local_file=!mms.local_data_dir+'mms_brst_intervals.sav', $
-      SSL_VERIFY_HOST=0, SSL_VERIFY_PEER=0) ; these keywords ignore certificate warnings
-
-    ; try updating the burst intervals file if there are any errors while trying to load the file
-    catch, error_status
-    if (error_status ne 0) then begin
-      catch, /cancel
-      if strpos(!error_state.msg, 'RESTORE: Error opening file.') ne -1 then begin
-          mms_update_brst_intervals
-          brst_file = !mms.local_data_dir+'mms_brst_intervals.sav'
-      endif
+  if undefined(nodownload) then begin
+    mms_update_brst_intervals, trange=tr_padded, start_times=start_times, end_times=end_times
+  endif else begin
+    monthly_intervals = spd_month_intervals(tr_padded[0], tr_padded[1])
+    if n_elements(monthly_intervals) < 2 then begin
+      dprint,dlevel=0,"mms_load_brst_intervals: Can't find monthly intervals for input trange: ",trange
+      return
     endif
-  endif else brst_file = !mms.local_data_dir+'mms_brst_intervals.sav'
+    ; Iterate through cached files and collect the burst intervals
+    for i=0,n_elements(monthly_intervals)/2-1 do begin
+      file_start = monthly_intervals[0,i]
+      file_end=monthly_intervals[1,i]
+      file_start_str = time_string(file_start,tformat="YYYY_MM_DD")
+      file_end_str = time_string(file_end,tformat="YYYY_MM_DD")
+      local_filename=spd_addslash(!mms.local_data_dir)+'burst_segs/segments_'+file_start_str+'_'+file_end_str+".csv"
+      seg_csv_get_start_end,filename=local_filename,unix_starts=this_start, unix_ends=this_end
+      append_array,start_times,this_start
+      append_array,end_times, this_end
+    endfor
+  endelse
+
+  ; Instead of restoring a single combined file, iterate over local files and accumulate intervals in range  
+  ;restore, brst_file
   
-  if undefined(nodownload) and sdc eq 1 then mms_update_brst_intervals
-  
-  restore, brst_file
-  
-  if is_struct(brst_intervals) then begin
-    unix_start = brst_intervals.start_times
-    unix_end = brst_intervals.end_times
+  if n_elements(start_times) ge 1 then begin
+    unix_start = start_times
+    unix_end = end_times
     
     sorted_idxs = bsort(unix_start)
     unix_start = unix_start[sorted_idxs]
     unix_end = unix_end[sorted_idxs]
     
-    times_in_range = where(unix_start ge tr[0]-300.0 and unix_start le tr[1]+300, t_count)
-
+    ; Time clip to remove any padding
+    times_in_range = where(unix_start ge tr[0] and unix_start le tr[1], t_count)
+  
     if t_count ne 0 then begin
-      unix_start = unix_start[times_in_range]
-       ; +10 second offset added by egrimes, 10/26/2016; there appears to be an extra 10
-       ; seconds of data, consistently, not included in the range here
-      unix_end = unix_end[times_in_range]+10.0
       
       for idx = 0, n_elements(unix_start)-1 do begin
         if unix_end[idx] ge tr[0] and unix_start[idx] le tr[1] then begin
@@ -78,7 +79,7 @@ pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_time
         endif
       endfor
       if undefined(bar_x) then begin
-        dprint, dlevel = 0, 'Error, no burst intervals within the requested time range'
+        dprint, dlevel = 0, 'mms_load_brst_intervals: No burst segments within the requested time range'
         return
       endif
       store_data,'mms_bss_burst'+suffix,data={x:bar_x, y:bar_y}
@@ -87,9 +88,13 @@ pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_time
       start_times = unix_start
       end_times = unix_end
     endif else begin
-      dprint, dlevel = 0, 'Error, no brst segments found in this time interval: ' + time_string(tr[0]) + ' to ' + time_string(tr[1])
+      dprint, dlevel = 0, 'mms_load_brst_intervals: No burst segments found in this time interval: ' + time_string(tr[0]) + ' to ' + time_string(tr[1])
+      start_times=[]
+      end_times=[]
     endelse
   endif else begin
-    dprint, dlevel = 0, 'Error, couldn''t find the brst intervals save file'
+    dprint, dlevel = 0, 'mms_load_brst_intervals: No burst segments found in this time interval: ' + time_string(tr[0]) + ' to ' + time_string(tr[1])
+    start_times=[]
+    end_times=[]
   endelse
 end

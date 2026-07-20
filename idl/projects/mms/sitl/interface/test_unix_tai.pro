@@ -17,6 +17,6 @@ pro test_unix_tai
        tai2unix_str = time_string(tai2unix)
        tai2unix_spd  = spd_tai2unix(unix2tai_spd)
        tai2unix_spd_str = time_string(tai2unix_spd)
-       print,ulong(unix_time), " ", unix_string, " ",ulong(unix2tai), ulong(unix2tai_spd), ulong(tai2unix), " ", tai2unix_str, " ", ulong(tai2unix_spd), " ", tai2unix_spd_str  
+       print,ulong(unix_time), " ", unix_string, " ",unix2tai, ulong(unix2tai_spd), ulong(tai2unix), " ", tai2unix_str, " ", ulong(tai2unix_spd), " ", tai2unix_spd_str  
    endfor
 end

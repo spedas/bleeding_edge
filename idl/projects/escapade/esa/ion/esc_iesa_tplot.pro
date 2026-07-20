@@ -10,16 +10,20 @@
 ;
 ;     TNAME:      Returns the tplot variables created.
 ;
+;      BLUE:      Explicitly specifies the BLUE spacecraft (1=on / 0=off).
+;
+;      GOLD:      Explicitly specifies the GOLD spacecraft (1=on / 0=off).
+;
 ;CREATED BY:      Gwen Hanley & Takuya Hara on 2026-02-22.
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-06-08 17:13:48 -0700 (Mon, 08 Jun 2026) $
-; $LastChangedRevision: 34561 $
+; $LastChangedDate: 2026-07-13 11:35:00 -0700 (Mon, 13 Jul 2026) $
+; $LastChangedRevision: 34635 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 ;
 ;-
-PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
+PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits, blue=blue, gold=gold 
 
   IF is_struct(data) AND is_struct(limits) THEN BEGIN
      str_element, data, 'vmin', value=vmin
@@ -36,7 +40,10 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
      IF tag_exist(limits, 'spec', /quiet) THEN specplot, data=data, limits=limits ELSE mplot, data=data, limits=limits
      RETURN
   ENDIF 
-  
+
+  IF undefined(blue) THEN bflg = 1 ELSE bflg = FIX(blue)
+  IF undefined(blue) THEN gflg = 1 ELSE gflg = FIX(gold)
+
   tnow = SYSTIME(/sec)
   prod = ['F4D', 'FM', 'FE', 'SW']
   prob = 'ESC-P'
@@ -45,6 +52,9 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   ; Fine 4D (f4d)
   cvar = 'escp_iesa_f4d'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
+     IF i EQ 1 THEN IF ~(bflg) THEN CONTINUE
+     IF i EQ 2 THEN IF ~(gflg) THEN CONTINUE
+
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
 
      IF SIZE(SCOPE_VARFETCH(prefix + '_par', common='esc_iesa_f4d_com'), /type) EQ 8 THEN $
@@ -118,6 +128,9 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   ; Fine Masses (fm)
   cvar = 'escp_iesa_fm'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
+     IF i EQ 1 THEN IF ~(bflg) THEN CONTINUE
+     IF i EQ 2 THEN IF ~(gflg) THEN CONTINUE
+     
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
      IF SIZE(SCOPE_VARFETCH(prefix + '_par', common='esc_iesa_fm_com'), /type) EQ 8 THEN $
         dat = esc_iesa_get_fm(minmax(esc_iesa_get_fm(/times, blue=2-i, gold=i-1)), blue=2-i, gold=i-1) $
@@ -174,6 +187,9 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   ; Solar Wind (sw)
   cvar = 'escp_iesa_sw'
   FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
+     IF i EQ 1 THEN IF ~(bflg) THEN CONTINUE
+     IF i EQ 2 THEN IF ~(gflg) THEN CONTINUE
+     
      IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
      IF i EQ 1 THEN probe = prob.replace('P', 'B') ELSE probe = prob.replace('P', 'G')
 
@@ -253,6 +269,9 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits
   cvar = 'escp_iesa_'
   type = ['E', 'D', 'A']
   FOR i=0, 1 DO BEGIN
+     IF i EQ 0 THEN IF ~(bflg) THEN CONTINUE
+     IF i EQ 1 THEN IF ~(gflg) THEN CONTINUE
+     
      prefix = cvar.replace('p', p[i])
      probe  = prob.replace('P', (p[i]).toupper())
      FOR j=0, 2 DO BEGIN

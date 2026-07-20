@@ -16,16 +16,17 @@
 ;         1958-01-01/00:00:00
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-07-02 19:09:32 -0700 (Thu, 02 Jul 2026) $
-;$LastChangedRevision: 34617 $
+;$LastChangedDate: 2026-07-17 17:06:10 -0700 (Fri, 17 Jul 2026) $
+;$LastChangedRevision: 34650 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/time/TT2000/spd_tai2unix.pro $
 ;-
 function spd_tai2unix, tinput
 
+
   ; need to check that the input times are doubles (floats might lead to unexpected precision problems)
   inp_type = size(/type, tinput[0])
-  if (inp_type ne 5) and (inp_type ne 13) and (inp_type ne 14) then begin
-    dprint, dlevel=1, 'Warning: the input values to spd_tai2unix should be double-precision, long64, or ulong'
+  if (inp_type ne 5) and (inp_type ne 3) and (inp_type ne 13) and (inp_type ne 14) then begin
+    dprint, dlevel=1, 'Warning: the input values to spd_tai2unix should be double-precision, long, long64, or ulong'
     tinput=double(tinput)
   endif
 

@@ -14,7 +14,7 @@
 ;         level:        indicates level of data processing. levels include 'l2', 'l1b', 'sitl'. 
 ;                       the default if no level is specified is 'L2'.
 ;         datatype:     data types include (note that not all levels have all datatypes):
-;                       L2: ['ion', 'moments']
+;                       L2: ['ion', 'moments', 'tof-counts']
 ;                       sitl, l1b: ['combined', 'bkgd_corr', 'count_rate', 'flux', 'moments', 'rf_corr', 'vel_dist'].
 ;                       if no value is given the default is 'moments'.
 ;         data_rate:    instrument data rates include 'brst' and 'srvy'; the default is 'srvy'.
@@ -81,9 +81,9 @@
 ;        the field of view (or anodes) used in the calculation to the name of the tplot variable.
 ; 
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-07-10 14:19:15 -0700 (Wed, 10 Jul 2019) $
-;$LastChangedRevision: 27435 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-07-14 10:08:02 -0700 (Tue, 14 Jul 2026) $
+;$LastChangedRevision: 34639 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/hpca/mms_load_hpca.pro $
 ;-
 
@@ -129,8 +129,8 @@ pro mms_load_hpca, trange = trange_in, probes = probes, datatype = datatype, $
     endif else begin
         ; required to center the measurements
         if undefined(get_support_data) then get_support_data = 1
-        if ~undefined(datatype) && n_elements(datatype) eq 1 && (datatype ne 'ion' && datatype ne 'moments') then begin
-            dprint, dlevel = 0, "Unknown datatype: " + datatype + " for L2 HPCA data; expected 'ion' or 'moments', loading 'ion'"
+        if ~undefined(datatype) && n_elements(datatype) eq 1 && (datatype ne 'ion' && datatype ne 'moments' && datatype ne 'tof-counts') then begin
+            dprint, dlevel = 0, "Unknown datatype: " + datatype + " for L2 HPCA data; expected 'ion', 'moments', or 'tof-counts', loading 'ion'"
             datatype='ion'
         endif
     endelse
