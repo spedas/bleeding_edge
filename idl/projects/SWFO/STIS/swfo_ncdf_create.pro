@@ -1,6 +1,6 @@
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2026-02-16 14:47:42 -0800 (Mon, 16 Feb 2026) $
-; $LastChangedRevision: 34157 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-07-21 15:15:10 -0700 (Tue, 21 Jul 2026) $
+; $LastChangedRevision: 34658 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_create.pro $
 ; $ID: $
 
@@ -52,6 +52,10 @@ pro swfo_ncdf_create,dat,filename=ncdf_filename,verbose=verbose,global_atts=glob
         u= uniq(dat.time)
         dat = dat[u]
       endif
+    endif
+    if file_test(ncdf_filename) then begin
+      dprint,dlevel=2,'Deleting old file: '+ncdf_filename
+      file_delete,ncdf_filename
     endif
     id =  ncdf_create(ncdf_filename,/clobber,/netcdf4_format)  ;,/netcdf4_format
 

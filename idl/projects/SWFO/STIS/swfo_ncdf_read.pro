@@ -1,6 +1,6 @@
 ; $LastChangedBy: davin $
-; $LastChangedDate: 2026-06-03 09:57:26 -0700 (Wed, 03 Jun 2026) $
-; $LastChangedRevision: 34524 $
+; $LastChangedDate: 2026-07-21 14:47:19 -0700 (Tue, 21 Jul 2026) $
+; $LastChangedRevision: 34657 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_ncdf_read.pro $
 ; $ID: $
 
@@ -52,6 +52,11 @@ function swfo_ncdf_read,  dynarray=dynarray, filenames=filenames $
       dprint,'Skipping ',filename,verbose=verbose,dlevel=3
       continue
     endif
+    if file_test(filename,/zero_length) then begin
+      dprint,'Skipping zero length file: '+filename
+      continue
+    endif
+    
     id =  ncdf_open(filename)  ;,/netcdf4_format
 
     inq= ncdf_inquire(id)

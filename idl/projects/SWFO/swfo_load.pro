@@ -21,7 +21,7 @@ pro swfo_load_tplot_store,da
       ;options,tname+['_RATE','*SIGMA','*BASELINE', /reverse_order, colors ='bgrmcd'
     end
     strmatch(da.name,'*_l1b*'):   begin
-      if 1 then begin    ; create EFLUX 
+      if isa(*(da.ptr)) then begin    ; create EFLUX
         str_element,/add,*da.ptr,'HDR_ION_EFLUX', (*da.ptr).HDR_ION_FLUX  * (*da.ptr).ion_energy
         str_element,/add,*da.ptr,'HDR_ELEC_EFLUX', (*da.ptr).HDR_ELEC_FLUX  * (*da.ptr).ELEC_energy
       endif
@@ -59,6 +59,10 @@ end
 pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datahash  $
   ,resolution=resolution,file_hashes=file_hashes,user_pass=user_pass,lowres=lowres  $
   ,force_l0b = force_l0b $
+  ,mk_l0b = mk_l0b $
+  ,mk_l1a = mk_l1a $
+  ,mk_l1b = mk_l1b $
+  ,mk_mag = mk_mag $
   ,station=station, varnames=varnames
 
 
@@ -125,8 +129,8 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
         if isa(da,'dynamicarray') then begin
           if da.size gt 0 then begin
             dprint,key,' ',da.name,da.size
-            tr = minmax(da.sample(varname='time') ) 
-            if keyword_set(trange) then tr = trange[0] > tr < trange[1] 
+            tr = minmax(da.sample(varname='time') )
+            if keyword_set(trange) then tr = trange[0] > tr < trange[1]
             da.ncdf_make_file,/append ,resolution=resolution, pathformat=pathname0 ,trange=tr  ; be careful using trange! it can be changed
           endif
         endif
@@ -153,23 +157,25 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
 
       source.local_data_dir = root_data_dir()  ; +'swfo/data/test2/'
 
-      printdat,source
+      ;printdat,source
 
       tr0 = timerange(trange)
       if ~keyword_set(res) then res = 24*3600d  ;3600d
       ;res = 3600d  *24  ; 1 day
       tints = floor(time_double(tr0)/res)
       nt = tints[1] - tints[0] +1
-      
+
       source_l0b = source
       if keyword_set(force_l0b) then source_l0b.no_download = 1
 
-      for tint= tints[0],tints[1]+1 do begin
+      for tint= tints[0],tints[1] do begin
         tr= (tint +[0,1]) *res
         l0a_filetime = 0
 
+
         l0b_filename = file_retrieve( str_sub(pathname0,'$NAME$','stis_l0b') ,trange=tr,_extra=source_l0b)
-        if keyword_set(make_l0b) then begin
+
+        if keyword_set(mk_l0b) then begin
           l0b_fileinfo = file_info(l0b_filename)
           l0b_filetime = l0b_fileinfo.mtime
           if keyword_set(force_l0b) then l0b_filetime = 0
@@ -223,63 +229,93 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
 
             l0b_da_300s = dynamicarray( l0b_da.reduce_resolution(300) , name= l0b_da.name+'_300s' )
             l0b_da_300s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
-
-
-
-            dprint,'Computing L1a',dlevel=2
-            l1a =swfo_stis_sci_level_1a(l0b_da.array)
-            l1a_da =  dynamicarray(name='stis_l1a', l1a ,/no_copy )
-            datahash['stis_l1a'] = l1a_da
-            l1a_da.ncdf_make_file,resolution = 24*3600d  ,pathformat=pathname0,  append=append
-
-            l1a_da_30s  = dynamicarray( l1a_da.reduce_resolution(30) , name= l1a_da.name+'_30s' )
-            l1a_da_30s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
-            l1a_da_300s = dynamicarray( l1a_da.reduce_resolution(300) , name= l1a_da.name+'_300s' )
-            l1a_da_300s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
-
-
-            dprint,'Computing L1b',dlevel=2
-            l1b = swfo_stis_sci_level_1b(l1a_da.array)
-            l1b_da =  dynamicarray(name='stis_l1b',l1b,/no_copy )
-            datahash['stis_l1b'] = l1b_da
-            l1b_da.ncdf_make_file,resolution = 24*3600d   ,pathformat=pathname0,  append=append
-
-            l1b_da_30s  = dynamicarray( l1b_da.reduce_resolution(30) , name= l1b_da.name+'_30s' )
-            l1b_da_30s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
-            l1b_da_300s = dynamicarray( l1b_da.reduce_resolution(300) , name= l1b_da.name+'_300s' )
-            l1b_da_300s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
-
-
-
-            if 1 then begin
-              dprint,'mag stuff'
-              if datahash.haskey('maghr') then maghr_da = datahash['maghr']
-              if datahash.haskey('mag1s') then mag1s_da = datahash['mag1s']
-
-              if datahash.haskey('mag8')   then swfo_mag_decom,datahash['mag8'],mag1s_da=mag1s_da, maghr_da=maghr_da,  /clear
-              if datahash.haskey('mag64')  then swfo_mag_decom,datahash['mag64'],mag1s_da=mag1s_da, maghr_da=maghr_da, /clear
-              datahash['maghr'] = maghr_da
-              datahash['mag1s'] = mag1s_da
-
-              ;        dprint,dlevel=2,'pathname0: ',pathname0
-              maghr_da.ncdf_make_file,resolution=24*3600d, pathformat=pathname0,  append=1
-              mag1s_da.ncdf_make_file,resolution=24*3600d, pathformat=pathname0,  append=1
-
-              if 1 then begin
-                mag_da_30s  = dynamicarray( mag1s_da.reduce_resolution(30) , name= mag1s_da.name+'_30s' )
-                mag_da_30s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
-              endif
-
-            endif   ; end mag stuff
-
-
-          endif else begin
+          endif  else begin
             dprint, 'Skipping file: '+l0b_filename
           endelse
+        endif else begin
+          dprint,'End mk_l0b'
+       ;   obj_destroy,l0b_da
+        endelse
+
+        l0b_fileinfo = file_info(l0b_filename)
+        l0b_filetime = l0b_fileinfo.mtime
+        l1a_filename = file_retrieve( str_sub(pathname0,'$NAME$','stis_l1a') ,trange=tr,_extra=source_l0b)
+        l1a_fileinfo = file_info(l1a_filename)
+        l1a_filetime = l1a_fileinfo.mtime
+  
+        if l1a_filetime lt l0b_filetime and keyword_set(mk_l1a) then begin
+          if 1  then begin
+            ;l0b_filename = file_retrieve( str_sub(pathname0,'$NAME$','stis_l0b') ,trange=tr,_extra=source_l0b)
+            l0b_da = swfo_ncdf_read(filenames = l0b_filename)
+          endif
+
+          dprint,'Computing L1a',dlevel=2
+          l1a =swfo_stis_sci_level_1a(l0b_da.array)
+          l1a_da =  dynamicarray(name='stis_l1a', l1a ,/no_copy )
+          datahash['stis_l1a'] = l1a_da
+          l1a_da.ncdf_make_file,resolution = 24*3600d  ,pathformat=pathname0,  append=append
+
+          l1a_da_30s  = dynamicarray( l1a_da.reduce_resolution(30) , name= l1a_da.name+'_30s' )
+          l1a_da_30s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
+          l1a_da_300s = dynamicarray( l1a_da.reduce_resolution(300) , name= l1a_da.name+'_300s' )
+          l1a_da_300s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
+        endif else begin
+          dprint,'Done l1a'
+        endelse
+
+        l1a_fileinfo = file_info(l1a_filename)
+        l1a_filetime = l1a_fileinfo.mtime
+        l1b_filename = file_retrieve( str_sub(pathname0,'$NAME$','stis_l1b') ,trange=tr,_extra=source_l0b)
+        l1b_fileinfo = file_info(l1b_filename)
+        l1b_filetime = l1b_fileinfo.mtime
 
 
-        endif
+        if l1b_filetime lt l1a_filetime and keyword_set(mk_l1b) then begin
 
+          dprint,'Computing L1b',dlevel=2
+          l1b = swfo_stis_sci_level_1b(l1a_da.array)
+          l1b_da =  dynamicarray(name='stis_l1b',l1b,/no_copy )
+          datahash['stis_l1b'] = l1b_da
+          l1b_da.ncdf_make_file,resolution = 24*3600d   ,pathformat=pathname0,  append=append
+
+          l1b_da_30s  = dynamicarray( l1b_da.reduce_resolution(30) , name= l1b_da.name+'_30s' )
+          l1b_da_30s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
+          l1b_da_300s = dynamicarray( l1b_da.reduce_resolution(300) , name= l1b_da.name+'_300s' )
+          l1b_da_300s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
+
+        endif else begin
+          dprint,'Done with l1b'
+        endelse
+
+        if keyword_set(mk_mag) then begin
+          dprint,'mag stuff'
+          if datahash.haskey('maghr') then maghr_da = datahash['maghr']
+          if datahash.haskey('mag1s') then mag1s_da = datahash['mag1s']
+
+          if datahash.haskey('mag8')   then swfo_mag_decom,datahash['mag8'],mag1s_da=mag1s_da, maghr_da=maghr_da,  /clear
+          if datahash.haskey('mag64')  then swfo_mag_decom,datahash['mag64'],mag1s_da=mag1s_da, maghr_da=maghr_da, /clear
+          datahash['maghr'] = maghr_da
+          datahash['mag1s'] = mag1s_da
+
+          ;        dprint,dlevel=2,'pathname0: ',pathname0
+          if obj_valid(maghr_da) then maghr_da.ncdf_make_file,resolution=24*3600d, pathformat=pathname0,  append=1
+          if obj_valid(mag1s_da) then mag1s_da.ncdf_make_file,resolution=24*3600d, pathformat=pathname0,  append=1
+
+          if obj_valid(mag1s_da) then begin
+            mag_da_30s  = dynamicarray( mag1s_da.reduce_resolution(30) , name= mag1s_da.name+'_30s' )
+            mag_da_30s.ncdf_make_file,resolution=24*3600d   , pathformat = pathname0,  append=append
+          endif
+
+        endif   ; end mag stuff
+
+
+        ;         endif else begin
+        ;           dprint, 'Skipping file: '+l0b_filename
+        ;         endelse
+
+
+
+        dprint,'Done with: ',time_string(tr)
       endfor
 
 
@@ -302,7 +338,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
   if n_elements(trange) ne 2 then trange=timerange(trange)   ;systime(1) + [-1,0]*3600d*24*current
 
   if ~isa(types) then begin
-    types = ['stis_l1a','stis_l1b','mag1s' ];, 'maghr']
+    types = ['stis_l1b']   ;,'mag1s' ];, 'maghr']
   endif
 
   if keyword_set(lowres) && lowres eq 1 then types=types+'_30s'

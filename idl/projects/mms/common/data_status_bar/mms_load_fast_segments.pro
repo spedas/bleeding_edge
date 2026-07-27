@@ -10,7 +10,7 @@
 ;         suffix:       suffix to append to the fast segments bar tplot variable
 ;         start_times:  returns an array of unix times (double) containing the start for each fast interval
 ;         end_times:    returns an array of unix times (double) containing the end of each fast interval
-;         nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
+;         no_download:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
 ;                       this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
 ;                       to manually update the file from the data at the SDC, and set this flag to load your local file
 ;         sdc:          flag to load the fast survey intervals directly from the SDC; set this flag to 0 to load the data 
@@ -23,25 +23,26 @@
 ;                  before 6Nov15) and the new SRoI code (mms_load_sroi_segments) for dates on and after 6Nov15 
 ; 
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
-;$LastChangedRevision: 34654 $
+;$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+;$LastChangedRevision: 34663 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_fast_segments.pro $
 ;-
 
-pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_times, end_times=end_times, nodownload=nodownload
+pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_times, end_times=end_times, no_download=no_download, make_tplot_var=make_tplot_var
   if undefined(suffix) then suffix = ''
   if (keyword_set(trange) && n_elements(trange) eq 2) $
     then tr = timerange(trange) $
   else tr = timerange()
+  if undefined(make_tplot_var) then make_tplot_var=1
   
   mms_init
   
-  padding = 14*86400
+  padding = 2*86400
   
   tr_padded = [tr[0]-padding, tr[1]+padding]
 
 
-  if undefined(nodownload) then begin
+  if undefined(no_download) then begin
     ; Get fast survey intervals from the SDC
     mms_update_fast_intervals, trange=tr_padded, unix_start=unix_start, unix_end=unix_end
     ; Check for empty arrays
@@ -57,6 +58,8 @@ pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_time
       dprint,dlevel=0,'mms_load_fast_segments: No local files found"
       return
     endif
+    last_start = -1
+    first = 1
     for i=0, n_elements(file_list)-1 do begin
       print,'Loading local file ', file_list[i]
       bn = file_basename(file_list[i])
@@ -69,17 +72,23 @@ pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_time
       file_timestamp=yyyy+'-'+mon+'-'+day+'/'+hr+':'+mm+':'+sec
       file_timestamp_dbl=time_double(file_timestamp)
       abs_get_start_end,filename=file_list[i], unix_start=this_start, unix_end=this_end
-      
-      append_array, unix_start, this_start
-      append_array, unix_end, this_end
+      if (first eq 1) and (this_start le last_start) then begin
+        dprint,dlevel=0, "Skipping repeated or out of order segment"
+      endif else begin
+        append_array, unix_start, this_start
+        append_array, unix_end, this_end
+        last_start = this_start
+        first = 0
+      endelse
       
       ; Can we stop reading files yet?  The choice of timestamps in the file names are a little weird. The individual files can contain
-      ; start times before the filename time, or after the filename time (by several days!)   So far, 1 week of padding seems to be
-      ; enough to guarantee that there won't be more segments found in later files.  For safety, we'll double that, and quit once
-      ; the file timestamps are two weeks past the end of the requested time range.
+      ; start times before the filename time, or after the filename time (by several days!)   But most of this weirdness happens
+      ; later in the mission.  Since we'll only be looking at ABS files for the first few months, two days of padding should suffice.
+      ; We know that the start times will be non-decreasing, so once we see a start beyond the end of the requested time range,
+      ; we can stop searching.
 
-      if file_timestamp_dbl gt tr_padded[1] then begin
-        dprint,dlevel=0,"Current file timestamp: "+ file_timestamp+" , end of unpadded time range: "+time_string(tr[1])+" , stopping search."
+      if this_start gt tr_padded[1] then begin
+        dprint,dlevel=0,"Current segment timestamp: "+ time_string(this_start) +" beyond end of padded time range: "+time_string(tr_padded[1])+" , stopping search."
         break
       endif
 
@@ -97,19 +106,10 @@ pro mms_load_fast_segments, trange=trange, suffix=suffix, start_times=start_time
   if t_count ne 0 then begin
     unix_start_clipped = unix_start[times_in_range]
     unix_end_clipped = unix_end[times_in_range]
+    start_times=unix_start_clipped
+    end_times=unix_end_clipped
     
-    for idx = 0, n_elements(unix_start_clipped)-1 do begin
-        append_array, bar_x, [unix_start_clipped[idx], unix_start_clipped[idx], unix_end_clipped[idx], unix_end_clipped[idx]]
-        append_array, bar_y, [!values.f_nan, 0.,0., !values.f_nan]
-    endfor
-    
-    if undefined(bar_x) then return
-    
-    store_data,'mms_bss_fast'+suffix,data={x:bar_x, y:bar_y}
-    options,'mms_bss_fast'+suffix,thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
-      ticklen=0,panel_size=0.09,colors=4, labels=['Fast'], charsize=2.
-    start_times = unix_start
-    end_times = unix_end
+    if make_tplot_var then make_bss_tplot_variable,start_times=unix_start_clipped, end_times=unix_end_clipped, suffix=suffix
   endif else begin
     dprint, dlevel = 0, 'No fast segments found in this time interval: ' + time_string(tr[0]) + ' to ' + time_string(tr[1])
   endelse

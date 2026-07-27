@@ -16,8 +16,8 @@
 ;
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
-; $LastChangedRevision: 34654 $
+; $LastChangedDate: 2026-07-23 16:34:45 -0700 (Thu, 23 Jul 2026) $
+; $LastChangedRevision: 34667 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_brst_intervals.pro $
 ;-
 
@@ -41,21 +41,6 @@ pro mms_update_brst_intervals, trange=trange, start_times=start_times, end_times
   n_months = n_elements(monthly_intervals)/2
   
   status = mms_login_lasp(username=username, password=password)
-
-  brst_seg_temp = { VERSION: 1.0000000, $
-    DATASTART: 1, $
-    DELIMITER: 44b, $
-    MISSINGVALUE: "", $
-    COMMENTSYMBOL: "", $
-    FIELDCOUNT: 13, $
-    FIELDTYPES: [0, 3, 3, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0], $
-    FIELDNAMES: [ "FIELD01", "TAISTARTTIME", $
-    "TAIENDTIME", "FIELD04", "FIELD05", "FIELD06", $
-    "FIELD07", "STATUS", "FIELD09", "FIELD10", $
-    "FIELD11", "FIELD12", "FIELD13"], $
-    FIELDLOCATIONS: [0, 4, 16, 28, 44, 50, 53, 56, 75, 78, 93, 114, 135], $
-    FIELDGROUPS: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  $
-  }
   
   my_start_times=[]
   my_end_times=[]
@@ -67,11 +52,10 @@ pro mms_update_brst_intervals, trange=trange, start_times=start_times, end_times
     end_tai = mms_unix2tai(end_unix)
     start_str = time_string(start_unix, tformat='YYYY_MM_DD')
     end_str = time_string(end_unix, tformat='YYYY_MM_DD')
-    local_filename = 'segments_'+start_str+'_'+end_str+'.csv'
     print, '*** now grabbing updates for ' + start_str + ' - ' +  end_str
-    local_filename=spd_addslash(!mms.local_data_dir)+'burst_segs/segments_'+start_str+'_'+end_str+".csv"
+    local_filename=spd_addslash(!mms.local_data_dir)+'burst_intervals/segments_'+start_str+'_'+end_str+".csv"
     remote_path = 'https://lasp.colorado.edu/mms/sdc/public/service/latis/'
-    remote_file = 'mms_burst_data_segment.csv?TAIENDTIME%3E='+strtrim(string(start_tai),2)+'&TAISTARTTIME%3C'+strtrim(string(end_tai),2)
+    remote_file = 'mms_burst_data_segment.csv?TAISTARTTIME%3E='+strtrim(string(start_tai),2)+'&TAISTARTTIME%3C'+strtrim(string(end_tai),2)
 
     brst_file = spd_download(remote_path=remote_path, remote_file=remote_file, $
       local_file=local_filename, /no_wildcards, $

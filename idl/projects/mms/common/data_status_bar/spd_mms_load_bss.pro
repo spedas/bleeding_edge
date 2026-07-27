@@ -39,12 +39,12 @@
 ;      for dates before 6Nov15)
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
-;$LastChangedRevision: 34654 $
+;$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+;$LastChangedRevision: 34663 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/spd_mms_load_bss.pro $
 ;-
 
-PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_labels, probe=probe, nodownload=nodownload
+PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_labels, probe=probe, no_download=no_download, suffix=suffix
   compile_opt idl2
   
   mms_init
@@ -52,6 +52,7 @@ PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_l
   if undefined(trange) then trange = timerange() else trange = timerange(trange)
   if undefined(probe) then probe = '1' else probe = strcompress(string(probe), /rem)
   if undefined(datatype) then datatype = ['fast','burst']
+  if undefined(suffix) then suffix=''
   datatype = strlowcase(datatype)
   
   nmax = n_elements(datatype)
@@ -76,22 +77,40 @@ PRO spd_mms_load_bss, trange=trange, datatype=datatype, include_labels=include_l
   for n=0,nmax-1 do begin
     case datatype[n] of
       'fast': begin
-         ; use the old fast segments code for dates before 6Nov15
-         if time_double(trange[0]) le time_double('2015-11-06') then begin
-           mms_load_fast_segments, trange=trange, nodownload=nodownload
+         ; use the old fast segments code for end dates before 6Nov15
+         if time_double(trange[1]) le time_double('2015-11-06') then begin
+           ; Use ABS data only
+           mms_load_fast_segments, trange=trange, no_download=no_download, suffix=suffix
            options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
             ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
           endif else begin
-            ; use SRoI code for dates on and after 6Nov15
-            mms_load_sroi_segments, trange=trange, probe=probe
-            copy_data, 'mms' + probe + '_bss_sroi', 'mms_bss_fast'
-            options,'mms_bss_fast',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
-              ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
+            if time_double(trange[0]) gt time_double('2015-11-06') then begin
+              ; use SRoI code for dates on and after 6Nov15
+
+              mms_load_sroi_segments, trange=trange, probe=probe
+              copy_data, 'mms' + probe + '_bss_sroi', 'mms_bss_fast'+suffix
+              options,'mms_bss_fast'+suffix,thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
+                ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
+            endif else begin
+              ; Use ABS times for start of interval, and SROI times after
+              mms_load_fast_segments ,trange=[time_double(trange[0]), time_double('2015-11-06')], no_download=no_download, make_tplot_var=0,start_times=abs_starts, end_times=abs_ends
+              mms_load_sroi_segments, trange=[time_double('2015-11-06'), time_double(trange[1])], probe=probe, start_times=sroi_starts, end_times=sroi_ends, no_download=no_download, make_tplot_var=0
+              combined_starts = []
+              combined_ends = []
+              append_array,combined_starts,abs_starts
+              append_array,combined_starts,sroi_starts
+              append_array,combined_ends, abs_ends
+              append_array,combined_ends, sroi_ends
+              make_bss_tplot_variable,start_times=combined_starts,end_times=combined_ends, suffix=suffix
+              options,'mms_bss_fast'+suffix,thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
+                ticklen=0,panel_size=panel_size,colors=6, labels=[fast_label], labsize=1, charsize=1.
+
+            endelse
           endelse
        end
       'burst': begin
-         mms_load_brst_segments, trange=trange, nodownload=nodownload
-         options,'mms_bss_burst',thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
+         mms_load_brst_segments, trange=trange, no_download=no_download, suffix=suffix
+         options,'mms_bss_burst'+suffix,thick=5,xstyle=4,ystyle=4,yrange=[-0.001,0.001],ytitle='',$
           ticklen=0,panel_size=panel_size,colors=2, labels=[burst_label], labsize=1, charsize=1.
        end
       'status': begin

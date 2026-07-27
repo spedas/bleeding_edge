@@ -10,23 +10,26 @@
 ;         suffix:       suffix to append to the tplot variable of the burst segments bar
 ;         start_times:  returns an array of unix times (double) containing the start for each burst interval
 ;         end_times:    returns an array of unix times (double) containing the end of each burst interval
-;         nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
+;         no_download:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
 ;                       this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
 ;                       to manually update the file from the data at the SDC, and set this flag to load your local file
 ;         sdc:          flag to load the brst intervals directly from the SDC; set this flag to 0 to load the data from spedas.org (may be out of date)
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
-;$LastChangedRevision: 34654 $
+;$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+;$LastChangedRevision: 34663 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_brst_segments.pro $
 ;-
 
-pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_times, end_times=end_times, nodownload=nodownload, sdc=sdc
+pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_times, end_times=end_times, no_download=no_download, sdc=sdc
   if undefined(suffix) then suffix = ''
   if (keyword_set(trange) && n_elements(trange) eq 2) $
     then tr = timerange(trange) $
   else tr = timerange()
-  
+
+  if undefined(no_download) then no_download=0
+  if undefined(suffix) then suffix=''
+    
   mms_init
   padding = 2*86400
   
@@ -35,7 +38,7 @@ pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_time
   undefine, start_times
   undefine, end_times
   
-  if undefined(nodownload) then begin
+  if no_download eq 0 then begin
     mms_update_brst_intervals, trange=tr_padded, start_times=start_times, end_times=end_times
   endif else begin
     monthly_intervals = spd_month_intervals(tr_padded[0], tr_padded[1])
@@ -49,7 +52,7 @@ pro mms_load_brst_segments, trange=trange, suffix=suffix, start_times=start_time
       file_end=monthly_intervals[1,i]
       file_start_str = time_string(file_start,tformat="YYYY_MM_DD")
       file_end_str = time_string(file_end,tformat="YYYY_MM_DD")
-      local_filename=spd_addslash(!mms.local_data_dir)+'burst_segs/segments_'+file_start_str+'_'+file_end_str+".csv"
+      local_filename=spd_addslash(!mms.local_data_dir)+'burst_intervals/segments_'+file_start_str+'_'+file_end_str+".csv"
       seg_csv_get_start_end,filename=local_filename,unix_starts=this_start, unix_ends=this_end
       append_array,start_times,this_start
       append_array,end_times, this_end

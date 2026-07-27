@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jul 18 03:16:59 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jul 25 03:16:38 2026.<P>
  
 <HR>
  
@@ -49,14 +49,14 @@ This page was created by the IDL library routine
          suffix:       suffix to append to the tplot variable of the burst segments bar
          start_times:  returns an array of unix times (double) containing the start for each burst interval
          end_times:    returns an array of unix times (double) containing the end of each burst interval
-         nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
+         no_download:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
                        this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
                        to manually update the file from the data at the SDC, and set this flag to load your local file
          sdc:          flag to load the brst intervals directly from the SDC; set this flag to 0 to load the data from spedas.org (may be out of date)
 
 $LastChangedBy: jwl $
-$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
-$LastChangedRevision: 34654 $
+$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+$LastChangedRevision: 34663 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_brst_segments.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_load_brst_segments.pro">projects/mms/common/data_status_bar/mms_load_brst_segments.pro</A>)</STRONG><P>
@@ -79,7 +79,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          suffix:       suffix to append to the fast segments bar tplot variable
          start_times:  returns an array of unix times (double) containing the start for each fast interval
          end_times:    returns an array of unix times (double) containing the end of each fast interval
-         nodownload:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
+         no_download:   flag to load the file if it's stored locally, and not download it from the spedas.org server;
                        this is useful if the remote file seems out of date; you can run mms_update_brst_intervals
                        to manually update the file from the data at the SDC, and set this flag to load your local file
          sdc:          flag to load the fast survey intervals directly from the SDC; set this flag to 0 to load the data 
@@ -92,8 +92,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
                   before 6Nov15) and the new SRoI code (mms_load_sroi_segments) for dates on and after 6Nov15 
  
 $LastChangedBy: jwl $
-$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
-$LastChangedRevision: 34654 $
+$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+$LastChangedRevision: 34663 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_fast_segments.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_load_fast_segments.pro">projects/mms/common/data_status_bar/mms_load_fast_segments.pro</A>)</STRONG><P>
@@ -118,9 +118,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
          start_times:  returns an array of unix times (double) containing the start for each SRoI interval
          end_times:    returns an array of unix times (double) containing the end of each SRoI interval
 
-$LastChangedBy: egrimes $
-$LastChangedDate: 2020-06-19 11:30:13 -0700 (Fri, 19 Jun 2020) $
-$LastChangedRevision: 28790 $
+$LastChangedBy: jwl $
+$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+$LastChangedRevision: 34663 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_sroi_segments.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_load_sroi_segments.pro">projects/mms/common/data_status_bar/mms_load_sroi_segments.pro</A>)</STRONG><P>
@@ -149,8 +149,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
 
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
- $LastChangedRevision: 34654 $
+ $LastChangedDate: 2026-07-23 16:34:45 -0700 (Thu, 23 Jul 2026) $
+ $LastChangedRevision: 34667 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_brst_intervals.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_update_brst_intervals.pro">projects/mms/common/data_status_bar/mms_update_brst_intervals.pro</A>)</STRONG><P>
@@ -182,8 +182,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        containing your login information. 
  
  $LastChangedBy: jwl $
- $LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
- $LastChangedRevision: 34654 $
+ $LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+ $LastChangedRevision: 34663 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_update_fast_intervals.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/mms_update_fast_intervals.pro">projects/mms/common/data_status_bar/mms_update_fast_intervals.pro</A>)</STRONG><P>
@@ -234,8 +234,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
       for dates before 6Nov15)
 
 $LastChangedBy: jwl $
-$LastChangedDate: 2026-07-17 17:19:03 -0700 (Fri, 17 Jul 2026) $
-$LastChangedRevision: 34654 $
+$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
+$LastChangedRevision: 34663 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/spd_mms_load_bss.pro $
 </PRE><P>
 <STRONG>(See <A href="data_status_bar/spd_mms_load_bss.pro">projects/mms/common/data_status_bar/spd_mms_load_bss.pro</A>)</STRONG><P>

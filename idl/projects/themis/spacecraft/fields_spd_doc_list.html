@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jul 18 03:16:59 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Jul 25 03:16:38 2026.<P>
  
 <HR>
  
@@ -21,6 +21,7 @@ This page was created by the IDL library routine
 <H1>projects/themis/spacecraft/fields</H1>
 <LI><A HREF="#BESSEL_FILTER_RESP">BESSEL_FILTER_RESP</A>
 <LI><A HREF="#BUTTERWORTH_FILTER_RESP">BUTTERWORTH_FILTER_RESP</A>
+<LI><A HREF="#GET_FGM_RANGE_TRANSITION_TIMES">GET_FGM_RANGE_TRANSITION_TIMES</A>
 <LI><A HREF="#SCM_CLEANUP_CCC">SCM_CLEANUP_CCC</A>
 <LI><A HREF="#SPIN_TONES_CLEANING_VECTOR_V5">SPIN_TONES_CLEANING_VECTOR_V5</A>
 <LI><A HREF="#SPINFIT">SPINFIT</A>
@@ -108,7 +109,7 @@ purpose: Calculates the transfer function of an N-pole Bessel filter
 <A NAME="BUTTERWORTH_FILTER_RESP">
 <H2>BUTTERWORTH_FILTER_RESP</H2></A>
 <A HREF="#BESSEL_FILTER_RESP">[Previous Routine]</A>
-<A HREF="#SCM_CLEANUP_CCC">[Next Routine]</A>
+<A HREF="#GET_FGM_RANGE_TRANSITION_TIMES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 function butterworth_filter_resp(f, fc, N)
@@ -122,9 +123,40 @@ purpose: Calculates the transfer function of an N-pole Butterworth filter
 <STRONG>(See <A href="fields/butterworth_filter_resp.pro">projects/themis/spacecraft/fields/butterworth_filter_resp.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="GET_FGM_RANGE_TRANSITION_TIMES">
+<H2>GET_FGM_RANGE_TRANSITION_TIMES</H2></A>
+<A HREF="#BUTTERWORTH_FILTER_RESP">[Previous Routine]</A>
+<A HREF="#SCM_CLEANUP_CCC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+Procedure get_fgm_range_transition_times
+
+Purpose:
+  Analyze a set of packet headers from spin fit (apid 410), FGE (apid 405), FGL (apid 460), or FGH (apid 461) L1 support data (the *_hed outputs)
+  Detect where the FGM range settings change, and return the packet header times which bracket the change.
+
+Syntax:
+  get_fgm_range_transitions_times, tvar, start_times=start_times, end_times=end_times
+
+  where
+
+  tvar: A tplot variable containing packet headers, obtained by loading L1 data with /get_support_data.  It will have a suffix '_hed'.
+  start_times: Returned array of start times bracketing the range transitions
+  end_times: Returned array of end times bracketing the range transitions
+ 
+
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-07-24 11:51:21 -0700 (Fri, 24 Jul 2026) $
+ $LastChangedRevision: 34673 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/get_fgm_range_transition_times.pro $
+</PRE><P>
+<STRONG>(See <A href="fields/get_fgm_range_transition_times.pro">projects/themis/spacecraft/fields/get_fgm_range_transition_times.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SCM_CLEANUP_CCC">
 <H2>SCM_CLEANUP_CCC</H2></A>
-<A HREF="#BUTTERWORTH_FILTER_RESP">[Previous Routine]</A>
+<A HREF="#GET_FGM_RANGE_TRANSITION_TIMES">[Previous Routine]</A>
 <A HREF="#SPINFIT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

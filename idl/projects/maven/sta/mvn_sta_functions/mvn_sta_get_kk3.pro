@@ -15,7 +15,7 @@
 ;NOTES:	  
 ;	kk3 ion suppression correction may be limited to times after 20151101
 ;-
-FUNCTION mvn_sta_get_kk3,time
+FUNCTION mvn_sta_get_kk3,time,noplot=noplot
 
 common mvn_sta_kk3,kk3
 
@@ -1858,9 +1858,10 @@ if time_double(time) gt time_double('2025-10-30/00:00') and kk3_anode then kk3 =
 ;if time_double(time) gt time_double('2025-11-02/00:00') and kk3_anode then kk3 = [4.0,3.7,3.9,3.5]		;tbd **sta o2+ good, sza=?, alt=?, att=?, scpot=-?V, checked 20251107 
 ;if time_double(time) gt time_double('2025-11-04/00:00') and kk3_anode then kk3 = [4.0,3.7,3.9,3.5]		;tbd **sta o2+ good, sza=?, alt=?, att=?, scpot=-?V, checked 20251107 
 
-
-tt=timerange()
-store_data,'mvn_sta_kk3',data={x:tt,y:transpose([[kk3],[kk3]])}
+if ~keyword_set(noplot) then begin
+  tt=timerange()
+  store_data,'mvn_sta_kk3',data={x:tt,y:transpose([[kk3],[kk3]])}
+endif
 
 return,kk3
 

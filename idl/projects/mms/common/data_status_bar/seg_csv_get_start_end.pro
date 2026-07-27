@@ -26,7 +26,7 @@ pro seg_csv_get_start_end,filename=filename,unix_starts=unix_starts, unix_ends=u
   endelse
 
   if ~is_struct(brst_data) then begin
-    dprint,dlevel=0,"seg_csv_get_start_end: Unable to parse "+filename
+    dprint,dlevel=0,"seg_csv_get_start_end: No burst segments found in "+filename
     unix_starts=[]
     unix_ends=[]
     return

@@ -23,8 +23,8 @@
 ; - swfo_stis_sci_l1b_crib.pro
 ;
 ; $LastChangedBy: davin $
-; $LastChangedDate: 2026-06-05 00:50:33 -0700 (Fri, 05 Jun 2026) $
-; $LastChangedRevision: 34537 $
+; $LastChangedDate: 2026-07-22 13:42:12 -0700 (Wed, 22 Jul 2026) $
+; $LastChangedRevision: 34660 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -240,7 +240,8 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     ; pixels to use O3 instead
     N_ion_big   = ion_rate_big * integration_time
     N_ion_small = ion_rate_small * integration_time
-    N_ion_tot   = total(N_ion_big)/100
+    ;N_ion_tot   = total(N_ion_big)/100   ; line removed 2026-7-17
+    N_ion_tot = total(ion_rate_small) * integration_time
 
     N_elec = elec_rate_small * integration_time
     N_elec_tot = total(elec_rate_small) * integration_time
