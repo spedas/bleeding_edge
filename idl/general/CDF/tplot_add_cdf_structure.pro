@@ -55,9 +55,9 @@
 ;CREATED BY:
 ;  Alexander Drozdov
 ;
-; $LastChangedBy: adrozdov $
-; $LastChangedDate: 2023-06-05 13:04:09 -0700 (Mon, 05 Jun 2023) $
-; $LastChangedRevision: 31884 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-07-28 21:48:17 -0700 (Tue, 28 Jul 2026) $
+; $LastChangedRevision: 34683 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/CDF/tplot_add_cdf_structure.pro $
 ;-
 
@@ -183,21 +183,11 @@ pro tplot_add_cdf_structure, tplot_vars, tt2000=tt2000, new=new
       dy = dimen(y)      
      ;  === Checking the missing v(#) if we have [2|3|4]D y ===
       CASE ndimen(y) OF
-        2: begin           
-             if undefined(v) then begin
-              ; If variable has predefined labels, we go we LABL_PTR_1, otherwise we put indexes instead
-              ; The label must have the same number of dimentions as data
-              ; Next, the attibutes of the label variable will be defined based on exitance of LABL_PTR_1 attribute
-                                           
-              if (dy[1] eq dimen(metadata.labels) and ~array_equal(metadata.labels, '')) then begin
-                v = metadata.labels
-                attr = *vars.attrptr 
-                str_element,attr,'LABL_PTR_1',tplot_vars[i] + '_v',/add
-                vars.attrptr = ptr_new(attr)
-              endif else begin
-                v = INDGEN(dy[1]) ; just indexing
-              endelse
-             endif
+        2: begin 
+             ; This code used to look for labels, and use them for v values if they existed.  But strings are not valid here, so
+             ; if v is missing, we just use an index.  JWL 2026-07-28
+             if undefined(v) then v = INDGEN(dy[1]) ; just indexing
+
              if ~undefined(x) then ds = {x:x,y:y,v:v} else ds = {y:y,v:v}
            end           
         3: begin

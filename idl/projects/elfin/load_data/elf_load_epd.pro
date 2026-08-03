@@ -76,14 +76,13 @@ pro elf_load_epd, trange = trange, probes = probes, datatype = datatype, $
   spdf = spdf, versions = versions, tt2000=tt2000, $
   nspinsinsum=my_nspinsinsum, apply_deadtime_corr=apply_deadtime_corr
 ;stop  
-  if (~undefined(trange) && n_elements(trange) eq 2) && (time_double(trange[1]) lt time_double(trange[0])) then begin
+  if ~undefined(trange) && n_elements(trange) eq 2 $
+    then tr = timerange(trange) $
+  else tr = timerange()
+  if (~undefined(tr) && n_elements(tr) eq 2) && (time_double(tr[1]) lt time_double(tr[0])) then begin
     dprint, dlevel = 0, 'Error, endtime is before starttime; trange should be: [starttime, endtime]'
     return
   endif
-
-  if ~undefined(trange) && n_elements(trange) eq 2 $
-    then tr = timerange(trange) $
-  else tr = time_double(['2022-08-19', '2022-08-20'])
 
   if undefined(probes) then probes = ['a', 'b'] 
   if probes EQ ['*'] then probes = ['a', 'b']

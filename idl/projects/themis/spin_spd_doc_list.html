@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Jul 25 03:16:38 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Aug  1 03:16:19 2026.<P>
  
 <HR>
  
@@ -26,6 +26,8 @@ This page was created by the IDL library routine
 <br>Performs interpolation on individual elements. (Now a vectorized implementation, accepts multiple inputs)
 <LI><A HREF="#SEGMENT_TEST.PRO">SEGMENT_TEST.PRO</A>
 <br>Check a spinmodel segment structure to ensure that the model parameters
+<LI><A HREF="#SPINMODEL_ECLIPSE_STATUS.PRO">SPINMODEL_ECLIPSE_STATUS.PRO</A>
+<br>For each eclipse period in a spinmodel, report the start and stop times, segment flag values, and status strings
 <LI><A HREF="#SPINMODEL_FINDSEG_T[1]">SPINMODEL_FINDSEG_T[1]</A>
 <br>Finds indexes of spin model segments matching each time.
 <LI><A HREF="#SPINMODEL_GET_INFO.PRO">SPINMODEL_GET_INFO.PRO</A>
@@ -201,7 +203,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <A NAME="SEGMENT_TEST.PRO">
 <H2>SEGMENT_TEST.PRO</H2></A>
 <A HREF="#SEGMENT_INTERP_T">[Previous Routine]</A>
-<A HREF="#SPINMODEL_FINDSEG_T[1]">[Next Routine]</A>
+<A HREF="#SPINMODEL_ECLIPSE_STATUS.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:
@@ -251,9 +253,42 @@ Change Date: 2007-10-08
 <STRONG>(See <A href="spin/segment_test.pro">projects/themis/spin/segment_test.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPINMODEL_ECLIPSE_STATUS.PRO">
+<H2>SPINMODEL_ECLIPSE_STATUS.PRO</H2></A>
+<A HREF="#SEGMENT_TEST.PRO">[Previous Routine]</A>
+<A HREF="#SPINMODEL_FINDSEG_T[1]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+    SPINMODEL_ECLIPSE_STATUS.PRO
+
+ PURPOSE:
+    For each eclipse period in a spinmodel, report the start and stop times, segment flag values, and status strings
+    describing the level of spinmodel corrections available for that eclipse.
+
+ CATEGORY:
+   TDAS
+
+ CALLING SEQUENCE:
+   spinmodel_eclipse_status,model=modelptr, start_times=start_times, end_times=end_times, flags=flags, flag_strings=flag_strings
+
+  INPUTS:
+    Model: pointer to s spinmodel structure
+
+  OUTPUTS:
+    start_times: start times of each eclipse
+    end_times: end times of each eclipse
+    flags: segment flag values (valid values 0=sunlight, 1=uncorrected eclipse, 3=partial corrections, 7=full corrections
+    flag_strings: descriptive strings for each possible status
+
+  
+</PRE><P>
+<STRONG>(See <A href="spin/spinmodel_eclipse_status.pro">projects/themis/spin/spinmodel_eclipse_status.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPINMODEL_FINDSEG_T[1]">
 <H2>SPINMODEL_FINDSEG_T[1]</H2></A>
-<A HREF="#SEGMENT_TEST.PRO">[Previous Routine]</A>
+<A HREF="#SPINMODEL_ECLIPSE_STATUS.PRO">[Previous Routine]</A>
 <A HREF="#SPINMODEL_FINDSEG_T[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -415,6 +450,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
   INPUTS:
     probe: A scalar character, one of 'a' through 'f', specifying which model
        pointer to return.
+    use_eclipse_corrections: 0, 1, or 1.  0=no eclipse corrections, 1=waveform corrections, 2=spin based corrections
 
   OUTPUTS:
     model_ptr: The return value is a pointer to the specified spin model,

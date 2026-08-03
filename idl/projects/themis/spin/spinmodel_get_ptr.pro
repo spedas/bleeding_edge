@@ -16,6 +16,7 @@
 ;  INPUTS:
 ;    probe: A scalar character, one of 'a' through 'f', specifying which model
 ;       pointer to return.
+;    use_eclipse_corrections: 0, 1, or 1.  0=no eclipse corrections, 1=waveform corrections, 2=spin based corrections
 ;
 ;  OUTPUTS:
 ;    model_ptr: The return value is a pointer to the specified spin model,

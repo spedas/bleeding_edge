@@ -1,6 +1,6 @@
 ;$LastChangedBy: ali $
-;$LastChangedDate: 2026-03-03 17:57:35 -0800 (Tue, 03 Mar 2026) $
-;$LastChangedRevision: 34225 $
+;$LastChangedDate: 2026-07-28 16:58:58 -0700 (Tue, 28 Jul 2026) $
+;$LastChangedRevision: 34682 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_aws_nc2sav_makefile.pro $
 
 pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,daily=daily,force_make=force_make,$
@@ -11,7 +11,8 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
   nc_path='swfo/aws/'
   if ~keyword_set(station) then station='WCD'
   if ~keyword_set(res) then res='' else res='_'+res
-  filepath='preplt/SWFO-L1/l0/SWFO'+station+'/YYYY/mth/YYYYMMDD/'
+  ;filepath='preplt/SWFO-L1/l0/SWFO'+station+'/YYYY/mth/YYYYMMDD/' ;old directory
+  filepath='SWFO-L1/l0/SWFO'+station+'/YYYY/mth/YYYYMMDD/' ;combines preplt and ops
   filename='OR_SWFO'+station+'-L0_SL1_sYYYYDOYhh*.nc'
 
   source={remote_data_dir:'http://sprg.ssl.berkeley.edu/data/' $
@@ -66,16 +67,17 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
 
   if keyword_set(make_sav) then begin
     ncfiles=file_retrieve(_extra=source,nc_path+filepath+filename,trange=trange,resolution=3600,/valid,verbose=1)
-    nctimes=time_double(ncfiles.substring(84,96),tformat='YYYYDOYhhmmss')
+    if ~keyword_set(ncfiles) then return
+    nctimes=time_double((file_basename(ncfiles)).substring(19,31),tformat='YYYYDOYhhmmss')
     store_data,'nctimes',nctimes,nctimes
     tres_data,'nctimes'
     get_data,'nctimes_tres(s)',dat=dat
-    missing=ncfiles[where(dat.y gt 310 and dat.y lt 1000)-1].substring(56)
+    missing=ncfiles[where(dat.y gt 310 and dat.y lt 1000)-1].substring(-77)
     rdr=ccsds_frame_reader(mission='SWFO',/no_widget,verbose=verbose,run_proc=run_proc)
     dict = rdr.source_dict
     frames_name = 'swfo_frame_data'
     foreach file,ncfiles do begin
-      sav_file=root+sav_path+(file).substring(-112)+'.sav'
+      sav_file=root+sav_path+(file).substring(-112+7)+'.sav'
       if ~keyword_set(force_make) then if (file_info(file)).mtime le (file_info(sav_file)).mtime then continue
       swfo_apdat_info,/reset
       swfo_stis_apdat_init,/reset,/save_flag

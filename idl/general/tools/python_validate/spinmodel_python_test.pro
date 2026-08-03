@@ -37,14 +37,18 @@
 pro spinmodel_python_test,probe=probe,trange=trange,correction_level=correction_level,cdf_filename=cdf_filename
 
 ; Store the test parameters as tplot variables
-trange_dbl=time_double(trange)
+;trange_dbl=time_double(trange)
+trange=['2008-03-23','2008-04-24']
+trange_dbl = time_double(trange)
+probe='a'
+correction_level=2
 t_sgl=trange_dbl[0]
 probe_idx=strpos('abcde',probe)
 interval_delta_t = trange_dbl[1]-trange_dbl[0]
 interval_days = interval_delta_t / 86400.0D
 store_data,'parm_trange',data={x:trange_dbl,y:trange_dbl}
-store_data,'parm_probe',data={x:t_sgl,y:probe_idx}
-store_data,'parm_correction_level',data={x:t_sgl,y:correction_level}
+store_data,'parm_probe',data={x:t_sgl,y:[probe_idx]}
+store_data,'parm_correction_level',data={x:t_sgl,y:[correction_level]}
 parm_varlist=['parm_trange','parm_correction_level','parm_probe']
 
 ; Load state data and create the spinmodels
@@ -76,5 +80,59 @@ store_data,'interp_segflags',data={x:tst_times,y:double(segflag)}
 interp_dq=['times','spincount','spinphase','spinper','t_last','eclipse_delta_phi','segflags']
 interp_varlist='interp_'+interp_dq
 cdf_varlist=[parm_varlist,seg_varlist,interp_varlist]
-tplot2cdf,filename=cdf_filename,tvars=cdf_varlist,/default_cdf_structure
+
+; Test eclipse spin model (vector) correction with some FGM data during eclipses
+
+timespan,'2026-01-01',2,/days
+thm_load_fgm, probe='b', level=2
+thm_autoload_support,vname='thb_fgs_dsl',probe_in='b',/spinmodel
+sm_spin=spinmodel_get_ptr('b', use_eclipse_corrections=2)
+sm_wave=spinmodel_get_ptr('b', use_eclipse_corrections=1)
+
+get_data,'thb_fgs_dsl',data=d, dl=dl
+times=d.x
+y=d.y
+x_in = d.y[0,*]
+y_in = d.y[1,*]
+z_in = d.y[2,*]
+spinmodel_interp_t,model=sm_spin,time=times,eclipse_delta_phi=delta_phi
+correct_delta_phi_vector,xyz_in=y,delta_phi=delta_phi
+store_data,'thb_fgs_dsl_corrected',data={x:d.x, y:y},dl=dl
+
+get_data,'thb_fgl_dsl',data=d, dl=dl
+times=d.x
+y=d.y
+x_in = d.y[0,*]
+y_in = d.y[1,*]
+z_in = d.y[2,*]
+spinmodel_interp_t,model=sm_wave,time=times,eclipse_delta_phi=delta_phi
+correct_delta_phi_vector,xyz_in=y,delta_phi=delta_phi
+store_data,'thb_fgl_dsl_corrected',data={x:d.x, y:y},dl=dl
+
+sm_varlist=['thb_fgs_dsl', 'thb_fgs_dsl_corrected', 'thb_fgl_dsl', 'thb_fgl_dsl_corrected']
+
+all_varlist=[]
+append_array,all_varlist,cdf_varlist
+append_array,all_varlist,sm_varlist
+
+thm_load_mom, probe='b', level=2
+
+
+tens_vars = tnames('*tens')
+tens_corrected_vars = tens_vars + '_corrected'
+
+for i=0,n_elements(tens_vars)-1 do begin
+  v=tens_vars[i]
+  get_data,v,data=d,dl=dl
+  tval=d.y
+  spinmodel_interp_t,model=sm_spin,time=d.x,eclipse_delta_phi=delta_phi
+  correct_delta_phi_tensor,tens=tval,delta_phi=delta_phi
+  store_data,v+'_corrected',data={x:d.x,y:tval},dl=dl  
+  
+endfor
+
+append_array,all_varlist,tens_vars
+append_array,all_varlist,tens_corrected_vars
+
+tplot2cdf,filename=cdf_filename,tvars=all_varlist,/default_cdf_structure
 end
