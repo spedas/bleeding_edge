@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-06-24 16:13:45 -0700 (Wed, 24 Jun 2026) $
-; $LastChangedRevision: 34598 $
+; $LastChangedDate: 2026-08-07 07:52:37 -0700 (Fri, 07 Aug 2026) $
+; $LastChangedRevision: 34713 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_kernels.pro $
 ;
 ;-
@@ -57,20 +57,19 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
              (((FILE_BASENAME(kernels)).matches('.bsp$') EQ 1) OR ((FILE_BASENAME(kernels)).matches('.bc$') EQ 1)), nw, complement=v, ncomplement=nv)
   IF nv GT 0 THEN kernels = kernels[v]
   undefine, w, nw, v, nv
-  kernels = esc_file_retrieve(kernels.replace(src.local_data_dir, ''), verbose=verbose, source=src, /valid_only)
-
+  kernels = LIST(esc_file_retrieve(kernels.replace(src.local_data_dir, ''), verbose=verbose, source=src, /valid_only))
   
   IF (bflg) THEN append_array, probes, 'blue'
   IF (gflg) THEN append_array, probes, 'gold'
 
   tr = timerange(itime)
-  trange = tr + [-1.d0, 1.d0] * oneday * 30.d0
+  trange = tr + [-1.d0, 1.d0] * oneday * 30.d0 > time_double('2025-11-14')
   dates = time_intervals(trange=trange, /daily_res)
   FOR i=0, N_ELEMENTS(probes)-1 DO BEGIN
      ; SPK & CK
      prefix = 'esc-' + (probes[i]).substring(0, 0)
-     bsp   = prefix + '_orb-???-eph_' + ['YYYYMMDD-????????', '????????-YYYYMMDD'] + '_v??.bsp'
-     bc    = prefix + '_orb-pre-ck_YYYYMMDD-????????_v??.bc'
+     bsp = prefix + '_orb-???-eph_' + ['YYYYMMDD-????????', '????????-YYYYMMDD'] + '_v??.bsp'
+     bc  = prefix + '_orb-???-ck_'  + ['YYYYMMDD-????????', '????????-YYYYMMDD'] + '_v??.bc'
 
      IF src.no_server EQ 1 THEN BEGIN
         spath = src.local_data_dir
@@ -81,22 +80,24 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
      ENDELSE 
 
      ; SPK
-     pspk = 0 ; = predictive SPK 
+     rec  = 0
+     pspk = 0                   ; = predictive SPK 
      tspk = trange
      SPK:
      IF (pspk) THEN $
         spks = esc_mission_phase(dates) + '/' + probes[i] + '/ephemeris/predictive/' + time_string(dates, tformat='YYYY/MM/' + prefix) + '*.bsp' $
      ELSE spks = 'science/' + probes[i] + '/ephemeris/reconstructed/' + time_string(dates, tformat='YYYY/' + prefix) + '*.bsp'
-     
+
      spks = spks[UNIQ(spks)]
      w = WHERE(STRMATCH(spks, '*prelaunch*') EQ 0, nw)
      IF nw GT 0 THEN spks = spks[w]
-     
+
      FOR j=0, N_ELEMENTS(spks)-1 DO BEGIN
         aspk = spath + spks[j]
         spd_download_expand, aspk, url_username=urls[0], url_password=urls[1], no_server=src.no_server;, /last_version
         append_array, spk, TEMPORARY(aspk)
-     ENDFOR 
+     ENDFOR
+
      w = WHERE(spk NE '', nw)
      IF nw GT 0 THEN BEGIN
         spk = spk[w]
@@ -105,16 +106,16 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
         s   = SORT(arr)
         spk = spk[(s[UNIQ(arr[s])])[SORT(s[UNIQ(arr[s])])]]
         undefine, arr, s
-        
+
         tspk_s = time_double(FILE_BASENAME(spk), tformat=bsp[0])
         tspk_e = time_double(FILE_BASENAME(spk), tformat=bsp[1])
+
         ; Only using the latest version.
         ispk = UNIQ(tspk_s)
         spk  = spk[ispk]
         tspk_s = tspk_s[ispk]
         tspk_e = tspk_e[ispk]
 
-        ;w = WHERE(tspk GE trange[0] AND tspk LE trange[1], nw)
         undefine, WHERE(tspk_s GT tspk[1] OR tspk_e LT tspk[0], complement=w, ncomplement=nw)
         IF nw GT 0 THEN BEGIN
            IF ~(pspk) THEN BEGIN
@@ -123,21 +124,46 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
                  pspk = 1
                  tspk = [MAX([tspk_s, tspk_e]), trange[1]]
               ENDIF
-           ENDIF ELSE pspk = 0
+           ENDIF ELSE BEGIN
+              wmx = WHERE((tspk_s[w] - tspk[0]) LE 0., nwmx)
+              w = w[wmx[-1]:*]
+              undefine, wmx, nwmx
+              pspk = 0
+           ENDELSE 
            IF src.no_server EQ 1 THEN spk = spk.replace(src.local_data_dir, '') $
            ELSE spk = spk.replace(src.remote_data_dir, '')
            spk = esc_file_retrieve(spk[w], source=src, /valid_only, verbose=verbose)
         ENDIF ELSE BEGIN
-           IF ~(pspk) THEN pspk = 1
-        ENDELSE 
-     ENDIF 
-     
-     IF nw GT 0 THEN append_array, kernels, spk
-     undefine, spk
-     IF (pspk) THEN GOTO, SPK
+           IF (pspk) THEN pspk = 0 ELSE pspk = 1
+        ENDELSE
+     ENDIF ELSE BEGIN
+        IF (pspk) THEN pspk = 0 ELSE pspk = 1
+        IF (pspk) THEN GOTO, SPK
+     ENDELSE 
+
+     IF nw GT 0 THEN BEGIN
+        kernels.add, TEMPORARY(spk)
+        IF (pspk) THEN BEGIN
+           rec = 1
+           GOTO, SPK
+        ENDIF ELSE BEGIN
+           IF (rec) THEN kernels.swap, -2, -1
+           rec = 0
+        ENDELSE
+     ENDIF ELSE BEGIN
+        undefine, spk
+        IF (pspk) THEN GOTO, SPK
+     ENDELSE
      
      ; CK
-     cks  = esc_mission_phase(dates) + '/' + probes[i] + '/ephemeris/predictive/' + time_string(dates, tformat='YYYY/MM/' + prefix) + '*.bc'
+     rec = 0
+     pck = 0                    ; = predictive CK 
+     tck = trange
+     CK:
+     IF (pck) THEN $
+        cks = esc_mission_phase(dates) + '/' + probes[i] + '/ephemeris/predictive/' + time_string(dates, tformat='YYYY/MM/' + prefix) + '*.bc' $
+     ELSE cks = 'science/' + probes[i] + '/ephemeris/reconstructed/' + time_string(dates, tformat='YYYY/' + prefix) + '*.bc'
+
      cks  = cks[UNIQ(cks)]
      w = WHERE(STRMATCH(cks, '*prelaunch*') EQ 0, nw)
      IF nw GT 0 THEN cks = cks[w]
@@ -156,25 +182,78 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
         ck = ck[(s[UNIQ(arr[s])])[SORT(s[UNIQ(arr[s])])]]
         undefine, arr, s
 
-        tck = time_double(FILE_BASENAME(ck), tformat=bc)
-        
-        ; Only using the latest version.
-        ick = UNIQ(tck)
-        ck  = ck[ick]
-        tck = tck[ick]
+        undefine, tck_s, tck_e
+        IF ~(pck) THEN BEGIN
+           wg = WHERE( (FILE_BASENAME(ck)).contains('gap'), nwg, complement=vg, ncomplement=nvg )
+           tck_s = DBLARR(N_ELEMENTS(ck))
+           tck_e = tck_s
+           IF nvg GT 0 THEN BEGIN
+              tck_s[vg] = time_double(FILE_BASENAME(ck[vg]), tformat=bc[0])
+              tck_e[vg] = time_double(FILE_BASENAME(ck[vg]), tformat=bc[1])
+           ENDIF
+           IF nwg GT 0 THEN BEGIN
+              tck_s[wg] = time_double(FILE_BASENAME(ck[wg]), tformat=(bc[0]).replace('-ck_', '-ck-gap-'))
+              tck_e[wg] = time_double(FILE_BASENAME(ck[wg]), tformat=(bc[1]).replace('-ck_', '-ck-gap-'))
+           ENDIF
 
-        w = WHERE(tck GE trange[0] AND tck LE trange[1], nw)
+           ck = [ck[vg], ck[wg]]
+           tck_s = [tck_s[vg], tck_s[wg]]
+           tck_e = [tck_e[vg], tck_e[wg]]
+
+           undefine, wg, vg, nwg, nvg
+        ENDIF ELSE BEGIN
+           tck_s = time_double(FILE_BASENAME(ck), tformat=bc[0])
+           tck_e = time_double(FILE_BASENAME(ck), tformat=bc[1])
+           
+           ; Only using the latest version.
+           ick = UNIQ(tck_s)
+           ck  = ck[ick]
+           tck_s = tck_s[ick]
+           tck_e = tck_e[ick]
+        ENDELSE 
+
+        undefine, WHERE(tck_s GT tck[1] OR tck_e LT tck[0], complement=w, ncomplement=nw)
         IF nw GT 0 THEN BEGIN
+           IF ~(pck) THEN BEGIN
+              v = WHERE(tck_s[w] LE tck[0] AND tck_e[w] GE tck[1], nv)
+              IF nv EQ 0 THEN BEGIN
+                 pck = 1
+                 tck = [MAX([tck_s, tck_e]), trange[1]]
+                 IF tck[0] GT tck[1] THEN tck = [time_double('2025-11-13'), trange[0]]
+              ENDIF
+           ENDIF ELSE BEGIN
+              wmx = WHERE((tck_s[w] - tck[0]) LE 0., nwmx)
+              w = w[wmx[-1]:*]
+              undefine, wmx, nwmx
+              pck = 0
+           ENDELSE 
            IF src.no_server EQ 1 THEN ck = ck.replace(src.local_data_dir, '') $
            ELSE ck = ck.replace(src.remote_data_dir, '')
            ck = esc_file_retrieve(ck[w], source=src, /valid_only, verbose=verbose)
-        ENDIF
-     ENDIF
+        ENDIF ELSE BEGIN
+           IF (pck) THEN pck = 0 ELSE pck = 1
+        ENDELSE 
+     ENDIF ELSE BEGIN
+        IF (pck) THEN pck = 0 ELSE pck = 1
+        IF (pck) THEN GOTO, CK
+     ENDELSE 
 
-     IF nw GT 0 THEN append_array, kernels, ck
-     undefine, ck
-      
+     IF nw GT 0 THEN BEGIN
+         kernels.add, TEMPORARY(ck)
+        IF (pck) THEN BEGIN
+           rec = 1
+           GOTO, CK
+        ENDIF ELSE BEGIN
+           IF (rec) THEN kernels.swap, -2, -1
+           rec = 0
+        ENDELSE
+     ENDIF ELSE BEGIN
+        undefine, ck
+        IF (pck) THEN GOTO, CK
+     ENDELSE 
   ENDFOR
+
+  IF ISA(kernels, 'LIST') THEN kernels = kernels.toarray(/dim)
   IF KEYWORD_SET(clear) THEN cspice_kclear
   IF KEYWORD_SET(load)  THEN spice_kernel_load, kernels, info=info, maxiv=10000
 

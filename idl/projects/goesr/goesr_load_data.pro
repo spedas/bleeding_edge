@@ -30,13 +30,13 @@
 ;
 ; Notes:
 ;     NOAA Site:  https://www.ngdc.noaa.gov/stp/satellite/goes-r.html
-;     data GOES 16-19:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/ 
+;     data GOES 16-19:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
 ;     reprocessed data GOES 8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
-; 
+;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2026-02-16 13:18:27 -0800 (Mon, 16 Feb 2026) $
-; $LastChangedRevision: 34155 $
+; $LastChangedDate: 2026-08-03 12:06:55 -0700 (Mon, 03 Aug 2026) $
+; $LastChangedRevision: 34700 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 ;-
 
@@ -86,7 +86,10 @@ pro goesr_sgps_postprocessing, varnames, prefix = prefix, suffix = suffix
       store_data, new_name, data={x:dp.x, y:transpose([reform([dp.y[*,i,*]])])}, dl=dlp
       options, /def, new_name, 'sensor', strcompress(string(i), /remove_all)
       if size(dpen,/n_dimensions) gt 0 then begin
-        options, /def, new_name, 'EffectiveEnergies', reform(dpen.y[*,i]) ; Effective sensor energies
+        ; Effective energies should have 13 elements
+        efen = reform(dpen.y[*,i])
+        if n_elements(efen) gt 13 then efen = efen[0:12]
+        options, /def, new_name, 'EffectiveEnergies', efen; Effective sensor energies
       endif
     endfor
   endif
@@ -121,7 +124,10 @@ pro goesr_mpsh_postprocessing, varnames, prefix = prefix, suffix = suffix
       store_data, new_name, data={x:dp.x, y:transpose([reform([dp.y[*,i,*]])])}, dl=dlp
       options, /def, new_name, 'telescope', tprotons[i]
       if size(dpen,/n_dimensions) gt 0 then begin
-        options, /def, new_name, 'EffectiveEnergies', reform(dpen.y[*,i]) ; Effective telescope energies
+        ; Effective energies should have 11 elements
+        efen = reform(dpen.y[*,i])
+        if n_elements(efen) gt 11 then efen = efen[0:10]
+        options, /def, new_name, 'EffectiveEnergies', efen ; Effective telescope energies
       endif
     endfor
   endif
@@ -147,7 +153,10 @@ pro goesr_mpsh_postprocessing, varnames, prefix = prefix, suffix = suffix
       store_data, new_name, data={x:de.x, y:transpose([reform([de.y[*,i,*]])])}, dl=dle
       options, /def, new_name, 'telescope', telectrons[i]
       if size(deen,/n_dimensions) gt 0 then begin
-        options, /def, new_name, 'EffectiveEnergies', reform(deen.y[*,i]) ; Effective telescope energies
+        ; Effective energies should have 10 elements
+        efen = reform(deen.y[*,i])
+        if n_elements(efen) gt 10 then efen = efen[0:9]
+        options, /def, new_name, 'EffectiveEnergies', efen; Effective telescope energies
       endif
     endfor
   endif
@@ -197,7 +206,7 @@ pro goesr_xrs_postprocessing, varnames
       xrsvars = [xrsvars, names]
     endif
   endfor
-  
+
   for i=0, n_elements(xrsvars)-1 do begin
     vname = xrsvars[i]
     idx = where(vname eq varnames, count)
@@ -279,16 +288,16 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
     sc = 'goes' + goesp
     sc0 = 'g' + goesp
     prefix = sc + '_'
-    
+
     if goesp ge 16 then begin
       ; For GOES 16-19
       ; https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
-      remote_path = !goesr.remote_data_dir  
+      remote_path = !goesr.remote_data_dir
     endif else begin
       ; For GOES 8-15
       remote_path = 'https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/'
     endelse
-    
+
 
     case datatype of
       'mag': begin
@@ -304,11 +313,11 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           pathformat = sc + '/' + level + '/data/magn-' + lr + '/YYYY/MM/dn_magn-' + lr + '_' + sc0 +'_dYYYYMMDD_v?-?-?.nc'
         endif else begin
           ; GOES 8-15: only high resolution is available (Nov 2025)
-          
-            res0 = 'hires'
-            lr = level + '-' + res0
-            pathformat = 'mag/' + sc + '/magn-'+ lr +'/YYYY/MM/dn_magn-' + lr + '_' + sc0 +'_dYYYYMMDD_v?_?_?.nc'
-          
+
+          res0 = 'hires'
+          lr = level + '-' + res0
+          pathformat = 'mag/' + sc + '/magn-'+ lr +'/YYYY/MM/dn_magn-' + lr + '_' + sc0 +'_dYYYYMMDD_v?_?_?.nc'
+
         endelse
       end
       'xrs': begin
@@ -328,7 +337,7 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
           if resolution eq 'hires' then begin
             res0='irrad'
           endif else res0='avg1m'
-          lr = level + '-' + res0 
+          lr = level + '-' + res0
           if resolution eq 'hires' then begin
             pathformat = 'xrs/' + sc + '/gxrs-'+ lr +'_science/YYYY/MM/sci_gxrs-' + lr + sc0 +'_dYYYYMMDD_v?-?-?.nc
           endif else begin
@@ -394,7 +403,7 @@ pro goesr_load_data, trange = trange, datatype = datatype, probes = probes, pref
         end
         'xrs':begin
           ; Replace -9999.0f FillValues with NaNs.
-          goesr_xrs_postprocessing, tplotnames 
+          goesr_xrs_postprocessing, tplotnames
         end
         'mpsh': begin
           ; Separate data from 5 telescopes.

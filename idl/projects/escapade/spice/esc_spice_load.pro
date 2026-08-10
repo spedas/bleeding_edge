@@ -17,6 +17,8 @@
 ;        km:      If set, the unit should be kilometer.
 ;                 Default is R_E (Earth Radii).
 ;
+;   KERNELS:      Returns a string array of the loaded SPICE/kernels.
+;
 ;NOTE:            As of 2025-11-17, only ESCAPADE science team members  
 ;                 are permitted to use this procedure only under the UCB-SSL remote servers.
 ;
@@ -24,12 +26,12 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-03-19 17:00:56 -0700 (Thu, 19 Mar 2026) $
-; $LastChangedRevision: 34279 $
+; $LastChangedDate: 2026-08-06 17:10:47 -0700 (Thu, 06 Aug 2026) $
+; $LastChangedRevision: 34712 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_load.pro $
 ;
 ;-
-PRO esc_spice_load, trange=itime, verbose=verbose, blue=blue, gold=gold, resolution=res, $
+PRO esc_spice_load, trange=itime, kernels=kernels, verbose=verbose, blue=blue, gold=gold, resolution=res, $
                     load=load, clear=clear, info=info, km=km, _extra=extra, download_only=download_only
 
   tr = timerange(itime)
