@@ -31,8 +31,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-07-10 13:06:17 -0700 (Fri, 10 Jul 2026) $
-; $LastChangedRevision: 34633 $
+; $LastChangedDate: 2026-08-12 11:50:16 -0700 (Wed, 12 Aug 2026) $
+; $LastChangedRevision: 34725 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/nibble.pro $
 ;
 ;CREATED BY:	David L. Mitchell,  January 1998
@@ -49,7 +49,7 @@ function nibble, i
      15  : nbits = 64  ; ulong64
     else : begin
              print,"nibble: argument must be an integer"
-             return, -1
+             return, 255B
            end
   endcase
 

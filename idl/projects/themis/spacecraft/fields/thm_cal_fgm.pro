@@ -79,8 +79,8 @@
 ;
 ;Written by Hannes Schwarzl.
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-03-26 13:07:55 -0700 (Thu, 26 Mar 2026) $
-; $LastChangedRevision: 34294 $
+; $LastChangedDate: 2026-08-14 12:01:29 -0700 (Fri, 14 Aug 2026) $
+; $LastChangedRevision: 34741 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_fgm.pro $
 ;Changes by Edita Georgescu
 ;eg 6/3/2007     - matrix multiplication
@@ -443,6 +443,7 @@ utc=dblarr(ncal)
 utcStr=strarr(ncal)
 
 ;THEMIS E has two extra columns as of 2024-04-24
+; For THEMIS-A, we have L1B corrections, but the extra columns for the previous set of corrections were never added to the cal file
 bz_slope_intercept = dblarr(ncal, 2)
 
 for i=0,ncal-1 do begin
@@ -623,37 +624,41 @@ ENDELSE
 ydata=thx_fgx.Y
 
 ;check for L1B data, and reset ydata
+; THEMIS-A and THEMIS-E both have L1B data now.
 thx = 'th'+probe_letter[0]
+use_l1b_bz = 0
 If(keyword_set(check_l1b)) Then use_l1b_bz = 1b Else Begin
    If(probe_letter[0] Eq 'e') Then Begin
-      If(thx_fgx.x[0] Gt time_double('2024-05-25/00:00:00')) Then use_l1b_bz = 1b Else use_l1b_bz = 0b
-   Endif Else use_l1b_bz = 0b
+      If(thx_fgx.x[0] Gt time_double('2024-05-25/00:00:00')) Then use_l1b_bz = 1b
+   Endif
+   if (probe_letter[0] eq 'a') then Begin
+      If(thx_fgx.x[0] Gt time_double('2024-09-01/00:00:00')) Then use_l1b_bz = 1b
+   endif
 Endelse
 If(use_l1b_bz) Then Begin
-   get_data, thx+'_fgl_l1b_bz', data = temp_bz
-   If(is_struct(temp_bz)) Then Begin
-;if the data overlaps the input, then keep the variable, set start and
-;end times to nearest day boundary
-      thbz = minmax(temp_bz.x)
-      thbz[0] = time_double(time_string(thbz[0], precision=-3))
-      thbz[1] = time_double(time_String(thbz[1]+86400.0d0, precision=-3))
-      If(min(thx_fgx.x) Ge thbz[0] And max(thx_fgx.x) Le thbz[1]) Then Begin
-         read_alt_bz = 0b
-      Endif Else read_alt_bz = 1b
-   Endif Else read_alt_bz = 1b
-   If(read_alt_bz) Then Begin
-      If(is_struct(temp_bz)) Then del_data, thx+'_fgl_l1b_bz'
-      l1b_relpath = thx+'/l1b/fgm/'
-      l1b_filenames = file_dailynames(thx+'/l1b/fgm/', thx+'_l1b_fgm_', '_v01.cdf', $
-                                      /yeardir, trange = minmax(thx_fgx.x))
-      l1b_files = spd_download(remote_file = l1b_filenames, _extra = !themis)
-      cdf2tplot, files = l1b_files, varformat = '*'
-      tdegap,'the_fgl_l1b_bz',dt=600.0,/overwrite
-      get_data, 'the_fgl_l1b_bz', data = temp_bz
-   Endif
+   bz_recovered = thx+'_fgl_l1b_bz'
+   ; Don't use possibly stale recovered Bz data
+   if tnames(bz_recovered) eq bz_recovered  then del_data,bz_recovered
+   l1b_relpath = thx+'/l1b/fgm/'
+   l1b_filenames = file_dailynames(thx+'/l1b/fgm/', thx+'_l1b_fgm_', '_v01.cdf', $
+                                   /yeardir, trange = minmax(thx_fgx.x))
+   l1b_files = spd_download(remote_file = l1b_filenames, _extra = !themis)
+   cdf2tplot, files = l1b_files, varformat = '*'
+   tdegap,bz_recovered,dt=600.0,/overwrite
+   get_data, bz_recovered, data = temp_bz
+
    If(is_struct(temp_bz)) Then Begin
       dprint, 'WARNING: Using L1B level Bz estimated from spin-plane components'
-      ydata[*, 0] = kr*interpol(temp_bz.y, temp_bz.x, thx_fgx.x)
+      ; Original code
+      ;ydata[*, 0] = kr*interpol(temp_bz.y, temp_bz.x, thx_fgx.x)
+      ;
+      ; We degap the recovered bz data above, but that doesn't prevent interpol() from
+      ; extrapolating from a partial day forward or back to a full day.  Instead,
+      ; it's better to use tinterpol_mxn with /nan_extrapolate.
+      ; JWL 2026-08-14
+      ;
+      tinterpol_mxn,bz_recovered,thx_fgx.x,out=bz_interp,/nan_extrapolate
+      ydata[*,0] = kr*bz_interp.y
       ydata_bz = ydata[*, 0] ;will use this value later
    Endif Else Begin
       ydata_bz = ydata[*, 0] & ydata_bz[*] = 0
@@ -688,7 +693,8 @@ for j=0L,count-1L do begin
    endwhile
 
 ;Here is where we make more exceptions for THEMIS E
-   if probe_letter eq 'e' then begin
+; Both THEMIS-A and THEMIS-E now have L1B recovered Bz data.  Only THEMIS-E has the additional slope and intercept in the cal file.
+   if (probe_letter eq 'e') then begin
 ;if the time is more than 1 orbit since the last value in the cal
 ;file, then use bz_ext_intercept for the offset with zero slope
       if thx_fgx.x[j] gt bz_last_time then begin

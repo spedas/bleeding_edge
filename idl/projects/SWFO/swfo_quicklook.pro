@@ -2,7 +2,7 @@
 ; that end every X days and begin every Y days
 
 pro plot_intervals, trange, durations,$
-  start_time, end_time, end_cadence=end_cadence
+  start_time, end_time, end_cadence=end_cadence,center_start=center_start
 
   ; Make sure trange is in unix time
   trange = time_double(trange)
@@ -31,6 +31,7 @@ pro plot_intervals, trange, durations,$
 
   for i= 0, n_intervals - 1 do begin
     if keyword_set(end_cadence) then tr = (tints[0] + i +[0,1]) *cadence_s else tr=trange
+    if keyword_set(center_start) then tr = tr + 86400d
 
     ; Now make the plot duration times:
     for j=0, n_durations - 1 do begin
@@ -167,7 +168,7 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
              'ace_rtsw_epam_proton_flux', 'ace_rtsw_epam_elec_flux']
 
   ; - NOISE:
-  noise_var = ['swfo_stis_l0b_{}_NSE_GAP', 'swfo_stis_l1a_{}_NOISE_*',$
+  noise_var = ['swfo_stis_l0b_GAP', 'swfo_stis_l1a_{}_NOISE_*',$
                'swfo_stis_l1a_{}_REACTION_WHEEL_SPEED_RPM',$
                'swfo_stis_l1a_{}_IRU_BITS']
 
@@ -220,55 +221,175 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
       ; if doing ace, load that as well
       if load_ace then ace_load, trange=tr
 
-      for dur=0, n_durations - 1 do begin
-        start_time_unix_i = start_time_unix[interval, dur]
-        subset_tr = [start_time_unix_i, end_time_unix_i]
+      ; Build a bitplot of useful flags:
+      get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_USER_09', data=user09
 
-        if keyword_set(live) then subset_tr = subset_tr + [0, 2*3600d]
-        ; print, tr
-        print, time_String(subset_tr)
+      ; The HKP, nse, and sci gap is not updated when the replay
+      ; data fills in, leading to residual "gaps". So those aren't as useful
+      ; for identifying missing data / processing pipeline errors
+      ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_HKP_GAP', data=hkpgap
+      ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_NSE_GAP', data=nsegap
+      ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_SCI_GAP', data=scigap
+      ; gapbit = ishft(user09.y ne 1, 3) or ishft(scigap.y, 2) or ishft(nsegap.y, 1) or hkpgap.y
+      ; store_data, 'swfo_stis_l0b_GAP', data={x: scigap.x, y: gapbit},$
+      ;   dl={tplot_routine: 'bitplot', psyms:1, colors: 'grbk',$
+      ;       labels: ['HKP Gap', 'NSE Gap', 'SCI Gap', 'User09!=1'],$
+      ;       ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 3.5],$
+      ;       yticks: 1, yminor: 1}
+
+      get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_HKP_REPLAY', data=replay
+      get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_SCI_TIME_RES', data=time_res
+
+      ; Try to flag the gaps indirectly
+      ; Calculate the effective time between frames:
+      tdiff = replay.x - shift(replay.x,1)
+
+      ; Duration = 1 + time_res should be == tdiff
+      missing_data_flag = (round(tdiff) - time_res.y) ne 1
+
+      if res_tplot_prefix eq 'fr' then begin
+
+        gapbit = ishft(replay.y, 2) or ishft(user09.y ne 1, 1) or missing_data_flag
+        store_data, 'swfo_stis_l0b_GAP', data={x: replay.x, y: gapbit},$
+          dl={tplot_routine: 'bitplot', psyms:1, colors: 'krbg',$
+              labels: ['Tdiff != Tres', 'User09!=1', 'Replay'],$
+              ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 2.5],$
+              yticks: 1, yminor: 1}
+
+      endif else begin
+
+        gapbit =user09.y ne 1
+        store_data, 'swfo_stis_l0b_GAP', data={x: replay.x, y: gapbit},$
+          dl={tplot_routine: 'bitplot', psyms:1, colors: 'r',$
+              labels: ['User09!=1'],$
+              ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 0.5],$
+              yticks: 1, yminor: 1}
+
+      endelse
+
+      ; Iterate through the possible plots to make:
+      foreach plot_name, plot_types do begin
         ; stop
 
-        ; Iterate through the possible plots to make:
-        foreach plot_name, plot_types do begin
-          ; stop
+        wi, 2, wsize=[900, 1000]
+        tplot_options, 'charsize', 1.2
+        tplot_options,'xmargin',[10,10]
+        tplot_options, 'ygap', 0.4
+
+        ; Health plot
+        if plot_name.startswith('health') then begin
+
+          ; Apply ylimit & tlimit:
+          foreach hkpname, hkp_var do begin
+            hkp_tplot_name_i = 'swfo_stis_l0b_'+res_tplot_prefix+'_'+hkpname
+            nom = hkp_nominal[hkpname]
+            plot_yrange = [nom[0] - 0.1*(nom[1] - nom[0]), nom[1] + 0.1*(nom[1] - nom[0])]
+            if hkpname.contains("FPGA") then begin
+              plot_yrange = [208, 210]
+              options, hkp_tplot_name_i, yticks=2, panel_size=0.5
+            endif else if hkpname.contains("VOLTAGE") then begin
+              options, hkp_tplot_name_i, yticks=4
+            endif
+
+            ylim, hkp_tplot_name_i, plot_yrange[0], plot_yrange[1]
+            options, hkp_tplot_name_i, ytitle=hkp_ytit[hkpname]
+          endforeach
+
+          tplot, tplot_hkp_var_i, window=2
+
+        endif else if plot_name.startswith('summ') then begin
+
+          ; if res_tplot_prefix eq 'fr' then begin
+          ;  valid_yrange = [1, 2e5]
+          ;  eflux_zrange = [1, 1e5]
+          ; endif else begin 
+          valid_yrange=[0.2, 2e5]
+          eflux_zrange = [0.2, 1e5]
+          ; endelse
+
+          options, 'swfo_stis_l1b_'+res_tplot_prefix+'_HDR_ION_EFLUX',$
+            ytitle='Ion Energy [keV]', ztitle='HDR EFLUX', zrange=eflux_zrange
+          options, 'swfo_stis_l1b_'+res_tplot_prefix+'_HDR_ELEC_EFLUX',$
+            ytitle='Elec Energy [keV]', ztitle='HDR EFLUX', zrange=eflux_zrange
+
+          options, 'swfo_stis_l1a_'+res_tplot_prefix+'_NOISE_SIGMA',$
+            ytitle='Noise Sigma', panel_size=0.5
+          options, 'swfo_stis_l0b_'+res_tplot_prefix+'_VALID_RATES',$
+            ytitle='Valid Rates', ysubtitle='[counts/s]', yrange=valid_yrange
+
+          tplot, summ_var_i, window=2
+
+        endif else if plot_name.startswith('ace') then begin
+
+          options, 'ace_rtsw_epam_elec_flux',$
+            ytitle='5-min ACE Elec Flux', ysubtitle='[#/cm2-s-ster-keV]'
+          options, 'ace_rtsw_epam_proton_flux',$
+            ytitle='5-min ACE Proton Flux', ysubtitle='[#/cm2-s-ster-keV]'
+
+          options, 'stis_l2_'+res_tplot_prefix+'_ION_FLUX',$
+            ytitle=data_resolution_label[res_index] +'STIS Ion Flux', ysubtitle='[#/cm2-s-ster-keV]'
+          options, 'stis_l2_'+res_tplot_prefix+'_ELEC_FLUX',$
+            ytitle=data_resolution_label[res_index] +'STIS Elec Flux', ysubtitle='[#/cm2-s-ster-keV]'
+
+          tplot, ace_var_i, window=2
+
+        endif else if plot_name.startswith('noise') then begin
+
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_HISTOGRAM',$
+            zrange=[1, 2e3], ytitle='Noise!CHistogram'
+
+          ; ylim, 'swfo_stis_l0b_' + res_tplot_prefix +'_NSE_GAP', 0, 1, 0
+          ; options, 'swfo_stis_l0b_' + res_tplot_prefix +'_NSE_GAP',$
+          ;   colors=6, panel_size=0.1, yticks=1, yminor=1
+          ; options, 'swfo_stis_l0b_'+res_tplot_prefix+'_NSE_GAP',ytitle='Nse', ysubtitle='Gap'
+
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_RES',$
+            yrange=[0, 7], yminor=1, yticks=7, panel_size=0.5, ytitle='Res'
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_PERIOD',$
+            yrange=[0, 250], yminor=1, panel_size=0.5, ytitle='Period'
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_TOTAL',$
+            panel_size=0.5, ytitle='Total'
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_SIGMA',$
+            panel_size=0.5, ytitle='Sigma'
+
+
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_REACTION_WHEEL_SPEED_RPM',$
+            yrange=[-2200, 2200], ytitle='Rxn Wheel Speed [RPM]'
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_BASELINE',$
+            yrange=[-10, 5], ytitle='Baseline'
+          options, 'swfo_stis_l1a_' + res_tplot_prefix + '_IRU_BITS', ytitle='IRU Bits'
+
+          tplot, noise_var_i, window=2
+
+        endif
+
+
+        for dur=0, n_durations - 1 do begin
+          start_time_unix_i = start_time_unix[interval, dur]
+          subset_tr = [start_time_unix_i, end_time_unix_i]
+
+          ; if keyword_set(center_start) then reference_t = end_time_unix_i - 86400d else $
+          ;   reference_t = subset_tr[1]
+          reference_t = end_time_unix_i - 86400d
+
           ; Now create the plot png name:
-          fname_i = time_string(subset_tr[1], tformat=destination_fname)
+          fname_i = time_string(reference_t, tformat=destination_fname)
           fname_i = fname_i.replace('{PLOTNAME}', plot_name)
           fname_i = fname_i.replace('{PLOTDURATION}', plot_durations[dur])
           fname_i = fname_i.replace("{CADENCE}", res_tplot_prefix)
           ; stop
 
-          ; Health plot
+          ; Redraw the subset timerange:
+          tlimit, subset_tr
+
+          ; Redraw the timebars:
           if plot_name.startswith('health') then begin
-            wi, 2, wsize=[900, 1000]
-            tplot, tplot_hkp_var_i, window=2
-            tplot_options, 'charsize', 1.2
-            tplot_options,'xmargin',[20,5]
-            tplot_options, 'ygap', 0.4
-
-            ; Apply ylimit & tlimit:
-            foreach hkpname, hkp_var do begin
-              hkp_tplot_name_i = 'swfo_stis_l0b_'+res_tplot_prefix+'_'+hkpname
-              nom = hkp_nominal[hkpname]
-              plot_yrange = [nom[0] - 0.1*(nom[1] - nom[0]), nom[1] + 0.1*(nom[1] - nom[0])]
-              if hkpname.contains("FPGA") then begin
-                plot_yrange = [208, 210]
-                options, hkp_tplot_name_i, yticks=2, panel_size=0.5
-              endif else if hkpname.contains("VOLTAGE") then begin
-                options, hkp_tplot_name_i, yticks=4
-              endif
-
-              ylim, hkp_tplot_name_i, plot_yrange[0], plot_yrange[1]
-              options, hkp_tplot_name_i, ytitle=hkp_ytit[hkpname]
-            endforeach
-
-            tlimit, subset_tr
 
             foreach hkpname, hkp_var do begin
               hkp_tplot_name_i = 'swfo_stis_l0b_'+res_tplot_prefix+'_'+hkpname
               nom = hkp_nominal[hkpname]
 
+              ; No nominal range for the FPGA
               if hkpname.contains("FPGA") then continue
 
               timebar, nom[0], /databar, varname=hkp_tplot_name_i, color='g'
@@ -281,107 +402,12 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
               linestyle=5, color='m'
             timebar, 5.0, /databar, varname='swfo_stis_l0b_'+res_tplot_prefix+'_VOLTAGE_5P0_VD',$
               linestyle=5, color='m'
-          endif else if plot_name.startswith('summ') then begin
-
-            wi, 2, wsize=[900, 1000]
-            tplot_options, 'charsize', 1.2
-            tplot_options,'xmargin',[10,10]
-            tplot_options, 'ygap', 0.4
-
-            ; if res_tplot_prefix eq 'fr' then begin
-            ;  valid_yrange = [1, 2e5]
-            ;  eflux_zrange = [1, 1e5]
-            ; endif else begin 
-            valid_yrange=[0.2, 2e5]
-            eflux_zrange = [0.2, 1e5]
-            ; endelse
-
-            ; Old gap as individual plots:
-            ; ylim, 'swfo_stis_l0b_' + res_tplot_prefix +'_*_GAP', 0, 1, 0
-            ; options, 'swfo_stis_l0b_' + res_tplot_prefix +'_*_GAP',$
-            ;   colors=6, panel_size=0.1, yticks=1, yminor=1
-            ; options, 'swfo_stis_l0b_'+res_tplot_prefix+'_HKP_GAP',ytitle='Hkp', ysubtitle='Gap'
-            ; options, 'swfo_stis_l0b_'+res_tplot_prefix+'_NSE_GAP',ytitle='Nse', ysubtitle='Gap'
-            ; options, 'swfo_stis_l0b_'+res_tplot_prefix+'_SCI_GAP',ytitle='Sci', ysubtitle='Gap'
-
-
-            ; Instead build a bitplot
-            get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_USER_09', data=user09
-            get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_HKP_GAP', data=hkpgap
-            get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_NSE_GAP', data=nsegap
-            get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_SCI_GAP', data=scigap
-            gapbit = ishft(user09.y ne 1, 3) or ishft(scigap.y, 2) or ishft(nsegap.y, 1) or hkpgap.y
-            store_data, 'swfo_stis_l0b_GAP', data={x: scigap.x, y: gapbit},$
-              dl={tplot_routine: 'bitplot', psyms:1, colors: 'grbk',$
-                  labels: ['HKP Gap', 'NSE Gap', 'SCI Gap', 'User09!=1'],$
-                  ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 3.5],$
-                  yticks: 1, yminor: 1}
-
-
-            options, 'swfo_stis_l1b_'+res_tplot_prefix+'_HDR_ION_EFLUX',$
-              ytitle='Ion Energy [keV]', ztitle='HDR EFLUX', zrange=eflux_zrange
-            options, 'swfo_stis_l1b_'+res_tplot_prefix+'_HDR_ELEC_EFLUX',$
-              ytitle='Elec Energy [keV]', ztitle='HDR EFLUX', zrange=eflux_zrange
-
-            options, 'swfo_stis_l1a_'+res_tplot_prefix+'_NOISE_SIGMA',$
-              ytitle='Noise Sigma', panel_size=0.5
-            options, 'swfo_stis_l0b_'+res_tplot_prefix+'_VALID_RATES',$
-              ytitle='Valid Rates', ysubtitle='[counts/s]', yrange=valid_yrange
-
-            tplot, summ_var_i, window=2
-            tlimit, subset_tr
-            ; stop
-
-          endif else if plot_name.startswith('ace') then begin
-
-            wi, 2, wsize=[900, 1000]
-            tplot_options, 'charsize', 1.2
-            tplot_options,'xmargin',[10,10]
-            tplot_options, 'ygap', 0.4
-
-            options, 'ace_rtsw_epam_elec_flux',$
-              ytitle='5-min ACE Elec Flux', ysubtitle='[#/cm2-s-ster-keV]'
-            options, 'ace_rtsw_epam_proton_flux',$
-              ytitle='5-min ACE Proton Flux', ysubtitle='[#/cm2-s-ster-keV]'
-
-            options, 'stis_l2_'+res_tplot_prefix+'_ION_FLUX',$
-              ytitle=data_resolution_label[res_index] +'STIS Ion Flux', ysubtitle='[#/cm2-s-ster-keV]'
-            options, 'stis_l2_'+res_tplot_prefix+'_ELEC_FLUX',$
-              ytitle=data_resolution_label[res_index] +'STIS Elec Flux', ysubtitle='[#/cm2-s-ster-keV]'
-
-            tplot, ace_var_i, window=2
-            tlimit, subset_tr
-            ; stop
-
-          endif else if plot_name.startswith('noise') then begin
-
-            wi, 2, wsize=[900, 1000]
-            tplot_options, 'charsize', 1.2
-            tplot_options,'xmargin',[10,10]
-            tplot_options, 'ygap', 0.4
-
-
-            ylim, 'swfo_stis_l0b_' + res_tplot_prefix +'_NSE_GAP', 0, 1, 0
-            options, 'swfo_stis_l0b_' + res_tplot_prefix +'_NSE_GAP',$
-              colors=6, panel_size=0.1, yticks=1, yminor=1
-            options, 'swfo_stis_l0b_'+res_tplot_prefix+'_NSE_GAP',ytitle='Nse', ysubtitle='Gap'
-
-            options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_RES',$
-              yrange=[0, 7], yminor=1, yticks=7, panel_size=0.5
-            options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_PERIOD',$
-              yrange=[0, 250], yminor=1, panel_size=0.5
-
-
-            options, 'swfo_stis_l1a_' + res_tplot_prefix + '_REACTION_WHEEL_SPEED_RPM',$
-              yrange=[-2200, 2200]
-            options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_BASELINE',$
-              yrange=[-10, 5]
-
-            tplot, noise_var_i, window=2
-            tlimit, subset_tr
-            ; stop
-
           endif
+
+          if keyword_set(live) then subset_tr = subset_tr + [0, 2*3600d]
+          ; print, tr
+          print, time_String(subset_tr)
+          ; stop
 
           ; add a timebar marking the current time if
           ; live plot
@@ -392,10 +418,10 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
 
           makepng, fname_i, /mkdir, window=2
           tlimit, 0, 0
+        endfor
 
 
-        endforeach
-      endfor   ; day
+      endforeach
     endfor
   endforeach
 

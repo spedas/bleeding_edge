@@ -70,7 +70,10 @@
 ;       STATUS:        Return the status of what was actually loaded: APIDs,
 ;                      product names, numbers of packets, and time coverages.
 ;
-;       SUMPLOT:       Create a summary plot of the loaded data.
+;       SUMPLOT:       Create tplot variables to make a summary panels of the
+;                      loaded data, but do not plot them.
+;
+;       VARS:          A list of the tplot variables created when SUMPLOT is set.
 ;
 ;       LOADONLY:      Download data but do not process.
 ;
@@ -90,15 +93,15 @@
 ;       SILENT:        Shhhh.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-04-29 16:43:27 -0700 (Mon, 29 Apr 2024) $
-; $LastChangedRevision: 32540 $
+; $LastChangedDate: 2026-08-12 11:48:12 -0700 (Wed, 12 Aug 2026) $
+; $LastChangedRevision: 34723 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l2.pro $
 ;
 ;CREATED BY:    David L. Mitchell  02-02-15
 ;FILE: mvn_swe_load_l2.pro
 ;-
 pro mvn_swe_load_l2, trange, filename=filename, latest=latest, apid=apid, prod=prod, $
-                     sumplot=sumplot, status=status, orbit=orbit, loadonly=loadonly, $
+                     sumplot=sumplot, vars=vars, status=status, orbit=orbit, loadonly=loadonly, $
                      noerase=noerase, spiceinit=spiceinit, nospice=nospice, silent=silent, $
                      spec=spec, pad=pad, ddd=ddd, burst=burst, archive=archive  ; this line obsolete
 
@@ -520,9 +523,9 @@ pro mvn_swe_load_l2, trange, filename=filename, latest=latest, apid=apid, prod=p
 
   mvn_swe_stat, npkt=npkt, silent=silent
 
-; Create a summary plot
+; Create tplot panels for a summary plot
 
-  if keyword_set(sumplot) then mvn_swe_sumplot
+  if keyword_set(sumplot) then mvn_swe_sumplot, /loadonly, vars=vars
 
   return
 

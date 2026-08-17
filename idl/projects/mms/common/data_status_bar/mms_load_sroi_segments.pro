@@ -13,8 +13,8 @@
 ;         end_times:    returns an array of unix times (double) containing the end of each SRoI interval
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-07-22 17:28:56 -0700 (Wed, 22 Jul 2026) $
-;$LastChangedRevision: 34663 $
+;$LastChangedDate: 2026-08-10 17:45:57 -0700 (Mon, 10 Aug 2026) $
+;$LastChangedRevision: 34720 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/data_status_bar/mms_load_sroi_segments.pro $
 ;-
 
@@ -76,7 +76,7 @@ pro mms_load_sroi_segments, trange=trange, probe=probe, suffix=suffix, start_tim
     end_times = sroi_ends[idx_in_range]
     
     for result_idx=0, n_elements(start_times)-1 do begin
-        append_array, bar_x, [start_times[i], start_times[i], end_times[i], end_times[i]]
+        append_array, bar_x, [start_times[result_idx], start_times[result_idx], end_times[result_idx], end_times[result_idx]]
         append_array, bar_y, [!values.f_nan, 0.,0., !values.f_nan]
     endfor
 

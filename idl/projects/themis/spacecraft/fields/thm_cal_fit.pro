@@ -32,8 +32,8 @@
 ;   -- fixed trouble reading cal files with extra lines at the end,
 ;      jmm, 8-nov-2007
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-03-26 13:07:55 -0700 (Thu, 26 Mar 2026) $
-; $LastChangedRevision: 34294 $
+; $LastChangedDate: 2026-08-14 12:01:29 -0700 (Fri, 14 Aug 2026) $
+; $LastChangedRevision: 34741 $
 ; $URL $
 ;-
 pro thm_cal_fit, probe = probe, datatype = datatype, files = files, trange = trange, $
@@ -348,38 +348,41 @@ pro thm_cal_fit, probe = probe, datatype = datatype, files = files, trange = tra
     if n_fgs_good gt 0 then begin ;if all fgs is NaN then skip calculations
 
 ;If check_l1b is set, then replace Bz with estimated value
+; THEMIS-A and THEMIS-E both have L1B files with recovered Bz data
+      use_l1b_bz = 0
       If(keyword_set(check_l1b)) Then use_l1b_bz = 1b Else Begin
          If(probe[0] Eq 'e') Then Begin
-            If(fgsx_fixed[0] Ge time_double('2024-05-25/00:00:00')) Then use_l1b_bz = 1b Else use_l1b_bz = 0b
-         Endif Else use_l1b_bz = 0b
+            If(fgsx_fixed[0] Ge time_double('2024-05-25/00:00:00')) Then use_l1b_bz = 1b
+         Endif
+         If(probe[0] Eq 'a') Then Begin
+           If(fgsx_fixed[0] Ge time_double('2024-09-01/00:00:00')) Then use_l1b_bz = 1b
+         Endif
       Endelse
       If(use_l1b_bz) Then Begin
-         get_data, thx+'_fgl_l1b_bz', data = temp_bz
-         If(is_struct(temp_bz)) Then Begin
-;if the data overlaps the input, then keep the variable, set start and
-;end times to nearest day boundary
-            thbz = minmax(temp_bz.x)
-            thbz[0] = time_double(time_string(thbz[0], precision=-3))
-            thbz[1] = time_double(time_String(thbz[1]+86400.0d0, precision=-3))
-            If(min(fgsx_fixed) Ge thbz[0] And max(fgsx_fixed) Le thbz[1]) Then Begin
-               read_alt_bz = 0b
-            Endif Else read_alt_bz = 1b
-         Endif Else read_alt_bz = 1b
-         If(read_alt_bz) Then Begin
-            If(is_struct(temp_bz)) Then del_data, thx+'_fgl_l1b_bz'
-            l1b_relpath = thx+'/l1b/fgm/'
-            l1b_filenames = file_dailynames(thx+'/l1b/fgm/', thx+'_l1b_fgm_', '_v01.cdf', $
-                                            /yeardir, trange = minmax(fgsx_fixed))
-            l1b_files = spd_download(remote_file = l1b_filenames, _extra = !themis)
-            cdf2tplot, files = l1b_files, varformat = '*'
-            tdegap,'the_fgl_l1b_bz',dt=600.0,/overwrite
-            get_data, 'the_fgl_l1b_bz', data = temp_bz
-         Endif
-         If(is_struct(temp_bz)) Then Begin
-            dprint, 'WARNING: Using L1B level Bz estimated from spin-plane components'
-            kr=2.980232238769531E-3 ;raw data to nT, kr=25000.0/2^23 --> see *CALPROC*.doc
-            fgsy_fixed[*, 2] = -kr*interpol(temp_bz.y, temp_bz.x, fgsx_fixed)
-         Endif
+        bz_recovered = thx+'_fgl_l1b_bz'
+        ; Don't use possibly stale recovered bz data
+        if tnames(bz_recovered) eq bz_recovered  then del_data,bz_recovered
+        l1b_relpath = thx+'/l1b/fgm/'
+        l1b_filenames = file_dailynames(thx+'/l1b/fgm/', thx+'_l1b_fgm_', '_v01.cdf', $
+                                        /yeardir, trange = minmax(fgsx_fixed))
+        l1b_files = spd_download(remote_file = l1b_filenames, _extra = !themis)
+        cdf2tplot, files = l1b_files, varformat = '*'
+        tdegap,bz_recovered,dt=600.0,/overwrite
+        get_data, bz_recovered, data = temp_bz
+  
+        If(is_struct(temp_bz)) Then Begin
+          dprint, 'WARNING: Using L1B level Bz estimated from spin-plane components'
+          kr=2.980232238769531E-3 ;raw data to nT, kr=25000.0/2^23 --> see *CALPROC*.doc
+          ; Old version:
+          ;fgsy_fixed[*, 2] = -kr*interpol(temp_bz.y, temp_bz.x, fgsx_fixed)
+          ;
+          ;temp_bz was degapped above, but that doesn't stop interpol() from extrapolating
+          ;a partial day forward and backward to a full day.  Instead, it's better to use tinterpol_mxn with /nan_extrapolate
+          ;JWL 2028-08-14
+          ;
+          tinterpol_mxn,bz_recovered,fgsx_fixed,out=bz_interp,/nan_extrapolate
+          fgsy_fixed[*,2] = -kr*bz_interp.y
+        Endif
       Endif
        
       if (where(dt_output eq 'fgs') ne -1) then begin

@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Aug  8 03:16:47 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 17 03:16:52 2026.<P>
  
 <HR>
  
@@ -4506,7 +4506,10 @@ KEYWORDS:
        STATUS:        Return the status of what was actually loaded: APIDs,
                       product names, numbers of packets, and time coverages.
 
-       SUMPLOT:       Create a summary plot of the loaded data.
+       SUMPLOT:       Create tplot variables to make a summary panels of the
+                      loaded data, but do not plot them.
+
+       VARS:          A list of the tplot variables created when SUMPLOT is set.
 
        LOADONLY:      Download data but do not process.
 
@@ -4526,8 +4529,8 @@ KEYWORDS:
        SILENT:        Shhhh.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2024-04-29 16:43:27 -0700 (Mon, 29 Apr 2024) $
- $LastChangedRevision: 32540 $
+ $LastChangedDate: 2026-08-12 11:48:12 -0700 (Wed, 12 Aug 2026) $
+ $LastChangedRevision: 34723 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_l2.pro $
 
 CREATED BY:    David L. Mitchell  02-02-15
@@ -7210,15 +7213,17 @@ KEYWORDS:
        TIMING:       Plot packet timing.  Useful to identify instrument mode and
                      dropped packets.  Default = 0 (no).
 
-       LOADONLY:     Load tplot variables but do not plot.
+       LOADONLY:     Load tplot variables but do not plot them.
+
+       VARS:         List of tplot variables created.
 
        PNG:          Create a PNG image and place it in the default location.
 
        BURST:        Plot a color bar showing PAD burst coverage.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-01-08 10:36:22 -0800 (Thu, 08 Jan 2026) $
- $LastChangedRevision: 33980 $
+ $LastChangedDate: 2026-08-12 16:35:20 -0700 (Wed, 12 Aug 2026) $
+ $LastChangedRevision: 34728 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_sumplot.pro $
 
 CREATED BY:    David L. Mitchell  07-24-12
@@ -7700,8 +7705,8 @@ OUTPUT:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-07-10 13:06:17 -0700 (Fri, 10 Jul 2026) $
- $LastChangedRevision: 34633 $
+ $LastChangedDate: 2026-08-12 11:50:16 -0700 (Wed, 12 Aug 2026) $
+ $LastChangedRevision: 34725 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/nibble.pro $
 
 CREATED BY:	David L. Mitchell,  January 1998
