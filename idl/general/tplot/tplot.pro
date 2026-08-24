@@ -111,9 +111,9 @@
 ;Still have questions:
 ;   Send e-mail to:  tplot@ssl.berkeley.edu    someone might answer!
 ;
-; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-12-31 18:33:10 -0800 (Tue, 31 Dec 2024) $
-; $LastChangedRevision: 33025 $
+; $LastChangedBy: hara $
+; $LastChangedDate: 2026-08-17 16:16:38 -0700 (Mon, 17 Aug 2026) $
+; $LastChangedRevision: 34760 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/tplot.pro $
 ;-
 
@@ -328,6 +328,8 @@ if trange[0] eq trange[1] then $
 else trg = trange
 
 tplot_var_labels,def_opts,trg,var_label,local_time,pos,chsize,vtitle=vtitle,vlab=vlab,time_offset=time_offset,time_scale=time_scale
+str_element,tplot_vars,'settings.time_scale',time_scale,/add_replace
+str_element,tplot_vars,'settings.time_offset',time_offset,/add_replace
 
 ;return time_offset in the t_offset keyword, if requested
 if undefined(time_offset) then begin
@@ -476,7 +478,6 @@ for i=0,nd-1 do begin
      ysubtitle = struct_value(newlim,'ysubtitle',def='')
      if keyword_set(ysubtitle) then newlim.ytitle += '!c'+ysubtitle
      if newlim.spec ne 0 then routine='specplot' else routine='mplot'
-;     if size(/type,data.y
      str_element,newlim,'tplot_routine',value=routine
      color_table= struct_value(newlim,'color_table',default=-1) & pct=-1
      rev_color_table= struct_value(newlim,'reverse_color_table',default=0) & prev=0
@@ -544,8 +545,8 @@ endif
 !p = plt.p
 
 
-str_element,tplot_vars,'settings.time_scale',time_scale,/add_replace
-str_element,tplot_vars,'settings.time_offset',time_offset,/add_replace
+;str_element,tplot_vars,'settings.time_scale',time_scale,/add_replace
+;str_element,tplot_vars,'settings.time_offset',time_offset,/add_replace
 new_tvars = tplot_vars
 return
 end

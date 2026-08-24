@@ -145,8 +145,8 @@
 ;   and line color schemes for individual tplot variables using options.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-06-25 15:17:24 -0700 (Thu, 25 Jun 2026) $
-; $LastChangedRevision: 34606 $
+; $LastChangedDate: 2026-08-18 14:53:57 -0700 (Tue, 18 Aug 2026) $
+; $LastChangedRevision: 34771 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/color_table_crib.pro $
 ;
 ; Created by David Mitchell;  February 2023
@@ -178,9 +178,14 @@ device, set_pixel_depth=24, decompose=0  ; allow the Z buffer to use color table
 
 initct, 1091
 
-;; Select a new color table and line color scheme at the command line.
+;; Select a new color table and line color scheme at the command line.  Return the color
+;; table as a 256x3 array of RGB values.
 
-initct, 43, line=2
+initct, 43, line=2, rgb_table=rgb_table
+
+;; Get the current color table as a 256x3 array:
+
+rgb_table = color_table()
 
 ;; Change line colors without otherwise modifying the color table.
 
@@ -280,6 +285,32 @@ options, var2, 'line_colors', 5
 
 mylines = get_line_colors(5, /graybkg, mycolors={ind:3, rgb:[211,0,211]})
 options, var1, 'line_colors', mylines
+
+;; If you want more than six line colors (not including !p.color), you can supplement
+;; any line color scheme with one or more entries from any color table.  For example,
+;; suppose you want to distinguish ten lines on the same panel:
+
+options, var1, 'color_table', 43  ; rainbow table with many possible line colors
+options, var1, 'line_colors', 10  ; Chaffin's CSV line color scheme
+options, var1, 'colors', [1, 2, 3, 4, 5, 6, 49, 73, 132, 254]  ; CSV + four more colors
+
+;; You can temporarily load a color table and line color scheme, and then use xpalette
+;; to pick the additional color indices you want.  That's how I chose the above indices.
+
+;; You can use line styles as another distinguishing feature.  This is useful when two
+;; lines are coincident so that one would normally cover up the other.  Make the second
+;; line dashed, and then you can see both.
+;;
+;;    Index      Linestyle
+;;   ----------------------------
+;;      0          Solid
+;;      1          Dotted
+;;      2          Dashed
+;;      3          Dash Dot
+;;      4          Dash Dot Dot
+;;      5          Long Dashed
+
+options, var1, 'linestyles', [0, 0, 0, 2, 2, 2, 0, 0, 2, 2]  ; some solid, some dashed
 
 ;; Disable custom color tables and line colors for a tplot variable.
 

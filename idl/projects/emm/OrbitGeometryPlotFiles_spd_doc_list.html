@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 17 03:16:52 2026.<P>
+<STRONG>Last modified: </STRONG>Sun Aug 23 15:46:51 2026.<P>
  
 <HR>
  
@@ -1089,8 +1089,13 @@ MVN_THREED_PROJECTION_PANEL_BRAIN</A>
        For the vast majority of the symbols, the return value is 8.
 
  KEYWORDS:
+ 
+       COLOR:  Set this keyword to the color (index or 24-bit value) of
+               the color desired. For example:
+               
+               Plot, Findgen(11), COLOR=FSC_COLOR('yellow'), PSYM=-SYMCAT(4, COLOR=FSC_COLOR('green'))
 
-       None.
+       THICK:  Set this keyword to the thickness desired. Default is 1. 
 
  MODIFICATION HISTORY:
 
@@ -1101,6 +1106,9 @@ MVN_THREED_PROJECTION_PANEL_BRAIN</A>
           their normal meanings. This shifted previous symbols by two values
           from their old meanings. For example, an hourglass went from symbol
           number 19 to 21.
+       Whoops! Added two symbols but forgot to change limits to allow for them. 4 May 2007. DWF.
+       Added THICK keyword. 21 Aug 2007. DWF.
+       Added COLOR keyword and made THICK keyword apply to all symbols. 11 Nov 2008. DWF.
 </PRE><P>
 <STRONG>(See <A href="OrbitGeometryPlotFiles/symcat.pro">projects/emm/OrbitGeometryPlotFiles/symcat.pro</A>)</STRONG><P>
 <HR>

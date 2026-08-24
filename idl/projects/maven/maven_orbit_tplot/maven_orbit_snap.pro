@@ -81,6 +81,8 @@
 ;                   LLIM.COMPONENT = 'BT'  ; north component
 ;                   LLIM.COMPONENT = 'BP'  ; east component
 ;                   LLIM.COMPONENT = 'BH'  ; horizontal component
+;                   LLIM.COMPONENT = 'AZ'  ; azimuth (deg)
+;                   LLIM.COMPONENT = 'EL'  ; elevation (deg)
 ;                   LLIM.COMPONENT = 'B'   ; magnitude
 ;
 ;       NPOLE:    Plot the position of the spacecraft (PREC=1) or periapsis
@@ -195,8 +197,8 @@
 ;                 easier to see the colors.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-09-22 12:44:04 -0700 (Mon, 22 Sep 2025) $
-; $LastChangedRevision: 33646 $
+; $LastChangedDate: 2026-08-17 12:50:20 -0700 (Mon, 17 Aug 2026) $
+; $LastChangedRevision: 34750 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11

@@ -258,8 +258,8 @@
 ;                  separately in the usual way.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-10-31 14:08:13 -0700 (Fri, 31 Oct 2025) $
-; $LastChangedRevision: 33811 $
+; $LastChangedDate: 2026-08-18 14:52:43 -0700 (Tue, 18 Aug 2026) $
+; $LastChangedRevision: 34770 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/win.pro $
 ;
 ;CREATED BY:	David L. Mitchell  2020-06-03
@@ -373,8 +373,9 @@ pro win, wnum, mnum, monitor=monitor, dx=dx, dy=dy, corner=corner, full=full, $
       endfor
 
       j = j[1:*]
-      msg = ''
-      read, msg, prompt='Press return or enter to continue ... '
+      print, 'Press any key to continue ... ', format='(a,$)'
+      msg = get_kbrd()
+      print,''
       for i=0,(n_elements(j)-1) do wdelete, j[i]
     endif else begin
       if (blab) then print,"Monitor configuration:"

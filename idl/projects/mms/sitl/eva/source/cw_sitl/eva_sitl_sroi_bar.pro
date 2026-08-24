@@ -14,7 +14,8 @@ pro eva_sitl_sroi_bar, trange = trange, colors = colors, suffix = suffix, sc_id=
   endelse
   if undefined(sc_id) then sc_id = 'mms1'
     str_trange = time_string(trange)
-  sROIs = mms_get_srois(trange = str_trange, sc_id = sc_id)
+  sROIs = eva_sitl_get_srois_array(trange = str_trange, sc_id = sc_id)
+  
   nan = !values.f_nan
   nan4 = [!values.f_nan, !values.f_nan, !values.f_nan, !values.f_nan]
   if n_tags(sROIs) lt 3 then return

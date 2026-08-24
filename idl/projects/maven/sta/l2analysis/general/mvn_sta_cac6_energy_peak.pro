@@ -279,11 +279,11 @@ if keyword_set(energywidth) then begin
     endfor  ;tt
     
 
-  ;  tname = 'mvn_sta_c6_energypeak'+tnameadd  ;this is the energy of the peak eflux, which is no longer used (we use counts now)
-  ;  store_data, tname, data={x: ddc6.x[iTIME_c6], y: c6_en_arr}
-  ;    ylim, tname, 0.1, 3E4
-  ;    options, tname, ylog=1
-  ;    options, tname, ytitle='STA energypeak!C[eV]'
+    tname = 'mvn_sta_c6_energypeak'+tnameadd  ;this is the energy of the peak eflux, which is no longer used (we use counts now)
+    store_data, tname, data={x: ddc6.x[iTIME_c6], y: c6_en_arr}
+      ylim, tname, 0.1, 3E4
+      options, tname, ylog=1
+      options, tname, ytitle='STA energypeak!C[eV]'
     
     tname = 'mvn_sta_c6_peak_counts'+tnameadd
       store_data, tname, data={x: ddc6.x[iTIME_c6], y: c6_peak_cnts}

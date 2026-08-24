@@ -22,7 +22,7 @@ FUNCTION eva_sitluplink_validateFOM, unix_fomstr
 
   transtart = time_string(unix_fomstr.timestamps[0])
   transtop = time_string(unix_fomstr.timestamps[n_elements(unix_fomstr.timestamps)-1])
-  sROIs = mms_get_srois(trange = [transtart, transtop])
+  sROIs = eva_sitl_get_srois_array(trange = [transtart, transtop])
 
   mms_convert_fom_unix2tai, unix_fomstr, tai_fomstr
   mms_check_fom_uplink, tai_fomstr, srois, error_flags, error_indices, error_msg, error_times

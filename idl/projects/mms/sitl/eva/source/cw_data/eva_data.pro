@@ -1,6 +1,6 @@
 ; $LastChangedBy: moka $
-; $LastChangedDate: 2026-05-06 14:22:55 -0700 (Wed, 06 May 2026) $
-; $LastChangedRevision: 34440 $
+; $LastChangedDate: 2026-08-17 16:16:28 -0700 (Mon, 17 Aug 2026) $
+; $LastChangedRevision: 34759 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/sitl/eva/source/cw_data/eva_data.pro $
 
 ; PRO eva_data_update_date, state, update=update
@@ -233,9 +233,6 @@ function eva_data_load_and_plot, state, cod = cod, evtop = evtop
   ; --exceptional parameter --
   idx = where(strmatch(paramlist, 'thg_idx_ae'), ct2)
   if ct2 eq 1 then paramlist_mms = [paramlist_mms, 'thg_idx_ae']
-  ; idx=where(strmatch(paramlist,'mms_sroi'),ct3)
-  ; if ct3 eq 0 then paramlist_mms = ['mms_sroi',paramlist_mms]
-  ;
   ; ----
   str_element, /add, state, 'paramlist_mms', paramlist_mms
   rst_mms = 'No'

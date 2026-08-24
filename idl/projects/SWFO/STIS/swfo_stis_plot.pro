@@ -3,9 +3,9 @@
 ; Run using:
 ; ctime,routine_name='swfo_stis_plot',/silent
 ;
-; $LastChangedBy: davin-mac $
-; $LastChangedDate: 2025-11-22 07:53:52 -0800 (Sat, 22 Nov 2025) $
-; $LastChangedRevision: 33864 $
+; $LastChangedBy: davin $
+; $LastChangedDate: 2026-08-21 14:26:04 -0700 (Fri, 21 Aug 2026) $
+; $LastChangedRevision: 34799 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_plot.pro $
 ; $ID: $
 ;-
@@ -43,7 +43,7 @@ end
 
 
 
-pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fit=par    ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
+pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fit=par ,debugv=debugv   ; This is very simple sample routine to demonstrate how to plot recently collecte spectra
 
   common swfo_stis_plot_com, def_param
   
@@ -72,6 +72,7 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
   if ~param.haskey('dtrate') then param.dtrate = 3e4     ; 1 / dead time
   if ~param.haskey('jconv') then param.jconv = .01       ; conversion from j to rate
   if ~param.haskey('ddata') || ~isa(param.ddata) then begin
+    dprint,'Getting data'
     if (sci = swfo_apdat('stis_sci'))  then begin ; First look for data from the L0 data stream
       param.ddata = sci.getattr('level_0b')      ; L0b data
       param.L0b = sci.getattr('level_0b')
@@ -79,18 +80,20 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
       param.L1b = sci.getattr('level_1b')
       ;param.L2  = sci.level_2b
     endif else begin        ;   Look for data from the L0 or L1 tplot variables
-      get_data,'swfo_stis_sci_COUNTS',ptr_str = tplot_data, time
-      if isa(tplot_data,'dynamicarray') then begin
+      ; get_data,'swfo_stis_sci_COUNTS',ptr_str = tplot_data, time
+      get_data,'swfo_stis_l0b_30s_SCI_COUNTS',ptr_str = tplot_data;, time
+      if isa(tplot_data) then begin
         param.ddata = tplot_data.ddata        
       endif else begin
         dprint,dlevel=2,'No data source available.'
         return
       endelse
-    endelse
+    endelse 
   endif
   
-  
-  
+  if keyword_set(debugv) then begin
+    dprint,dlevel=3,'hello 1
+  endif
   
 ;printdat,param
 ;  range = struct_value(param,'range',default=[-.5,.5]*30)
@@ -141,11 +144,13 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
   ymin = min( struct_value(param.lim,'yrange',default=0.))
   
   names='SPEC_' + ['O1','O2','O3','F1','F2','F3']  ;,'O23']
+  names='SPEC_' + ['O1','O2','O3','F1','F2','F3','O12','O23' ,'O13']  ;,'O23']
   nans = replicate(!values.f_nan,48)
   format = {name:'',color:0,linestye:0,psym:-4,linethick:2,geomfactor:1.,x:nans,y:nans,dx:nans,dy:nans,xunits:'',yunits:'',lim:obj_new()}
   channels = replicate(format,n_elements(names))
   channels.name = names
-  channels.color = [2,4,6,1,3,0]
+ ; channels.color = [2,4,6,1,3,0]
+  channels.color = [2,4,6,1,3,0, 2,4,5]
 
   old_window = !d.window
   if isa(samples) then begin
@@ -228,7 +233,12 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
             end
           'ERATE': begin
             scale = 1
-            param.lim.ytitle = 'Rate  (#/sec/adc)'
+            param.lim.ytitle =  'Rate  (#/sec/adc)'
+            dprint,'Not correct'
+            end
+            'FLUX': begin
+              scale = 1
+              param.lim.ytitle =  'Differential particle Flux (#/cm2/s/ster/keV'  ;'Rate  (#/sec/adc)'
             end
         endcase
        
@@ -247,7 +257,7 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
         ch.dy = dy
         ch.lim = lim
         channels[c] = ch
-        if 1 then begin
+        if 0 then begin
           j1 = channels[3].y
           j2 = channels[5].y
           jconv = param.jconv
@@ -305,7 +315,7 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
     endif
     
 
-    if 0 then begin
+    if param.haskey('requirement') && param.requirement ne 0 then begin
       xv = dgen()
       
       
@@ -318,6 +328,7 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
       oplot, 40.*[1.,1.],[30,1e6],linestyle=2
       oplot, 2000.*[1.,1.],[3,1e5],linestyle=2
       
+      geomfactor = .5
       
       if 1 then begin
         ;stop
@@ -325,9 +336,9 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
         flux_min = 2.48e2 * x ^ (-1.6)
         eflux_min  = x * flux_min
         dt = 300.
-        counts = flux_min * .2 * dt * dx
-        flux = counts /.2 / dt / dx
-        dflux = sqrt(counts+1.) / .2/dt/dx  
+        counts = flux_min * geomfactor * dt * dx
+        flux = counts /geomfactor / dt / dx
+        dflux = sqrt(counts+1.) / geomfactor /dt/dx  
         oplot,x,flux * x, color = 2,psym=10
         oplot,x,(flux+dflux) * x, color = 2,psym=10
         oplot,x,(flux-dflux) * x, color = 2,psym=10
@@ -350,7 +361,7 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
         flux_max = 1.01e7 * x ^ (-1.6)
         eflux_max  = x * flux_max
         dt = 300.
-        geom = .002
+        geom = .01 * geomfactor
         counts = flux_max * geom * dt * dx
         flux = counts /geom / dt / dx
         dflux = sqrt(counts+1.) / geom/dt/dx
@@ -370,6 +381,13 @@ pro  swfo_stis_plot,var,t,param=param,trange=trange,nsamples=nsamples,lim=lim,fi
       
     endif
         
+  endif
+  
+  
+  
+  if param.haskey('l1b_da') && isa(param.l1b_da,'dynamicarray') then begin
+    dprint
+    
   endif
   
 ;  if isa(param,'dictionary') then begin

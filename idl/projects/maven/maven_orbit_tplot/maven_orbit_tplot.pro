@@ -61,6 +61,9 @@
 ;                 Minimum matching is used for this keyword.
 ;                 See mvn_altitude.pro for more information.
 ;
+;       FATMARS:  Use the equatorial Mars radius (3396.19 +/- 0.1 km) instead of
+;                 the volumetric mean radius (3389.50 +/- 0.2 km).
+;
 ;       IALT:     Ionopause altitude.  Highly variable, but nominally ~400 km.
 ;                 For display only - not included in statistics.  Default is NaN.
 ;
@@ -171,19 +174,51 @@
 ;
 ;       RESTORE:  Restore tplot variables and the common block from a save file.
 ;
-;       MISSION:  Restore save files that span from Mars orbit insertion to the 
-;                 present.  These files are refreshed periodically.  Together, 
-;                 the save files are 17 GB in size (as of December 2024), so this 
+;       MISSION:  Restore ephermeris data and tplot variables that span the entire 
+;                 mission, from Mars orbit insertion (MOI) to loss of signal (LOS) 
+;                 with 10-sec resolution (about 35 million ephemeris points).
+;
+;                     MOI : 2014-09-22/02:24
+;                     LOS : 2025-12-06/02:09
+;                     Latest refresh : 2026-02-12
+;
+;                 The short segment of ephemeris data after LOS is highly uncertain.
+;
+;                 At least 27 GB of RAM is needed to restore the save files, perform
+;                 calculations, and hold the ephemeris data structure, so this 
 ;                 keyword is only useful for computers with sufficient memory.
+;                 MAVEN network computers with 128+ GB of RAM (phobos, maja, mojo) 
+;                 can use this keyword with no issues.  It has also been tested on
+;                 laptops with 64+ GB RAM with no issues.
 ;
-;                   Latest refresh: 2026-02-12
+;                 Use keyword EPH to return the ephermeris structure:
 ;
-;                 Using the where command, you can identify times that meet an
-;                 arbitrary set of ephemeris conditions.
+;                   TIME         dblarr(N)     unix time (seconds since 1970)
+;                   MSO_X        fltarr(N,3)   position in MSO frame (km)
+;                   MSO_V        fltarr(N,3)   velocity in MSO frame (km/s)
+;                   GEO_X        fltarr(N,3)   position in IAU_MARS frame (km)
+;                   GEO_V        fltarr(N,3)   velocity in IAU_MARS frame (km/s)
+;                   R            fltarr(N)     radial distance to MSO origin (km)
+;                   R_M          float         volumetric mean radius of Mars (km)
+;                   VMAG_MSO     fltarr(N)     velocity magnitude in MSO frame (km/s)
+;                   VMAG_GEO     fltarr(N)     velocity magnitude in IAU_MARS frame
+;                   ALT          fltarr(N)     altitude relative to DATUM (km)
+;                   LON          fltarr(N)     east longitude in IAU_MARS frame (deg)
+;                   LAT          fltarr(N)     latitude in IAU_MARS frame (deg)
+;                   DATUM        string        reference surface ('ellipsoid')
+;                   SZA          fltarr(N)     solar zenith angle (deg)
+;                   LST          fltarr(N)     local solar time (Mars hours)
+;                   SLON         fltarr(N)     sub-solar longitude in IAU_MARS frame
+;                   SLAT         fltarr(N)     sub-solar latitude in IAU_MARS frame
+;
+;                 Where N = 35,388,577 is the number of ephemeris points.
+;
+;                 Use the WHERE command to identify times that meet an arbitrary set
+;                 ephemeris conditions.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-16 11:12:59 -0800 (Mon, 16 Feb 2026) $
-; $LastChangedRevision: 34154 $
+; $LastChangedDate: 2026-08-19 09:04:47 -0700 (Wed, 19 Aug 2026) $
+; $LastChangedRevision: 34774 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/maven_orbit_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell  10-28-11
@@ -201,6 +236,7 @@ pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=re
   rootdir = 'maven/anc/spice/sav/'
   ssrc = mvn_file_source(archive_ext='')  ; don't archive old files
   moi = time_double('2014-09-22/02:24')   ; Mars orbit insertion
+  los = time_double('2025-12-06/02:09')   ; Loss of signal
   oneday = 86400D
 
 ; Clear the common block and return
@@ -262,9 +298,30 @@ pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=re
   endif
 
 ; Restore mission-to-date from save files (last refresh 2026-02-12)
+;   These save files span then entire mission from MOI (2014-09-22/02:24) to
+;   LOS (2025-12-06/02:09) with a resolution of 10 seconds.  The short segment
+;   of ephemeris data after LOS is highly uncertain.
 
   if keyword_set(mission) then begin
-    fname = 'maven_moi_present.sav'
+    ram = ram_test()  ; physical RAM in GB
+    case (1) of
+      ram eq -1 : begin
+                    print,"  This operation uses 27 GB of RAM."
+                    yn = 'n'
+                    read, yn, prompt='  Proceed (y|n) ? ', format='(a1)'
+                    if (strupcase(yn) ne 'Y') then return
+                  end
+      ram lt 48 : begin
+                    print,"  This operation uses 27 GB of RAM.", format='(a,$)'
+                    print,"  You have " + strtrim(string(ram),2) + " GB."
+                    yn = 'n'
+                    read, yn, prompt='  Proceed (y|n) ? ', format='(a1)'
+                    if (strupcase(yn) ne 'Y') then return
+                  end
+      else      : ; do nothing, there should be enough RAM
+    endcase
+
+    fname = 'maven_moi_present.sav'  ; 11 GB
     file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
     if (nfiles ne 1) then begin
@@ -273,7 +330,7 @@ pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=re
     endif
     restore, file
 
-    fname = 'maven_moi_present.tplot'
+    fname = 'maven_moi_present.tplot'  ; 6.3 GB
     file = mvn_pfp_file_retrieve(rootdir+fname,last_version=0,source=ssrc,verbose=verbose)
     nfiles = n_elements(file)
     if (nfiles ne 1) then begin
@@ -281,6 +338,8 @@ pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=re
       return
     endif
     tplot_restore, file=file
+
+    eph = maven_orbit_eph()  ; ephemeris for the entire mission
 
     timefit, var='alt'
     ylim,'alt2',0,7000,0
@@ -297,7 +356,9 @@ pro maven_orbit_tplot, trange=trange, stat=stat, swia=swia, ialt=ialt, result=re
     Asun = (6.957e10/1.496e13)*!radeg
     options,'SEM','constant',[Asun,3.0]
 
-    tplot,['alt2','palt','SEM','plat','S-M']
+    vars = ['alt2','palt','SEM','plat','S-M']
+
+    if ~keyword_set(loadonly) then tplot, vars[1:*]  ; don't include the Rorschach panel
 
     return
   endif

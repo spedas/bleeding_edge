@@ -49,6 +49,34 @@ pro plot_intervals, trange, durations,$
   return
 end
 
+; +
+; PROCEDURE: swfo_quicklook
+; PURPOSE:
+; Makes and saves plots of SWFO STIS data at given intervals.
+; Can be combined with exec to continually produce plots.
+; 
+; Example usage:
+; > swfo_quicklook, plot_types=['summ', 'noise', 'health'],$
+;     data_resolution=['30s', '300s', 'fr'],$
+;     plot_durations=['1d', '3d', '7d'],$
+;     trange=systime(1) + [-3600d*24, 3600d*24]
+; Will make summary, noise, and instrument health plots
+; for resolutions of 30 seconds, 300 seconds, and the full resolution
+; with plot durations of 1 day, 3 days, and 7 days.
+; over a time range of 24 hours before now, and 24 hours after now.
+; 
+; For live plots that are centered on now rather than dailies:
+; > swfo_quicklook, plot_types=['summ', 'noise', 'health'],$
+;     data_resolution=['30s', '300s', 'fr'],$
+;     plot_durations=['1d', '3d', '7d'], /live
+;
+; Note: ACE plot not working yet.
+;
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-08-17 09:27:15 -0700 (Mon, 17 Aug 2026) $
+; $LastChangedRevision: 34746 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_quicklook.pro $
+; $ID: $
 
 pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
   plot_types=plot_types, destination_dir=destination_dir,$
@@ -379,8 +407,19 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
           fname_i = fname_i.replace("{CADENCE}", res_tplot_prefix)
           ; stop
 
+          ; Offset by two hours the end of the trange
+          ; for live view:
+          if keyword_set(live) then begin
+            subset_tr = subset_tr + [0, 2*3600d]
+            print, time_string(subset_tr)
+          endif
+            
           ; Redraw the subset timerange:
           tlimit, subset_tr
+
+          ; add a timebar marking the current time if
+          ; live plot
+          if keyword_set(live) then timebar, end_time_unix_i
 
           ; Redraw the timebars:
           if plot_name.startswith('health') then begin
@@ -404,20 +443,11 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
               linestyle=5, color='m'
           endif
 
-          if keyword_set(live) then subset_tr = subset_tr + [0, 2*3600d]
-          ; print, tr
-          print, time_String(subset_tr)
-          ; stop
-
-          ; add a timebar marking the current time if
-          ; live plot
-          if keyword_set(live) then timebar, end_time_unix_i
-
           ; Write the pngs:
           if keyword_set(show) then stop
 
           makepng, fname_i, /mkdir, window=2
-          tlimit, 0, 0
+          ;tlimit, 0, 0
         endfor
 
 

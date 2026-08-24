@@ -88,8 +88,8 @@
 ;       SCOL:       Color for each of the sites.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-09-22 12:45:24 -0700 (Mon, 22 Sep 2025) $
-; $LastChangedRevision: 33647 $
+; $LastChangedDate: 2026-08-17 12:50:20 -0700 (Mon, 17 Aug 2026) $
+; $LastChangedRevision: 34750 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mag_mola_orbit.pro $
 ;
 ;CREATED BY:	David L. Mitchell  04-02-03
@@ -180,6 +180,19 @@ pro mag_mola_orbit, lon, lat, psym=psym, lstyle=lstyle, color=color, $
                  Bmag = sqrt(bmod.br^2. + bmod.bt^2. + bmod.bp^2.)
                  z = sqrt(bmod.bt^2. + bmod.bp^2.)/Bmag
                  k.gray = 180
+               end
+        'EL' : begin
+                 Bmag = sqrt(bmod.br^2. + bmod.bt^2. + bmod.bp^2.)
+                 z = asin(bmod.br/Bmag)*!radeg
+                 k.levels = [20,40,60,80]
+                 k.gray = 128
+               end
+        'AZ' : begin
+                 z = atan(bmod.bt, bmod.bp)*!radeg
+                 indx = where(z lt 0., count)
+                 if (count gt 0L) then z[indx] += 360.
+                 k.levels = [0,90,180,270]
+                 k.gray = 0
                end
         'B'  : begin
                  z = sqrt(bmod.br^2. + bmod.bt^2. + bmod.bp^2.)

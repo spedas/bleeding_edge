@@ -8,9 +8,9 @@
 ;HISTORY:
 ; 2015-01-23
 ; Added init, reset, for control of version during background reprocessing
-; $LastChangedBy: muser $
-; $LastChangedDate: 2026-01-12 13:38:15 -0800 (Mon, 12 Jan 2026) $
-; $LastChangedRevision: 33998 $
+; $LastChangedBy: ghanley $
+; $LastChangedDate: 2026-08-21 16:35:48 -0700 (Fri, 21 Aug 2026) $
+; $LastChangedRevision: 34801 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_current_sw_version.pro $
 ;-
 Function mvn_sta_current_sw_version, value = value, init = init, reset = reset
@@ -24,7 +24,7 @@ Function mvn_sta_current_sw_version, value = value, init = init, reset = reset
 ;  dead time corrections, jmm, 2025-09-09
   common mvn_sta_software_version,ver
   If(keyword_set(init) Or keyword_set(reset) Or (n_elements(ver) Eq 0)) Then Begin
-     If(keyword_set(value)) Then ver = value Else ver = 2
+     If(keyword_set(value)) Then ver = value Else ver = 3
   Endif 
      
   Return, ver

@@ -344,22 +344,43 @@ function searchStringInArray (str, strArray) {
 function changeImgSrc(delType)
 {
 
+    console.log("Live status: ", document.getElementById("live").checked, document.getElementById("live").value)
+
     if (delType == "live_toggle") {
 	    var liveplot = document.getElementById("live").value;
 
-	    if (liveplot == "on") {
-		  liveplot = "off";
-		} else {
-		  liveplot ="on";
-		}
+	    if (liveplot == "on") {liveplot = "off";} else {liveplot ="on";}
 
     	document.getElementById("live").value = liveplot;
 
-	    console.log("Updating...")
-		console.log(liveplot)
+	    console.log("Updating...", liveplot)
 	    displayImage();
 		return;
     }
+    else {
+	    var liveplot = document.getElementById("live").value;
+	    if (liveplot == "on") {
+    		document.getElementById("live").value = "off";
+    		document.getElementById("live").checked = false
+			// document.getElementById("live").checked
+		    console.log("Deactivating live.")
+		}
+
+    }
+
+    if (delType == "first") {
+		document.getElementById("set_date").value = '2025-09-30'; 
+	    syncBottomToTop();
+	    // displayImage();
+	    return;
+	}
+    if (delType == "now") {
+	    let [year, month, day] = presentDay();
+		document.getElementById("set_date").value = year + '-' + month + '-' + day; 
+	    syncBottomToTop();
+	    // displayImage();
+	    return;
+	}
 
 
     var plotDuration = document.getElementById("plotDuration").value ;
@@ -491,12 +512,12 @@ function changeImgSrc(delType)
     // document.getElementById("hour").value=hour ;
     syncBottomToTop();
 
-    displayImage();
+    // displayImage();
 }
-//firstload loads at the start
-function firstLoad()
+
+function presentDay()
 {
-    // Grab current Date
+	// Grab current Date
     var currentDate = new Date() ;
     // Break out year, month, and day
     var currentYear = currentDate.getFullYear() ;
@@ -513,18 +534,18 @@ function firstLoad()
 	{
 	    currentDayString = "0" + currentDayString ;
 	}
-    // Set form elements
 
+	return [currentYearString, currentMonthString, currentDayString]
+}
+
+//firstload loads at the start
+function firstLoad()
+{
+    let [year, month, day] = presentDay();
+
+    // Set form elements
     document.getElementById("live").value = 'on'
-    document.getElementById("set_date").value = currentYearString + "-" + currentMonthString + "-" +currentDayString;
-    
-    // document.getElementById("set_year").value = currentYearString ;
-    // document.getElementById("set_month").value = currentMonthString ;
-    // document.getElementById("set_day").value = currentDayString ;
-    
-    // document.getElementById("set_year_bottom").value = currentYearString ;
-    // document.getElementById("set_month_bottom").value = currentMonthString ;
-    // document.getElementById("set_day_bottom").value = currentDayString ;
+    document.getElementById("set_date").value = year + "-" + month + "-" +day;
 	
     // document.weboptions.sumplotType[0].selected = true;
     // document.weboptions_bottom.sumplotType_bottom[0].selected = true;
@@ -772,10 +793,12 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 <table align='center' cellspacing=0 cellpadding=0 id="t1">
   <tr>
 		<td nowrap>		
-		
-		<input type='button' name='last_plot' onclick="changeImgSrc('dec')" value='&#60;&#60; Last'>
+
+		<input type='button' name='first_plot' onclick="changeImgSrc('first')" value='&#60;&#60; First'>		
+		<input type='button' name='last_plot' onclick="changeImgSrc('dec')" value='&#60; Last'>
 		<input type="date" id="set_date" name="yyyy-mm-dd" onchange="syncBottomToTop()"/>
-		<input type='button' name='next_plot' onclick="changeImgSrc('inc')" value='Next &#62;&#62;'>
+		<input type='button' name='next_plot' onclick="changeImgSrc('inc')" value='Next &#62;'>
+		<input type='button' name='current_plot' onclick="changeImgSrc('now')" value='Today &#62;&#62;'>
 		  OR Live:
 		<label class="switch">
 		  <input type="checkbox" id="live" onclick="changeImgSrc('live_toggle')" checked autocomplete="off">

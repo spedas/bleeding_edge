@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 17 03:16:52 2026.<P>
+<STRONG>Last modified: </STRONG>Sun Aug 23 15:46:51 2026.<P>
  
 <HR>
  
@@ -21,6 +21,7 @@ This page was created by the IDL library routine
 <H1>projects/SWFO</H1>
 <LI><A HREF="#NCDF2STRUCT">NCDF2STRUCT</A>
 <LI><A HREF="#STRUCT2NCDF">STRUCT2NCDF</A>
+<LI><A HREF="#SWFO_NOAA_LOAD">SWFO_NOAA_LOAD</A>
 <br>
 </UL><P>
 <HR>
@@ -64,6 +65,7 @@ This page was created by the IDL library routine
 <A NAME="STRUCT2NCDF">
 <H2>STRUCT2NCDF</H2></A>
 <A HREF="#NCDF2STRUCT">[Previous Routine]</A>
+<A HREF="#SWFO_NOAA_LOAD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  name:
@@ -92,5 +94,46 @@ This page was created by the IDL library routine
    andi christen, tu berlin, 23-aug-05, andreas.christen@tu-berlin.de
 </PRE><P>
 <STRONG>(See <A href="SWFO/struct2ncdf.pro">projects/SWFO/struct2ncdf.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SWFO_NOAA_LOAD">
+<H2>SWFO_NOAA_LOAD</H2></A>
+<A HREF="#STRUCT2NCDF">[Previous Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       SWFO_NOAA_LOAD
+
+PURPOSE:         Loads SOLAR-1 (SWFO) netCDF files from NOAA National Centers for Environmental Information (NCEI),
+                 (formerly the National Geophysical Data Center: NGDC).
+
+INPUTS:          None.
+
+KEYWORDS:
+
+      TYPE:      Specifies the data type(s) to be loaded.
+                 Default is type = 'sci_mag-l3'. 
+ 
+        ID:      If type = 'swpc', specifies the spacecraft ID.
+                 Default is id = 'active'.
+
+    TRANGE:      Specifies the time range to be loaded.
+
+      DATA:      Returns the actual data to be loaded from the netCDF file(s).
+
+LOCAL_DATA_DIR:  Specifies where to archive the downloaded file(s).
+
+     TNAME:      Returns the string array of created tplot variables.
+
+CREATED BY:      Takuya Hara on 2026-07-06.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-08-19 15:40:19 -0700 (Wed, 19 Aug 2026) $
+ $LastChangedRevision: 34778 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_noaa_load.pro $
+
+</PRE><P>
+<STRONG>(See <A href="SWFO/swfo_noaa_load.pro">projects/SWFO/swfo_noaa_load.pro</A>)</STRONG><P>
 <HR>
  

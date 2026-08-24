@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 17 03:16:52 2026.<P>
+<STRONG>Last modified: </STRONG>Sun Aug 23 15:46:51 2026.<P>
  
 <HR>
  
@@ -19,14 +19,55 @@ This page was created by the IDL library routine
 <H1>Directory Listing of Routines</H1></A>
 <UL>
 <H1>projects/escapade/emag</H1>
+<LI><A HREF="#ESC_EMAG_ANGLE">ESC_EMAG_ANGLE</A>
 <LI><A HREF="#ESC_EMAG_LOAD">ESC_EMAG_LOAD</A>
 <br>
 </UL><P>
 <HR>
  
 <H1>Routine Descriptions</H1>
+<A NAME="ESC_EMAG_ANGLE">
+<H2>ESC_EMAG_ANGLE</H2></A>
+<A HREF="#ESC_EMAG_LOAD">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+
+PROCEDURE:       ESC_EMAG_ANGLE
+
+PURPOSE:         Creates tplot variables of the ESCAPADE/EMAG magnetic field 
+                 angles in the specified coordinate system. 
+
+INPUTS:          Tplot name can be specified.
+
+KEYWORDS:
+
+     LEVEL:      Specifies the MAG level used (currently unused).
+
+  FILL_NAN:      If set, inserts NANs when the Bphi direction wraps from 360 to 0 degrees, 
+                 making the wrap more visually apparent.
+
+      CONE:      If set, calculates the magnetic field cone angle.
+
+     CLOCK:      If set, calculates the magnetic field clock angle.
+
+NOTE:            This procedure was originally written for MAVEN/MAG data.
+                 It has since been copied and simplified for use with ESCAPADE/EMAG data.
+
+CREATED BY:      Takuya Hara on 2015-10-24.
+
+LAST MODIFICATION:
+ $LastChangedBy: hara $
+ $LastChangedDate: 2026-08-19 13:54:38 -0700 (Wed, 19 Aug 2026) $
+ $LastChangedRevision: 34777 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/emag/esc_emag_angle.pro $
+
+</PRE><P>
+<STRONG>(See <A href="emag/esc_emag_angle.pro">projects/escapade/emag/esc_emag_angle.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="ESC_EMAG_LOAD">
 <H2>ESC_EMAG_LOAD</H2></A>
+<A HREF="#ESC_EMAG_ANGLE">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
