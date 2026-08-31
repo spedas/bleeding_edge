@@ -15,8 +15,8 @@
 ; thm_sst_overviews,'2007-03-23',dir='~/out',device='z'
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-30 12:15:38 -0700 (Sat, 30 Aug 2025) $
-; $LastChangedRevision: 33589 $
+; $LastChangedDate: 2026-08-30 11:34:32 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34836 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sst_overviews.pro $
 ;-
 
@@ -44,7 +44,10 @@ date2 = time_string(date)
 
 if keyword_set(directory) then dir=directory else dir='./'
 
-if keyword_set(device) then set_plot,device
+if keyword_set(device) then begin
+  set_plot,device
+  spd_graphics_config
+endif
 
 ;tplot_options,'lazy_ytitle',0  ; prevent auto formatting on ytitle (namely having carrage returns at underscores)
 

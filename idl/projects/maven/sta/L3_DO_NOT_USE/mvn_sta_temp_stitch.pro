@@ -66,7 +66,7 @@ pro mvn_sta_temp_stitch, PICK=pick, TEST=test, TAILS=tails, noload=noload
     
   endif
    ;; setup the checks for beamwidth
-   mvn_sta_cac6_energy_peak
+   mvn_sta_cac6_energy_peak,/energy,/angular
   get_data, 'mvn_sta_ca_anode_perc', data=ddperc
   get_data, 'mvn_sta_c6_energypeak', data=ddpeaken
   get_data, 'mvn_sta_c6_cb_scpot', data=ddscpot
@@ -74,7 +74,7 @@ pro mvn_sta_temp_stitch, PICK=pick, TEST=test, TAILS=tails, noload=noload
   peakenergy_tplot = ddpeaken.y + ddscpot.y 
   tpeakenergy = ddpeaken.x 
   
-  efluxperc_tplot=ddperc.y[*,2]
+  efluxperc_tplot=ddperc.y[*,1]
   tefluxperc=ddperc.x 
  
   pick=0

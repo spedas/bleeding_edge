@@ -1,5 +1,55 @@
 ;+
 ;NAME:
+; thm_sample_rate_bar_helper
+;PURPOSE:
+; Expands rate start/end intervals into "rate on" flags with a fixed cadence for the 'on' periods
+;CALLING SEQUENCE:
+; thm_sample_rate_bar_helper,in_name=in_name,out_name=out_name,dt=dt
+;KEYWORDS:
+; in_name =  a tplot variable with scmode data
+; dt = time (in seconds) between points with sample rate "on"
+; out_name = name of the output tplot variable
+;
+;HISTORY:
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-08-30 22:37:14 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34844 $
+; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sample_rate_bar.pro $
+;-
+
+pro thm_sample_rate_bar_helper,in_name=in_name, dt=dt, out_name=out_name
+
+   a=tnames(in_name)
+   if a[0] eq '' then begin
+    message,'Input variable ' + in_name + 'does not exist.'
+   endif
+   
+   if n_elements(dt) eq 0 then dt = 0.25
+   
+   if n_elements(out_name) eq 0 then out_name=in_name + '_expanded'
+   
+   get_data,in_name,data=d
+   
+   inp_times = d.x
+   tr = minmax(inp_times)
+   tstart = tr[0]
+   tspan = tr[1] - tr[0]
+   tcount = long(tspan/dt)
+   tgrid=[tstart+dindgen(tcount)*dt,tr[1]]
+   tinterpol_mxn,in_name,tgrid,out=d_exp,/nearest_neighbor
+   idx = where(d_exp.y gt 0, c)
+   if c eq 0 then begin
+    ; No 'on' periods, just return a single NaN at the start time
+    store_data,out_name,data={x:tr[0],y:[float("NaN")]}
+   endif else begin
+    out_times = tgrid[idx]
+    out_dat = d_exp.y[idx]
+    store_data,out_name,data={x:out_times, y: out_dat}
+   endelse     
+end
+
+;+
+;NAME:
 ; thm_sample_rate_bar
 ;PURPOSE:
 ; creates the sample rate bar for overview plots
@@ -18,9 +68,9 @@
 ;     sccessful
 ;HISTORY:
 ; 20-nov-2007, jmm, jimm@ssl.berkeley.edu
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2016-02-17 10:47:06 -0800 (Wed, 17 Feb 2016) $
-; $LastChangedRevision: 20029 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-08-30 22:37:14 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34844 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sample_rate_bar.pro $
 ;-
 Function thm_sample_rate_bar, date, duration, probe,outline=outline, _extra = _extra
@@ -30,15 +80,33 @@ Function thm_sample_rate_bar, date, duration, probe,outline=outline, _extra = _e
   timespan, date, duration
   sc = strlowcase(strcompress(probe[0], /remove_all))
 
-; make tplot variable tracking the sample rate (0=SS,1=FS,2=PB,3=WB)
-;------------------------------------------------------------------
-
+  ; Delete stale variables in case this call does not load data
+  del_data,'th'+sc+'_scmode_*'
+  ; Load L1 SCMODE data. The variables contain all the OFF-ON or ON-OFF transitions. 0=OFF, 1=ON
   thm_load_scmode, probe=sc
-  ; default is slow survey, yellow bar
+  get_data, strjoin('th'+sc+'_scmode_pb'), data = dpb,dlimit=dl
+  get_data, strjoin('th'+sc+'_scmode_wb'), data = dwb,dlimit=dl
   get_data, strjoin('th'+sc+'_scmode_ufs'), data = dufs,dlimit=dl
   get_data, strjoin('th'+sc+'_scmode_fs'), data = dfs,dlimit=dl
+  ; default is slow survey, yellow bar
   get_data, strjoin('th'+sc+'_scmode_ss'), data = dss,dlimit=dl
   
+  if  ~(is_struct(dpb) && is_struct(dwb) && is_struct(dufs) && is_struct(dfs) && is_struct(dss)) then begin
+    dprint,'Warning: some scmode variables were not successfully loaded for probe '+sc+', date '+date+', duration '+str(duration)
+  endif
+  
+  ; PB and WB intervals are depicted by symbols plotted above and below the colored bar.
+  ; For this type of plot, we don't want to mark just the transitions, but have a set of times within each interval
+  ; so the plotted symbols form a continuous bar.  thm_sample_rate_bar_helper converts the start/stop times to sets of
+  ; points at the given cadence 'dt'.
+  
+  pb_name = 'th'+sc+'_scmode_pb'
+  if tnames(pb_name) ne '' then thm_sample_rate_bar_helper, in_name=pb_name, dt=0.25, out_name=pb_name+'_expanded'
+  wb_name = 'th'+sc+'_scmode_wb'
+  if tnames(wb_name) ne '' then thm_sample_rate_bar_helper, in_name=wb_name, dt=0.25, out_name=wb_name+'_expanded'
+
+  ; If any of the SCMODE variables are missing, set up some variables representing "all off" for that mode.
+  ;   
   if tnames('th'+sc+'_scmode_ufs') eq '' then begin
     ufs_time = [float('NaN')]
     ufs_data = [float('NaN')]
@@ -51,9 +119,8 @@ Function thm_sample_rate_bar, date, duration, probe,outline=outline, _extra = _e
   endelse
 
   if (size(dfs,/type) ne 8) then begin
-    fs_time = float('NaN')
-    fs_data = float('NaN')
-    fs_data[*] = float('NaN')   
+    fs_time = [float('NaN')]
+    fs_data = [float('NaN')] 
   endif else begin
     ind_fs = where(dfs.y eq 1)
     fs_time = float(dfs.x)
@@ -63,15 +130,36 @@ Function thm_sample_rate_bar, date, duration, probe,outline=outline, _extra = _e
   endelse
 
   if (size(dss,/type) ne 8) then begin
-    ss_time = float('NaN')
-    ss_data = float('NaN')
-    ss_data[*] = float('NaN')   
+    ss_time = [float('NaN')]
+    ss_data = [float('NaN')]
   endif else begin
     ind_ss = where(dss.y eq 1)
     ss_time = float(dss.x)
     ss_data = float(dss.y)
     ss_data[*] = float('NaN')
     if (ind_ss[0] ne -1) then ss_data[ind_ss] = 0.0
+  endelse
+
+  if (size(dpb,/type) ne 8) then begin
+    pb_time = [float('NaN')]
+    pb_data = [float('NaN')]
+  endif else begin
+    ind_pb = where(dpb.y eq 1)
+    pb_time = float(dpb.x)
+    pb_data = float(dpb.y)
+    pb_data[*] = float('NaN')
+    if (ind_pb[0] ne -1) then pb_data[ind_pb] = 0.0
+  endelse
+
+  if (size(dwb,/type) ne 8) then begin
+    wb_time = [float('NaN')]
+    wb_data = [float('NaN')]
+  endif else begin
+    ind_wb = where(dwb.y eq 1)
+    wb_time = float(dwb.x)
+    wb_data = float(dwb.y)
+    wb_data[*] = float('NaN')
+    if (ind_wb[0] ne -1) then wb_data[ind_wb] = 0.0
   endelse
     
   str_element,dl,'labels',/delete
@@ -82,20 +170,15 @@ Function thm_sample_rate_bar, date, duration, probe,outline=outline, _extra = _e
   store_data, 'slow_survey_bar_'+sc, data = {x:ss_time, y:ss_data},dlimit=dl
   store_data, 'fast_survey_bar_'+sc, data = {x:fs_time, y:fs_data},dlimit=dl
   store_data, 'ultrafast_survey_bar_'+sc, data = {x:ufs_time, y:ufs_data},dlimit=dl
-  store_data, 'aesthetic_bar_'+sc, data = {x:time_double(date), y:float('NaN')},dlimit=dl
-;get particle burst data from fgh level 2 data, jmm, 27-aug-2007
-  thm_load_fgm, probe = sc[0], level = 'l2', datatype = 'fgh'
-;if L2 data is not there, look for L1 data, jmm, 24-apr-2008
-  tn = tnames('th'+sc+'*fgh*')
-  If(tn[0] eq '') then begin
-    tns = tnames('th'+sc+'*state_spin*')
-    If(tns[0] eq '') then thm_load_state, probe = sc[0], /get_support_data
-    thm_load_fgm, probe = sc[0], level = 'l1', datatype = 'fgh'
-  Endif
-  tn = tnames('th'+sc+'*fgh*')
+  store_data, 'particle_burst_bar_'+sc, data = {x:pb_time, y:pb_data},dlimit=dl
+  store_data, 'wave_burst_bar_bar_'+sc, data = {x:wb_time, y:wb_data},dlimit=dl
+  store_data, 'aesthetic_bar_'+sc, data = {x:[time_double(date)], y:[float('NaN')]},dlimit=dl
+  
+  ; Particle burst markers: one marker per timestamp when the mode is 'on'  
+  tn = tnames('th'+sc+'_scmode_pb_expanded')
   if tn[0] eq '' then begin     ;no data
-    store_data, 'particle_burst_bar_'+sc, data = {x:time_double(date), y:float('NaN')}
-    store_data, 'particle_burst_sym_'+sc, data = {x:time_double(date), y:float('NaN')}
+    store_data, 'particle_burst_bar_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
+    store_data, 'particle_burst_sym_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
   endif else begin
     tn = tn[0]       ;assuming that all fgh's have the same time range
     get_data, tn, data = d,dlimit=dl
@@ -116,17 +199,16 @@ Function thm_sample_rate_bar, date, duration, probe,outline=outline, _extra = _e
       store_data, 'particle_burst_bar_'+sc, data = {x:d.x, y:pb_data},dlimit=dl
       store_data, 'particle_burst_sym_'+sc, data = {x:d.x, y:pb_data2},dlimit=dl
     Endif Else Begin
-      store_data, 'particle_burst_bar_'+sc, data = {x:time_double(date), y:float('NaN')}
-      store_data, 'particle_burst_sym_'+sc, data = {x:time_double(date), y:float('NaN')}
+      store_data, 'particle_burst_bar_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
+      store_data, 'particle_burst_sym_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
     Endelse
   endelse
 
-;wave bursts from level 1 ffw data
-  thm_load_fft, probe = sc[0], level = 'l1', varformat = 'th'+sc+'*ffw*'
-  tn = tnames('th'+sc+'*ffw*')
+  ; Wave burst markers: one marker per timestamp when the mode is 'on'  
+  tn = tnames('th'+sc+'_scmode_wb_expanded')
   if tn[0] eq '' then begin
-    store_data, 'wave_burst_bar_'+sc, data = {x:time_double(date), y:float('NaN')}
-    store_data, 'wave_burst_sym_'+sc, data = {x:time_double(date), y:float('NaN')}
+    store_data, 'wave_burst_bar_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
+    store_data, 'wave_burst_sym_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
   endif else begin
     tn = tn[0] ;making the assumption that all ffws will have the same time range?
     get_data, tn, data = d,dlimit=dl
@@ -145,11 +227,13 @@ Function thm_sample_rate_bar, date, duration, probe,outline=outline, _extra = _e
       store_data, 'wave_burst_bar_'+sc, data = {x:d.x, y:wb_data},dlimit=dl
       store_data, 'wave_burst_sym_'+sc, data = {x:d.x, y:wb_data2},dlimit=dl
     Endif Else Begin
-      store_data, 'wave_burst_bar_'+sc, data = {x:time_double(date), y:float('NaN')}
-      store_data, 'wave_burst_sym_'+sc, data = {x:time_double(date), y:float('NaN')}
+      store_data, 'wave_burst_bar_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
+      store_data, 'wave_burst_sym_'+sc, data = {x:[time_double(date)], y:[float('NaN')]}
     Endelse
   endelse
 
+  ; Set some plot options for the online and SPEDAS GUI summary plots
+  
   options, 'aesthetic_bar_'+sc, 'color', 255
   options, 'slow_survey_bar_'+sc, 'color', 5 
   options, 'fast_survey_bar_'+sc, 'color', 6 ;red

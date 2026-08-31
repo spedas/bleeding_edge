@@ -187,7 +187,10 @@ endif
 
 if keyword_set(directory) then dir=directory else dir='./'
 
-if keyword_set(device) then set_plot,device
+if keyword_set(device) then begin
+  set_plot,device
+  spd_graphics_config
+endif
 
 timespan,date2,1,/day
 
@@ -242,7 +245,7 @@ endelse
 
 var_string += ' ' + fgs_name+'+t'
 
-thm_load_state,probe=probe,coord='gsm',/get_support
+thm_load_state,probe=probe,coord='gsm'
 
 ;---------------------------------------
 ;fgm with t89 model field subtracted
@@ -427,13 +430,13 @@ var_string += ' Tieperpara'
 
 
 ;--------------------------------------------------------
-;- thx_peir_velocity [km/s] (x y z t = blue, green, red, black)
+;- thx_peif_velocity [km/s] (x y z t = blue, green, red, black)
 ;  For on board moments, when possible, replace with:
 ;  thx_peim_velocity
 
 ;      Autoscale this with max velocity of +/-1500km/s.
 
-pei_vel_name = 'th'+probe+'_peir_velocity_gsm'
+pei_vel_name = 'th'+probe+'_peif_velocity_gsm'
 
 if tnames(pei_vel_name) then begin
 
@@ -443,7 +446,7 @@ if tnames(pei_vel_name) then begin
 
    tvectot,pei_vel_name,newname=pei_vel_name+'+t'
    
-   options,pei_vel_name+'+t',ytitle='th'+probe+'!Cpeir!Cvelocity!Cgsm'
+   options,pei_vel_name+'+t',ytitle='th'+probe+'!Cpeif!Cvelocity!Cgsm'
 
    get_data,pei_vel_name+'+t',dlimit=dl
 
@@ -462,14 +465,14 @@ endelse
 var_string += ' ' + pei_vel_name+'+t'
 
 ;------------------------------------------------------
-;- thm_peer_velocity [km/s] (x y z t = blue, green, red, black)
+;- thm_peef_velocity [km/s] (x y z t = blue, green, red, black)
 ;  For on board moments, when possible, replace with:
 ;  thx_peem_velocity
 
 ;      Autoscale, max velocity of +/-1500km/s.
 
 
-pee_vel_name = 'th'+probe+'_peer_velocity_gsm'
+pee_vel_name = 'th'+probe+'_peef_velocity_gsm'
 
 if tnames(pee_vel_name) then begin
 
@@ -479,7 +482,7 @@ if tnames(pee_vel_name) then begin
 
    tvectot,pee_vel_name,newname=pee_vel_name+'+t'
    
-   options,pee_vel_name+'+t',ytitle='th'+probe+'!Cpeer!Cvelocity!Cgsm'
+   options,pee_vel_name+'+t',ytitle='th'+probe+'!Cpeef!Cvelocity!Cgsm'
 
    get_data,pee_vel_name+'+t',dlimit=dl
 
@@ -491,7 +494,7 @@ if tnames(pee_vel_name) then begin
    
 endif else begin
 
-   thm_blank_panel,pee_vel_name+'+t','th'+probe+'!Cpeer!Cvelocity!C[km/s]',labels=['Vx','Vy','Vz','Vt']
+   thm_blank_panel,pee_vel_name+'+t','th'+probe+'!Cpeef!Cvelocity!C[km/s]',labels=['Vx','Vy','Vz','Vt']
 
 endelse
 
@@ -507,14 +510,14 @@ var_string += ' ' + pee_vel_name+'+t'
 ;     * Note: You must interpolate the B data on the V times before
 ;       multiplying, even though they are at the same cadence.
 
-if tnames('th'+probe+'_peir_velocity_gsm') && $
+if tnames('th'+probe+'_peif_velocity_gsm') && $
    tnames('th'+probe+'_fgs_gsm') then begin
 
    
    ;this clipping fixes an artifact where interpolation sometimes causes
    ;unreasonably large or small values if the velocity times preceed or
    ;exceed the fgm times.
-   time_clip,'th'+probe+'_peir_velocity_gsm','th'+probe+'_fgs_gsm','th'+probe+'_fgs_gsm',/tvar,newname='vel_clip'
+   time_clip,'th'+probe+'_peif_velocity_gsm','th'+probe+'_fgs_gsm','th'+probe+'_fgs_gsm',/tvar,newname='vel_clip'
 
    tinterpol_mxn,'th'+probe+'_fgs_gsm','vel_clip',newname='bvinterpol'
 
@@ -682,7 +685,7 @@ thm_set_lim,pei_vel_name+'+t',times[0],times[1],-1500D,1500D,0
 
 thm_set_lim,pee_vel_name+'+t',times[0],times[1],-1500D,1500D,0
 
-thm_set_lim,'pressure_vars',times[0],times[1],0D,50D,1
+thm_set_lim,'pressure_vars',times[0],times[1],0.0001D,50D,1
 
 if tnames('th'+probe+'_state_pos') then begin
 
@@ -722,7 +725,7 @@ if keyword_set(makepng) then begin
     thm_set_lim, 'Tieperpara', tr0[0], tr0[1], 0.1, 9999.0, 1
     thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D,0
     thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D,0
-    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0D, 50D, 1
+    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0.0001D, 50D, 1
     tplot, trange = tr0
     makepng, dir+'th'+probe+'_l2_gmoms_'+ymd+'_'+hshf, /no_expose
   Endfor
@@ -739,7 +742,7 @@ if keyword_set(makepng) then begin
     thm_set_lim, 'Tieperpara', tr0[0], tr0[1], 0.1, 9999.0, 1
     thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
     thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
-    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0D, 50D, 1
+    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0.0001D, 50D, 1
     tplot, trange = tr0
     makepng, dir+'th'+probe+'_l2_gmoms_'+ymd+'_'+hshf, /no_expose
   Endfor

@@ -44,8 +44,8 @@
 ;  This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-03-26 13:01:57 -0700 (Thu, 26 Mar 2026) $
-;$LastChangedRevision: 34293 $
+;$LastChangedDate: 2026-08-30 11:29:31 -0700 (Sun, 30 Aug 2026) $
+;$LastChangedRevision: 34834 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -225,6 +225,7 @@ endif else begin
   endif  
 
   set_plot,device
+  spd_graphics_config
   help,/device,output=plot_device
   plot_device=strtrim(strlowcase(strmid(plot_device[1],24)),2)
   if plot_device eq 'z' then device, set_resolution = [750, 800]
@@ -300,15 +301,27 @@ tclip, fgs_varname, -100.0, 100.0, /overwrite
 ;--------------
 
 load_position='fbk'
-If(sc Eq 'a') Then Begin
-   If(time_double(date) Lt time_double('2025-02-26')) Then Begin
-      thm_load_fbk,lev=1,probe=sc
-      thm_load_fft,lev=1,probe=sc
-   Endif
-Endif Else Begin
-   thm_load_fbk,lev=1,probe=sc
-   thm_load_fft,lev=1,probe=sc
-Endelse   
+; Delete stale variables that might cause problems below
+del_data,thx+'_fb_*'
+del_data,'filler1'
+del_data,'filler2'
+; There used to be a check for TH-A after 2025-02-26, to skip loading fbk/fft data after that date.
+; Similar logic should have applied to TH-E after the DFB instruments on that probe were shut off.
+; However, the case of missing fbk/fft data is already handled adequately below, so we can skip those checks.
+; JWL 2026-08-26
+; 
+;If(sc Eq 'a') Then Begin
+;   If(time_double(date) Lt time_double('2025-02-26')) Then Begin
+;      thm_load_fbk,lev=1,probe=sc
+;      thm_load_fft,lev=1,probe=sc
+;   Endif
+;Endif Else Begin
+;   thm_load_fbk,lev=1,probe=sc
+;   thm_load_fft,lev=1,probe=sc
+;Endelse   
+
+thm_load_fbk,lev=1,probe=sc
+thm_load_fft,lev=1,probe=sc
 
 SKIP_FBK_LOAD:
 
@@ -316,7 +329,7 @@ del_data,thx+'_fb_h*'  ; del thx_fb_hff as it is not used and gets in the way la
 fbk_tvars=tnames(thx+'_fb_*') ; this should give us two tplot variables (but sometimes more)
 fft_tvars=tnames(thx+'_fff_*')
 
-If(n_elements(fbk_tvars) Eq 1) Then fbk_tvars=[fbk_tvars,'filler']
+If(n_elements(fbk_tvars) Eq 1) Then fbk_tvars=['filler1','filler2']
 
 For i=0,n_elements(fbk_tvars)-1 Do Begin
   ;kluge to prevent missing data from crashing things

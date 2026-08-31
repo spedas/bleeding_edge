@@ -184,7 +184,10 @@ endif
 
 if keyword_set(directory) then dir=directory else dir='./'
 
-if keyword_set(device) then set_plot,device
+if keyword_set(device) then begin
+  set_plot,device
+  spd_graphics_config
+endif
 
 ;the dates after which spacecraft moments are considered valid
 if(probe eq 'a' && time_double(date) lt time_double('2007-08-02/:00:00')) then begin
@@ -267,7 +270,7 @@ endelse
 var_string += ' ' + fgs_name+'+t'
 
 ;need state data in GEI for cotrans
-thm_load_state,probe=probe,/get_support
+thm_load_state,probe=probe
 
 ;needs position in gsm for t89 modeling
 thm_load_state,probe=probe,coord='gsm',suffix='_gsm'
@@ -516,13 +519,18 @@ var_string += ' ' + pee_vel_name+'+t'
 ;     * Note: You must interpolate the B data on the V times before
 ;       multiplying, even though they are at the same cadence.
 
-if tnames('th'+probe+'_peim_velocity_gsm') && $
+pei_vel_name = 'th'+probe+'_peim_velocity'
+if tnames(pei_vel_name) && $
    tnames('th'+probe+'_fgs_gsm') then begin
+
+   thm_cotrans,pee_vel_name,out_c='gsm',out_suffix='_gsm'
+    
+   
 
    ;this clipping fixes an artifact where interpolation sometimes causes
    ;unreasonably large or small values if the velocity times preceed or
    ;exceed the fgm times.
-   time_clip,'th'+probe+'_peim_velocity_gsm','th'+probe+'_fgs_gsm','th'+probe+'_fgs_gsm',/tvar,newname='vel_clip'
+   time_clip,pee_vel_name+'_gsm','th'+probe+'_fgs_gsm','th'+probe+'_fgs_gsm',/tvar,newname='vel_clip'
 
    tinterpol_mxn,'th'+probe+'_fgs_gsm','vel_clip',newname='bvinterpol'
 
@@ -689,7 +697,7 @@ thm_set_lim,pei_vel_name+'+t',times[0],times[1],-1500D,1500D, 0
 
 thm_set_lim,pee_vel_name+'+t',times[0],times[1],-1500D,1500D, 0
 
-thm_set_lim,'pressure_vars',times[0],times[1],0D,50D,1
+thm_set_lim,'pressure_vars',times[0],times[1],0.0001D,50D,1
 
 ;Bottom tick marks:
 
@@ -733,7 +741,7 @@ if keyword_set(makepng) then begin
     thm_set_lim, 'Tieperpara', tr0[0], tr0[1], 0.1, 9999.0, 1
     thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
     thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
-    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0D, 50D, 1
+    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0.0001D, 50D, 1
     tplot, trange = tr0
     makepng, dir+'th'+probe+'_l2_moms_'+ymd+'_'+hshf, /no_expose
   Endfor
@@ -750,7 +758,7 @@ if keyword_set(makepng) then begin
     thm_set_lim, 'Tieperpara', tr0[0], tr0[1], 0.1, 9999.0, 1
     thm_set_lim, pei_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
     thm_set_lim, pee_vel_name+'+t', tr0[0], tr0[1], -1500D, 1500D, 0
-    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0D, 50D, 1
+    thm_set_lim, 'pressure_vars', tr0[0], tr0[1], 0.0001D, 50D, 1
     tplot, trange = tr0
     makepng, dir+'th'+probe+'_l2_moms_'+ymd+'_'+hshf, /no_expose
   Endfor

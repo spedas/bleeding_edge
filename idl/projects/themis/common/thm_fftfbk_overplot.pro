@@ -19,9 +19,9 @@
 ;          MAKEPNG: keyword to generate 5 png files
 ;          DIRECTORY: sets the directory where the above pngs are
 ;          placed (default is './')
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2012-01-26 16:41:44 -0800 (Thu, 26 Jan 2012) $
-; $LastChangedRevision: 9622 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-08-30 10:58:46 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34829 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fftfbk_overplot.pro $
 ;-
 Pro thm_fftfbk_overplot, date, device = device, dont_delete_data = dont_delete_data, $
@@ -37,7 +37,10 @@ Pro thm_fftfbk_overplot, date, device = device, dont_delete_data = dont_delete_d
     Return
   Endif
   If(keyword_set(directory)) Then dir = directory Else dir = './'
-  If(keyword_set(device)) Then set_plot, device
+  If(keyword_set(device)) Then begin
+    set_plot, device
+    spd_graphics_config
+  endif
 ;
   date2 = time_string(date)
   timespan, date2, 1
@@ -45,7 +48,7 @@ Pro thm_fftfbk_overplot, date, device = device, dont_delete_data = dont_delete_d
   month = string(strmid(date2, 5, 2))
   day = string(strmid(date2, 8, 2))
 ;Load data for all probes
-  thm_load_state, /get_support_data
+  thm_load_state
   thm_load_fbk
   thm_load_fft
 ;For each probe there should be 4 variables filled, 2 fbk and 2 fff,

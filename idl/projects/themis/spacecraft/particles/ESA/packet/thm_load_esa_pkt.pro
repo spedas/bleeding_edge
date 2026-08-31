@@ -121,9 +121,11 @@ for s=0,n_elements(probes)-1 do begin
 
 	thm_load_esa_cal
 
-  ;load support data for spinmodel  
-  thm_load_state, probe=sc, trange=trange, downloadonly=downloadonly, $
+  if (n_elements(use_eclipse_corrections) ne 0) && (use_eclipse_corrections gt 0) then begin
+    ;load support data for spinmodel  
+    thm_load_state, probe=sc, trange=trange, downloadonly=downloadonly, $
                   /get_support_data, suffix = support_suffix
+  endif
 
 	if not keyword_set(downloadonly) then begin
   	for j=0,ndt-1 do begin

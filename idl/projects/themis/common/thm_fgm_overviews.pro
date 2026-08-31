@@ -12,8 +12,8 @@
 ;       device(optional):switch to 'z' device for cron plotting
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-03-26 13:01:57 -0700 (Thu, 26 Mar 2026) $
-; $LastChangedRevision: 34293 $
+; $LastChangedDate: 2026-08-30 11:21:20 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34830 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fgm_overviews.pro $
 ;-
 
@@ -33,7 +33,10 @@ date2 = time_string(date)
 
 if keyword_set(directory) then dir=directory else dir='./'
 
-if keyword_set(device) then set_plot,device
+if keyword_set(device) then begin
+  set_plot,device
+  spd_graphics_config
+endif
 
 ;tplot_options,'lazy_ytitle',0  ; prevent auto formatting on ytitle (namely having carrage returns at underscores)
 
@@ -43,7 +46,6 @@ year=string(strmid(date2,0,4))
 month=string(strmid(date2,5,2))
 day=string(strmid(date2,8,2))
 
-thm_load_state,/get_sup
 
 var_string1 = ''
 var_string2 = ''
@@ -52,7 +54,40 @@ var_string2 = ''
 for i = 0L,n_elements(probe_list)-1L do begin
     sc = probe_list[i]
     sample_rate_var = thm_sample_rate_bar(date, 1, sc, /outline)
-;Use L1 data
+    ; Protect this call to thm_load_state.  In rare cases, it can fail even if there is L1 fgm data available
+    CATCH, err
+    IF err NE 0 THEN BEGIN
+        err_msg = !ERROR_STATE.MSG
+
+        ; Disable the handler before cleanup, avoiding recursive catches
+        CATCH, /CANCEL
+        MESSAGE, /RESET
+
+        PRINT, 'Skipping probe ' + sc + ': ' + err_msg
+
+        ; Create a NaN-filled variable for this probe's panels
+        
+        if ~is_string(tnames('th'+sc+'_fgl_gse')) then begin
+          store_data,'th'+sc+'_fgl_gse',data={x:time_double(date2)+findgen(2)*86400., y:[!VALUES.D_NAN,!VALUES.D_NAN]}
+        endif
+
+        if ~is_string(tnames('th'+sc+'_fgs_gse')) then begin
+          store_data,'th'+sc+'_fgs_gse',data={x:time_double(date2)+findgen(2)*86400., y:[!VALUES.D_NAN,!VALUES.D_NAN]}
+        endif
+        
+        var_string1 += 'th'+sc+'_fgs_gse '
+        var_string2 += ' sample_rate_'+sc + ' th'+sc+'_fgl_gse '
+
+        ; Skip the rest of this iteration and move on to the next probe.  All plotting happens after this loop completes.
+        CONTINUE
+    ENDIF
+
+    thm_load_state, probe=sc, /get_sup
+
+    ; The protected call succeeded, so remove this handler
+    CATCH, /CANCEL
+
+    ; Continue normally
     thm_load_fgm, probe = sc, coord = 'gse', suff = '_gse', level = 'l1'
     thm_load_fit, probe = sc, coord = 'gse', suff = '_gse', level = 'l1' ;level 1 is default    
     

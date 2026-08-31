@@ -13,14 +13,15 @@
 ;        directory(optional): the directory into which pngs will be
 ;        output (default: current working directory)
 ;
-; $LastChangedBy: aaflores $
-; $LastChangedDate: 2012-01-06 12:37:07 -0800 (Fri, 06 Jan 2012) $
-; $LastChangedRevision: 9507 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-08-30 11:22:08 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34831 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fgm_shell.pro $
 ;-
 pro thm_fgm_shell,date=date,reprocess = reprocess, test_reprocess = test_reprocess,directory=directory
 
 set_plot,'z'   ; set_plot now done in thm_over_shell.pro
+spd_graphics_config
 
 device, set_resolution = [850, 900]
 

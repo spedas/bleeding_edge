@@ -15,8 +15,8 @@
 ; thm_esa_overviews,'2007-03-23',dir='~/out',device='z'
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-30 12:57:11 -0700 (Sat, 30 Aug 2025) $
-; $LastChangedRevision: 33590 $
+; $LastChangedDate: 2026-08-30 10:57:52 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34828 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_esa_overviews.pro $
 ;-
 
@@ -43,7 +43,10 @@ trange = time_double(date)+[0.0d0, 24.0d0*3600.0d0]
 
 if keyword_set(directory) then dir=directory else dir='./'
 
-if keyword_set(device) then set_plot,device
+if keyword_set(device) then begin
+  set_plot,device
+  spd_graphics_config
+endif
 
 ;tplot_options,'lazy_ytitle',0  ; prevent auto formatting on ytitle (namely having carrage returns at underscores)
 
@@ -72,7 +75,33 @@ for i = 0L,n_elements(probe_list)-1L do begin
     index_esa_i = where('th'+sc+'_peif_en_eflux' eq tnames())
     if(index_esa_e[0] eq -1 Or index_esa_i[0] Eq -1) then begin
       thm_load_esa_pkt, probe = sc
+      
+      ; Protect this call to thm_load_esa_pot.  In rare cases, it can fail due to missing spin model data.
+      CATCH, err
+      IF err NE 0 THEN BEGIN
+        err_msg = !ERROR_STATE.MSG
+
+        ; Disable the handler before cleanup, avoiding recursive catches
+        CATCH, /CANCEL
+        MESSAGE, /RESET
+
+        PRINT, 'Skipping probe ' + sc + ': ' + err_msg
+
+        ; Optional cleanup of partially loaded data/resources goes here
+        ; Example:
+        ; DEL_DATA, 'th' + sc + '_some_partial_variable'
+
+        ;CONTINUE
+      ENDIF
+
       thm_load_esa_pot, probe = sc
+ 
+      ; The protected call succeeded, so remove this handler
+      CATCH, /CANCEL
+
+      ; Continue normally
+     
+      
       instr_all = ['peif', 'peir', 'peib', 'peef', 'peer', 'peeb']
       for j = 0, 5 do begin
         test_index = where('th'+sc+'_'+instr_all[j]+'_en_counts' eq tnames())

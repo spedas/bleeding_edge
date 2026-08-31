@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sun Aug 23 15:46:51 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Aug 31 03:16:53 2026.<P>
  
 <HR>
  
@@ -63,6 +63,8 @@ This page was created by the IDL library routine
 <br>Reads the thm_config file
 <LI><A HREF="#THM_ROI_BAR">THM_ROI_BAR</A>
 <br>creates the roi bar for overview plots
+<LI><A HREF="#THM_SAMPLE_RATE_BAR_HELPER">THM_SAMPLE_RATE_BAR_HELPER</A>
+<br>Expands rate start/end intervals into &quot;rate on&quot; flags with a fixed cadence for the 'on' periods
 <LI><A HREF="#THM_SAMPLE_RATE_BAR">THM_SAMPLE_RATE_BAR</A>
 <br>creates the sample rate bar for overview plots
 <LI><A HREF="#THM_SCPOT2DENS">THM_SCPOT2DENS</A>
@@ -321,8 +323,8 @@ Example:
  thm_esa_overviews,'2007-03-23',dir='~/out',device='z'
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2025-08-30 12:57:11 -0700 (Sat, 30 Aug 2025) $
- $LastChangedRevision: 33590 $
+ $LastChangedDate: 2026-08-30 10:57:52 -0700 (Sun, 30 Aug 2026) $
+ $LastChangedRevision: 34828 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_esa_overviews.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_esa_overviews.pro">projects/themis/common/thm_esa_overviews.pro</A>)</STRONG><P>
@@ -388,9 +390,9 @@ KEYWORDS:
           MAKEPNG: keyword to generate 5 png files
           DIRECTORY: sets the directory where the above pngs are
           placed (default is './')
- $LastChangedBy: aaflores $
- $LastChangedDate: 2012-01-26 16:41:44 -0800 (Thu, 26 Jan 2012) $
- $LastChangedRevision: 9622 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-08-30 10:58:46 -0700 (Sun, 30 Aug 2026) $
+ $LastChangedRevision: 34829 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fftfbk_overplot.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_fftfbk_overplot.pro">projects/themis/common/thm_fftfbk_overplot.pro</A>)</STRONG><P>
@@ -486,8 +488,8 @@ Arguments:
        device(optional):switch to 'z' device for cron plotting
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2026-03-26 13:01:57 -0700 (Thu, 26 Mar 2026) $
- $LastChangedRevision: 34293 $
+ $LastChangedDate: 2026-08-30 11:21:20 -0700 (Sun, 30 Aug 2026) $
+ $LastChangedRevision: 34830 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fgm_overviews.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_fgm_overviews.pro">projects/themis/common/thm_fgm_overviews.pro</A>)</STRONG><P>
@@ -513,9 +515,9 @@ Arguments:
         directory(optional): the directory into which pngs will be
         output (default: current working directory)
 
- $LastChangedBy: aaflores $
- $LastChangedDate: 2012-01-06 12:37:07 -0800 (Fri, 06 Jan 2012) $
- $LastChangedRevision: 9507 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-08-30 11:22:08 -0700 (Sun, 30 Aug 2026) $
+ $LastChangedRevision: 34831 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_fgm_shell.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_fgm_shell.pro">projects/themis/common/thm_fgm_shell.pro</A>)</STRONG><P>
@@ -875,8 +877,8 @@ HISTORY:
   This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 
 $LastChangedBy: jwl $
-$LastChangedDate: 2026-03-26 13:01:57 -0700 (Thu, 26 Mar 2026) $
-$LastChangedRevision: 34293 $
+$LastChangedDate: 2026-08-30 11:29:31 -0700 (Sun, 30 Aug 2026) $
+$LastChangedRevision: 34834 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_gen_overplot.pro">projects/themis/common/thm_gen_overplot.pro</A>)</STRONG><P>
@@ -1311,7 +1313,7 @@ HISTORY:
 <A NAME="THM_SAMPLE_RATE_BAR">
 <H2>THM_SAMPLE_RATE_BAR</H2></A>
 <A HREF="#THM_ROI_BAR">[Previous Routine]</A>
-<A HREF="#THM_SCPOT2DENS">[Next Routine]</A>
+<A HREF="#THM_SAMPLE_RATE_BAR_HELPER">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME:
@@ -1333,9 +1335,35 @@ OUTPUT:
      sccessful
 HISTORY:
  20-nov-2007, jmm, jimm@ssl.berkeley.edu
- $LastChangedBy: nikos $
- $LastChangedDate: 2016-02-17 10:47:06 -0800 (Wed, 17 Feb 2016) $
- $LastChangedRevision: 20029 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-08-30 22:37:14 -0700 (Sun, 30 Aug 2026) $
+ $LastChangedRevision: 34844 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sample_rate_bar.pro $
+</PRE><P>
+<STRONG>(See <A href="common/thm_sample_rate_bar.pro">projects/themis/common/thm_sample_rate_bar.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="THM_SAMPLE_RATE_BAR_HELPER">
+<H2>THM_SAMPLE_RATE_BAR_HELPER</H2></A>
+<A HREF="#THM_SAMPLE_RATE_BAR">[Previous Routine]</A>
+<A HREF="#THM_SCPOT2DENS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+NAME:
+ thm_sample_rate_bar_helper
+PURPOSE:
+ Expands rate start/end intervals into &quot;rate on&quot; flags with a fixed cadence for the 'on' periods
+CALLING SEQUENCE:
+ thm_sample_rate_bar_helper,in_name=in_name,out_name=out_name,dt=dt
+KEYWORDS:
+ in_name =  a tplot variable with scmode data
+ dt = time (in seconds) between points with sample rate &quot;on&quot;
+ out_name = name of the output tplot variable
+
+HISTORY:
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-08-30 22:37:14 -0700 (Sun, 30 Aug 2026) $
+ $LastChangedRevision: 34844 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sample_rate_bar.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_sample_rate_bar.pro">projects/themis/common/thm_sample_rate_bar.pro</A>)</STRONG><P>
@@ -1343,7 +1371,7 @@ HISTORY:
  
 <A NAME="THM_SCPOT2DENS">
 <H2>THM_SCPOT2DENS</H2></A>
-<A HREF="#THM_SAMPLE_RATE_BAR">[Previous Routine]</A>
+<A HREF="#THM_SAMPLE_RATE_BAR_HELPER">[Previous Routine]</A>
 <A HREF="#THM_SCPOT2DENS_OPT_N">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1542,8 +1570,8 @@ Example:
  thm_sst_overviews,'2007-03-23',dir='~/out',device='z'
 
  $LastChangedBy: jwl $
- $LastChangedDate: 2025-08-30 12:15:38 -0700 (Sat, 30 Aug 2025) $
- $LastChangedRevision: 33589 $
+ $LastChangedDate: 2026-08-30 11:34:32 -0700 (Sun, 30 Aug 2026) $
+ $LastChangedRevision: 34836 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_sst_overviews.pro $
 </PRE><P>
 <STRONG>(See <A href="common/thm_sst_overviews.pro">projects/themis/common/thm_sst_overviews.pro</A>)</STRONG><P>

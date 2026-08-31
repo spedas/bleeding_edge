@@ -67,8 +67,8 @@
 ; corresponding changes to the c_names constant
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2023-04-03 12:28:04 -0700 (Mon, 03 Apr 2023) $
-; $LastChangedRevision: 31701 $
+; $LastChangedDate: 2026-08-30 11:38:18 -0700 (Sun, 30 Aug 2026) $
+; $LastChangedRevision: 34838 $
 ; $URL $
 ;-
 
@@ -140,7 +140,13 @@ dt_temp = strsplit(dt,' ',/extract)
 ;support data must be loaded
 if keyword_set(coord) then begin
     tn_before = [tnames('*')]
-    thm_load_state, probe = probe, /get_support_data, suffix = '_state_temp', trange = trange  ;jmm, 2009-10-08
+    if (strlowcase(coord) eq 'ssl') then begin
+      ; We need the spin model for this case
+      thm_load_state, probe = probe, /get_support_data, suffix = '_state_temp', trange = trange  ;jmm, 2009-10-08
+    endif else begin
+      ; Avoid loading the spin model unnecessarily
+      thm_load_state, probe = probe, /get_support_data, /no_spin, suffix = '_state_temp', trange = trange  ;jmm, 2009-10-08
+    endelse
     tn_after = [tnames('*')]
 endif
 

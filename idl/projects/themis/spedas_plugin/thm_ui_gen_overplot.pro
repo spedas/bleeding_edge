@@ -21,9 +21,9 @@
 ;OUTPUT:
 ;  none
 ;  
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-03-16 21:14:08 -0700 (Wed, 16 Mar 2022) $
-;$LastChangedRevision: 30684 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-08-26 11:52:05 -0700 (Wed, 26 Aug 2026) $
+;$LastChangedRevision: 34812 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spedas_plugin/thm_ui_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -188,8 +188,8 @@ pro thm_ui_fix_overview_panels, state=state
 
   ; There should be 14 panels
   ; If not, then what follows might need modifications
-  if n_elements(panel) ne 14 then begin
-    dprint, dlevel = 1, 'Error: THEMIS overview plot does not contain 14 panel.'
+  if n_elements(panel) lt 12 then begin
+    dprint, dlevel = 1, 'Error: THEMIS overview plot contains '+str(n_elements(panel)) + ' panels, expected at least 12.'
     return
   endif
 
@@ -574,7 +574,7 @@ pro thm_ui_gen_overplot, gui_id = gui_id, $
       If(obj_valid(historywin)) Then historyWin->update, err_msg[j]
     Endfor
     Print, 'Error--See history'
-    ok = error_message('An unknown error occured while starting the THEMIS overview plot widget. ', $
+    ok = error_message('An unknown error occured while starting the THEMIS overview plot widget. \n'+ $
          'See console for details.', /noname, /center, title='Error in THEMIS overview plots')
     spd_gui_error, gui_id, historywin
     RETURN

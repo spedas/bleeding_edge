@@ -16,16 +16,17 @@
 ;HISTORY:
 ; 19-dec-2007, from Andreas Kieling
 ; 9-jan-2008, jmm, Added directory keyword
-;$LastChangedBy: jimm $
-;$LastChangedDate: 2019-08-05 13:41:02 -0700 (Mon, 05 Aug 2019) $
-;$LastChangedRevision: 27542 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-08-30 11:33:14 -0700 (Sun, 30 Aug 2026) $
+;$LastChangedRevision: 34835 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_memory_plots.pro $
 ;
 Pro thm_memory_plots, date = date, dur = dur, nopng = nopng, $
                       directory = directory, mode = mode, _extra = _extra
 
   del_data, '*'
-
+  set_plot,'z'
+  spd_graphics_config
   If(keyword_set(directory)) Then Begin
     dir = directory             ;slash check
     ll = strmid(dir, strlen(dir)-1, 1)
@@ -46,6 +47,19 @@ Pro thm_memory_plots, date = date, dur = dur, nopng = nopng, $
   thm_load_hsk, probe = 'd'
   thm_load_hsk, probe = 'e'
   
+  tnames_outer_survey = 'th'+['b','c']+'_hsk_issr_survey_raw'
+  tnames_inner_survey = 'th'+['a','d','e']+'_hsk_issr_survey_raw'
+  tnames_survey = 'th'+['a','b','c','d','e']+'_hsk_issr_survey_raw'
+  tnames_burst = 'th'+['a','b','c','d','e']+'_hsk_issr_burst_raw'
+  tnames_eng =  'th'+['a','b','c','d','e']+'_hsk_issr_eng_raw'
+
+  ylim, tnames_inner_survey, 0, 30000, 0
+  ylim, tnames_outer_survey, 0, 40000, 0
+  ylim, tnames_burst, 0, 25000, 0
+  ylim, tnames_eng, 0, 1000, 0
+
+  title = 'P5, P1, P2, P3, P4 (TH-A,B,C,D,E)'
+  
   probe_list = ['a','b','c','d','e']
   
   for i = 0,n_elements(probe_list)-1 do begin
@@ -60,27 +74,15 @@ Pro thm_memory_plots, date = date, dur = dur, nopng = nopng, $
     endif 
   endfor
 
-  tnames_outer_survey = 'th'+['b','c']+'_hsk_issr_survey_raw'
-  tnames_inner_survey = 'th'+['a','d','e']+'_hsk_issr_survey_raw'
-  tnames_survey = 'th'+['a','b','c','d','e']+'_hsk_issr_survey_raw'
-  tnames_burst = 'th'+['a','b','c','d','e']+'_hsk_issr_burst_raw'
-  tnames_eng =  'th'+['a','b','c','d','e']+'_hsk_issr_eng_raw'
-
-  ylim, tnames_inner_survey, 0, 30000, 0
-  ylim, tnames_outer_survey, 0, 40000, 0
-  ylim, tnames_burst, 0, 25000, 0
-  ylim, tnames_eng, 0, 1000, 0
-
-  title = 'P5, P1, P2, P3, P4 (TH-A,B,C,D,E)'
   If(not keyword_set(nopng)) Then Begin
     dur_str = strcompress(/remove_all, string(dur))
     date_str = time_string(time_double(date), /date_only)
     tplot,tnames_survey, title = title
-    makepng, dir+date_str+'-'+dur_str+'days-memory-survey'
+    makepng, dir+date_str+'-'+dur_str+'days-memory-survey',/no_expose
     tplot, tnames_burst, title = title
-    makepng, dir+date_str+'-'+dur_str+'days-memory-burst'
+    makepng, dir+date_str+'-'+dur_str+'days-memory-burst',/no_expose
     tplot, tnames_eng, title = title
-    makepng, dir+date_str+'-'+dur_str+'days-memory-eng'
+    makepng, dir+date_str+'-'+dur_str+'days-memory-eng',/no_expose
   Endif Else Begin
     If(keyword_set(mode)) Then Begin
       xmode = strcompress(strlowcase(mode), /remove_all)
