@@ -48,8 +48,8 @@
 ;       SUCCESS :   Returns 1 if there were no problems.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-08-04 13:32:40 -0700 (Mon, 04 Aug 2025) $
-; $LastChangedRevision: 33530 $
+; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+; $LastChangedRevision: 34858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_filter.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -81,8 +81,8 @@ pro mvn_sta_cio_filter, ptr, in_filter, list=list, success=ok
         print,tag[i],format='(2x,a6," : ",$)'
         value = (*filter).(indx[i])
         case tag[i] of
-          'time' : print,time_string(value),format='(2(a19,3x))'
-           else  : print, value, format='(2(f9.2))'
+          'time'     : print,time_string(value),format='(2(a19,3x))'
+           else      : print, value, format='(2(f9.2))'
         endcase
       endfor
 
@@ -180,7 +180,7 @@ pro mvn_sta_cio_filter, ptr, in_filter, list=list, success=ok
       tag = j[0]
 
       if (filter_tags[f_order[i]] eq 'time') then range = trange $
-       else range = filter.(f_order[i])
+        else range = filter.(f_order[i])
 
       if ((filter_tags[i] ne 'glon') and (filter_tags[i] ne 'slon') and $
           (filter_tags[i] ne 'bclk')) then begin

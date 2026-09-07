@@ -25,8 +25,10 @@
 ;                         'vel_x'  -> ion velocity X component
 ;                         'vel_y'  -> ion velocity Y component
 ;                         'vel_z'  -> ion velocity Z component
-;                         'energy' -> ion bulk kinetic energy
+;                         'energy' -> ion bulk kinetic energy (den_i * vbulk * vbulk)
 ;                         'VB_phi' -> angle between V and B
+;                         'sc_pot' -> spacecraft potential
+;                         'E_sta_tot' -> ion energy in STATIC frame
 ;
 ;           XVAR:       Parameter for the X variable.  Can be one of:
 ;
@@ -117,6 +119,9 @@
 ;                   filter settings.  Set this keyword to the IDL window
 ;                   number where you want the plot to appear (1 to 31).
 ;
+;       CAMPAIGN:   If time is provided as a filter tag, then convert the
+;                   time range to a campaign range.
+;
 ;       FILTER:     Set this flag to a structure defining a filter.  See
 ;                   mvn_sta_cio_filter for more information.  If not set,
 ;                   then no filter is applied, even if it is present in 
@@ -152,6 +157,12 @@
 ;                   an external monitor.  Use a smaller value for a laptop
 ;                   monitor.
 ;
+;       COLOR_TABLE:  Use this color table for all plots.
+;
+;       REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+;
+;       LINE_COLORS:  Use this for the line colors.
+;
 ;       EVEC:       Plot the convection electric field direction.
 ;                   Default = 1 (yes) if BCLK is among the data filters.
 ;
@@ -159,8 +170,8 @@
 ;                   for outputting a png plot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-04-07 15:27:02 -0700 (Mon, 07 Apr 2025) $
-; $LastChangedRevision: 33238 $
+; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+; $LastChangedRevision: 34858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_plot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -169,7 +180,10 @@
 pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
                       doplot=doplot, dosamp=dosamp, domom=domom, doall=doall, $
                       limits=ulimits, zlimits=zlimits, rlimits=rlimits, png=png, $
-                      wscale=wscale, evec=evec
+                      wscale=wscale, evec=evec, color_table=color_table, campaign=campaign, $
+                      reverse_color_table=reverse_color_table, line_colors=line_colors
+
+  common cio_com, cname, cstart, cstop
 
 ; Make sure inputs are reasonable
 
@@ -535,6 +549,33 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
                  zmax = 4.
                  zrange = [zmin,zmax]
                  zt = 4
+                 zm = 0
+                 zlog = 0
+               end
+    'SC_POT' : begin
+                 zlab = 'Spacecraft Potential'
+                 zmin = -20.
+                 zmax = 20.
+                 zrange = [zmin,zmax]
+                 zt = 4
+                 zm = 0
+                 zlog = 0
+               end
+    'E_STA_TOT' : begin
+                 zlab = 'Energy in STATIC Frame'
+                 zmin = 0.1
+                 zmax = 10000.
+                 zrange = [zmin,zmax]
+                 zt = 5
+                 zm = 0
+                 zlog = 1
+               end
+    'V_STA_AZ' : begin
+                 zlab = 'Azimuth in STATIC Frame'
+                 zmin = 0.
+                 zmax = 360.
+                 zrange = [zmin,zmax]
+                 zt = 6
                  zm = 0
                  zlog = 0
                end
@@ -1239,6 +1280,19 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
     endif
   endelse
 
+; Set color table and line colors
+
+  ctab = -1 & pct = -1 & crev = -1 & prev = -1 & lines = -1 & plines = -1
+  if (n_elements(color_table) gt 0) then begin
+    ctab = fix(color_table[0])
+    crev = keyword_set(reverse_color_table)
+    initct, ctab, previous_ct=pct, reverse=crev, previous_rev=prev
+  endif
+  if (n_elements(line_colors) gt 0) then begin
+    lines = line_colors
+    line_colors, lines, previous_lines=plines
+  endif
+
 ; Put up probability, sampling, and/or rms plots
 
   if keyword_set(doall) then begin
@@ -1652,6 +1706,23 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
       indx = where(tag ne 'f_indx', ntag)
       tag = tag[indx]
 
+      jndx = where(tag eq 'time', nj)
+      if (nj gt 0) then begin
+        value = (*(*ptr).filter).(jndx[0])
+        if keyword_set(campaign) then begin
+          i = min(where(value[0] ge cstart)) > 0
+          j = max(where(value[1] ge cstop)) > 0
+          msg = 'CAMPAIGNS ' + cname[i] + '-' + cname[j]
+          xyouts, x[0], y, msg, charsize=limits.charsize
+        endif else begin
+          xyouts, x[0], y, 'TIME RANGE', charsize=limits.charsize
+          y -= dy
+          msg = time_string(value[0],prec=-3) + " to " + time_string(value[1],prec=-3)
+          xyouts, x[0]+dx, y, msg, charsize=limits.charsize
+        endelse
+      endif else xyouts, x[0], y, 'CAMPAIGNS A-Q', charsize=limits.charsize, align=0
+      y -= (2.*dy)
+
       jndx = where(tag eq 'topo', nj)
       xyouts, x[0], y, 'TOPOLOGY', charsize=limits.charsize
       x += dx
@@ -1676,13 +1747,7 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
 
       for i=0,(ntag-1) do begin
         case tag[i] of
-          'time' : begin
-                     xyouts, x[0], y, tag[i], charsize=limits.charsize
-                     value = (*(*ptr).filter).(indx[i])
-                     xyouts, x[1], y, time_string(value[0]), charsize=limits.charsize, align=1
-                     xyouts, x[2], y, time_string(value[1]), charsize=limits.charsize, align=1
-                     y -= dy
-                   end
+          'time' : ; do nothing here (see above)
           'topo' : ; do nothing here (see above)
            else  : begin
                      xyouts, x[0], y, tag[i], charsize=limits.charsize
@@ -1740,6 +1805,8 @@ pro mvn_sta_cio_plot, ptr, data=data, dst=dst, options=options, filter=filter, $
   endif
 
   !p.multi = 0
+  if ((ctab ne pct) or (crev ne prev)) then initct, pct, reverse=prev
+  if (max(abs(lines - plines)) gt 0) then line_colors, plines
 
   return
 

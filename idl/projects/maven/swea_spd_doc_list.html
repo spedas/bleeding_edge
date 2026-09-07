@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 31 03:16:53 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Sep  5 03:16:15 2026.<P>
  
 <HR>
  
@@ -960,8 +960,8 @@ KEYWORDS:
        SUCCESS :   Returns 1 if there were no problems.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-08-04 13:32:40 -0700 (Mon, 04 Aug 2025) $
- $LastChangedRevision: 33530 $
+ $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+ $LastChangedRevision: 34858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_filter.pro $
 
 CREATED BY:	David L. Mitchell
@@ -987,7 +987,7 @@ INPUTS:
 
 KEYWORDS:
 
-    FROOT  : File root for save file (e.g., 'cio_ABCD_').
+    FROOT  : File root for save file (default = 'cio_AtoQ_').
 
      TAGS  : A named variable to hold a string array of the names
              of the data structure tags.
@@ -995,8 +995,8 @@ KEYWORDS:
      NPTS  : A named variable to hold the number of data points.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-11-09 11:42:13 -0800 (Fri, 09 Nov 2018) $
- $LastChangedRevision: 26099 $
+ $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+ $LastChangedRevision: 34858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1037,8 +1037,10 @@ KEYWORDS:
                          'vel_x'  -&gt; ion velocity X component
                          'vel_y'  -&gt; ion velocity Y component
                          'vel_z'  -&gt; ion velocity Z component
-                         'energy' -&gt; ion bulk kinetic energy
+                         'energy' -&gt; ion bulk kinetic energy (den_i * vbulk * vbulk)
                          'VB_phi' -&gt; angle between V and B
+                         'sc_pot' -&gt; spacecraft potential
+                         'E_sta_tot' -&gt; ion energy in STATIC frame
 
            XVAR:       Parameter for the X variable.  Can be one of:
 
@@ -1129,6 +1131,9 @@ KEYWORDS:
                    filter settings.  Set this keyword to the IDL window
                    number where you want the plot to appear (1 to 31).
 
+       CAMPAIGN:   If time is provided as a filter tag, then convert the
+                   time range to a campaign range.
+
        FILTER:     Set this flag to a structure defining a filter.  See
                    mvn_sta_cio_filter for more information.  If not set,
                    then no filter is applied, even if it is present in 
@@ -1164,6 +1169,12 @@ KEYWORDS:
                    an external monitor.  Use a smaller value for a laptop
                    monitor.
 
+       COLOR_TABLE:  Use this color table for all plots.
+
+       REVERSE_COLOR_TABLE:  Reverse the color table (except for fixed colors).
+
+       LINE_COLORS:  Use this for the line colors.
+
        EVEC:       Plot the convection electric field direction.
                    Default = 1 (yes) if BCLK is among the data filters.
 
@@ -1171,8 +1182,8 @@ KEYWORDS:
                    for outputting a png plot.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-04-07 15:27:02 -0700 (Mon, 07 Apr 2025) $
- $LastChangedRevision: 33238 $
+ $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+ $LastChangedRevision: 34858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_plot.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1215,8 +1226,8 @@ KEYWORDS:
        SUCCESS:       Success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-02-24 18:34:27 -0800 (Tue, 24 Feb 2026) $
- $LastChangedRevision: 34191 $
+ $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+ $LastChangedRevision: 34858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1307,18 +1318,28 @@ KEYWORDS:
 
        ALLSTAT:    Include skewness and kurtosis in legend.
 
+                     skewness: = 0 -&gt; distribution is symmetric about the maximum
+                               &lt; 0 -&gt; distribution is skewed to the left
+                               &gt; 0 -&gt; distribution is skewed to the right
+
+                     kurtosis: = 0 -&gt; distribution is peaked like a Gaussian
+                               &lt; 0 -&gt; distribution is less peaked than a Gaussian
+                               &gt; 0 -&gt; distribution is more peaked than a Gaussian
+
        CONSTANT:   Plot a vertical dashed line at this position.
                    Sets NOLINES = 1.
 
        CLABEL:     Labels across the top for each element of CONSTANT.
+
+       CCOLOR:     Color(s) for constant lines.
 
        NOLINES:    Do not plot lines for mean and median.
 
        This routine also passes keywords to PLOT.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
- $LastChangedRevision: 34039 $
+ $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+ $LastChangedRevision: 34858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1373,8 +1394,8 @@ KEYWORDS:
        PANS:          Tplot panel names created when DOPLOT is set.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-02-02 13:44:20 -0800 (Mon, 02 Feb 2026) $
- $LastChangedRevision: 34106 $
+ $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+ $LastChangedRevision: 34858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1511,8 +1532,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-03-20 08:45:34 -0700 (Fri, 20 Mar 2026) $
- $LastChangedRevision: 34282 $
+ $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+ $LastChangedRevision: 34858 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell
@@ -6487,8 +6508,8 @@ KEYWORDS:
        TPLOT:        Create a tplot variable.  (Only works for SPEC data.)
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-01-03 12:14:09 -0800 (Fri, 03 Jan 2025) $
- $LastChangedRevision: 33040 $
+ $LastChangedDate: 2026-09-04 10:30:15 -0700 (Fri, 04 Sep 2026) $
+ $LastChangedRevision: 34872 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_secondary.pro $
 
 CREATED BY:	David L. Mitchell

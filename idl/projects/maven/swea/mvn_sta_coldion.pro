@@ -87,8 +87,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-03-20 08:45:34 -0700 (Fri, 20 Mar 2026) $
-; $LastChangedRevision: 34282 $
+; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+; $LastChangedRevision: 34858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -688,6 +688,17 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
         endfor
         print,''
 
+; Filter out bad velocity moments (bulk velocity exactly zero in s/c frame)
+
+        delta_v = total(abs(v_bulk.vel - v_bulk.v_sc), 1)
+        indx = where(delta_v lt 1d-5, count)
+        if (count gt 0L) then begin
+          v_bulk[indx].vel = !values.f_nan
+          v_bulk[indx].vbulk = !values.f_nan
+        endif
+
+; Store result in output structure
+
         case (i) of
           0 : begin
                 result_h.v_sc   = v_bulk.v_sc
@@ -738,6 +749,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
                 result_o2.valid  = v_bulk.valid
               end
         endcase
+
+; Make tplot variable
 
         y = fltarr(npts,4)
         y[*,0:2] = transpose(v_bulk.vel)

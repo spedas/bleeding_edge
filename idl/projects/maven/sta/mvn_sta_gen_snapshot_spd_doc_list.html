@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Aug 31 03:16:53 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Sep  5 03:16:15 2026.<P>
  
 <HR>
  
@@ -20,14 +20,14 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/maven/sta/mvn_sta_gen_snapshot</H1>
 <LI><A HREF="#MVN_STA_3D_SNAP">MVN_STA_3D_SNAP</A>
+<LI><A HREF="#MVN_STA_D0_SNAP">MVN_STA_D0_SNAP</A>
+<br>Creates/refreshes tplot variables of the deflector coverage for O+
 <LI><A HREF="#MVN_STA_ENEPA2VV">MVN_STA_ENEPA2VV</A>
 <LI><A HREF="#MVN_STA_MSNAP">MVN_STA_MSNAP</A>
 <br>Plots mass/energy snapshots of STATIC c6 data.  Wrapper for mvn_sta_get('c6')
 <LI><A HREF="#MVN_STA_SLICE2D_SNAP">MVN_STA_SLICE2D_SNAP</A>
 <LI><A HREF="#MVN_STA_VSNAP">MVN_STA_VSNAP</A>
 <br>Wrapper for mvn_sta_slice2d_snap that provides improved interactive use.
-<LI><A HREF="#STA_FOV_SNAP">STA_FOV_SNAP</A>
-<br>Creates/refreshes tplot variables of the deflector coverage for O+
 <br>
 </UL><P>
 <HR>
@@ -35,7 +35,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="MVN_STA_3D_SNAP">
 <H2>MVN_STA_3D_SNAP</H2></A>
-<A HREF="#MVN_STA_ENEPA2VV">[Next Routine]</A>
+<A HREF="#MVN_STA_D0_SNAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 
@@ -148,9 +148,137 @@ CREATED BY:      Takuya Hara on  2015-02-11.
 <STRONG>(See <A href="mvn_sta_gen_snapshot/mvn_sta_3d_snap.pro">projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_3d_snap.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_STA_D0_SNAP">
+<H2>MVN_STA_D0_SNAP</H2></A>
+<A HREF="#MVN_STA_3D_SNAP">[Previous Routine]</A>
+<A HREF="#MVN_STA_ENEPA2VV">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_sta_d0_snap
+PURPOSE:
+  Creates/refreshes tplot variables of the deflector coverage for O+ 
+  and O2+ from STATIC d0/d1 data.  Also creates tplot variables with 
+  two metrics for evaluating whether the O+ and O2+ distributions are 
+  &quot;mostly&quot; in the field of view:
+
+     Metric 1: ratio of the peak counts in the two equatorial
+               deflection bins to the counts in the adjacent
+               polar bin (isotropic = 1)
+
+     Metric 2: ratio of the total counts in the two equatorial
+               bins to the total counts in all deflection bins
+               (isotropic = 0.5)
+
+     Just An Idea: create a metric that uses the distribution of
+               counts in azimuth to estimate how much signal is
+               missing outside the deflection range -- assumes the
+               distributions of counts in azimuth and elevation are
+               not too different
+
+  Once the above tplot variables are created, shows the measured 
+  distribution of counts for O+ or O2+ as a function of azimuth and 
+  elevation at times selected by the cursor.  A plot of the deflector 
+  distribution (integrated over azimuth) is also shown as a line plot 
+  with the value of the above FOV metric.
+
+  Unless keyword SUM is set, you can hold down the left mouse button 
+  and drag for a movie effect.  Click the right mouse button at any 
+  time to exit.
+
+USAGE:
+  mvn_sta_d0_snap
+
+INPUTS:
+
+KEYWORDS:
+       NAVG:     Number of times to average centered on the selected time.
+                 This is forced to be an odd number, less than or equal to
+                 the value provided.  Default = 1 (no averaging).
+
+       SUM:      Average all times between two selected times.
+
+       APID:     APID to use: 'd0' or 'd1'.  Default = 'd0'.
+
+       MASS:     Integer specifying which mass bin to make snapshots for:
+
+                           bin     mass/charge        species
+                         -------------------------------------------
+                            0         1.04            H+
+                            1         2.13            He++, H2+
+                            2         4.49
+                            3         9.10
+                            4        16.89            O+
+                 default -&gt; 5        31.44            O2+
+                            6        45.73            CO2+
+                            7        74.84
+
+                 You can choose only one mass bin for this.
+
+       TMASS:    Integer array specifying which mass bins to make deflector
+                 FOV tplot panels for.  You can make up to eight panels.
+                 If available, the Sun and magnetic field directions will be
+                 overplotted onto the fov spectrogram.  Default = [4,5].
+
+       ERANGE:   Energy range (eV) for testing the field of view.  Applies to
+                 both the tplot panels and the snapshots.  Default = [0,1000].
+
+       KEEP:     Do not close the snapshot windows on exit.
+
+       LASTCUT:  Named variable to hold data for the last snapshots.  Use this
+                 to make your own fancy plots for a publication.
+
+       TMARK:    On the time series window, mark the currently selected time or
+                 time interval with transient timebar(s).
+
+       REFRESH:  Refresh the FOV common block and FOV tplot panels.  Use this 
+                 when you change between 'd0' and 'd1', change ERANGE, or when
+                 you load data for a new date.
+
+       SHOWDIR:  Show the directions and anti-directions of the Sun and the 
+                 magnetic field in the deflector tplot panels and the az-el 
+                 snapshots.  Default = 1 (yes).
+
+       SHOWMASS: Show the mass distribution in a separate window.  Default = 1.
+
+       MINCOUNTS: Minimum number of counts/deflection bin to calculate metrics.
+                  Use this to mask values with poor statistics.  Default = 3.
+
+       BKG:      If set, subtract background counts.  This requires v3 L2 data
+                 or v2 L2 data with the IV_LEVEL keyword set.  Otherwise, it
+                 will have no effect.  Default = 1 (yes).
+
+       Passes many keywords to WIN (e.g. MONITOR, DX, DY, etc.).  If WIN is
+       enabled (win, /config), then by default the snapshot window will be 
+       placed in the secondary monitor.
+
+       Passes many keywords to PLOT (e.g., XSIZE, YTITLE, etc.).  If not set,
+       TITLE becomes the time or time range of the snapshot.
+
+       KEY:      Alternate method for setting keywords.  Structure containing
+                 keyword(s) for this routine, plus many keywords for WIN and
+                 PLOT.  Unrecognized or ambiguous keywords are ignored, but 
+                 they will generate error messages.
+
+                      {KEYWORD: value, KEYWORD: value, ...}
+
+                 This allows you to gather keywords into a single structure and
+                 use them multiple times without a lot of typing.  In case of 
+                 conflict, keywords set explicitly take precedence over KEY.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-09-04 18:54:59 -0700 (Fri, 04 Sep 2026) $
+ $LastChangedRevision: 34874 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_d0_snap.pro $
+
+BASED ON:      tsnap.pro
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="mvn_sta_gen_snapshot/mvn_sta_d0_snap.pro">projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_d0_snap.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_STA_ENEPA2VV">
 <H2>MVN_STA_ENEPA2VV</H2></A>
-<A HREF="#MVN_STA_3D_SNAP">[Previous Routine]</A>
+<A HREF="#MVN_STA_D0_SNAP">[Previous Routine]</A>
 <A HREF="#MVN_STA_MSNAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -411,7 +539,6 @@ LAST MODIFICATION:
 <A NAME="MVN_STA_VSNAP">
 <H2>MVN_STA_VSNAP</H2></A>
 <A HREF="#MVN_STA_SLICE2D_SNAP">[Previous Routine]</A>
-<A HREF="#STA_FOV_SNAP">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mvn_sta_vsnap
@@ -461,110 +588,5 @@ KEYWORDS:
 CREATED BY:    David L. Mitchell
 </PRE><P>
 <STRONG>(See <A href="mvn_sta_gen_snapshot/mvn_sta_vsnap.pro">projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_vsnap.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="STA_FOV_SNAP">
-<H2>STA_FOV_SNAP</H2></A>
-<A HREF="#MVN_STA_VSNAP">[Previous Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-PROCEDURE:   sta_fov_snap
-PURPOSE:
-  Creates/refreshes tplot variables of the deflector coverage for O+ 
-  and O2+ from STATIC d0/d1 data.  Also creates tplot variables with 
-  two metrics for evaluating whether the O+ and O2+ distributions are 
-  &quot;mostly&quot; in the field of view:
-
-     Metric 1: ratio of the peak counts in the two equatorial
-               deflection bins to the counts in the adjacent
-               polar bin (isotropic = 1)
-
-     Metric 2: ratio of the total counts in the two equatorial
-               bins to the total counts in all deflection bins
-               (isotropic = 0.5)
-
-     Just An Idea: create a metric that uses the distribution of
-               counts in azimuth to estimate how much signal is
-               missing outside the deflection range -- assumes the
-               distributions of counts in azimuth and elevation are
-               not too different
-
-  Once the above tplot variables are created, shows the measured 
-  distribution of counts for O+ or O2+ as a function of azimuth and 
-  elevation at times selected by the cursor.  A plot of the deflector 
-  distribution (integrated over azimuth) is also shown as a line plot 
-  with the value of the above FOV metric.
-
-  Unless keyword SUM is set, you can hold down the left mouse button 
-  and drag for a movie effect.  Click the right mouse button at any time
-  to exit.
-
-USAGE:
-  sta_fov_snap
-
-INPUTS:
-
-KEYWORDS:
-       NAVG:     Number of times to average centered on the selected time.
-                 This is forced to be an odd number, less than or equal to
-                 the value provided.  Default = 1 (no averaging).
-
-       SUM:      Average all times between two selected times.
-
-       APID:     APID to use: 'd0' or 'd1'.  Default = 'd0'.
-
-       SPECIES:  Integer specifying which species to make tplot panels and
-                 snapshots for:
-                   1 = O+
-                   2 = O2+  (default)
-
-       ERANGE:   Energy range (eV) for testing the field of view.  Default
-                 is [0,1000].
-
-       KEEP:     Do not close the snapshot window on exit.
-
-       LASTCUT:  Named variable to hold data for the last snapshots.  Use this
-                 to make your own fancy plots for a publication.
-
-       TMARK:    On the time series window, mark the currently selected time or
-                 time interval with transient timebar(s).
-
-       REFRESH:  Refresh the fov common block.  Use this when changing between
-                 'd0' and 'd1', or when you load data for a new date.
-
-       SHOWDIR:  Show the directions and anti-directions of the Sun and the 
-                 magnetic field in the deflector tplot panels and the az-el 
-                 snapshots.  Default = 1 (yes).
-
-       MINCOUNTS: Minimum number of counts/deflection bin to calculate metrics.
-                  Use this to mask values with poor statistics.  Default = 3.
-
-       Passes many keywords to WIN (e.g. MONITOR, DX, DY, etc.).  If WIN is
-       enabled (win, /config), then by default the snapshot window will be 
-       placed in the secondary monitor.
-
-       Passes many keywords to PLOT (e.g., XSIZE, YTITLE, etc.).  If not set,
-       TITLE becomes the time or time range of the snapshot.
-
-       KEY:      Alternate method for setting keywords.  Structure containing
-                 keyword(s) for this routine, plus many keywords for WIN and
-                 PLOT.  Unrecognized or ambiguous keywords are ignored, but 
-                 they will generate error messages.
-
-                      {KEYWORD: value, KEYWORD: value, ...}
-
-                 This allows you to gather keywords into a single structure and
-                 use them multiple times without a lot of typing.  In case of 
-                 conflict, keywords set explicitly take precedence over KEY.
-
- $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-08-28 08:42:23 -0700 (Fri, 28 Aug 2026) $
- $LastChangedRevision: 34823 $
- $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/sta_fov_snap.pro $
-
-BASED ON:      tsnap.pro
-CREATED BY:    David L. Mitchell
-</PRE><P>
-<STRONG>(See <A href="mvn_sta_gen_snapshot/sta_fov_snap.pro">projects/maven/sta/mvn_sta_gen_snapshot/sta_fov_snap.pro</A>)</STRONG><P>
 <HR>
  

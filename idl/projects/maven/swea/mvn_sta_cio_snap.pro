@@ -23,18 +23,28 @@
 ;
 ;       ALLSTAT:    Include skewness and kurtosis in legend.
 ;
+;                     skewness: = 0 -> distribution is symmetric about the maximum
+;                               < 0 -> distribution is skewed to the left
+;                               > 0 -> distribution is skewed to the right
+;
+;                     kurtosis: = 0 -> distribution is peaked like a Gaussian
+;                               < 0 -> distribution is less peaked than a Gaussian
+;                               > 0 -> distribution is more peaked than a Gaussian
+;
 ;       CONSTANT:   Plot a vertical dashed line at this position.
 ;                   Sets NOLINES = 1.
 ;
 ;       CLABEL:     Labels across the top for each element of CONSTANT.
+;
+;       CCOLOR:     Color(s) for constant lines.
 ;
 ;       NOLINES:    Do not plot lines for mean and median.
 ;
 ;       This routine also passes keywords to PLOT.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-20 10:15:19 -0800 (Tue, 20 Jan 2026) $
-; $LastChangedRevision: 34039 $
+; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+; $LastChangedRevision: 34858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -42,7 +52,9 @@
 ;-
 pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, lpos=lpos, $
                       allstat=allstat, nostat=nostat, constant=constant, nolines=nolines, $
-                      clabel=clabel, _extra=extra
+                      clabel=clabel, ccolor=ccolor, _extra=extra
+
+  common cio_com, cname, cstart, cstop
 
   result = 0
   str_element, data, 'x', success=ok
@@ -62,6 +74,11 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
   if (size(clabel,/type) eq 7) then begin
     maxlab = n_elements(clabel) - 1
     label[0:(maxlab < maxcst)] = clabel[0:(maxlab < maxcst)]
+  endif
+  color = replicate(0,(maxcst+1) > 1)
+  if (n_elements(ccolor) gt 0) then begin
+    maxcol = n_elements(ccolor) - 1
+    color[0:(maxlab < maxcst)] = ccolor[0:(maxlab < maxcst)]
   endif
   if not keyword_set(nbins) then nbins = 30
   str_element, data, 'z', success=pmode
@@ -136,8 +153,8 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
       for k=0,maxcst do begin
         x = [constant[k], constant[k]]
         y = [0., htop]
-        oplot, x, y, linestyle=2
-        xyouts, constant[k], htop*1.02, clabel[k], align=0.5, charsize=1.4
+        oplot, x, y, linestyle=2, color=color[k]
+        xyouts, constant[k], htop*1.02, label[k], align=0.5, charsize=1.4
       endfor
 
       mx = lpos[0]

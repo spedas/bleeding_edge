@@ -44,8 +44,8 @@
 ;  This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-08-30 11:29:31 -0700 (Sun, 30 Aug 2026) $
-;$LastChangedRevision: 34834 $
+;$LastChangedDate: 2026-09-02 16:45:53 -0700 (Wed, 02 Sep 2026) $
+;$LastChangedRevision: 34868 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -266,7 +266,7 @@ if (index_fit[0] eq -1 or index_state[0] eq -1) then begin
 endif else begin
 ;for recent FGS data, if there is an estimated Bz, put the Bz curve
 ;behind Bx and By. jmm, 2024-12-12
-  If(sc[0] Eq 'e' And time_double(date) Ge time_double('2024-05-25')) Then Begin
+  If(sc[0] Eq 'e' && fgm_bad_bz(probe=sc[0],date=date)) Then Begin
      ; this is the varname that will be added to the list of vars to plot
      fgs_varname=thx+'_fgs'
      options, fgs_varname, 'indices', [2,0,1]
@@ -277,11 +277,33 @@ endif else begin
         store_data, fgs_varname, data = btmp
      Endif
      options, fgs_varname, 'ytitle', 'B FIT!CDSL!C[nT]'
-     options, fgs_varname, 'labels', ['Bx', 'By', 'Bz']
+     options, fgs_varname, 'labels', ['Bx', 'By', 'Bz_est']
      options, fgs_varname, 'labflag', 1
      options, fgs_varname, 'colors', [2, 4, 6]
 
-  Endif else begin
+  Endif else $
+  If(sc[0] Eq 'a' && fgm_bad_bz(probe=sc[0],date=date)) then Begin
+     ; this is the varname that will be added to the list of vars to plot
+     fgs_varname=thx+'_fgs'
+     options, fgs_varname, 'indices', [2,0,1]
+     if fgm_sensor_off(probe=sc[0], date=date) then begin
+       ; Set all components to NaN
+       get_data, fgs_varname, data = btmp
+       btmp.y[*, *] = !values.f_nan
+       store_data, fgs_varname, data = btmp
+     endif
+     options, fgs_varname, 'indices', [2,0,1]
+;check for l1b data, if there is none yet, set Bz to NaN 
+     If(~is_string(thm_l1b_check(date, sc[0]))) Then Begin
+        get_data, fgs_varname, data = btmp
+        btmp.y[*, 2] = !values.f_nan
+        store_data, fgs_varname, data = btmp
+     Endif
+     options, fgs_varname, 'ytitle', 'B FIT!CDSL!C[nT]'
+     options, fgs_varname, 'labels', ['Bx', 'By', 'Bz_est']
+     options, fgs_varname, 'labflag', 1
+     options, fgs_varname, 'colors', [2, 4, 6]
+   endif else begin
    ; other probes and times: use cotrans to gse
    thm_cotrans,thx+'_fgs',out_suf='_gse', in_c='dsl', out_c='gse'
    options, fgs_varname, 'ytitle', 'B FIT!CGSE!C[nT]'

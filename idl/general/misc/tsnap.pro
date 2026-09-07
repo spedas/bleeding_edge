@@ -49,6 +49,9 @@
 ;       ERR:    If the tplot variable has a DY tag, then plot error bars for
 ;               each point.  Propagate uncertainties when NAVG or SUM is set.
 ;
+;       TMARK:  On the time series window, mark the currently selected time or
+;               time interval with transient timebar(s).
+;
 ;       Passes many keywords to WIN (e.g. MONITOR, DX, DY, etc.).  If WIN is
 ;       enabled (win, /config), then by default the snapshot window will be 
 ;       placed in the secondary monitor.
@@ -70,13 +73,14 @@
 ;       LASTCUT:  Named variable to hold data for the last plot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-05-25 09:50:47 -0700 (Sun, 25 May 2025) $
-; $LastChangedRevision: 33334 $
+; $LastChangedDate: 2026-09-04 12:17:05 -0700 (Fri, 04 Sep 2026) $
+; $LastChangedRevision: 34873 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tsnap.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, key=key, lastcut=lastcut, $
+pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, key=key, $
+                tmark=tmark, lastcut=lastcut, $
 
               ; WIN
                 monitor=monitor, secondary=secondary, xsize=xsize, ysize=ysize, dx=dx, dy=dy, $
@@ -96,7 +100,7 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
 
   if (size(key,/type) eq 8) then begin
     ktag = tag_names(key)
-    tlist = ['NAVG','SUM','XSMO','KEEP','DERIV','ERR','LASTCUT', $
+    tlist = ['NAVG','SUM','XSMO','KEEP','DERIV','ERR','LASTCUT','TMARK', $
              'MONITOR','SECONDARY','XSIZE','YSIZE','DX','DY','CORNER','CENTER','XCENTER','YCENTER', $
              'NORM','XPOS','YPOS','FULL','XFULL','YFULL', $
              'TITLE','XTITLE','YTITLE','XLOG','YLOG','XRANGE','YRANGE','XSTYLE','YSTYLE','LINESTYLE', $
@@ -122,6 +126,7 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
   if (n_elements(navg) gt 0) then k = (round(navg[0]) - 1)/2 > 0 else k = 0
   npts = keyword_set(sum) ? 2 : 1
   keep = keyword_set(keep)
+  tmark = keyword_set(tmark)
   xsmo = (n_elements(xsmo) gt 0) ? fix(xsmo[0]) > 1 : 1
   if (size(deriv,/type) eq 0) then deriv = 0 else deriv = fix(deriv[0]) < 2 > 0
   dx = (n_elements(dx) gt 0) ? fix(dx[0]) : 10
@@ -233,9 +238,12 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
       y = reform(dat.y[imin:imax,*])
       if (err) then dy = reform(dat.dy[imin:imax,*])
     endif else begin
-      y = reform(dat.y[min(i):max(i),*])
-      if (err) then dy = reform(dat.dy[min(i):max(i),*])
+      imin = min(i, max=imax)
+      y = reform(dat.y[imin:imax,*])
+      if (err) then dy = reform(dat.dy[imin:imax,*])
     endelse
+
+    if (tmark) then timebar, [dat.x[imin], dat.x[imax]], /line, /transient
 
     if ((size(y))[0] eq 2) then begin
       nrm = y
@@ -283,9 +291,11 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
       if (err) then str_element, lastcut, 'dy', dy, /add_replace
     wset, Twin
 
-    ctime,t,npoints=npts,/silent
+    ctime,tnext,npoints=npts,/silent
     if (npts eq 2) then cursor,cx,cy,/norm,/up  ; make sure mouse button is released
-    if (size(t,/type) eq 2) then keepgoing = 0
+    if (size(tnext,/type) eq 2) then keepgoing = 0
+    if (tmark) then timebar, [dat.x[imin],dat.x[imax]], /line, /transient
+    t = tnext
   endwhile
 
   if (~keep) then wdelete,Swin

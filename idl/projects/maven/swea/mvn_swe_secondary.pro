@@ -81,8 +81,8 @@
 ;       TPLOT:        Create a tplot variable.  (Only works for SPEC data.)
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-01-03 12:14:09 -0800 (Fri, 03 Jan 2025) $
-; $LastChangedRevision: 33040 $
+; $LastChangedDate: 2026-09-04 10:30:15 -0700 (Fri, 04 Sep 2026) $
+; $LastChangedRevision: 34872 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_secondary.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -159,7 +159,7 @@ pro mvn_swe_secondary, data, config=config, param=param, default=default, tplot=
 
   data.bkg = 0.
   data.valid = 1B
-  endx = where(energy lt 100.)
+  endx = where(energy[*,0] lt 100.)           ; energy not a function of angle
 
   for i=0L,(npts-1L) do begin
     for j=0L,(nbins-1L) do begin

@@ -1,6 +1,6 @@
 ;$LastChangedBy: ali $
-;$LastChangedDate: 2026-07-28 16:58:58 -0700 (Tue, 28 Jul 2026) $
-;$LastChangedRevision: 34682 $
+;$LastChangedDate: 2026-09-03 11:46:10 -0700 (Thu, 03 Sep 2026) $
+;$LastChangedRevision: 34870 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_aws_nc2sav_makefile.pro $
 
 pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,daily=daily,force_make=force_make,$
@@ -12,7 +12,8 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
   if ~keyword_set(station) then station='WCD'
   if ~keyword_set(res) then res='' else res='_'+res
   ;filepath='preplt/SWFO-L1/l0/SWFO'+station+'/YYYY/mth/YYYYMMDD/' ;old directory
-  filepath='SWFO-L1/l0/SWFO'+station+'/YYYY/mth/YYYYMMDD/' ;combines preplt and ops
+  filepath0='SWFO-L1/l0/SWFO'+station+'/YYYY/mth/YYYYMMDD/' ;combines preplt and ops
+  filepath='GCCS/SOLAR-1/L0/SWFO'+station+'/swfo-archive-sl1/YYYY/DOY/' ;gccs
   filename='OR_SWFO'+station+'-L0_SL1_sYYYYDOYhh*.nc'
 
   source={remote_data_dir:'http://sprg.ssl.berkeley.edu/data/' $
@@ -49,7 +50,7 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
     nd=t1-t0
     for day=0,nd-1 do begin
       tr=(t0+day+[0,1])*daysec
-      sav_file=file_retrieve(_extra=source,sav_path+'daily/'+filepath.substring(0,-10)+filename.substring(0,-10)+'MMDD'+res+'.sav',tr=tr,valid=keyword_set(load_sav))
+      sav_file=file_retrieve(_extra=source,sav_path+'daily/'+filepath0.substring(0,-10)+filename.substring(0,-10)+'MMDD'+res+'.sav',tr=tr,valid=keyword_set(load_sav))
       if keyword_set(make_sav) then begin
         sav_files=file_retrieve(_extra=source,sav_path+filepath+filename+'.sav',trange=tr,resolution=3600,/valid,verbose=1)
         if ~keyword_set(force_make) then if max((file_info(sav_files)).mtime) le (file_info(sav_file.substring(0,-5)+'_30min.sav')).mtime then continue
@@ -77,7 +78,8 @@ pro swfo_aws_nc2sav_makefile,trange=trange,make_sav=make_sav,load_sav=load_sav,d
     dict = rdr.source_dict
     frames_name = 'swfo_frame_data'
     foreach file,ncfiles do begin
-      sav_file=root+sav_path+(file).substring(-112+7)+'.sav'
+      sav_file=root+sav_path+(file).substring(-112+7)+'.sav' ;plt
+      sav_file=root+sav_path+(file).substring(-118)+'.sav' ;gccs
       if ~keyword_set(force_make) then if (file_info(file)).mtime le (file_info(sav_file)).mtime then continue
       swfo_apdat_info,/reset
       swfo_stis_apdat_init,/reset,/save_flag

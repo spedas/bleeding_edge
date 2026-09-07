@@ -11,8 +11,8 @@
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-02 13:44:20 -0800 (Mon, 02 Feb 2026) $
-; $LastChangedRevision: 34106 $
+; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+; $LastChangedRevision: 34858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -569,18 +569,42 @@ pro mvn_sta_cio_tplot, pans=pans
       store_data,'sthe',data={x:cio_h.time, y:cio_h.sthe}
       store_data,'sthe_app',data={x:cio_h.time, y:cio_h.sthe_app}
       store_data,'rthe_app',data={x:cio_h.time, y:cio_h.rthe_app}
+      str_element, cio_h, 'alt', alt, success=ok
+      if (not ok) then print, "CIO structure does not contain ALT!"
+      str_element, cio_h, 'mso_x', mso_x, success=ok
+      if (not ok) then begin
+        str_element, cio_h, 'mso', mso, success=ok
+        if (ok) then mso_x = reform(mso[0,*])
+      endif
+      if (not ok) then print, "CIO structure does not contain MSO position!"      
       first = 0
     endif
     if (first and doo1) then begin
       store_data,'sthe',data={x:cio_o1.time, y:cio_o1.sthe}
       store_data,'sthe_app',data={x:cio_o1.time, y:cio_o1.sthe_app}
       store_data,'rthe_app',data={x:cio_o1.time, y:cio_o1.rthe_app}
+      str_element, cio_o1, 'alt', alt, success=ok
+      if (not ok) then print, "CIO structure does not contain ALT!"
+      str_element, cio_o1, 'mso_x', mso_x, success=ok
+      if (not ok) then begin
+        str_element, cio_o1, 'mso', mso, success=ok
+        if (ok) then mso_x = reform(mso[0,*])
+      endif
+      if (not ok) then print, "CIO structure does not contain MSO position!"      
       first = 0
     endif
     if (first and doo2) then begin
       store_data,'sthe',data={x:cio_o2.time, y:cio_o2.sthe}
       store_data,'sthe_app',data={x:cio_o2.time, y:cio_o2.sthe_app}
       store_data,'rthe_app',data={x:cio_o2.time, y:cio_o2.rthe_app}
+      str_element, cio_o2, 'alt', alt, success=ok
+      if (not ok) then print, "CIO structure does not contain ALT!"
+      str_element, cio_o2, 'mso_x', mso_x, success=ok
+      if (not ok) then begin
+        str_element, cio_o2, 'mso', mso, success=ok
+        if (ok) then mso_x = reform(mso[0,*])
+      endif
+      if (not ok) then print, "CIO structure does not contain MSO position!"      
       first = 0
     endif
 
@@ -605,16 +629,19 @@ pro mvn_sta_cio_tplot, pans=pans
     get_data,'sthe',data=sthe
     get_data,'sthe_app',data=sthe_app
     get_data,'rthe_app',data=rthe_app
-    y = replicate(0,npts,2)             ; black = neither is optimized
+    y = replicate(0,npts,2)              ; black = neither is optimized
     indx = where(abs(sthe.y - 45) lt 5, count)
-    if (count gt 0) then y[indx,*] = 1  ; blue = only SWEA is optimized
+    if (count gt 0) then y[indx,*] = 1   ; blue = only SWEA is optimized
     indx = where((abs(sthe_app.y) le 5) and $
                  (abs(rthe_app.y) le 10), count)
-    if (count gt 0) then y[indx,*] = 2  ; yellow = only STATIC is optimized (no twist)
+    if (count gt 0) then y[indx,*] = 2   ; yellow = only STATIC is optimized (no twist)
     indx = where((abs(sthe.y - 45) lt 5) and $
                  (abs(sthe_app.y) le 5) and $
                  (abs(rthe_app.y) le 10), count)
-    if (count gt 0) then y[indx,*] = 3  ; red = both STATIC and SWEA are optimized
+    if (count gt 0) then y[indx,*] = 3   ; red = both STATIC and SWEA are optimized
+    indx = where((alt lt 1000.) or (mso_x gt 0.), count)
+    if (count gt 0L) then y[indx,*] = 0  ; black = spacecraft not in CIO region of space
+
     bname = 'cio_bar'
     store_data,bname,data={x:sthe.x, y:y, v:[0,1]}
     ylim,bname,0,1,0

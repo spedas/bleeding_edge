@@ -27,8 +27,8 @@
 ;       SUCCESS:       Success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-24 18:34:27 -0800 (Tue, 24 Feb 2026) $
-; $LastChangedRevision: 34191 $
+; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
+; $LastChangedRevision: 34858 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -121,10 +121,34 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
   endif
 
   if (mpts lt npts) then begin
-    cio_h  = temporary(result_h[indx])
-    cio_o1 = temporary(result_o1[indx])
-    cio_o2 = temporary(result_o2[indx])
+    result_h  = temporary(result_h[indx])
+    result_o1 = temporary(result_o1[indx])
+    result_o2 = temporary(result_o2[indx])
     npts = mpts
+  endif
+
+; Filter out bad velocity moments (bulk velocity exactly zero in s/c frame)
+; This is now done in mvn_sta_coldion, but it's included here for older databases
+
+  delta_v = total(abs(result_h.v_mso - result_h.v_sc), 1)
+  indx = where(delta_v lt 1d-5, count)
+  if (count gt 0L) then begin
+    result_h[indx].v_mso = !values.f_nan
+    result_h[indx].vbulk = !values.f_nan
+  endif
+
+  delta_v = total(abs(result_o1.v_mso - result_o1.v_sc), 1)
+  indx = where(delta_v lt 1d-5, count)
+  if (count gt 0L) then begin
+    result_o1[indx].v_mso = !values.f_nan
+    result_o1[indx].vbulk = !values.f_nan
+  endif
+
+  delta_v = total(abs(result_o2.v_mso - result_o2.v_sc), 1)
+  indx = where(delta_v lt 1d-5, count)
+  if (count gt 0L) then begin
+    result_o2[indx].v_mso = !values.f_nan
+    result_o2[indx].vbulk = !values.f_nan
   endif
 
 ; Store results in common block

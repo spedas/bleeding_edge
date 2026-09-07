@@ -33,7 +33,20 @@ Function thm_l1b_check, date, probe
      If(is_string(file_search(l1b_file))) Then Begin
         Return, l1b_file
      Endif Else Return, ''
-  Endif Else Return, ''
+  Endif Else $
+    If((thx Eq 'tha') && (time_double(date) Ge time_double('2024-09-01')) && time_double(date) lt time_double('2026-04-16')) Then Begin
+    ;check for L1B data, if there is a file, then we move on, otherwise return
+    date0 = time_string(date, tformat = 'YYYYMMDD')
+    year0 = strmid(date0, 0, 4)
+    fullfile = file_dailynames(thx+'/l1b/fgm/', thx+'_l1b_fgm_', '_v01.cdf', $
+      /yeardir, trange = time_double(date)+[0.0,86400.0d0])
+    l1b_file = spd_download(remote_file = fullfile, _extra = !themis)
+    If(is_string(file_search(l1b_file))) Then Begin
+      Return, l1b_file
+    Endif Else Return, ''
+  Endif Else $
+
+  Return, ''
 End
 
   
