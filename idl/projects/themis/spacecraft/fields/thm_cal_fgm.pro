@@ -79,8 +79,8 @@
 ;
 ;Written by Hannes Schwarzl.
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-08-14 12:01:29 -0700 (Fri, 14 Aug 2026) $
-; $LastChangedRevision: 34741 $
+; $LastChangedDate: 2026-09-09 17:50:37 -0700 (Wed, 09 Sep 2026) $
+; $LastChangedRevision: 34880 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/thm_cal_fgm.pro $
 ;Changes by Edita Georgescu
 ;eg 6/3/2007     - matrix multiplication
@@ -627,14 +627,8 @@ ydata=thx_fgx.Y
 ; THEMIS-A and THEMIS-E both have L1B data now.
 thx = 'th'+probe_letter[0]
 use_l1b_bz = 0
-If(keyword_set(check_l1b)) Then use_l1b_bz = 1b Else Begin
-   If(probe_letter[0] Eq 'e') Then Begin
-      If(thx_fgx.x[0] Gt time_double('2024-05-25/00:00:00')) Then use_l1b_bz = 1b
-   Endif
-   if (probe_letter[0] eq 'a') then Begin
-      If(thx_fgx.x[0] Gt time_double('2024-09-01/00:00:00')) Then use_l1b_bz = 1b
-   endif
-Endelse
+If(keyword_set(check_l1b)) || fgm_bad_bz(probe=probe_letter[0], date=thx_fgx.x[0]) Then use_l1b_bz = 1b
+
 If(use_l1b_bz) Then Begin
    bz_recovered = thx+'_fgl_l1b_bz'
    ; Don't use possibly stale recovered Bz data
@@ -661,7 +655,8 @@ If(use_l1b_bz) Then Begin
       ydata[*,0] = kr*bz_interp.y
       ydata_bz = ydata[*, 0] ;will use this value later
    Endif Else Begin
-      ydata_bz = ydata[*, 0] & ydata_bz[*] = 0
+      ; We might not even need this.  thm_cal_fit doesn't do it.  IF we're going to fill it, NaN is probably better than 0 here.
+      ydata_bz = ydata[*, 0] ; & ydata_bz[*] = 0
    Endelse
 Endif
 

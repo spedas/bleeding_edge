@@ -40,7 +40,9 @@
 ;                 This is forced to be an odd number, less than or equal to
 ;                 the value provided.  Default = 1 (no averaging).
 ;
-;       SUM:      Average all times between two selected times.
+;       SUM:      Average all times between two selected times.  Occasionally,
+;                 ctime does not capture the second time selection and appears
+;                 to hang.  If this happens, just click again.
 ;
 ;       APID:     APID to use: 'd0' or 'd1'.  Default = 'd0'.
 ;
@@ -111,8 +113,8 @@
 ;                 conflict, keywords set explicitly take precedence over KEY.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-04 18:54:59 -0700 (Fri, 04 Sep 2026) $
-; $LastChangedRevision: 34874 $
+; $LastChangedDate: 2026-09-07 18:22:21 -0700 (Mon, 07 Sep 2026) $
+; $LastChangedRevision: 34875 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_d0_snap.pro $
 ;
 ;BASED ON:      tsnap.pro
@@ -166,8 +168,9 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
 
 ; Set some defaults
 
-  if (n_elements(navg) gt 0) then k = (round(navg[0]) - 1)/2 > 0 else k = 0
   npts = keyword_set(sum) ? 2 : 1
+  if ((n_elements(navg) gt 0) and (npts eq 1)) then k = (round(navg[0]) - 1)/2 > 0 else k = 0
+
   keep = keyword_set(keep)
   tmark = keyword_set(tmark)
   dx = (n_elements(dx) gt 0) ? fix(dx[0]) : 10
@@ -206,36 +209,43 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
     return
   endif
 
+  if (showdir) then begin
+
 ; Check to see if sufficient SPICE information exists to transform the Sun
 ; and magnetic field directions into the STATIC frame
 
-  mvn_spice_stat, check=dtime, summary=sinfo, /silent
-  if (~sinfo.all_check) then begin
-    print,"  SPICE not initialized or insufficient coverage."
-    yn = 'N'
-    read, yn, prompt='  Initialize SPICE now (y|n) ? ', format='(a1)'
-    if (strupcase(yn) eq 'Y') then begin
-      tstart = time_string(min(dtime) - 86400D, prec=-3)
-      tstop = time_string(max(dtime) + (2D*86400D), prec=-3)
-      mvn_swe_spice_init, trange=[tstart,tstop], /force
-      mvn_spice_stat, check=dtime, summary=sinfo, /silent
+    mvn_spice_stat, check=dtime, summary=sinfo, /silent
+    if (~sinfo.all_check) then begin
+      print,"  SPICE not initialized or insufficient coverage."
+      yn = 'N'
+      read, yn, prompt='  Initialize SPICE now (y|n) ? ', format='(a1)'
+      if (strupcase(yn) eq 'Y') then begin
+        tstart = time_string(min(dtime) - 86400D, prec=-3)
+        tstop = time_string(max(dtime) + (2D*86400D), prec=-3)
+        mvn_swe_spice_init, trange=[tstart,tstop], /force
+        mvn_spice_stat, check=dtime, summary=sinfo, /silent
+      endif
     endif
-  endif
-  gotspice = sinfo.all_check
+    gotspice = sinfo.all_check
 
 ; Check to see if MAG 1-sec data are loaded
 
-  if (~find_handle('mvn_B_1sec')) then begin
-    print,"  MAG 1-sec data not loaded."
-    yn = 'N'
-    read, yn, prompt='  Load MAG data now (y|n) ? ', format='(a1)'
-    if (strupcase(yn) eq 'Y') then begin
-      tstart = time_string(min(dtime), prec=-3)
-      tstop = time_string(max(dtime) + 86400D, prec=-3)
-      mvn_mag_load, 'L2_1SEC', trange=[tstart,tstop]
+    if (~find_handle('mvn_B_1sec')) then begin
+      print,"  MAG 1-sec data not loaded."
+      yn = 'N'
+      read, yn, prompt='  Load MAG data now (y|n) ? ', format='(a1)'
+      if (strupcase(yn) eq 'Y') then begin
+        tstart = time_string(min(dtime), prec=-3)
+        tstop = time_string(max(dtime) + 86400D, prec=-3)
+        mvn_mag_load, 'L2_1SEC', trange=[tstart,tstop]
+      endif
     endif
-  endif
-  gotmag = find_handle('mvn_B_1sec')
+    gotmag = find_handle('mvn_B_1sec')
+
+  endif else begin
+    gotspice = 0
+    gotmag = 0
+  endelse
 
 ; Compare currently loaded STATIC data with the fov common block
 ; Refresh the fov common block if necessary
@@ -472,11 +482,11 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
 
 ; Make snapshot(s)
 
-  imax = n_elements(time) - 1L
-  keepgoing = 1
+  wset, Twin
+  if (npts eq 1) then print,"Select time(s).  Right button any time to exit." $
+                 else print,"Select start and stop time(s).  Right button any time to exit."
+  ctime,t,npoints=npts,silent=2  ; on first call to ctime, don't wait for button up transition
 
-  ctime,t,npoints=npts,/silent
-  if (npts eq 2) then cursor,cx,cy,/norm,/up  ; make sure mouse button is released
   if (size(t,/type) eq 2) then begin
     wdelete,Swin
     wdelete,Dwin
@@ -486,10 +496,16 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
     return
   endif
 
+  dt = time - shift(time,1)
+  dt[0] = dt[1]
+  dt /= 2D
+  imax = n_elements(time) - 1L
+  keepgoing = 1
+
   while (keepgoing) do begin
     i = (nn2(time, t) + [-k,k]) > 0L < imax
     i = min(i, max=j)
-    if (tmark) then timebar, [time[i], time[j]], /line, /transient
+    if (tmark) then timebar, [time[i]-dt[i], time[j]+dt[j]], /line, /transient
     if (i eq j) then begin
       endx = where((energy[i,*] ge erange[0]) and (energy[i,*] le erange[1]), count)
       if (count gt 0L) then begin
@@ -627,8 +643,8 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
 
       lastcut = {time:[time[i],time[j]], x:x, y:y, z:z, dz:dz, navg:(j-i+1), erange:erange}
     wset, Dwin
-      msg1 = string(m1, format='("edge : ", f4.1)')
-      msg2 = string(m2, format='("cntr : ", f4.1)')
+      msg1 = string(m1, format='("edge : ", f5.2)')
+      msg2 = string(m2, format='("cntr : ", f5.2)')
 
       plot, y, zthe, psym=10, xtitle='Elevation (deg)', ytitle=(sname[mass]+' Counts'), $
                      xrange=[-90,90], /xsty, xticks=2, xminor=3, charsize=1.5, $
@@ -664,11 +680,10 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
     endif
 
     wset, Twin
-
-    ctime,tnext,npoints=npts,/silent
-    if (npts eq 2) then cursor,cx,cy,/norm,/up  ; make sure mouse button is released
+    ctime,tnext,npoints=npts,silent=2
+    if (npts gt 1) then cursor, cx, cy, /norm, /up
     if (size(tnext,/type) eq 2) then keepgoing = 0
-    if (tmark) then timebar, [time[i],time[j]], /line, /transient
+    if (tmark) then timebar, [time[i]-dt[i], time[j]+dt[j]], /line, /transient
     t = tnext
   endwhile
 

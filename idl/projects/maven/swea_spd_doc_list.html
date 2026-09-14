@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep  5 03:16:15 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
  
 <HR>
  
@@ -1393,9 +1393,22 @@ INPUTS:
 KEYWORDS:
        PANS:          Tplot panel names created when DOPLOT is set.
 
+       COLOR_TABLE:   Color table for color bars.  Default = 43 (custom rainbow).
+                      This works for all color table files (STD, SPP, CSV).
+
+       COLOR_REVERSE: If set, reverse color table.  Default = 0 (no).
+
+       LINE_SCHEME:   Line color scheme.  Default = 11.
+
+       LINE_COLORS:   Five-element array of line color indicies.
+                      Default = [!p.color,1,2,4,6].
+
+       Note: All color tables and lines are internal to the tplot variables and do
+             not affect the user's environment.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
- $LastChangedRevision: 34858 $
+ $LastChangedDate: 2026-09-07 18:25:49 -0700 (Mon, 07 Sep 2026) $
+ $LastChangedRevision: 34876 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1518,7 +1531,7 @@ KEYWORDS:
 
     NOLOAD:        Skip the step of loading data.
 
-    L2_VERSION:    STATIC L2 version to use.  Default = 2.
+    L2_VERSION:    STATIC L2 version to use.  Default = 3.
                    The STATIC loader does not use file_retreive, so the normal version
                    control doesn't work.
 
@@ -1532,8 +1545,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
- $LastChangedRevision: 34858 $
+ $LastChangedDate: 2026-09-07 18:25:49 -0700 (Mon, 07 Sep 2026) $
+ $LastChangedRevision: 34876 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell

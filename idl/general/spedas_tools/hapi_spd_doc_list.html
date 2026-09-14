@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep  5 03:16:15 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
  
 <HR>
  
@@ -47,47 +47,45 @@ This page was created by the IDL library routine
          info:         provides information on a given dataset (optional)
          dataset:      dataset to load (optional)
          
-         server:       HAPI server to connect to (e.g, 'http://datashop.elasticbeanstalk.com/hapi')
+         server:       HAPI server to connect to (e.g, 'https://lasp.colorado.edu/lisird/hapi')
          parameters:   limit the requested parameters to a string or array of strings (works in 
                        conjunction with /info and trange= keywords) (optional)
 
  EXAMPLES:
   List server capabilities:
-    IDL&gt; hapi_load_data, /capabilities, server='http://datashop.elasticbeanstalk.com/hapi'
-    HAPI v1.1
-    Output formats: csv, binary, json
+    IDL&gt; hapi_load_data, /capabilities, server='https://lasp.colorado.edu/lisird/hapi'
+    HAPI_GET_JSON(64): HAPI v2.0 (lisird/hapi/capabilities)
+    HAPI_GET_JSON(67): HAPI 1200 OK (lisird/hapi/capabilities)
+    Output formats: csv
   
   List the datasets available on this server:
-    IDL&gt; hapi_load_data, /catalog, server='http://datashop.elasticbeanstalk.com/hapi'
-    HAPI v1.1
-    1: CASSINI_LEMMS_PHA_CHANNEL_1_SEC
-    2: CASSINI_LEMMS_REG_CHANNEL_PITCH_ANGLE_10_MIN_AVG
+    IDL&gt; hapi_load_data, /catalog, server='https://lasp.colorado.edu/lisird/hapi'
+    HAPI_GET_JSON(64): HAPI v2.0 (lisird/hapi/catalog)
+    HAPI_GET_JSON(67): HAPI 1200 OK (lisird/hapi/catalog)
+    1: bremen_composite_mgii
+    2: cak
+    3: composite_lyman_alpha
+    4: composite_mg_index
     ....
   
   Get info on a dataset:
-    IDL&gt; hapi_load_data, /info, dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
-    HAPI v1.1
-    Dataset: spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H
-    Start: 1977-09-07T00:00:00.000
-    End: 2017-05-02T21:38:00.000
-    Parameters: Epoch, year, doy, hr, dec_year, dec_doy, flux, flux_uncert
+    IDL&gt; hapi_load_data, /info, dataset='composite_lyman_alpha', server='https://lasp.colorado.edu/lisird/hapi'
+    HAPI_GET_JSON(64): HAPI v2.0 (lisird/hapi/info?id=composite_lyman_alpha)
+    HAPI_GET_JSON(67): HAPI 1200 OK (lisird/hapi/info?id=composite_lyman_alpha)
+    Dataset: composite_lyman_alpha
+    Start: 1947-02-14T00:00:00.000Z
+    End: 2026-09-09T00:00:00.000Z
+    Parameters: time, irradiance, uncertainty, type
   
-  Load and plot the Voyager flux data:
-    IDL&gt; hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
-    IDL&gt; tplot, 'flux'
-    
-  Load and plot the Voyager flux data (limit the request to the 'flux' variable via the parameters keyword):
-    IDL&gt; hapi_load_data, parameter='flux', trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
-    IDL&gt; tplot, 'flux'
   
  NOTES:
          - capabilities, catalog, info keywords are informational
          - Requires IDL 8.3 or later due to json_parse + orderedhash usage
          
 
-$LastChangedBy: nikos $
-$LastChangedDate: 2022-02-11 14:35:22 -0800 (Fri, 11 Feb 2022) $
-$LastChangedRevision: 30578 $
+$LastChangedBy: jwl $
+$LastChangedDate: 2026-09-12 13:00:49 -0700 (Sat, 12 Sep 2026) $
+$LastChangedRevision: 34890 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 </PRE><P>
 <STRONG>(See <A href="hapi/hapi_load_data.pro">general/spedas_tools/hapi/hapi_load_data.pro</A>)</STRONG><P>

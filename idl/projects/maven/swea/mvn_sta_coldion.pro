@@ -73,7 +73,7 @@
 ;
 ;    NOLOAD:        Skip the step of loading data.
 ;
-;    L2_VERSION:    STATIC L2 version to use.  Default = 2.
+;    L2_VERSION:    STATIC L2 version to use.  Default = 3.
 ;                   The STATIC loader does not use file_retreive, so the normal version
 ;                   control doesn't work.
 ;
@@ -87,8 +87,8 @@
 ;    SUCCESS:       Processing success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
-; $LastChangedRevision: 34858 $
+; $LastChangedDate: 2026-09-07 18:25:49 -0700 (Mon, 07 Sep 2026) $
+; $LastChangedRevision: 34876 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -128,7 +128,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   dotmp = keyword_set(temperature)
   useL3 = keyword_set(L3)
   ivlev = 4  ; STATIC background subtraction level (should be >= 2)
-  l2_v = keyword_set(l2_version) ? l2_version[0] : 2
+  l2_v = keyword_set(l2_version) ? l2_version[0] : 3
 
 ; Use STATIC L3 densities and temperatures if possible (these use IV4)
 ;   five species (m/q): 1, 2, 16, 32, 44
@@ -137,6 +137,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   got_l3_den = 0
   got_l3_tmp = 0
   if (useL3) then begin
+    c = getct()
     mvn_sta_l3_load  ; load all moments
     get_data,'mvn_sta_l3_density',data=sta_den,alim=sta_den_lim,index=i
     if (i gt 0) then begin
@@ -152,6 +153,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
       got_l3_tmp = 1
       dotmp = 0 ; using L3, no longer need to calculate temperatures
     endif
+    initct, c.color_table, reverse=c.color_reverse, file=c.ct_file, line=c.line_array
   endif
 
   kk3_anode = 1  ; enable attenuator-dependent ion suppression correction
@@ -234,7 +236,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
   if keyword_set(reload) then nc6 = 0
   if (nc6 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=ivlev, l2_version_in=l2_v
+    if (l2_v gt 2) then mvn_sta_l2_load, sta_apid=['c0','c6','c8'], l2_version=l2_v $
+                   else mvn_sta_l2_load, sta_apid=['c0','c6','c8'], iv_level=ivlev, l2_version_in=l2_v
     str_element, mvn_c6_dat, 'time', time_c6, success=gotc6
     if (gotc6) then indx = where((time_c6 gt trange[0]) and (time_c6 lt trange[1]), nc6) else nc6 = 0
     if (nc6 lt 10) then begin
@@ -250,7 +253,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
   if keyword_set(reload) then nd0 = 0
   if (nd0 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['d0'], iv_level=ivlev, l2_version_in=l2_v
+    if (l2_v gt 2) then mvn_sta_l2_load, sta_apid=['d0'], l2_version_in=l2_v $
+                   else mvn_sta_l2_load, sta_apid=['d0'], iv_level=ivlev, l2_version_in=l2_v
     str_element, mvn_d0_dat, 'time', time_d0, success=gotd0
     if (gotd0) then indx = where((time_d0 gt trange[0]) and (time_d0 lt trange[1]), nd0) else nd0 = 0
     if (nd0 lt 10) then begin
@@ -266,7 +270,8 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
   if (gotd1) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
   if keyword_set(reload) then nd1 = 0
   if (nd1 lt 10) then begin
-    mvn_sta_l2_load, sta_apid=['d1'], iv_level=ivlev, l2_version_in=l2_v
+    if (l2_v gt 2) then mvn_sta_l2_load, sta_apid=['d1'], l2_version_in=l2_v $
+                   else mvn_sta_l2_load, sta_apid=['d1'], iv_level=ivlev, l2_version_in=l2_v
     str_element, mvn_d1_dat, 'time', time_d1, success=gotd1
     if (gotd1) then indx = where((time_d1 gt trange[0]) and (time_d1 lt trange[1]), nd1) else nd1 = 0
     if (nd1 lt 10) then begin
@@ -686,7 +691,7 @@ pro mvn_sta_coldion, beam=beam, potential=potential, adisc=adisc, parng=parng, $
           if (~(j mod jskip)) then print,string(13b),species[i],round(100.*j/npts),$
                                          format='(a,a3,1x,i3," %",$)'
         endfor
-        print,''
+        print,string(13b),species[i],format='(a,a3,1x,"100 %")'
 
 ; Filter out bad velocity moments (bulk velocity exactly zero in s/c frame)
 

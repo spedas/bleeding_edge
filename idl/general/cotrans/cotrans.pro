@@ -45,6 +45,9 @@
 ;
 ; /GEI2J2000
 ; /J20002GEI
+;
+; /GSE2GSEQ
+; /GSEQ2GSE
 ; 
 ; /IGNORE_DLIMITS: set so it won't require the coordinate
 ;system of the input tplot variable to match the coordinate
@@ -67,15 +70,16 @@
 ;
 ;Written by: Hannes Schwarzl & Patrick Cruce(pcruce@igpp.ucla.edu)
 ;
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2015-09-22 08:59:06 -0700 (Tue, 22 Sep 2015) $
-; $LastChangedRevision: 18869 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-09-08 12:32:22 -0700 (Tue, 08 Sep 2026) $
+; $LastChangedRevision: 34877 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans.pro $
 ;-
 pro cotrans, name_in, name_out, time, GSM2GSE=GSM2GSE, GSE2GEI=GSE2GEI,          $
              GSE2GSM=GSE2GSM,GEI2GSE=GEI2GSE,GSM2SM=GSM2SM,SM2GSM=SM2GSM,        $
              GEI2GEO=GEI2GEO, GEO2GEI=GEO2GEI, GEO2MAG=GEO2MAG, MAG2GEO=MAG2GEO, $
-             GEI2J2000=GEI2J2000, J20002GEI=J20002GEI, ignore_dlimits=ignore_dlimits
+             GEI2J2000=GEI2J2000, J20002GEI=J20002GEI,                           $
+             GSE2GSEQ=GSE2GSEQ, GSEQ2GSE=GSEQ2GSE, ignore_dlimits=ignore_dlimits
 
 cotrans_lib
 
@@ -180,6 +184,30 @@ if keyword_set(GSE2GEI) then begin
    end
    sub_GEI2GSE,data_in,data_conv,/GSE2GEI
    out_coord = 'gei'
+endif
+
+;GSE GSEQ
+if keyword_set(GSE2GSEQ) then begin
+  if keyword_set(ignore_dlimits) then data_in_coord='gse'
+  is_valid_keyws=1
+  if ~strmatch(data_in_coord, 'unknown') && ~strmatch(data_in_coord, 'gse') then begin
+    dprint, 'coord of input '+name_in+': '+data_in_coord+' must be GSE'
+    return
+  endif
+  sub_GSE2GSEQ, data_in, data_conv
+  out_coord = 'gseq'
+endif
+
+;GSEQ GSE
+if keyword_set(GSEQ2GSE) then begin
+  if keyword_set(ignore_dlimits) then data_in_coord='gseq'
+  is_valid_keyws=1
+  if ~strmatch(data_in_coord, 'unknown') && ~strmatch(data_in_coord, 'gseq') then begin
+    dprint, 'coord of input '+name_in+': '+data_in_coord+' must be GSEQ'
+    return
+  endif
+  sub_GSE2GSEQ, data_in, data_conv, /GSEQ2GSE
+  out_coord = 'gse'
 endif
 
 ;GSM SM
@@ -364,8 +392,6 @@ endif else name_out = data_conv.y
 
 ;RETURN, data_conv
 end
-
-
 
 
 

@@ -14,57 +14,65 @@
 ;         info:         provides information on a given dataset (optional)
 ;         dataset:      dataset to load (optional)
 ;         
-;         server:       HAPI server to connect to (e.g, 'http://datashop.elasticbeanstalk.com/hapi')
+;         server:       HAPI server to connect to (e.g, 'https://lasp.colorado.edu/lisird/hapi')
 ;         parameters:   limit the requested parameters to a string or array of strings (works in 
 ;                       conjunction with /info and trange= keywords) (optional)
 ;
 ; EXAMPLES:
 ;  List server capabilities:
-;    IDL> hapi_load_data, /capabilities, server='http://datashop.elasticbeanstalk.com/hapi'
-;    HAPI v1.1
-;    Output formats: csv, binary, json
+;    IDL> hapi_load_data, /capabilities, server='https://lasp.colorado.edu/lisird/hapi'
+;    HAPI_GET_JSON(64): HAPI v2.0 (lisird/hapi/capabilities)
+;    HAPI_GET_JSON(67): HAPI 1200 OK (lisird/hapi/capabilities)
+;    Output formats: csv
 ;  
 ;  List the datasets available on this server:
-;    IDL> hapi_load_data, /catalog, server='http://datashop.elasticbeanstalk.com/hapi'
-;    HAPI v1.1
-;    1: CASSINI_LEMMS_PHA_CHANNEL_1_SEC
-;    2: CASSINI_LEMMS_REG_CHANNEL_PITCH_ANGLE_10_MIN_AVG
+;    IDL> hapi_load_data, /catalog, server='https://lasp.colorado.edu/lisird/hapi'
+;    HAPI_GET_JSON(64): HAPI v2.0 (lisird/hapi/catalog)
+;    HAPI_GET_JSON(67): HAPI 1200 OK (lisird/hapi/catalog)
+;    1: bremen_composite_mgii
+;    2: cak
+;    3: composite_lyman_alpha
+;    4: composite_mg_index
 ;    ....
 ;  
 ;  Get info on a dataset:
-;    IDL> hapi_load_data, /info, dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
-;    HAPI v1.1
-;    Dataset: spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H
-;    Start: 1977-09-07T00:00:00.000
-;    End: 2017-05-02T21:38:00.000
-;    Parameters: Epoch, year, doy, hr, dec_year, dec_doy, flux, flux_uncert
+;    IDL> hapi_load_data, /info, dataset='composite_lyman_alpha', server='https://lasp.colorado.edu/lisird/hapi'
+;    HAPI_GET_JSON(64): HAPI v2.0 (lisird/hapi/info?id=composite_lyman_alpha)
+;    HAPI_GET_JSON(67): HAPI 1200 OK (lisird/hapi/info?id=composite_lyman_alpha)
+;    Dataset: composite_lyman_alpha
+;    Start: 1947-02-14T00:00:00.000Z
+;    End: 2026-09-09T00:00:00.000Z
+;    Parameters: time, irradiance, uncertainty, type
 ;  
-;  Load and plot the Voyager flux data:
-;    IDL> hapi_load_data, trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
-;    IDL> tplot, 'flux'
-;    
-;  Load and plot the Voyager flux data (limit the request to the 'flux' variable via the parameters keyword):
-;    IDL> hapi_load_data, parameter='flux', trange=['77-09-27', '78-01-20'], dataset='spase://VEPO/NumericalData/Voyager1/LECP/Flux.Proton.PT1H', server='http://datashop.elasticbeanstalk.com/hapi'
-;    IDL> tplot, 'flux'
 ;  
 ; NOTES:
 ;         - capabilities, catalog, info keywords are informational
 ;         - Requires IDL 8.3 or later due to json_parse + orderedhash usage
 ;         
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2022-02-11 14:35:22 -0800 (Fri, 11 Feb 2022) $
-;$LastChangedRevision: 30578 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-09-12 13:00:49 -0700 (Sat, 12 Sep 2026) $
+;$LastChangedRevision: 34890 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
-function hapi_get_json, neturl
+function hapi_get_json, neturl 
   neturl->getProperty, url_path=url_path
   table = json_parse(string(neturl->get(/buffer)))
   if table.HasKey('HAPI') then dprint, dlevel = 2,  'HAPI v' + table['HAPI']  + ' (' + url_path + ')'
   if table.HasKey('status') then begin
     if table['status'].hasKey('code') && table['status'].hasKey('message') then begin
       dprint, dlevel = 2, 'HAPI ' + strcompress(string((table['status'])['code']), /rem) + ' ' + (table['status'])['message']  + ' (' + url_path + ')'
+    endif 
+    if table['status'].hasKey('code') then begin
+       json_code = (table['status'])['code']  ; assumed to be numeric
+       ; 1200=OK, 1201=OK (no data), 1400-1499=bad request, 1500+ = insternal server error
+       if json_code ge 1500 then begin
+        message,'Request returned internal server error code, quitting'
+       endif else $
+       if json_code ge 1400 then begin
+        message,'Request returned bad request error code, quitting'
+       endif
     endif
   endif
   return, table
@@ -91,7 +99,8 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     dprint, dlevel = 0, '- https://pds-ppi.igpp.ucla.edu/hapi'
     dprint, dlevel = 0, '- http://planet.physics.uiowa.edu/das/das2Server/hapi'
     dprint, dlevel = 0, '- https://iswa.gsfc.nasa.gov/IswaSystemWebApp/hapi'
-    dprint, dlevel = 0, '- http://lasp.colorado.edu/lisird/hapi'
+    dprint, dlevel = 0, '- https://lasp.colorado.edu/lisird/hapi'
+    dprint, dlevel = 0, '- http://api.phys.ucalgary.ca/hapi'
     return
   endif else begin
     url_parts = parse_url(server)
@@ -195,10 +204,14 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
       return
     endelse
 
-    data_directory = spd_addslash(local_data_dir) + spd_addslash(scheme) + spd_addslash(url_host) + spd_addslash(url_path) + 'data/' + spd_addslash(info_dataset)
+    data_subdirectory = spd_addslash(scheme) + spd_addslash(url_host) + spd_addslash(url_path) + 'data/' + spd_addslash(info_dataset)
     
     ; make sure no :'s show up in the directory
-    data_directory = strjoin(strsplit(data_directory, ':', /extract))
+    data_subdirectory = strjoin(strsplit(data_subdirectory, ':', /extract))
+    
+    ; make sure colons in drive letters don't get sanitized
+    data_directory = spd_addslash(local_data_dir) + data_subdirectory
+    
     
     dir_exists = file_test(data_directory)
     if ~dir_exists then file_mkdir2, data_directory
@@ -213,27 +226,31 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
     var_map = hash() ; maps variable name to variable index (index of the variable in the 'variables' variable..)
     
     ; extract the data
+    current_column = 0
     for param_idx = 0, n_elements(info['parameters'])-1 do begin
       variable = (info['parameters'])[param_idx]
       variable['epoch'] = time_double_ordinal(csv.(0))
 
       if (info['parameters'])[param_idx].hasKey('size') then begin
-        data = dblarr(n_elements(csv.(param_idx)), (((info['parameters'])[param_idx])['size'])[0])
-        for data_idx = 0, (((info['parameters'])[param_idx])['size'])[0]-1 do begin
-          thedata = csv.(param_idx+data_idx)
-          if (info['parameters'])[param_idx].hasKey('fill') then begin
+        this_ncols = (((info['parameters'])[param_idx])['size'])[0]
+        data = dblarr(n_elements(csv.(param_idx)), this_ncols)
+        for data_idx = 0, this_ncols-1 do begin
+          thedata = csv.(current_column+data_idx)
+          if (info['parameters'])[param_idx].hasKey('fill') && ((info['parameters'])[param_idx])['fill'] ne !null then begin
             datanofill = where(thedata le ((info['parameters'])[param_idx])['fill'], count)
             if count ne 0 then thedata[datanofill] = !values.d_nan
           endif
           data[*, data_idx] = thedata
         endfor
       endif else begin
-        data = csv.(param_idx)
+        data = csv.(current_column)
+        this_ncols = 1
         if (info['parameters'])[param_idx].hasKey('fill') && ((info['parameters'])[param_idx])['fill'] ne !null then begin
           datanofill = where(data le ((info['parameters'])[param_idx])['fill'], count)
           if count ne 0 then data[datanofill] = !values.d_nan
         endif
       endelse
+      current_column += this_ncols
       
       ; check for spectra variables
       if (info['parameters'])[param_idx].hasKey('bins') then begin
@@ -279,6 +296,9 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
             store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data'], v: (variables[var_idx])['v']}
           endelse
           options, tname, 'spec', 1, /def
+          ; Some data sets may have out-of-order spectrogram bins
+          ; We will pre-emptively set the sort_spec_bins option to ensure that they're plotted correctly.  Harmless if not needed...
+          options, tname, 'sort_spec_bins', 1, /def
         endif else begin
           store_data, tname, data={x: (variables[var_idx])['epoch'], y: (variables[var_idx])['data']}
         endelse

@@ -9,8 +9,10 @@
 ;  specified.
 ;
 ;The set of transformations forms the following graph:
-;  GSE<->GEI<->GEO<->MAG
+;  HEE<->GSE<->GEI<->GEO<->MAG
 ;  GSE<->GSM<->SM
+;  GSE<->GSEQ<->HEEQ
+;  GEI<->HAE
 ;
 ;-
 pro spd_cotrans_transform_helper,in_name,out_name,in_coord,out_coord, $
@@ -27,6 +29,17 @@ pro spd_cotrans_transform_helper,in_name,out_name,in_coord,out_coord, $
     case in_coord of
 
       'gse': switch out_coord of
+        'hee': begin
+          gse2hee, in_name, out_name, ignore_dlimits=ignore_dlimits
+          recursive_in_coord='hee'
+          break
+        end
+        'gseq':
+        'heeq': begin
+          cotrans, in_name, out_name, /gse2gseq, ignore_dlimits=ignore_dlimits
+          recursive_in_coord='gseq'
+          break
+        end
         'sm':
         'gsm': begin
           cotrans, in_name, out_name, /gse2gsm,ignore_dlimits=ignore_dlimits
@@ -46,6 +59,29 @@ pro spd_cotrans_transform_helper,in_name,out_name,in_coord,out_coord, $
           recursive_in_coord='gei'
         end
       endswitch
+      'gseq': switch out_coord of
+        'heeq': begin
+          gseq2heeq, in_name, out_name, ignore_dlimits=ignore_dlimits
+          recursive_in_coord='heeq'
+          break
+        end
+        else: begin
+          cotrans, in_name, out_name, /gseq2gse, ignore_dlimits=ignore_dlimits
+          recursive_in_coord='gse'
+        end
+      endswitch
+      'hee': begin
+        gse2hee, in_name, out_name, /hee2gse, ignore_dlimits=ignore_dlimits
+        recursive_in_coord='gse'
+      end
+      'heeq': begin
+        gseq2heeq, in_name, out_name, /heeq2gseq, ignore_dlimits=ignore_dlimits
+        recursive_in_coord='gseq'
+      end
+      'hae': begin
+        gei2hae, in_name, out_name, /hae2gei, ignore_dlimits=ignore_dlimits
+        recursive_in_coord='gei'
+      end
       'agsm': begin
         agsm2gse, in_name, out_name, rotation_angle = 4.0
         recursive_in_coord='gse'
@@ -67,6 +103,11 @@ pro spd_cotrans_transform_helper,in_name,out_name,in_coord,out_coord, $
         end
       endswitch
       'gei': switch out_coord of
+        'hae': begin
+          gei2hae, in_name, out_name, ignore_dlimits=ignore_dlimits
+          recursive_in_coord='hae'
+          break
+        end
         'geo': begin
           ; if the data is of type 'vel' this is an invalid coordinate transform, warn user
           spd_cotrans_validate_transform, in_name, in_coord, out_coord
@@ -131,6 +172,20 @@ pro spd_cotrans_transform_helper,in_name,out_name,in_coord,out_coord, $
 end
 
 
+; Return the valid coordinate name at the end of a variable suffix.
+function spd_cotrans_coord_from_suffix, suffix, valid_coords
+  compile_opt idl2, hidden
+  suffix_lc = strlowcase(suffix)
+  for i=0, n_elements(valid_coords)-1 do begin
+    coord_suffix = '_'+valid_coords[i]
+    start = strlen(suffix_lc)-strlen(coord_suffix)
+    if start ge 0 && strmid(suffix_lc,start) eq coord_suffix then $
+      return, valid_coords[i]
+  endfor
+  return, ''
+end
+
+
 
 
 ;+
@@ -155,9 +210,10 @@ end
 ;             This keyword is optional if the dlimits.data_att.coord_sys attribute
 ;             is present for the tplot variable, and if present, it must match
 ;             the value of that attribute (see cotrans_set_coord, cotrans_get_coord).
-;               e.g. 'gse', 'gsm', 'sm', 'gei','geo', 'mag'
+;               e.g. 'gse', 'gseq', 'gsm', 'sm', 'gei', 'geo', 'mag',
+;                    'hee', 'hae', 'heeq'
 ;  out_coord:  String specifying the desitnation coordinate system.
-;                e.g. 'gse', 'gsm', 'sm', 'gei','geo', 'mag' 
+;               The same coordinate-system names accepted by in_coord.
 ;  in_suffix:  Suffix of input variable name.  This specifies the portion of
 ;              the input variable's name that will be replace with the output
 ;              suffix.  If specified, the name effective input name will be
@@ -179,9 +235,9 @@ end
 ;  This procedure was forked from thm_cotrans.
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2016-02-24 18:53:52 -0800 (Wed, 24 Feb 2016) $
-;$LastChangedRevision: 20171 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-09-08 12:35:19 -0700 (Tue, 08 Sep 2026) $
+;$LastChangedRevision: 34878 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/cotrans/spd_cotrans.pro $
 ;
 ;-
@@ -229,10 +285,7 @@ endif
 ;Validate in_coord and out_coord
 ;--------------------------------
 if not keyword_set(out_coord) and keyword_set(out_suf) then begin
-  out_coord=strmid(out_suf,2,3,/reverse)
-  if stregex(out_coord,'sm',/boolean) && ~stregex(out_coord,'gsm',/boolean) then begin
-    out_coord = 'sm'
-  endif
+  out_coord=spd_cotrans_coord_from_suffix(out_suf,vcoord)
 endif
  
 if not keyword_set(out_coord) then begin
@@ -250,10 +303,7 @@ if n_elements(out_coord) gt 1 then begin
 endif
 
 if ~keyword_set(in_coord) && keyword_set(in_suf) then begin 
-  in_coord=strmid(in_suf,2,3,/reverse)
-  if stregex(in_coord,'sm',/boolean) && ~stregex(in_coord,'gsm',/boolean) then begin
-    in_coord = 'sm'
-  endif
+  in_coord=spd_cotrans_coord_from_suffix(in_suf,vcoord)
 endif
 
 if keyword_set(in_coord) then begin

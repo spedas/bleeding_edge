@@ -10,15 +10,29 @@
 ;KEYWORDS:
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
+;       COLOR_TABLE:   Color table for color bars.  Default = 43 (custom rainbow).
+;                      This works for all color table files (STD, SPP, CSV).
+;
+;       COLOR_REVERSE: If set, reverse color table.  Default = 0 (no).
+;
+;       LINE_SCHEME:   Line color scheme.  Default = 11.
+;
+;       LINE_COLORS:   Five-element array of line color indicies.
+;                      Default = [!p.color,1,2,4,6].
+;
+;       Note: All color tables and lines are internal to the tplot variables and do
+;             not affect the user's environment.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
-; $LastChangedRevision: 34858 $
+; $LastChangedDate: 2026-09-07 18:25:49 -0700 (Mon, 07 Sep 2026) $
+; $LastChangedRevision: 34876 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
 ;FILE:  mvn_sta_cio_plot.pro
 ;-
-pro mvn_sta_cio_tplot, pans=pans
+pro mvn_sta_cio_tplot, pans=pans, color_table=ctab, color_reverse=crev, line_scheme=lcol, $
+                       line_colors=line_index
 
     common coldion, cio_h, cio_o1, cio_o2
 
@@ -26,9 +40,18 @@ pro mvn_sta_cio_tplot, pans=pans
     phi = findgen(49)*(2.*!pi/49)
     usersym,a*cos(phi),a*sin(phi),/fill
 
+; Labels, color table, and line colors
+;   Default color table = 43  (custom rainbow)
+;   Default line colors = [foreground, magenta, blue, green, red] for scheme 11
+
+    ctab = (n_elements(ctab) eq 0) ? 43 : fix(ctab[0])
+    crev = (n_elements(crev) eq 0) ?  0 : fix(crev[0])
+    lcol = (n_elements(lcol) eq 0) ? 11 : fix(lcol[0])
+
     species = ['i+','e-','H+','O+','O2+']
-    cols = get_colors()
-    icols = [!p.color,cols.magenta,cols.blue,cols.green,cols.red]  ; color for each species
+    icols = [!p.color,1,2,4,6]
+    n = n_elements(line_index) < 5
+    if (n gt 0L) then icols[0:(n-1)] = fix(line_index)
 
     doh  = size(cio_h,/type)  eq 8
     doo1 = size(cio_o1,/type) eq 8
@@ -104,6 +127,7 @@ pro mvn_sta_cio_tplot, pans=pans
     ylim,'den_i+',0.1,100,1
     options,'den_i+','constant',[1,10,100]
     options,'den_i+','ytitle','Ion Density!c1/cc'
+    options,'den_i+','line_colors',lcol
     options,'den_i+','colors',cols
     options,'den_i+','labels',spec
     options,'den_i+','labflag',1
@@ -136,6 +160,7 @@ pro mvn_sta_cio_tplot, pans=pans
     ylim,'temp_i+',0.1,100,1
     options,'temp_i+','constant',[1,10]
     options,'temp_i+','ytitle','Ion Temp!ceV'
+    options,'temp_i+','line_colors',lcol
     options,'temp_i+','colors',cols[1:*]
     options,'temp_i+','labels',spec[1:*]
     options,'temp_i+','labflag',1
@@ -146,6 +171,7 @@ pro mvn_sta_cio_tplot, pans=pans
     if (doh) then begin
       store_data,'velocity_h',data={x:cio_h.time, y:transpose(cio_h.v_mso), v:[0,1,2]}
       options,'velocity_h','ytitle','H Vel!ckm/s'
+      options,'velocity_h','line_colors',lcol
       options,'velocity_h','colors',[2,4,6]
       options,'velocity_h','labels',['Vx','Vy','Vz']
       options,'velocity_h','labflag',1
@@ -173,6 +199,8 @@ pro mvn_sta_cio_tplot, pans=pans
       store_data,bname,data={x:cio_h.time, y:ybar, v:[0,1]}
       ylim,bname,0,1,0
       zlim,bname,0,2,0
+      options,bname,'color_table',ctab
+      options,bname,'color_reverse',crev
       options,bname,'spec',1
       options,bname,'panel_size',0.05
       options,bname,'ytitle',''
@@ -186,6 +214,7 @@ pro mvn_sta_cio_tplot, pans=pans
     if (doo1) then begin
       store_data,'velocity_o1',data={x:cio_o1.time, y:transpose(cio_o1.v_mso), v:[0,1,2]}
       options,'velocity_o1','ytitle','O Vel!ckm/s'
+      options,'velocity_o1','line_colors',lcol
       options,'velocity_o1','colors',[2,4,6]
       options,'velocity_o1','labels',['Vx','Vy','Vz']
       options,'velocity_o1','labflag',1
@@ -213,6 +242,8 @@ pro mvn_sta_cio_tplot, pans=pans
       store_data,bname,data={x:cio_o1.time, y:ybar, v:[0,1]}
       ylim,bname,0,1,0
       zlim,bname,0,2,0
+      options,bname,'color_table',ctab
+      options,bname,'color_reverse',crev
       options,bname,'spec',1
       options,bname,'panel_size',0.05
       options,bname,'ytitle',''
@@ -226,6 +257,7 @@ pro mvn_sta_cio_tplot, pans=pans
     if (doo2) then begin
       store_data,'velocity_o2',data={x:cio_o2.time, y:transpose(cio_o2.v_mso), v:[0,1,2]}
       options,'velocity_o2','ytitle','O2 Vel!ckm/s'
+      options,'velocity_o2','line_colors',lcol
       options,'velocity_o2','colors',[2,4,6]
       options,'velocity_o2','labels',['Vx','Vy','Vz']
       options,'velocity_o2','labflag',1
@@ -253,6 +285,8 @@ pro mvn_sta_cio_tplot, pans=pans
       store_data,bname,data={x:cio_o2.time, y:ybar, v:[0,1]}
       ylim,bname,0,1,0
       zlim,bname,0,2,0
+      options,bname,'color_table',ctab
+      options,bname,'color_reverse',crev
       options,bname,'spec',1
       options,bname,'panel_size',0.05
       options,bname,'ytitle',''
@@ -302,6 +336,7 @@ pro mvn_sta_cio_tplot, pans=pans
     ylim,'vel_i+',1,500,1
     options,'vel_i+','constant',[10,100]
     options,'vel_i+','ytitle','Ion Vel!ckm/s'
+    options,'vel_i+','line_colors',lcol
     options,'vel_i+','colors',cols
     options,'vel_i+','labels',spec
     options,'vel_i+','labflag',1
@@ -334,6 +369,7 @@ pro mvn_sta_cio_tplot, pans=pans
     ylim,'engy_i+',0.1,100,1
     options,'engy_i+','constant',[1,10]
     options,'engy_i+','ytitle','Ion Energy!ceV'
+    options,'engy_i+','line_colors',lcol
     options,'engy_i+','colors',cols[1:*]
     options,'engy_i+','labels',spec[1:*]
     options,'engy_i+','labflag',1
@@ -364,6 +400,7 @@ pro mvn_sta_cio_tplot, pans=pans
     endif
     store_data,'VB_phi',data=vars[1:*]
     ylim,'VB_phi',0,180,0
+    options,'VB_phi','line_colors',lcol
     options,'VB_phi','colors',cols[1:*]
     options,'VB_phi','yticks',2
     options,'VB_phi','yminor',3
@@ -381,6 +418,7 @@ pro mvn_sta_cio_tplot, pans=pans
       store_data,'VI_phi',data={x:time, y:VI_phi, v:[0,1]}
       ylim,'VI_phi',0,180
       options,'VI_phi','ytitle','VI Phi!cAPP'
+      options,'VI_phi','line_colors',lcol
       options,'VI_phi','colors',icols[3:4]
       options,'VI_phi','yticks',2
       options,'VI_phi','yminor',3
@@ -399,6 +437,7 @@ pro mvn_sta_cio_tplot, pans=pans
     store_data,'VK_the',data={x:time, y:VK_the, v:[0,1,2]}
     ylim,'VK_the',-45,45,0
     options,'VK_the','ytitle','VK The!cAPP'
+    options,'VK_the','line_colors',lcol
     options,'VK_the','colors',icols[2:4]
     options,'VK_the','yticks',2
     options,'VK_the','yminor',3
@@ -440,25 +479,29 @@ pro mvn_sta_cio_tplot, pans=pans
     options,'Shape_PAD2','yminor',1
     options,'Shape_PAD2','constant',1
     options,'Shape_PAD2','ytitle','Shape'
-    options,'Shape_PAD2','colors',[cols.blue,cols.red]
+    options,'Shape_PAD2','line_colors',lcol
+    options,'Shape_PAD2','colors',[2,6]
     options,'Shape_PAD2','labels',['away','toward']
     options,'Shape_PAD2','labflag',1
 
     ylim,'flux40',0.1,1000,1
     options,'flux40','ytitle','Eflux/1e5!c40 eV'
     options,'flux40','constant',1
-    options,'flux40','colors',cols.green
+    options,'flux40','line_colors',lcol
+    options,'flux40','colors',4
 
     ylim,'ratio',0,2.5,0
     options,'ratio','ytitle','Flux Ratio!caway/twd!cPA 0-30'
     options,'ratio','constant',[0.75,1]
-    options,'ratio','colors',cols.green
+    options,'ratio','line_colors',lcol
+    options,'ratio','colors',4
 
     pans = [pans, 'Shape_PAD2', 'flux40', 'ratio']
 
 ; Topology and Plasma Region
 
-    options,'topo','colors',cols.blue
+    options,'topo','line_colors',lcol
+    options,'topo','colors',2
     store_data,'topo_lab',data={x:minmax(time), y:replicate(-1,2,5), v:findgen(5)}
     options,'topo_lab','labels',['?','Closed','Open-D','Open-N','Draped']
     options,'topo_lab','labflag',1
@@ -481,6 +524,8 @@ pro mvn_sta_cio_tplot, pans=pans
     store_data,bname,data={x:time, y:y, v:[0,1]}
     ylim,bname,0,1,0
     zlim,bname,0,4,0
+    options,bname,'color_table',ctab
+    options,bname,'color_reverse',crev
     options,bname,'spec',1
     options,bname,'panel_size',0.05
     options,bname,'ytitle',''
@@ -493,6 +538,7 @@ pro mvn_sta_cio_tplot, pans=pans
 
     options,'reg_id','psym',8
     options,'reg_id','symsize',1
+    options,'reg_id','line_colors',lcol
     options,'reg_id','colors',4
 
     store_data,'reg_lab',data={x:minmax(time), y:replicate(-1,2,5), v:findgen(5)}
@@ -512,6 +558,8 @@ pro mvn_sta_cio_tplot, pans=pans
     store_data,bname,data={x:reg_id.x, y:y, v:[0,1]}
     ylim,bname,0,1,0
     zlim,bname,0,4,0
+    options,bname,'color_table',ctab
+    options,bname,'color_reverse',crev
     options,bname,'spec',1
     options,bname,'panel_size',0.05
     options,bname,'ytitle',''
@@ -556,6 +604,7 @@ pro mvn_sta_cio_tplot, pans=pans
     store_data,'flux_i+',data=vars[1:*]
     ylim,'flux_i+',1e4,1e10,1
     options,'flux_i+','ytitle','Ion Flux!ccm!u-2!ns!u-1!n'
+    options,'flux_i+','line_colors',lcol
     options,'flux_i+','colors',cols[1:*]
     options,'flux_i+','labels',spec[1:*]
     options,'flux_i+','labflag',1
@@ -563,7 +612,6 @@ pro mvn_sta_cio_tplot, pans=pans
 
 ; CIO Geometry
 
-    cols = get_colors()
     first = 1
     if (doh) then begin
       store_data,'sthe',data={x:cio_h.time, y:cio_h.sthe}
@@ -608,21 +656,24 @@ pro mvn_sta_cio_tplot, pans=pans
       first = 0
     endif
 
-    options,'sthe','colors',cols.magenta
+    options,'sthe','line_colors',lcol
+    options,'sthe','colors',1
     options,'sthe','ytitle','Sun The!cSWEA'
     options,'sthe','constant',45     ; nominal value for SWEA CIO twist
 
     ylim,'sthe_app',-45,45,0
     options,'sthe_app','yticks',2
     options,'sthe_app','yminor',3
-    options,'sthe_app','colors',cols.magenta
+    options,'sthe_app','line_colors',lcol
+    options,'sthe_app','colors',1
     options,'sthe_app','ytitle','Sun The!cAPP'
     options,'sthe_app','constant',0  ; nominal value for STATIC CIO configuration
 
     ylim,'rthe_app',-45,45,0
     options,'rthe_app','yticks',2
     options,'rthe_app','yminor',3
-    options,'rthe_app','colors',cols.magenta
+    options,'rthe_app','line_colors',lcol
+    options,'rthe_app','colors',1
     options,'rthe_app','ytitle','MSO RAM The!cAPP'
     options,'rthe_app','constant',0  ; nominal value for STATIC CIO configuration
 
@@ -646,8 +697,9 @@ pro mvn_sta_cio_tplot, pans=pans
     store_data,bname,data={x:sthe.x, y:y, v:[0,1]}
     ylim,bname,0,1,0
     zlim,bname,0,3,0
+    options,bname,'color_table',ctab
+    options,bname,'color_reverse',crev
     options,bname,'spec',1
-    options,bname,'color_table',43  ; ensure blank-blue-yellow-red color scheme
     options,bname,'panel_size',0.05
     options,bname,'ytitle',''
     options,bname,'yticks',1
@@ -690,7 +742,5 @@ pro mvn_sta_cio_tplot, pans=pans
     options,vname,'ytitle','STA c0 M<10!cEnergy (eV)'
     options,vname,'ysubtitle',''
   endif else print, "Tplot variable not found: ", vname
-
-  return
 
 end

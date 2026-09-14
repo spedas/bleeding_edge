@@ -50,9 +50,9 @@
 ;
 ;See Also:  "XLIM", "YLIM", "ZLIM",  "OPTIONS",  "TPLOT", "DRAW_COLOR_SCALE"
 ;Author:  Davin Larson,  Space Sciences Lab
-; $LastChangedBy: jimm $
-; $LastChangedDate: 2025-02-18 14:05:52 -0800 (Tue, 18 Feb 2025) $
-; $LastChangedRevision: 33138 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-09-12 12:36:17 -0700 (Sat, 12 Sep 2026) $
+; $LastChangedRevision: 34889 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/tplot/specplot.pro $
 ;-
 pro specplot,x,y,z,limits=lim,data=data,overplot=overplot,overlay=overlay,$
@@ -92,6 +92,59 @@ if keyword_set(data) then begin
 ;     printdat,z,y
   endif
 endif
+
+
+; For testing purposes, we'll leave the spec bin sorting off by defauls.
+; Use options,var,sort_spec_bins=1 to enable
+
+str_element,lim,'sort_spec_bins',sort_spec_bins_opt
+if n_elements(sort_spec_bins_opt) eq 0 then sort_spec_bins_opt = 0
+
+if sort_spec_bins_opt then begin
+
+  ; Sort spectrogram bins only when the inputs satisfy the helper's contract.
+  ; If they do not, leave y and z unchanged.
+  sort_bins = 0B
+  
+  x_ndim = SIZE(x, /N_DIMENSIONS)
+  y_ndim = SIZE(y, /N_DIMENSIONS)
+  z_ndim = SIZE(z, /N_DIMENSIONS)
+  
+  IF (x_ndim EQ 1) AND (z_ndim EQ 2) THEN BEGIN
+    z_dims = SIZE(z, /DIMENSIONS)
+  
+    ; z must be [N,M], where N is the number of times.
+    IF N_ELEMENTS(x) EQ z_dims[0] THEN BEGIN
+      CASE y_ndim OF
+        1: BEGIN
+          ; Constant bins: y[M].
+          IF N_ELEMENTS(y) EQ z_dims[1] THEN sort_bins = 1B
+        END
+  
+        2: BEGIN
+          ; Time-varying bins: y[N,M].
+          y_dims = SIZE(y, /DIMENSIONS)
+  
+          IF (y_dims[0] EQ z_dims[0]) AND $
+            (y_dims[1] EQ z_dims[1]) THEN sort_bins = 1B
+        END
+  
+        ELSE: dpring, dlevel=2, 'Unexpected spectrogram bin array shape, skipping spectrogram bin sorting. y_ndims = '+str(y_ndim) ; Unsupported y rank: retain the original arrays.
+      ENDCASE
+    ENDIF ELSE BEGIN
+      dprint,dlevel=2,"Mismatched time and z data array shapes, skipping spectrogram bin sorting. ntimes, z_dims[0] = "+str(n_elememts(x))+' , '+str(z_dims[0])     
+    ENDELSE
+  ENDIF ELSE BEGIN
+    dprint,dlevel=2,"Unexpected input array dimensions, skipping spectrogram bin sorting. x_ndim, z_ndim = "+str(x_ndim)+' , '+str(z_ndim)
+  ENDELSE
+    
+  IF sort_bins THEN BEGIN
+    dprint,dlevel=2,"Sorting spectrogram bins"
+    sort_spectrogram_bins, y, z, y_sorted, z_sorted
+    y = TEMPORARY(y_sorted)
+    z = TEMPORARY(z_sorted)
+  ENDIF
+ENDIF
 
 if keyword_set(no_interp) then begin
    x_no_interp=1

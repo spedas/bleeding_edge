@@ -32,8 +32,8 @@
 ;   -- fixed trouble reading cal files with extra lines at the end,
 ;      jmm, 8-nov-2007
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2026-08-14 12:01:29 -0700 (Fri, 14 Aug 2026) $
-; $LastChangedRevision: 34741 $
+; $LastChangedDate: 2026-09-09 17:51:17 -0700 (Wed, 09 Sep 2026) $
+; $LastChangedRevision: 34881 $
 ; $URL $
 ;-
 pro thm_cal_fit, probe = probe, datatype = datatype, files = files, trange = trange, $
@@ -350,14 +350,8 @@ pro thm_cal_fit, probe = probe, datatype = datatype, files = files, trange = tra
 ;If check_l1b is set, then replace Bz with estimated value
 ; THEMIS-A and THEMIS-E both have L1B files with recovered Bz data
       use_l1b_bz = 0
-      If(keyword_set(check_l1b)) Then use_l1b_bz = 1b Else Begin
-         If(probe[0] Eq 'e') Then Begin
-            If(fgsx_fixed[0] Ge time_double('2024-05-25/00:00:00')) Then use_l1b_bz = 1b
-         Endif
-         If(probe[0] Eq 'a') Then Begin
-           If(fgsx_fixed[0] Ge time_double('2024-09-01/00:00:00')) Then use_l1b_bz = 1b
-         Endif
-      Endelse
+      If(keyword_set(check_l1b)) || fgm_bad_bz(probe=probe[0], date=fgsx_fixed[0]) Then use_l1b_bz = 1b
+
       If(use_l1b_bz) Then Begin
         bz_recovered = thx+'_fgl_l1b_bz'
         ; Don't use possibly stale recovered bz data

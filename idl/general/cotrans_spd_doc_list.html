@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep  5 03:16:15 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
  
 <HR>
  
@@ -51,10 +51,15 @@ This page was created by the IDL library routine
 <LI><A HREF="#COTRANS_LIB[26]">COTRANS_LIB[26]</A>
 <LI><A HREF="#COTRANS_LIB[27]">COTRANS_LIB[27]</A>
 <LI><A HREF="#COTRANS_LIB[28]">COTRANS_LIB[28]</A>
+<LI><A HREF="#COTRANS_LIB[29]">COTRANS_LIB[29]</A>
+<LI><A HREF="#COTRANS_LIB[30]">COTRANS_LIB[30]</A>
 <LI><A HREF="#COTRANS_SET_COORD">COTRANS_SET_COORD</A>
+<LI><A HREF="#GEI2HAE">GEI2HAE</A>
 <LI><A HREF="#GEO2MAG">GEO2MAG</A>
 <br>Convert from geographic to geomagnetic coordinates
 <LI><A HREF="#GSE2AGSM">GSE2AGSM</A>
+<LI><A HREF="#GSE2HEE">GSE2HEE</A>
+<LI><A HREF="#GSEQ2HEEQ">GSEQ2HEEQ</A>
 <LI><A HREF="#HDZ2GEO">HDZ2GEO</A>
 <LI><A HREF="#MAG2GEO.PRO">MAG2GEO.PRO</A>
 <br>Convert from geomagnetic to geographic coordinates
@@ -63,6 +68,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#SPD_COTRANS_UPDATE_DLIMITS">SPD_COTRANS_UPDATE_DLIMITS</A>
 <LI><A HREF="#SPD_COTRANS_VALIDATE_TRANSFORM">SPD_COTRANS_VALIDATE_TRANSFORM</A>
 <LI><A HREF="#SPD_GET_NUT_ANGLES_VEC">SPD_GET_NUT_ANGLES_VEC</A>
+<LI><A HREF="#SPD_HELIO_TRANSFORM[1]">SPD_HELIO_TRANSFORM[1]</A>
+<LI><A HREF="#SPD_HELIO_TRANSFORM[2]">SPD_HELIO_TRANSFORM[2]</A>
 <LI><A HREF="#SPD_MAKE_J2000_MATRIX_VEC">SPD_MAKE_J2000_MATRIX_VEC</A>
 <LI><A HREF="#SPD_SET_COORD">SPD_SET_COORD</A>
 <LI><A HREF="#SPG2SSL">SPG2SSL</A>
@@ -183,6 +190,9 @@ keywords:
 
  /GEI2J2000
  /J20002GEI
+
+ /GSE2GSEQ
+ /GSEQ2GSE
  
  /IGNORE_DLIMITS: set so it won't require the coordinate
 system of the input tplot variable to match the coordinate
@@ -205,9 +215,9 @@ Notes: under construction!!
 
 Written by: Hannes Schwarzl &amp; Patrick Cruce(pcruce@igpp.ucla.edu)
 
- $LastChangedBy: egrimes $
- $LastChangedDate: 2015-09-22 08:59:06 -0700 (Tue, 22 Sep 2015) $
- $LastChangedRevision: 18869 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-09-08 12:32:22 -0700 (Tue, 08 Sep 2026) $
+ $LastChangedRevision: 34877 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans.pro $
 </PRE><P>
 <STRONG>(See <A href="cotrans/cotrans.pro">general/cotrans/cotrans.pro</A>)</STRONG><P>
@@ -251,6 +261,29 @@ Written by: Hannes Schwarzl &amp; Patrick Cruce(pcruce@igpp.ucla.edu)
 <A HREF="#COTRANS_LIB[11]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
+proceddure: subGEI2GSE
+
+Purpose: transforms data from GEI to GSE
+
+INPUTS: TIMES as time_struct, DATA_in as nx3 array
+
+
+keywords:
+
+Example:
+
+
+Notes: under construction!!  will run faster in the near future!!
+</PRE><P>
+<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COTRANS_LIB[11]">
+<H2>COTRANS_LIB[11]</H2></A>
+<A HREF="#COTRANS_LIB[10]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[12]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
 procedure: subGSE2GEI
 
 Purpose: transforms data from GSE to GEI
@@ -269,10 +302,24 @@ Notes: under construction!!  will run faster in the near future!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[11]">
-<H2>COTRANS_LIB[11]</H2></A>
-<A HREF="#COTRANS_LIB[10]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[12]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[12]">
+<H2>COTRANS_LIB[12]</H2></A>
+<A HREF="#COTRANS_LIB[11]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[13]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: subGEI2GSEQ
+Purpose: transforms vectors between GEI and GSEQ.  With /GSE_INPUT, the
+         geocentric endpoint is GSE.  GSEQ uses X toward the Sun, Y in the
+         solar equatorial plane, and northward Z.
+</PRE><P>
+<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COTRANS_LIB[13]">
+<H2>COTRANS_LIB[13]</H2></A>
+<A HREF="#COTRANS_LIB[12]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[14]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: subGSE2GSM
@@ -292,10 +339,10 @@ Notes: under construction!!  will run faster in the near future!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[12]">
-<H2>COTRANS_LIB[12]</H2></A>
-<A HREF="#COTRANS_LIB[11]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[13]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[14]">
+<H2>COTRANS_LIB[14]</H2></A>
+<A HREF="#COTRANS_LIB[13]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[15]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: subGSM2GSE
@@ -315,61 +362,15 @@ Notes: under construction!!  will run faster in the near future!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[13]">
-<H2>COTRANS_LIB[13]</H2></A>
-<A HREF="#COTRANS_LIB[12]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[14]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-procedure: subGSM2SM
-
-Purpose: transforms data from GSM to SM
-
-INPUTS: TIMES as time_struct, DATA_in as nx3 array
-
-
-keywords:
-
-Example:
-
-
-Notes: under construction!!
-</PRE><P>
-<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="COTRANS_LIB[14]">
-<H2>COTRANS_LIB[14]</H2></A>
-<A HREF="#COTRANS_LIB[13]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[15]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-procedure: subSM2GSM
-
-Purpose: transforms data from SM to GSM
-
-INPUTS: TIMES as time_struct, DATA_in as nx3 array
-
-
-keywords:
-
-Example:
-
-
-Notes: under construction!!
-</PRE><P>
-<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="COTRANS_LIB[15]">
 <H2>COTRANS_LIB[15]</H2></A>
 <A HREF="#COTRANS_LIB[14]">[Previous Routine]</A>
 <A HREF="#COTRANS_LIB[16]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-procedure: subGEI2GEO
+procedure: subGSM2SM
 
-Purpose: transforms data from GEI to GEO
+Purpose: transforms data from GSM to SM
 
 INPUTS: TIMES as time_struct, DATA_in as nx3 array
 
@@ -390,9 +391,9 @@ Notes: under construction!!
 <A HREF="#COTRANS_LIB[17]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-procedure: subGEO2GEI
+procedure: subSM2GSM
 
-Purpose: transforms data from GEO to GEI
+Purpose: transforms data from SM to GSM
 
 INPUTS: TIMES as time_struct, DATA_in as nx3 array
 
@@ -413,9 +414,9 @@ Notes: under construction!!
 <A HREF="#COTRANS_LIB[18]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-procedure: subGEO2MAG
+procedure: subGEI2GEO
 
-Purpose: transforms data from GEO to MAG
+Purpose: transforms data from GEI to GEO
 
 INPUTS: TIMES as time_struct, DATA_in as nx3 array
 
@@ -436,9 +437,9 @@ Notes: under construction!!
 <A HREF="#COTRANS_LIB[19]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-procedure: subMAG2GEO
+procedure: subGEO2GEI
 
-Purpose: transforms data from MAG to GEO
+Purpose: transforms data from GEO to GEI
 
 INPUTS: TIMES as time_struct, DATA_in as nx3 array
 
@@ -459,21 +460,16 @@ Notes: under construction!!
 <A HREF="#COTRANS_LIB[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-procedure: csundir_vect
+procedure: subGEO2MAG
 
-Purpose: calculates the direction of the sun
-         (vectorized version of csundir from ROCOTLIB by
-          Patrick Robert)
+Purpose: transforms data from GEO to MAG
 
-INPUTS: integer time
+INPUTS: TIMES as time_struct, DATA_in as nx3 array
 
 
-output :      gst      greenwich mean sideral time (radians)
-              slong    longitude along ecliptic (radians)
-              sra      right ascension (radians)
-              sdec     declination of the sun (radians)
-              obliq    inclination of Earth's axis (radians)
+keywords:
 
+Example:
 
 
 Notes: under construction!!
@@ -503,9 +499,9 @@ Example:
 Notes: Same as sub_GSE2GSM, with &quot;aberrated GSM&quot; in the output message. The actual aberration 
        occurs in the higher level routine, gse2agsm
 
- $LastChangedBy: nikos $
- $LastChangedDate: 2025-02-27 20:48:10 -0800 (Thu, 27 Feb 2025) $
- $LastChangedRevision: 33158 $
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-09-08 12:32:22 -0700 (Tue, 08 Sep 2026) $
+ $LastChangedRevision: 34877 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans_lib.pro $
 </PRE><P>
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
@@ -515,6 +511,57 @@ Notes: Same as sub_GSE2GSM, with &quot;aberrated GSM&quot; in the output message
 <H2>COTRANS_LIB[20]</H2></A>
 <A HREF="#COTRANS_LIB[1]">[Previous Routine]</A>
 <A HREF="#COTRANS_LIB[21]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: subMAG2GEO
+
+Purpose: transforms data from MAG to GEO
+
+INPUTS: TIMES as time_struct, DATA_in as nx3 array
+
+
+keywords:
+
+Example:
+
+
+Notes: under construction!!
+</PRE><P>
+<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COTRANS_LIB[21]">
+<H2>COTRANS_LIB[21]</H2></A>
+<A HREF="#COTRANS_LIB[20]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[22]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: csundir_vect
+
+Purpose: calculates the direction of the sun
+         (vectorized version of csundir from ROCOTLIB by
+          Patrick Robert)
+
+INPUTS: integer time
+
+
+output :      gst      greenwich mean sideral time (radians)
+              slong    longitude along ecliptic (radians)
+              sra      right ascension (radians)
+              sdec     declination of the sun (radians)
+              obliq    inclination of Earth's axis (radians)
+
+
+
+Notes: under construction!!
+</PRE><P>
+<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COTRANS_LIB[22]">
+<H2>COTRANS_LIB[22]</H2></A>
+<A HREF="#COTRANS_LIB[21]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[23]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: tgeigse_vect
@@ -530,10 +577,10 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[21]">
-<H2>COTRANS_LIB[21]</H2></A>
-<A HREF="#COTRANS_LIB[20]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[22]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[23]">
+<H2>COTRANS_LIB[23]</H2></A>
+<A HREF="#COTRANS_LIB[22]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[24]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: tgsegei_vect
@@ -549,10 +596,10 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[22]">
-<H2>COTRANS_LIB[22]</H2></A>
-<A HREF="#COTRANS_LIB[21]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[23]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[24]">
+<H2>COTRANS_LIB[24]</H2></A>
+<A HREF="#COTRANS_LIB[23]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[25]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: tgsegsm_vect
@@ -568,10 +615,10 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[23]">
-<H2>COTRANS_LIB[23]</H2></A>
-<A HREF="#COTRANS_LIB[22]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[24]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[25]">
+<H2>COTRANS_LIB[25]</H2></A>
+<A HREF="#COTRANS_LIB[24]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[26]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: tgsmgse_vect
@@ -587,10 +634,10 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[24]">
-<H2>COTRANS_LIB[24]</H2></A>
-<A HREF="#COTRANS_LIB[23]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[25]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[26]">
+<H2>COTRANS_LIB[26]</H2></A>
+<A HREF="#COTRANS_LIB[25]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[27]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: tgsmsm_vect
@@ -606,10 +653,10 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[25]">
-<H2>COTRANS_LIB[25]</H2></A>
-<A HREF="#COTRANS_LIB[24]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[26]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[27]">
+<H2>COTRANS_LIB[27]</H2></A>
+<A HREF="#COTRANS_LIB[26]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[28]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: tsmgsm_vect
@@ -625,10 +672,10 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[26]">
-<H2>COTRANS_LIB[26]</H2></A>
-<A HREF="#COTRANS_LIB[25]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[27]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[28]">
+<H2>COTRANS_LIB[28]</H2></A>
+<A HREF="#COTRANS_LIB[27]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[29]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: cdipdir_vect
@@ -645,10 +692,10 @@ Notes: under construction!!;
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[27]">
-<H2>COTRANS_LIB[27]</H2></A>
-<A HREF="#COTRANS_LIB[26]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[28]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[29]">
+<H2>COTRANS_LIB[29]</H2></A>
+<A HREF="#COTRANS_LIB[28]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[2]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: cdipdir
@@ -662,10 +709,60 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[28]">
-<H2>COTRANS_LIB[28]</H2></A>
-<A HREF="#COTRANS_LIB[27]">[Previous Routine]</A>
+<A NAME="COTRANS_LIB[2]">
+<H2>COTRANS_LIB[2]</H2></A>
+<A HREF="#COTRANS_LIB[29]">[Previous Routine]</A>
 <A HREF="#COTRANS_LIB[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+pro sub_GSE2GSM
+
+Purpose: transforms data from GSE to GSM
+
+
+keywords:
+   /GSM2GSE : inverse transformation
+Example:
+      sub_GSE2GSM,tha_fglc_gse,tha_fglc_gsm
+
+      sub_GSE2GSM,tha_fglc_gsm,tha_fglc_gse,/GSM2GSE
+
+
+Notes: under construction!!  will run faster in the near future!!
+
+Written by Hannes Schwarzl
+</PRE><P>
+<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COTRANS_LIB[2]">
+<H2>COTRANS_LIB[2]</H2></A>
+<A HREF="#COTRANS_LIB[2]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[30]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+pro: sub_GEI2GSE
+
+Purpose: transforms THEMIS fluxgate magnetometer data from GEI to GSE
+
+
+keywords:
+   /GSE2GEI : inverse transformation
+Example:
+      sub_GEI2GSE,tha_fglc_gei,tha_fglc_gse
+
+      sub_GEI2GSE,tha_fglc_gse,tha_fglc_gei,/GSE2GEI
+
+
+Notes: under construction!!  will run faster in the near future!!
+</PRE><P>
+<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COTRANS_LIB[30]">
+<H2>COTRANS_LIB[30]</H2></A>
+<A HREF="#COTRANS_LIB[2]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[3]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE cotrans_lib
@@ -697,60 +794,23 @@ Notes: under construction!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[2]">
-<H2>COTRANS_LIB[2]</H2></A>
-<A HREF="#COTRANS_LIB[28]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[2]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-pro sub_GSE2GSM
-
-Purpose: transforms data from GSE to GSM
-
-
-keywords:
-   /GSM2GSE : inverse transformation
-Example:
-      sub_GSE2GSM,tha_fglc_gse,tha_fglc_gsm
-
-      sub_GSE2GSM,tha_fglc_gsm,tha_fglc_gse,/GSM2GSE
-
-
-Notes: under construction!!  will run faster in the near future!!
-
-Written by Hannes Schwarzl
-</PRE><P>
-<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
-<HR>
- 
-<A NAME="COTRANS_LIB[2]">
-<H2>COTRANS_LIB[2]</H2></A>
-<A HREF="#COTRANS_LIB[2]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[3]">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-pro: sub_GEI2GSE
-
-Purpose: transforms THEMIS fluxgate magnetometer data from GEI to GSE
-
-
-keywords:
-   /GSE2GEI : inverse transformation
-Example:
-      sub_GEI2GSE,tha_fglc_gei,tha_fglc_gse
-
-      sub_GEI2GSE,tha_fglc_gse,tha_fglc_gei,/GSE2GEI
-
-
-Notes: under construction!!  will run faster in the near future!!
-</PRE><P>
-<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="COTRANS_LIB[3]">
 <H2>COTRANS_LIB[3]</H2></A>
-<A HREF="#COTRANS_LIB[2]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[30]">[Previous Routine]</A>
 <A HREF="#COTRANS_LIB[4]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+pro: sub_GSE2GSEQ
+Purpose: transforms vectors between GSE and Geocentric Solar Equatorial.
+keywords: /GSEQ2GSE performs the inverse transformation.
+</PRE><P>
+<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="COTRANS_LIB[4]">
+<H2>COTRANS_LIB[4]</H2></A>
+<A HREF="#COTRANS_LIB[3]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[5]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 pro sub_GSM2SM
@@ -771,10 +831,10 @@ Notes: under construction!!  will run faster in the near future!!
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[4]">
-<H2>COTRANS_LIB[4]</H2></A>
-<A HREF="#COTRANS_LIB[3]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[5]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[5]">
+<H2>COTRANS_LIB[5]</H2></A>
+<A HREF="#COTRANS_LIB[4]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[6]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 pro sub_GEI2GEO
@@ -795,10 +855,10 @@ Notes:
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[5]">
-<H2>COTRANS_LIB[5]</H2></A>
-<A HREF="#COTRANS_LIB[4]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[6]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[6]">
+<H2>COTRANS_LIB[6]</H2></A>
+<A HREF="#COTRANS_LIB[5]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[7]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 pro sub_GEO2MAG
@@ -819,10 +879,10 @@ Notes:
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[6]">
-<H2>COTRANS_LIB[6]</H2></A>
-<A HREF="#COTRANS_LIB[5]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[7]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[7]">
+<H2>COTRANS_LIB[7]</H2></A>
+<A HREF="#COTRANS_LIB[6]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[8]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 proceddure: subGEI2J2000
@@ -839,10 +899,10 @@ Example:
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[7]">
-<H2>COTRANS_LIB[7]</H2></A>
-<A HREF="#COTRANS_LIB[6]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[8]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[8]">
+<H2>COTRANS_LIB[8]</H2></A>
+<A HREF="#COTRANS_LIB[7]">[Previous Routine]</A>
+<A HREF="#COTRANS_LIB[9]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 procedure: subJ20002GEI
@@ -860,10 +920,10 @@ Example:
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[8]">
-<H2>COTRANS_LIB[8]</H2></A>
-<A HREF="#COTRANS_LIB[7]">[Previous Routine]</A>
-<A HREF="#COTRANS_LIB[9]">[Next Routine]</A>
+<A NAME="COTRANS_LIB[9]">
+<H2>COTRANS_LIB[9]</H2></A>
+<A HREF="#COTRANS_LIB[8]">[Previous Routine]</A>
+<A HREF="#COTRANS_SET_COORD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 pro: sub_GEI2J2000
@@ -878,33 +938,10 @@ keywords:
 <STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="COTRANS_LIB[9]">
-<H2>COTRANS_LIB[9]</H2></A>
-<A HREF="#COTRANS_LIB[8]">[Previous Routine]</A>
-<A HREF="#COTRANS_SET_COORD">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-proceddure: subGEI2GSE
-
-Purpose: transforms data from GEI to GSE
-
-INPUTS: TIMES as time_struct, DATA_in as nx3 array
-
-
-keywords:
-
-Example:
-
-
-Notes: under construction!!  will run faster in the near future!!
-</PRE><P>
-<STRONG>(See <A href="cotrans/cotrans_lib.pro">general/cotrans/cotrans_lib.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="COTRANS_SET_COORD">
 <H2>COTRANS_SET_COORD</H2></A>
 <A HREF="#COTRANS_LIB[9]">[Previous Routine]</A>
-<A HREF="#GEO2MAG">[Next Routine]</A>
+<A HREF="#GEI2HAE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 	Function: COTRANS_SET_COORD
@@ -932,9 +969,22 @@ Notes: under construction!!  will run faster in the near future!!
 <STRONG>(See <A href="cotrans/cotrans_set_coord.pro">general/cotrans/cotrans_set_coord.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="GEI2HAE">
+<H2>GEI2HAE</H2></A>
+<A HREF="#COTRANS_SET_COORD">[Previous Routine]</A>
+<A HREF="#GEO2MAG">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: gei2hae
+Purpose: transform GEI to Heliocentric Aries Ecliptic, or the inverse.
+Use /POSITION for array positions.  Tplot positions are detected from st_type.
+</PRE><P>
+<STRONG>(See <A href="cotrans/gei2hae.pro">general/cotrans/gei2hae.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="GEO2MAG">
 <H2>GEO2MAG</H2></A>
-<A HREF="#COTRANS_SET_COORD">[Previous Routine]</A>
+<A HREF="#GEI2HAE">[Previous Routine]</A>
 <A HREF="#GSE2AGSM">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -977,7 +1027,7 @@ Notes: under construction!!  will run faster in the near future!!
 <A NAME="GSE2AGSM">
 <H2>GSE2AGSM</H2></A>
 <A HREF="#GEO2MAG">[Previous Routine]</A>
-<A HREF="#HDZ2GEO">[Next Routine]</A>
+<A HREF="#GSE2HEE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  Procedure: gse2agsm
@@ -1033,9 +1083,35 @@ Notes: under construction!!  will run faster in the near future!!
 <STRONG>(See <A href="cotrans/gse2agsm.pro">general/cotrans/gse2agsm.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="GSE2HEE">
+<H2>GSE2HEE</H2></A>
+<A HREF="#GSE2AGSM">[Previous Routine]</A>
+<A HREF="#GSEQ2HEEQ">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: gse2hee
+Purpose: transform GSE to Heliocentric Earth Ecliptic, or the inverse.
+Use /POSITION for array positions.  Tplot positions are detected from st_type.
+</PRE><P>
+<STRONG>(See <A href="cotrans/gse2hee.pro">general/cotrans/gse2hee.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="GSEQ2HEEQ">
+<H2>GSEQ2HEEQ</H2></A>
+<A HREF="#GSE2HEE">[Previous Routine]</A>
+<A HREF="#HDZ2GEO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: gseq2heeq
+Purpose: transform GSEQ to Heliocentric Earth Equatorial, or the inverse.
+Use /POSITION for array positions.  Tplot positions are detected from st_type.
+</PRE><P>
+<STRONG>(See <A href="cotrans/gseq2heeq.pro">general/cotrans/gseq2heeq.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="HDZ2GEO">
 <H2>HDZ2GEO</H2></A>
-<A HREF="#GSE2AGSM">[Previous Routine]</A>
+<A HREF="#GSEQ2HEEQ">[Previous Routine]</A>
 <A HREF="#MAG2GEO.PRO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -1225,7 +1301,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cot
 <A NAME="SPD_GET_NUT_ANGLES_VEC">
 <H2>SPD_GET_NUT_ANGLES_VEC</H2></A>
 <A HREF="#SPD_COTRANS_VALIDATE_TRANSFORM">[Previous Routine]</A>
-<A HREF="#SPD_MAKE_J2000_MATRIX_VEC">[Next Routine]</A>
+<A HREF="#SPD_HELIO_TRANSFORM[1]">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  SPD_GET_NUT_ANGLES_VEC
@@ -1244,9 +1320,33 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cot
 <STRONG>(See <A href="cotrans/spd_get_nut_angles_vec.pro">general/cotrans/spd_get_nut_angles_vec.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="SPD_HELIO_TRANSFORM[1]">
+<H2>SPD_HELIO_TRANSFORM[1]</H2></A>
+<A HREF="#SPD_GET_NUT_ANGLES_VEC">[Previous Routine]</A>
+<A HREF="#SPD_HELIO_TRANSFORM[2]">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: spd_helio_transform_array
+Purpose: numerical core for the dedicated geocentric/heliocentric routines.
+</PRE><P>
+<STRONG>(See <A href="cotrans/spd_helio_transform.pro">general/cotrans/spd_helio_transform.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="SPD_HELIO_TRANSFORM[2]">
+<H2>SPD_HELIO_TRANSFORM[2]</H2></A>
+<A HREF="#SPD_HELIO_TRANSFORM[1]">[Previous Routine]</A>
+<A HREF="#SPD_MAKE_J2000_MATRIX_VEC">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+procedure: spd_helio_transform
+Purpose: shared tplot/array handling for dedicated heliocentric transforms.
+</PRE><P>
+<STRONG>(See <A href="cotrans/spd_helio_transform.pro">general/cotrans/spd_helio_transform.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="SPD_MAKE_J2000_MATRIX_VEC">
 <H2>SPD_MAKE_J2000_MATRIX_VEC</H2></A>
-<A HREF="#SPD_GET_NUT_ANGLES_VEC">[Previous Routine]</A>
+<A HREF="#SPD_HELIO_TRANSFORM[2]">[Previous Routine]</A>
 <A HREF="#SPD_SET_COORD">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

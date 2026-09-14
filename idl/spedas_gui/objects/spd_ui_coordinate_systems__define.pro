@@ -40,9 +40,9 @@
 ;      This routine was forked from the THEMIS coord object (thm_ui_coordinate_systems)
 ;
 ;
-;$LastChangedBy: crussell $
-;$LastChangedDate: 2015-09-23 08:48:08 -0700 (Wed, 23 Sep 2015) $
-;$LastChangedRevision: 18883 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-09-08 12:35:19 -0700 (Tue, 08 Sep 2026) $
+;$LastChangedRevision: 34878 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/objects/spd_ui_coordinate_systems__define.pro $
 ;-
 
@@ -57,15 +57,19 @@ end
 ; constructor
 function spd_ui_coordinate_systems::init
 
-    ; standard Earth-centered coordinate systems
+    ; standard geocentric and heliocentric coordinate systems
     geomag_coord_sys_list = ['gsm', $ ; Geocentric Solar Magnetospheric
                              'agsm', $ ; aberrated GSM
                              'gse', $ ; Geocentric Solar Ecliptic
+                             'gseq', $ ; Geocentric Solar Equatorial
                              'gei', $ ; Geocentric Equatorial Inertial
                              'sm', $ ; Solar Magnetic
                              'geo', $ ; Geographic
                              'mag', $ ; Magnetic
-                             'j2000' $ ; J2000 (mean of date)                             
+                             'j2000', $ ; J2000 (mean of date)
+                             'hee', $ ; Heliocentric Earth Ecliptic
+                             'hae', $ ; Heliocentric Aries Ecliptic
+                             'heeq' $ ; Heliocentric Earth Equatorial
                              ]
     
     ; additional coordinate systems

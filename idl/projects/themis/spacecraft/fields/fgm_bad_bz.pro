@@ -12,8 +12,8 @@
 ;RETURNS:
 ; 1 if Bz was known bad, 0 otherwise
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-09-02 13:32:02 -0700 (Wed, 02 Sep 2026) $
-;$LastChangedRevision: 34866 $
+;$LastChangedDate: 2026-09-09 17:48:51 -0700 (Wed, 09 Sep 2026) $
+;$LastChangedRevision: 34879 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/spacecraft/fields/fgm_bad_bz.pro $
 
 
@@ -23,14 +23,18 @@ function fgm_bad_bz,probe=probe,date=date
   if (pl eq 'a') then begin
      if (date_dbl Ge time_double('2024-09-01')) && (date_dbl lt time_double('2026-04-16')) then begin
          ; Most of this data is bad. except for some good time intervals
-         if (date_dbl Ge time_double('2026-01-15')) && (date_dbl lt time_double('2026-01-25')) then begin
+         if (date_dbl Ge time_double('2026-01-15')) && (date_dbl lt time_double('2026-01-31')) then begin
           ; first good subrange
           return, 0
          endif else $
-         if (date_dbl Ge time_double('2026-01-27')) && (date_dbl lt time_double('2026-01-31')) then begin
-          ; second good subrange
+         if(date_dbl Ge time_double('2026-02-25')) && (date_dbl lt time_double('2026-03-03')) then begin
+            ; second good subrange
+            return, 0
+         endif else $
+         if(date_dbl Ge time_double('2026-03-23')) && (date_dbl lt time_double('2026-03-24')) then begin
+          ; third good subrange
           return, 0
-         endif else begin
+        endif else begin
           ; bad tha range
           return, 1
          endelse

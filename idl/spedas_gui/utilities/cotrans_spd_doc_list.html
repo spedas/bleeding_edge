@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Sep  5 03:16:15 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
  
 <HR>
  
@@ -41,8 +41,10 @@ Purpose:
   specified.
 
 The set of transformations forms the following graph:
-  GSE&lt;-&gt;GEI&lt;-&gt;GEO&lt;-&gt;MAG
+  HEE&lt;-&gt;GSE&lt;-&gt;GEI&lt;-&gt;GEO&lt;-&gt;MAG
   GSE&lt;-&gt;GSM&lt;-&gt;SM
+  GSE&lt;-&gt;GSEQ&lt;-&gt;HEEQ
+  GEI&lt;-&gt;HAE
 
 </PRE><P>
 <STRONG>(See <A href="cotrans/spd_cotrans.pro">spedas_gui/utilities/cotrans/spd_cotrans.pro</A>)</STRONG><P>
@@ -75,9 +77,10 @@ Keywords:
              This keyword is optional if the dlimits.data_att.coord_sys attribute
              is present for the tplot variable, and if present, it must match
              the value of that attribute (see cotrans_set_coord, cotrans_get_coord).
-               e.g. 'gse', 'gsm', 'sm', 'gei','geo', 'mag'
+               e.g. 'gse', 'gseq', 'gsm', 'sm', 'gei', 'geo', 'mag',
+                    'hee', 'hae', 'heeq'
   out_coord:  String specifying the desitnation coordinate system.
-                e.g. 'gse', 'gsm', 'sm', 'gei','geo', 'mag' 
+               The same coordinate-system names accepted by in_coord.
   in_suffix:  Suffix of input variable name.  This specifies the portion of
               the input variable's name that will be replace with the output
               suffix.  If specified, the name effective input name will be
@@ -99,9 +102,9 @@ Notes:
   This procedure was forked from thm_cotrans.
 
 
-$LastChangedBy: aaflores $
-$LastChangedDate: 2016-02-24 18:53:52 -0800 (Wed, 24 Feb 2016) $
-$LastChangedRevision: 20171 $
+$LastChangedBy: jwl $
+$LastChangedDate: 2026-09-08 12:35:19 -0700 (Tue, 08 Sep 2026) $
+$LastChangedRevision: 34878 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/cotrans/spd_cotrans.pro $
 
 </PRE><P>

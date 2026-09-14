@@ -15,9 +15,9 @@
 ;Notes: Same as sub_GSE2GSM, with "aberrated GSM" in the output message. The actual aberration 
 ;       occurs in the higher level routine, gse2agsm
 ;
-; $LastChangedBy: nikos $
-; $LastChangedDate: 2025-02-27 20:48:10 -0800 (Thu, 27 Feb 2025) $
-; $LastChangedRevision: 33158 $
+; $LastChangedBy: jwl $
+; $LastChangedDate: 2026-09-08 12:32:22 -0700 (Tue, 08 Sep 2026) $
+; $LastChangedRevision: 34877 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/cotrans/cotrans_lib.pro $
 ;-
 pro sub_GSE2aGSM,data_in,data_out,aGSM2GSE=aGSM2GSE
@@ -132,6 +132,19 @@ pro sub_GEI2GSE,data_in,data_out,GSE2GEI=GSE2GEI
     DPRINT,'done'
     
     ;RETURN,data_out
+end
+
+;+
+;pro: sub_GSE2GSEQ
+;Purpose: transforms vectors between GSE and Geocentric Solar Equatorial.
+;keywords: /GSEQ2GSE performs the inverse transformation.
+;-
+pro sub_GSE2GSEQ, data_in, data_out, GSEQ2GSE=GSEQ2GSE
+  data_out = data_in
+  times = time_struct(data_in.x)
+  subGEI2GSEQ, times, data_in.y, data_out_arr, /GSE_INPUT, $
+    GSEQ2GSE=keyword_set(GSEQ2GSE)
+  data_out.y = data_out_arr
 end
 
 ;+
@@ -463,6 +476,63 @@ pro subGSE2GEI,TIMES,DATA_in,DATA_out
     ;endfor
     
     ;return,DATA_out
+end
+
+
+;#################################################
+;+
+;procedure: subGEI2GSEQ
+;Purpose: transforms vectors between GEI and GSEQ.  With /GSE_INPUT, the
+;         geocentric endpoint is GSE.  GSEQ uses X toward the Sun, Y in the
+;         solar equatorial plane, and northward Z.
+;-
+pro subGEI2GSEQ, TIMES, DATA_in, DATA_out, GSEQ2GEI=GSEQ2GEI, $
+  GSE_INPUT=GSE_INPUT, GSEQ2GSE=GSEQ2GSE
+
+  count = size(DATA_in[*,0], /n_elements)
+  ts = time_struct(TIMES)
+  csundir_vect, ts.year, ts.doy, ts.hour, ts.min, $
+    double(ts.sec)+ts.fsec, gst, slong, sra, sdec, obliq
+  x_axis = [[cos(sra)*cos(sdec)], [sin(sra)*cos(sdec)], [sin(sdec)]]
+
+  ; IAU solar north pole (J2000): RA 286.13 deg, Dec 63.87 deg.
+  ra_p = 286.13d * !dpi / 180d
+  dec_p = 63.87d * !dpi / 180d
+  pole_j2000 = dblarr(count, 3)
+  pole_j2000[*,0] = cos(ra_p)*cos(dec_p)
+  pole_j2000[*,1] = sin(ra_p)*cos(dec_p)
+  pole_j2000[*,2] = sin(dec_p)
+  subJ20002GEI, ts, pole_j2000, pole_gei
+
+  y_axis = dblarr(count, 3)
+  y_axis[*,0] = pole_gei[*,1]*x_axis[*,2] - pole_gei[*,2]*x_axis[*,1]
+  y_axis[*,1] = pole_gei[*,2]*x_axis[*,0] - pole_gei[*,0]*x_axis[*,2]
+  y_axis[*,2] = pole_gei[*,0]*x_axis[*,1] - pole_gei[*,1]*x_axis[*,0]
+  y_norm = sqrt(total(y_axis^2, 2))
+  y_axis[*,0] /= y_norm
+  y_axis[*,1] /= y_norm
+  y_axis[*,2] /= y_norm
+
+  z_axis = dblarr(count, 3)
+  z_axis[*,0] = x_axis[*,1]*y_axis[*,2] - x_axis[*,2]*y_axis[*,1]
+  z_axis[*,1] = x_axis[*,2]*y_axis[*,0] - x_axis[*,0]*y_axis[*,2]
+  z_axis[*,2] = x_axis[*,0]*y_axis[*,1] - x_axis[*,1]*y_axis[*,0]
+
+  inverse = keyword_set(GSEQ2GEI) || keyword_set(GSEQ2GSE)
+  if ~inverse then begin
+    if keyword_set(GSE_INPUT) then subGSE2GEI, ts, DATA_in, work else work=DATA_in
+    DATA_out = [[total(work*x_axis,2)], [total(work*y_axis,2)], $
+      [total(work*z_axis,2)]]
+  endif else begin
+    work = x_axis
+    work[*,0] = DATA_in[*,0]*x_axis[*,0] + DATA_in[*,1]*y_axis[*,0] + $
+      DATA_in[*,2]*z_axis[*,0]
+    work[*,1] = DATA_in[*,0]*x_axis[*,1] + DATA_in[*,1]*y_axis[*,1] + $
+      DATA_in[*,2]*z_axis[*,1]
+    work[*,2] = DATA_in[*,0]*x_axis[*,2] + DATA_in[*,1]*y_axis[*,2] + $
+      DATA_in[*,2]*z_axis[*,2]
+    if keyword_set(GSEQ2GSE) then subGEI2GSE, ts, work, DATA_out else DATA_out=work
+  endelse
 end
 
 ;#################################################
