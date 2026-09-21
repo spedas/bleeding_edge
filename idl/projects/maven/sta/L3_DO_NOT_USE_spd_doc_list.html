@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 18 15:46:10 2026.<P>
  
 <HR>
  
@@ -69,7 +69,6 @@ This page was created by the IDL library routine
 MVN_STA_L3_GENERATE_SCIENCE_FILES</A>
 <LI><A HREF="#MVN_STA_L3_GENERATE_SCIENCE_FILES_NOBKG4">
 MVN_STA_L3_GENERATE_SCIENCE_FILES_NOBKG4</A>
-<LI><A HREF="#MVN_STA_L3_LOAD[2]">MVN_STA_L3_LOAD[2]</A>
 <LI><A HREF="#MVN_STA_L3_MAC_DEN_V2">MVN_STA_L3_MAC_DEN_V2</A>
 <br>Calculates Ni from sta c6 and puts it into tplot structures
 <LI><A HREF="#MVN_STA_L3_RAMDIR">MVN_STA_L3_RAMDIR</A>
@@ -1165,7 +1164,7 @@ EDITS:
 <A NAME="MVN_STA_L3_GENERATE_SCIENCE_FILES_NOBKG4">
 <H2>MVN_STA_L3_GENERATE_SCIENCE_FILES_NOBKG4</H2></A>
 <A HREF="#MVN_STA_L3_GENERATE_SCIENCE_FILES">[Previous Routine]</A>
-<A HREF="#MVN_STA_L3_LOAD[2]">[Next Routine]</A>
+<A HREF="#MVN_STA_L3_MAC_DEN_V2">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 2025-12-01: CMF: note, the original generate.pro has had small edits to improve it, and so this _nobkg4 is
@@ -1230,139 +1229,9 @@ PLOTTING NOTES:
 <STRONG>(See <A href="L3_DO_NOT_USE/mvn_sta_l3_generate_science_files_nobkg4.pro">projects/maven/sta/L3_DO_NOT_USE/mvn_sta_l3_generate_science_files_nobkg4.pro</A>)</STRONG><P>
 <HR>
  
-<A NAME="MVN_STA_L3_LOAD[2]">
-<H2>MVN_STA_L3_LOAD[2]</H2></A>
-<A HREF="#MVN_STA_L3_GENERATE_SCIENCE_FILES_NOBKG4">[Previous Routine]</A>
-<A HREF="#MVN_STA_L3_MAC_DEN_V2">[Next Routine]</A>
-<A HREF="#ROUTINELIST">[List of Routines]</A>
-<PRE>
-Routine to load STATIC L3 moments into IDL tplot: density, temperature, and eventually flow and winds.
-
-KEYWORDS:
-Set /den to load STATIC densities for the five major species: H+, m/q=2 (typically He++ in the solar wind), O+, O2+, CO2+.
-Set /temp to load STATIC O2+ temperatures.
-
- - Setting no keywords will by default load all moment types.
-
-Set /append to append the output tplot variables to IDL tplot memory. This means that if the loaded tplot variables already exist,
-     they will be appended to, rather than being overwritten. By default, when this keyword is not set, any tplot variables with the same
-     names that already exist are overwritten.
-
-success: set to a named variable to return: 0: unsuccessful - no data loaded.
-                                            1: successful - data (probably) loaded.
-                                            The routine is not clever enough to provide more details - 0 means it could not find any
-                                            files to load, 1 means it found some (could be density or temperature) files and loaded them.
-
-Set /margin to extend the left hand side margin so that tplot panel titles show properly. The default settings in tplot mean that 
-these don't always fit. These are changed to tplot_options, 'xmargin', [16,8].
-
-Set /anc to load ancillary data files that include more detailed information from the density and temperature calculations. These are
-typically used for calibration and checks by the instrument team, and should not be needed for most users. It is recommended that you 
-contact the instrument team if you wish to use any parameters loaded using this keyword.
-
-Set /flag to load a second set of ancillary data files that contain additional flag information, that was used to create the final flag variable
-     mvn_sta_l3_density_quality_flag.
-
-Set coltab as a float/integer to the desired color table, so that tplot variable labels can be colored correctly. If not set, the default
-     value of 43 is used, via loadct2, 43.
-
-Set /qualc if you are using Mike Chaffins qualcolors colortable software. This supercedes the coltab keyword. If qualc is not set, 
-     then the keyword coltab is used instead, which defaults to 43 if not set.
-     NOTE: If you use the qualcolors software, you may get a red background when loading the data if you don't use the /qualc keyword. 
-           To fix this, run the following:
-               @'qualcolors'
-               !p.background = qualcolors.white
-               !p.color = qualcolors.black 
- 
-If you set /leavecolors, the routine will not set any colors and will ignore the coltab and qualc keywords. Use this if you do not 
-     want this routine loading a new colortable. You can fix the tplot colors outside of this routine using 
-         options, 'tplotname', colors=[1,2,3,4,5]
-
-Set filesloaded to a variable that will contain the filenames of the tplot files loaded. This output will be in string format. Files are appended in the order loaded,
-     so science, ancillary and flag filenames, if /anc and /flag are set. 
-
-
-OUTPUTS: 
-The following IDL tplot variables:
-DENSITY:
-mvn_sta_l3_density : densities in cm^-3, for H+, m/q=2 (usually He++ in the solar wind, sometimes H2+ in the ionosphere), O+, O2+, CO2+.
-
-mvn_sta_l3_density_abs_uncertainty - absolute statistical uncertainty in densities (cm^-3). Note, this is the statisical uncertainty
-                                     associated with the number of counts observed. There can be other sources of uncertainty, for example
-                                     from blockage caused by the spacecraft or gaps in STATICs field of view. These are not accounted for 
-                                     (and are difficult to do so in an automated fashion).                                   
-
-mvn_sta_l3_density_perc_uncertainty - statistical uncertainty in densities as a percentage of the total density for that species.
-
-mvn_sta_l3_density_quality_flag - quality flag assigned to each data point and ion species:
-                               0 = ok
-                               1 = use caution (recommend not using)
-                               Quality flag takes into account the statistical significance of the observed count rates, changes in
-                               attenuator states, whether STATIC is pointed optimally. 
-                               
-mvn_sta_l3_density_light_method &amp; 
-mvn_sta_l3_density_heavy_method - methods used to determine light and heavy ion densities. 
-                                  0 = moment; 1, 2, or 3 = beam for O+, O2+, CO2+ respectively (different values used for viewing purposes).      
-    
-mvn_sta_c6_att_mode -   indicates which mode &amp; attenuator state STATIC is in  (see STATIC readme)                                            
-                               
-mvn_sta_l3_density_mvn_pos_mso - MAVENs position in the MSO coordinate system, in units of km, generated using SPICE.
-
-mvn_sta_l3_density_mvn_sza - MAVENs solar zenith angle in the MSO coordinate system, in degrees, generated using SPICE.
-
-mvn_sta_l3_density_mvn_alt_iau - MAVENs altitude in the IAU coordinate system (ie Mars is an oblate spheroid), in units of km, generated using SPICE.
-
-
-
-TEMPERATURE:
-
-mvn_sta_l3_temperature_o2+: O2+ temperature, mostly at c6 time cadence (4s) in eV
-
-mvn_sta_l3_temperature_abs_uncertainty: absolute statistical uncertainty in temperature (eV). Note, this is the statisical uncertainty
-                                     associated with the number of counts observed. There can be other sources of uncertainty, for example
-                                     from blockage caused by the spacecraft or gaps in STATICs field of view. These are not accounted for
-                                     (and are difficult to do so in an automated fashion).;
-                      
-mvn_sta_l3_temperature_quality_flag - quality flag assigned to each data point and ion species:
-                               0 = ok
-                               1 = use caution (recommend not using)
-                               Quality flag takes into account the availability of corrections to s/c potential based on LPW data, 
-                               and the ratio of the temperature corrections to the temperature (T_AC/T_ion, see temperature paper for 
-                               definition of T_AC) 
-                               
-mvn_sta_l3_temperature_product - indicates which STATIC data product was used to calculate O2+ temperature.
-                               0 = c6 energy beamwidth (default) 
-                               1 = c8 angular beamwidth 
-                               
-mvn_sta_l3_sta_att_mode - indicates which mode &amp; attenuator state STATIC is in  (see STATIC readme; same as mvn_sta_c6_att_mode)                 
-
-mvn_sta_l3_temperature_mvn_pos_mso - MAVEN's position in the MSO coordinate system, in units of km, generated using SPICE.
-
-mvn_sta_l3_temperature_mvn_pos_geo - MAVEN's position in the planetocentric coordinate system, in units of km, generated using SPICE.
-
-mvn_sta_l3_temperature_mvn_sza - MAVEN's solar zenith angle in the MSO coordinate system, in degrees, generated using SPICE.
-
-mvn_sta_l3_temperature_mvn_alt_iau - MAVEN's altitude in the IAU coordinate system (ie Mars is an oblate spheroid), in units of km, generated using SPICE.
-
-mvn_sta_l3_temperature_mvn_lst - MAVEN's local solar time, in hours. 
-
-
-
-BULK FLOW VELOCITY:
-TBD
-
-
-
-EXAMPLES:
-timespan, '2019-04-03', 1.  ;set timespan
-mvn_sta_l3_load  ;load all STATIC moments into tplot.
-</PRE><P>
-<STRONG>(See <A href="L3_DO_NOT_USE/mvn_sta_l3_load.pro">projects/maven/sta/L3_DO_NOT_USE/mvn_sta_l3_load.pro</A>)</STRONG><P>
-<HR>
- 
 <A NAME="MVN_STA_L3_MAC_DEN_V2">
 <H2>MVN_STA_L3_MAC_DEN_V2</H2></A>
-<A HREF="#MVN_STA_L3_LOAD[2]">[Previous Routine]</A>
+<A HREF="#MVN_STA_L3_GENERATE_SCIENCE_FILES_NOBKG4">[Previous Routine]</A>
 <A HREF="#MVN_STA_L3_RAMDIR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

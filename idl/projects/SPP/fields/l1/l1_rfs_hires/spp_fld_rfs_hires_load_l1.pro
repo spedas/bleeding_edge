@@ -3,9 +3,9 @@
 ; NAME:
 ;   spp_fld_rfs_hires_load_l1
 ;
-; $LastChangedBy: pulupa $
-; $LastChangedDate: 2023-09-28 13:18:16 -0700 (Thu, 28 Sep 2023) $
-; $LastChangedRevision: 32147 $
+; $LastChangedBy: pulupalap $
+; $LastChangedDate: 2026-09-18 14:38:10 -0700 (Fri, 18 Sep 2026) $
+; $LastChangedRevision: 34911 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/l1/l1_rfs_hires/spp_fld_rfs_hires_load_l1.pro $
 ;
 ;-
@@ -16,7 +16,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat =
   ; TODO improve this check for valid CDF file and add to other routines
   if n_elements(file) lt 1 or file[0] eq '' then return
 
-  if file[0].Contains('lusee') then lusee = 1 else lusee = 0
+  if file[0].contains('lusee') then lusee = 1 else lusee = 0
   rfs_freqs = spp_fld_rfs_freqs(/lfr, plasma = rfs_plasma, lusee = lusee)
 
   lfr_flag = strpos(prefix, 'lfr') ne -1
@@ -397,7 +397,7 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat =
 
             store_data, src_name, $
               data = {x: (raw_spec_data.x)[inds], y: converted_spec_data[inds, *], $
-                v: hr_freq_all}
+                v: hr_freq_all[inds, *]}
 
             options, src_name, 'spec', 1
             options, src_name, 'no_interp', 1
@@ -416,8 +416,14 @@ pro spp_fld_rfs_hires_load_l1, file, prefix = prefix, color = color, varformat =
         ; stop
       endif
 
+      ytitle3 = receiver_str + ' HiRes!C' + strupcase(raw_spec_i)
+      avg_pos = strpos(ytitle3, 'AVERAGES')
+
+      if avg_pos ge 0 then ytitle3 = strmid(ytitle3, 0, avg_pos) + 'AVGS' + $
+        strmid(ytitle3, avg_pos + 8)
+
       options, prefix + raw_spec_i + '_converted', 'ytitle', $
-        ytitle
+        ytitle3
 
       options, prefix + raw_spec_i + '_converted', 'ysubtitle', $
         'Freq [Hz]'

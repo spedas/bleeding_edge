@@ -45,8 +45,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-08-20 14:48:01 -0700 (Thu, 20 Aug 2026) $
-; $LastChangedRevision: 34790 $
+; $LastChangedDate: 2026-09-18 01:39:12 -0700 (Fri, 18 Sep 2026) $
+; $LastChangedRevision: 34909 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/quicklook/esc_ql_tplot.pro $
 ;
 ;-
@@ -242,8 +242,9 @@ PRO esc_ql_tplot, date, trange=trange, verbose=verbose, window=window, path=path
            store_data, 'OMNI_HRO_1min_B_GSE', data={x: obx.x, y: [ [obx.y], [oby.y], [obz.y]]};, dlim={colors: 100, color_table: 0}
            esc_emag_angle, 'OMNI_HRO_1min_B_GSE', /cone, /clock
 
-           ow  = WHERE(FINITE(obx.y))
+           ow  = WHERE(FINITE(obx.y), ncomplement=nov)
            otr = minmax(obx.x[ow]) 
+           IF FLOAT(TEMPORARY(nov)) / FLOAT(N_ELEMENTS(obx.x)) GT 0.25 THEN undefine, otr
            
            omn_name = [omn_name[oidx[-1]], omn_name[oidx[-2]], 'OMNI_HRO_1min_B_GSE' + ['_tot', '_cone', '_phi']]
            IF KEYWORD_SET(clock) THEN omn_name[-2] = (omn_name[-2]).replace('cone', 'clk')

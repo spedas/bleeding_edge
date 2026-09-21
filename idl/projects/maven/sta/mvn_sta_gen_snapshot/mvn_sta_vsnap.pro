@@ -12,6 +12,10 @@
 ;KEYWORDS:
 ;       SUM:    Average all times between two selected times.
 ;
+;       DRANGE: The DF scale is adjusted based on the peak value.  This provides
+;               the number of orders of magnitude down from the peak to plot the
+;               DF.
+;
 ;       KEEP:   Do not close the snapshot window on exit.
 ;
 ;       Passes many keywords to WIN (e.g. MONITOR, DX, DY, etc.).  If WIN is
@@ -39,13 +43,13 @@
 ;                 and end times.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-01-31 18:27:13 -0800 (Sat, 31 Jan 2026) $
-; $LastChangedRevision: 34092 $
+; $LastChangedDate: 2026-09-15 09:37:56 -0700 (Tue, 15 Sep 2026) $
+; $LastChangedRevision: 34900 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_vsnap.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;-
-pro mvn_sta_vsnap, sum=sum, keep=keep, key=key, lastcut=result, tmark=tmark, xmax=xmax, $
+pro mvn_sta_vsnap, sum=sum, keep=keep, key=key, lastcut=result, tmark=tmark, xmax=xmax, drange=drange, $
 
               ; WIN
                 monitor=monitor, secondary=secondary, xsize=xsize, ysize=ysize, dx=dx, dy=dy, $
@@ -71,7 +75,7 @@ pro mvn_sta_vsnap, sum=sum, keep=keep, key=key, lastcut=result, tmark=tmark, xma
 
   if (size(key,/type) eq 8) then begin
     ktag = tag_names(key)
-    tlist = ['SUM','KEEP','LASTCUT','TMARK','XMAX', $
+    tlist = ['SUM','KEEP','LASTCUT','TMARK','XMAX','DRANGE', $
 
              'MONITOR','SECONDARY','XSIZE','YSIZE','DX','DY','CORNER','CENTER','XCENTER','YCENTER', $
              'NORM','XPOS','YPOS','FULL','XFULL','YFULL', $
@@ -140,7 +144,7 @@ pro mvn_sta_vsnap, sum=sum, keep=keep, key=key, lastcut=result, tmark=tmark, xma
                           vsc=vsc, units=units, charsize=charsize, range=range, $
                           resolution=resolution, showdata=showdata, apid=apid, /keep, $
                           v_esc=v_esc, subtract=subtract, window=Swin, erange=erange, $
-                          result=result
+                          drange=drange, result=result
 
     wset, Twin
 

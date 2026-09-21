@@ -22,9 +22,9 @@
 ;
 ;
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2023-03-09 13:47:07 -0800 (Thu, 09 Mar 2023) $
-;$LastChangedRevision: 31613 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-09-15 11:32:02 -0700 (Tue, 15 Sep 2026) $
+;$LastChangedRevision: 34901 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/load_data/mms_login_lasp.pro $
 ;-
 
@@ -50,24 +50,68 @@ function mms_login_lasp, login_info = login_info, save_login_info = save_login_i
       duration = systime(/seconds) - connection_time
       if (duration gt expire_duration) then mms_sitl_logout
     endif
-    
-    if undefined(login_info) then login_info = 'mms_auth_info.sav'
 
+    ; Look in home directory first.  This would be the HOME environment variable for Unix and Mac, 
+    ; USERPROFILE for Windows
+    
+    homedir_exists = 0    
+    if undefined(login_info) then  begin
+      homedir = getenv('HOME')
+      if homedir eq '' then homedir = getenv('USERPROFILE')
+      if homedir eq '' then begin
+        message, 'Neither HOME nor USERPROFILE environment variables defined, unable to determine home directory', /info
+      endif else begin
+        homedir_exists = 1
+        login_info = homedir + '/mms_auth_info.sav'
+      endelse
+    endif
+    
+    file_exists = 0
+    valid_cred = 0
     if ~keyword_set(always_prompt) then begin ; restore the login info, if not always prompting
         ; check that the auth file exists before trying to restore it
-        file_exists = file_test(login_info, /regular)
+        if ~undefined(login_info) then begin
+          file_exists = file_test(login_info, /regular)
+        endif
     
         if file_exists eq 1 then begin
             restore, login_info
             if is_struct(auth_info) then begin
                 username = auth_info.user
                 password = auth_info.password
+                valid_cred = 1
             endif else begin
                 dprint, dlevel=1, 'No valid credentials found in '+file_expand_path(login_info)
             endelse
-        endif else begin
-            ; look for the SITL login info
-            save_file = getenv('HOME') + '/.mms_sitl_login.sav'
+        endif
+        
+        if ~valid_cred then begin
+            ; Either a home directory wasn't found, or no credentials file was found, or the file existed but
+            ; ddn't contain valid credentials.   Try the current directory instead.
+            
+            cd, current=current_dir
+            save_file = current_dir + '/mms_auth_info.sav'
+            file_exists = file_test(save_file, /regular)
+            if file_exists eq 1 then begin
+              login_info = save_file
+              restore, login_info
+              if is_struct(auth_info) then begin
+                username = auth_info.user
+                password = auth_info.password
+                valid_cred = 1
+                login_info = save_file
+              endif else begin
+                dprint, dlevel=1, 'No valid credentials found in '+file_expand_path(save_file)
+              endelse
+            endif
+        endif
+            
+        if ~valid_cred && homedir_exists then begin
+            ; If we reach this point, no SDC auth file was found, but the home directory exists.
+            ; So we set login_info to the standard location, in order to create the file there after prompting 
+            login_info = homedir + '/mms_auth_info.sav'          
+            ; look for the SITL login info                       
+            save_file = homedir + '/.mms_sitl_login.sav'
             if file_test(save_file) then begin 
               restore, save_file
               ; user/pass stored in a struct named 'login'
@@ -77,7 +121,7 @@ function mms_login_lasp, login_info = login_info, save_login_info = save_login_i
                 dprint, dlevel = 1, 'Using login info from SITL file'
               endif
             endif
-        endelse
+        endif
     endif else begin
       if obj_valid(netUrl) then obj_destroy, netUrl
       netUrl = 0
@@ -136,7 +180,7 @@ function mms_login_lasp, login_info = login_info, save_login_info = save_login_i
 
         ; now save the user/pass to a sav file to remember it in future sessions
         ; (only if the user requested, which should never be by default)
-        if keyword_set(save_login_info) then begin
+        if keyword_set(save_login_info) && ~undefined(login_info) then begin
             ; this assumes username and password are passed out of get_mms_sitl_connection
             ; the idlneturl getproperty method does not allow the pw to be retrieved (despite it being accessible with help command) 
             auth_info = {user:username, password:password}

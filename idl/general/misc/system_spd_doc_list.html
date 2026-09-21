@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 18 15:46:10 2026.<P>
  
 <HR>
  
@@ -24,6 +24,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#COLOR_TABLE_CRIB">COLOR_TABLE_CRIB</A>
 <LI><A HREF="#CWD">CWD</A>
 <LI><A HREF="#GET_LINE_COLORS">GET_LINE_COLORS</A>
+<LI><A HREF="#GETCT">GETCT</A>
+<br>Returns the current color table and line color configuration.
 <LI><A HREF="#INIT_DEVICES">INIT_DEVICES</A>
 <LI><A HREF="#INITCT">INITCT</A>
 <br>Wrapper for loadct2 and loadcsv.  Calls the appropriate color table
@@ -420,7 +422,7 @@ nd ; of crib
 <A NAME="CWD">
 <H2>CWD</H2></A>
 <A HREF="#COLOR_TABLE_CRIB">[Previous Routine]</A>
-<A HREF="#GET_LINE_COLORS">[Next Routine]</A>
+<A HREF="#GETCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Procedure:  CWD  [,newdir]
@@ -438,9 +440,36 @@ Other options:
 <STRONG>(See <A href="system/cwd.pro">general/misc/system/cwd.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="GETCT">
+<H2>GETCT</H2></A>
+<A HREF="#CWD">[Previous Routine]</A>
+<A HREF="#GET_LINE_COLORS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+FUNCTION:   getct
+PURPOSE:
+  Returns the current color table and line color configuration.
+
+  To restore the user's color table and line color scheme:
+
+      c = getct()
+        ...
+      initct, c.color_table, reverse=c.color_reverse, file=c.ct_file, $
+              line=c.line_array
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-09-15 08:46:05 -0700 (Tue, 15 Sep 2026) $
+ $LastChangedRevision: 34897 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/system/getct.pro $
+
+Created by David L. Mitchell (Sep 2026)
+</PRE><P>
+<STRONG>(See <A href="system/getct.pro">general/misc/system/getct.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="GET_LINE_COLORS">
 <H2>GET_LINE_COLORS</H2></A>
-<A HREF="#CWD">[Previous Routine]</A>
+<A HREF="#GETCT">[Previous Routine]</A>
 <A HREF="#INITCT">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

@@ -59,6 +59,9 @@
 ;  SHOWDATA:      Plots sampling locations over the contour (symsize = showdata).
 ;                 Pluses = Free sky bins, Crosses = Blocked bins.
 ;
+;    DRANGE:      Dynamic range for plotting DF, in orders of magnitude.  Peak
+;                 value is autoscaled.
+;
 ;    ERANGE:      Specifies the energy range used in analyses. 
 ;
 ;   DATPLOT:      Returns a structure which contains data used to plot.
@@ -100,8 +103,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-02-02 11:12:55 -0800 (Mon, 02 Feb 2026) $
-; $LastChangedRevision: 34101 $
+; $LastChangedDate: 2026-09-15 09:37:56 -0700 (Tue, 15 Sep 2026) $
+; $LastChangedRevision: 34900 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_slice2d_snap.pro $
 ;
 ;-
@@ -109,7 +112,8 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
                           bline=bline, mass=mass, m_int=mq, mmin=mmin, mmax=mmax, apid=id, units=units, $
                           verbose=verbose, keepwin=keepwin, charsize=chsz, sum=sum, burst=burst, $
                           dopot=dopot, sc_pot=sc_pot, vsc=vsc, showdata=showdata, erange=erange, $
-                          v_esc=v_esc, datplot=datplot, diag=diag, subtract=subtract, result=result
+                          v_esc=v_esc, datplot=datplot, diag=diag, subtract=subtract, result=result, $
+                          range=range, drange=drange
 
   IF STRUPCASE(STRMID(!version.os, 0, 3)) EQ 'WIN' THEN lbreak = STRING([13B, 10B]) ELSE lbreak = STRING(10B)
 
@@ -282,11 +286,23 @@ PRO mvn_sta_slice2d_snap, var1, var2, archive=archive, window=window, mso=mso, _
            dummy = d
            dummy = conv_units(dummy, 'df')
            dummy.data = FLOAT(dummy.bins_sc)
-           status = EXECUTE("slice2d, dummy, _extra=_extra, vel=vel, subtract=subtract, /noplot, datplot=block, /verbose")
+           status = EXECUTE("slice2d, dummy, _extra=_extra, vel=vel, range=range, subtract=subtract, /noplot, datplot=block, /verbose")
            undefine, dummy
         ENDIF
 
-        status = EXECUTE("slice2d, d, _extra=_extra, sundir=bdir, vel=vel, subtract=subtract, datplot=datplot, units=units")
+        help, drange
+        if keyword_set(drange) then begin
+          dmax = max(d.data, /nan)
+          print,"dmax = ",dmax
+          if finite(dmax) then begin
+            dmax = ceil(alog10(dmax))
+            print, "log(dmax) = ",dmax
+            range = [10.^(dmax - drange), 10.^dmax]
+            print, "range = ",range
+          endif
+        endif
+
+        status = EXECUTE("slice2d, d, _extra=_extra, sundir=bdir, vel=vel, range=range, subtract=subtract, datplot=datplot, units=units")
         IF status EQ 1 THEN BEGIN
            if keyword_set(v_esc) then oplot, Vesc_x, Vesc_y, linestyle=2, thick=2
 

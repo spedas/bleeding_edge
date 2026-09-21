@@ -36,7 +36,9 @@
 ;       NAVG:   Number of times to average centered on the selected time.
 ;               This is forced to be an odd number.  Default = 1.
 ;
-;       SUM:    Average all times between two selected times.
+;       SUM:    Average all times between two selected times.  Occasionally,
+;               ctime does not capture the second time selection and appears
+;               to hang.  If this happens, just left-click again.
 ;
 ;       XSMO:   Number of points to smooth in the second independent variable
 ;               (which is the snapshot X axis).  Default = 1 (no smoothing).
@@ -73,8 +75,8 @@
 ;       LASTCUT:  Named variable to hold data for the last plot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-04 12:17:05 -0700 (Fri, 04 Sep 2026) $
-; $LastChangedRevision: 34873 $
+; $LastChangedDate: 2026-09-15 08:47:12 -0700 (Tue, 15 Sep 2026) $
+; $LastChangedRevision: 34898 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tsnap.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -136,8 +138,9 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
 
 ; Make sure the tplot variable exists and has the standard tags and correct dimensions
 
-  ctime,t,panel=p,npoints=npts,/silent
-  if (npts eq 2) then cursor,cx,cy,/norm,/up  ; make sure mouse button is released
+  if (npts eq 1) then print,"Select time(s).  Right button any time to exit." $
+                 else print,"Select start and stop time(s).  Right button any time to exit."
+  ctime,t,panel=p,npoints=npts,silent=2  ; on first call to ctime, don't wait for button up transition
   if (size(t,/type) eq 2) then return
 
   if (n_elements(var) eq 0) then begin
@@ -226,6 +229,8 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
 
 ; Make snapshot(s)
 
+  dt = (dat.x - shift(dat.x,1))/2D
+  dt[0] = dt[1]
   nmax = n_elements(dat.x) - 1L
   keepgoing = 1
 
@@ -243,7 +248,7 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
       if (err) then dy = reform(dat.dy[imin:imax,*])
     endelse
 
-    if (tmark) then timebar, [dat.x[imin], dat.x[imax]], /line, /transient
+    if (tmark) then timebar, [dat.x[imin]-dt[imin], dat.x[imax]+dt[imax]], /line, /transient
 
     if ((size(y))[0] eq 2) then begin
       nrm = y
@@ -291,10 +296,10 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
       if (err) then str_element, lastcut, 'dy', dy, /add_replace
     wset, Twin
 
-    ctime,tnext,npoints=npts,/silent
+    ctime,tnext,npoints=npts,silent=2
     if (npts eq 2) then cursor,cx,cy,/norm,/up  ; make sure mouse button is released
     if (size(tnext,/type) eq 2) then keepgoing = 0
-    if (tmark) then timebar, [dat.x[imin],dat.x[imax]], /line, /transient
+    if (tmark) then timebar, [dat.x[imin]-dt[imin], dat.x[imax]+dt[imax]], /line, /transient
     t = tnext
   endwhile
 

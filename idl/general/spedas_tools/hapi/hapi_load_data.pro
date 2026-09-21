@@ -51,8 +51,8 @@
 ;         
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-09-12 13:00:49 -0700 (Sat, 12 Sep 2026) $
-;$LastChangedRevision: 34890 $
+;$LastChangedDate: 2026-09-14 22:51:17 -0700 (Mon, 14 Sep 2026) $
+;$LastChangedRevision: 34894 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -236,19 +236,11 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
         data = dblarr(n_elements(csv.(param_idx)), this_ncols)
         for data_idx = 0, this_ncols-1 do begin
           thedata = csv.(current_column+data_idx)
-          if (info['parameters'])[param_idx].hasKey('fill') && ((info['parameters'])[param_idx])['fill'] ne !null then begin
-            datanofill = where(thedata le ((info['parameters'])[param_idx])['fill'], count)
-            if count ne 0 then thedata[datanofill] = !values.d_nan
-          endif
           data[*, data_idx] = thedata
         endfor
       endif else begin
         data = csv.(current_column)
         this_ncols = 1
-        if (info['parameters'])[param_idx].hasKey('fill') && ((info['parameters'])[param_idx])['fill'] ne !null then begin
-          datanofill = where(data le ((info['parameters'])[param_idx])['fill'], count)
-          if count ne 0 then data[datanofill] = !values.d_nan
-        endif
       endelse
       current_column += this_ncols
       
@@ -272,6 +264,11 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
             variable['v'] = bin_centers
           endif
         endif
+      endif
+
+      ; Replace fillvals      
+      if variable.hasKey('fill') && ((info['parameters'])[param_idx])['fill'] ne !null then begin
+        hapi_replace_fillvals, data, variable['fill'], variable['name']
       endif
       
       variable['data'] = data

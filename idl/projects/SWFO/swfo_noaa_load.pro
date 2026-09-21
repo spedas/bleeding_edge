@@ -27,8 +27,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-08-19 15:40:19 -0700 (Wed, 19 Aug 2026) $
-; $LastChangedRevision: 34778 $
+; $LastChangedDate: 2026-09-18 00:56:06 -0700 (Fri, 18 Sep 2026) $
+; $LastChangedRevision: 34908 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_noaa_load.pro $
 ;
 ;-
@@ -190,6 +190,7 @@ PRO swfo_noaa_load, type=type, id=id, trange=trange, data=data, verbose=verbose,
         swind = (STRSPLIT(swind[1:*], ',', /extract)).toarray()
         imf   = (STRSPLIT(imf[1:*], ',', /extract)).toarray()
 
+        swind = swind.replace('null', '-1.0')
         prefix = 'swfo_swpc'
         twind  = time_double(swind[*, 0], tformat='YYYY-MM-DDThh:mm:ssZ')
         store_data, prefix + '_dens', data={x: twind, y: FLOAT(swind[*, 2])}, dlim={ytitle: 'SOLAR-1!CSWPC', ysubtitle: 'N [cm!E-3!N]'}
@@ -198,6 +199,7 @@ PRO swfo_noaa_load, type=type, id=id, trange=trange, data=data, verbose=verbose,
 
         tclip, prefix + '_dens', 1.e-10, 1.e4, /overwrite
         tclip, prefix + '_velc', 1.e-10, 1.e4, /overwrite
+        tclip, prefix + '_temp', 1.e-10, 1.e4, /overwrite
         
         timf = time_double(imf[*, 0], tformat='YYYY-MM-DDThh:mm:ssZ')
         store_data, prefix + '_bgsm', data={x: timf, y: FLOAT(imf[*, 2:4])}, dlim={ytitle: 'SOLAR-1!CSWPC', ysubtitle: 'B_GSM [nT]', labels: ['X', 'Y', 'Z'], labflag: -1, colors: 'bgr', constant: 0.}

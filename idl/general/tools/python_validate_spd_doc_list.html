@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 18 15:46:10 2026.<P>
  
 <HR>
  
@@ -29,6 +29,8 @@ This page was created by the IDL library routine
 <br>Load several spin models and export them as CDFs for comparison with Python results
 <LI><A HREF="#THM_SCPOT_PYTHON_VALIDATE">THM_SCPOT_PYTHON_VALIDATE</A>
 <br>Generate test data for Python vs IDL validation tests for THEMIS spacecraft potential routines.
+<LI><A HREF="#TINTERPOL_MXN_VALIDATE">TINTERPOL_MXN_VALIDATE</A>
+<br>Generate synthetic inputs and IDL reference outputs for the Python
 <LI><A HREF="#WAV_DATA_VALIDATE">WAV_DATA_VALIDATE</A>
 <br>Generate test data for Python vs IDL validation tests for the wav_data routine.
 <br>
@@ -174,7 +176,7 @@ Written by: Jim Lewis (jwl@ssl.berkeley.edu)
 <A NAME="THM_SCPOT_PYTHON_VALIDATE">
 <H2>THM_SCPOT_PYTHON_VALIDATE</H2></A>
 <A HREF="#SPINMODEL_PYTHON_TEST.PRO">[Previous Routine]</A>
-<A HREF="#WAV_DATA_VALIDATE">[Next Routine]</A>
+<A HREF="#TINTERPOL_MXN_VALIDATE">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: thm_scpot_python_validate
@@ -197,9 +199,44 @@ PURPOSE:
 <STRONG>(See <A href="python_validate/thm_scpot_python_validate.pro">general/tools/python_validate/thm_scpot_python_validate.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TINTERPOL_MXN_VALIDATE">
+<H2>TINTERPOL_MXN_VALIDATE</H2></A>
+<A HREF="#THM_SCPOT_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#WAV_DATA_VALIDATE">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME: tinterpol_mxn_validate
+ PURPOSE:
+   Generate synthetic inputs and IDL reference outputs for the Python
+   time_interpolate and interpolate_rotation validation suites.
+   No mission data or network access is needed.
+
+ CALLING SEQUENCE:
+   tinterpol_mxn_validate
+   tinterpol_mxn_validate, filename='/path/to/tinterpol_mxn_validate.cdf'
+
+ NOTES:
+   Companions: pyspedas/utilities/tests/test_tinterpol_mxn.py
+               pyspedas/utilities/tests/test_interpolate_rotation.py
+   All mxn_idl_*, mxn_methods_*, and rot_idl_* variables are reserved for this generator. Only those variables
+   are exported. Times include exact half-seconds and use TT2000 in the CDF.
+   Re-running replaces the single fixture, retaining the linear cases and adding
+   quadratic, spline, nearest-neighbor, repeat-previous, and rotation cases.
+   Python uses PYSPEDAS_TINTERPOL_MXN_CDF for a local override; otherwise it
+   downloads interpolation_tests/tinterpol_mxn_validate.cdf from spedas/test_data.
+   Publish the regenerated CDF there when the new cases are ready for CI.
+   Previous has no tinterpol_mxn keyword; its reference uses VALUE_LOCATE.
+
+   The preserve-NaNs case records IDL's actual output, including the NaN at an
+   exact valid input sample adjacent to a NaN. Python deliberately preserves
+   that valid sample; the corresponding test checks this difference explicitly.
+</PRE><P>
+<STRONG>(See <A href="python_validate/tinterpol_mxn_validate.pro">general/tools/python_validate/tinterpol_mxn_validate.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="WAV_DATA_VALIDATE">
 <H2>WAV_DATA_VALIDATE</H2></A>
-<A HREF="#THM_SCPOT_PYTHON_VALIDATE">[Previous Routine]</A>
+<A HREF="#TINTERPOL_MXN_VALIDATE">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: wav_data_validate

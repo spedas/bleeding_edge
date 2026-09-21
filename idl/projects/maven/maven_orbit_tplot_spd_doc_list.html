@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Mon Sep 14 03:16:42 2026.<P>
+<STRONG>Last modified: </STRONG>Fri Sep 18 15:46:10 2026.<P>
  
 <HR>
  
@@ -47,6 +47,8 @@ This page was created by the IDL library routine
 <br>Updates the &quot;current&quot; spacecraft ephemeris using SPICE.
 <LI><A HREF="#MHD_ORBIT">MHD_ORBIT</A>
 <br>Plots
+<LI><A HREF="#MVN_CIO_BAR">MVN_CIO_BAR</A>
+<br>Creates a color bar showing when the cold ion configuration geometry is
 <LI><A HREF="#MVN_EXO_BAR">MVN_EXO_BAR</A>
 <br>Creates a colored bar indicating when the spacecraft is below
 <LI><A HREF="#MVN_FLYZ_BAR">MVN_FLYZ_BAR</A>
@@ -1148,7 +1150,7 @@ CREATED BY:	David L. Mitchell  2014-10-13
 <A NAME="MHD_ORBIT">
 <H2>MHD_ORBIT</H2></A>
 <A HREF="#MAVEN_ORBIT_UPDATE">[Previous Routine]</A>
-<A HREF="#MVN_EXO_BAR">[Next Routine]</A>
+<A HREF="#MVN_CIO_BAR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE:   mhd_orbit
@@ -1189,9 +1191,57 @@ CREATED BY:	David L. Mitchell  04-02-03
 <STRONG>(See <A href="maven_orbit_tplot/mhd_orbit.pro">projects/maven/maven_orbit_tplot/mhd_orbit.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_CIO_BAR">
+<H2>MVN_CIO_BAR</H2></A>
+<A HREF="#MHD_ORBIT">[Previous Routine]</A>
+<A HREF="#MVN_EXO_BAR">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_cio_bar
+PURPOSE:
+  Creates a color bar showing when the cold ion configuration geometry is
+  partially of completely achieved:
+
+      blank  = neither is optimized or s/c not in CIO region of space
+      blue   = only SWEA is optimized
+      yellow = only STATIC is optimized
+      red    = both SWEA and STATIC are optimized
+
+  Assumes that SPICE is loaded and maven_orbit_tplot has been run.
+
+USAGE:
+  mvn_cio_bar
+
+INPUTS:
+
+KEYWORDS:
+       PANS:          Tplot panel name created.
+
+       COLOR_TABLE:   Color table for color bar.  Default = 43 (custom rainbow).
+                      This works for all color table files (STD, SPP, CSV).
+
+       COLOR_REVERSE: If set, reverse color table.  Default = 0 (no).
+
+       DELTA_T:       Time resolution for the bar.  Default = 10 sec.
+
+       KEY:           Print the color key and return.
+
+       Note: Color table is internal to the tplot variable and does not affect
+             the user's environment.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-09-16 16:13:22 -0700 (Wed, 16 Sep 2026) $
+ $LastChangedRevision: 34904 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_cio_bar.pro $
+
+CREATED BY:    David L. Mitchell
+</PRE><P>
+<STRONG>(See <A href="maven_orbit_tplot/mvn_cio_bar.pro">projects/maven/maven_orbit_tplot/mvn_cio_bar.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_EXO_BAR">
 <H2>MVN_EXO_BAR</H2></A>
-<A HREF="#MHD_ORBIT">[Previous Routine]</A>
+<A HREF="#MVN_CIO_BAR">[Previous Routine]</A>
 <A HREF="#MVN_FLYZ_BAR">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
