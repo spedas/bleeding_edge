@@ -233,11 +233,47 @@ end
 ;
 ;Notes:
 ;  This procedure was forked from thm_cotrans.
+;  
+;  The supported coordinate systems are defined as follows:
+;  
+;  GSE (Geocentric Solar Ecliptic): GSE is centered on Earth. Its X axis points from Earth toward the Sun, 
+;  and its Z axis points toward ecliptic north.
+;
+;  GSEQ (Geocentric Solar Equatorial): GSEQ is centered on Earth. Its X axis points from Earth toward the Sun, 
+;  and its Z axis is the projection of the solar north rotation axis onto the plane perpendicular to X.
+;
+;  GSM (Geocentric Solar Magnetospheric) : GSM is centered on Earth. It has its X axis pointing from Earth toward the Sun. 
+;  Its Z axis is the projection of Earth’s north geomagnetic dipole axis onto the plane perpendicular to X.;
+;
+;  GEI (Geocentric Equatorial Inertial) : GEI is centered on Earth. It uses the true equator and equinox of date. 
+;  Its X axis points toward the true vernal equinox of date, and its Z axis points toward the true north celestial pole of date.
+;
+;  SM (Solar Magnetic) : SM is centered on Earth. It has its Z axis aligned with Earth’s north geomagnetic dipole axis. 
+;  Its Y axis is perpendicular to the plane containing the dipole axis and the Earth–Sun line and points approximately 
+;  toward dusk; consequently, its X axis does not generally point exactly toward the Sun.
+;
+;  GEO (Geographic): GEO is centered on Earth and rotates with Earth. Its X axis lies in the equatorial plane and points 
+;  through the intersection of the equator and the Greenwich meridian, while its Z axis points toward the geographic North Pole.
+;
+;  J2000 (GEI at J2000 epoch): 2000 is the geocentric equatorial inertial system fixed to the mean equator and mean equinox 
+;  of epoch J2000.0. Its X axis points toward the J2000 mean vernal equinox, and its Z axis points toward the J2000 mean north celestial pole.
+;
+;  HEE (Heliocentric Earth Ecliptic): HEE is centered on the Sun. Its X axis points from the Sun toward Earth, and its Z axis 
+;  points toward ecliptic north. Compared with GSE, the HEE X and Y axes are reversed while the Z axis has the same direction.
+;
+;  HAE (Heliocentric Aries Ecliptic): HAE is centered on the Sun. Its X axis points toward the First Point of Aries 
+;  (the J2000 vernal equinox), and its Z axis points toward J2000 ecliptic north.
+;
+;  HEEQ (Heliocentric Earth Equatorial) : HEEQ is centered on the Sun. Its Z axis is the solar north rotation axis, and 
+;  its X axis is the projection of the Sun-to-Earth direction onto the solar equatorial plane.
+;  
+;  The GSM and SM systems use the IGRF dipole definition. Note that this varies with time, so use caution when comparing legacy
+;  data products with modern coordinate system definitions.
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-09-08 12:35:19 -0700 (Tue, 08 Sep 2026) $
-;$LastChangedRevision: 34878 $
+;$LastChangedDate: 2026-09-22 14:48:44 -0700 (Tue, 22 Sep 2026) $
+;$LastChangedRevision: 34917 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/utilities/cotrans/spd_cotrans.pro $
 ;
 ;-
