@@ -1,0 +1,147 @@
+{
+  "generated_by": ".github/scripts/build_agents_map.py",
+  "agents": [
+    {
+      "path": "AGENTS.md",
+      "parent": null,
+      "children": [
+        "idl/projects/themis/AGENTS.md"
+      ],
+      "header_ok": true,
+      "related_files": [
+        {
+          "path": "idl/projects/themis/AGENTS.md",
+          "kind": "agents"
+        },
+        {
+          "path": "README.md",
+          "kind": "file"
+        },
+        {
+          "path": "LICENSE.txt",
+          "kind": "file"
+        },
+        {
+          "path": ".gitattributes",
+          "kind": "file"
+        },
+        {
+          "path": ".gitignore",
+          "kind": "file"
+        },
+        {
+          "path": ".github/workflows/mirror_bleeding_edge.yml",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/tplot/tplot_com.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/tplot/tplot_quant__define.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/tplot/store_data.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/tplot/get_data.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/misc/file_dailynames.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/spedas_tools/spd_download/spd_download.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/CDF/spd_cdf2tplot.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/misc/file_retrieve.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/projects/themis/examples/basic/thm_crib_fgm.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/_spd_doc.html",
+          "kind": "file"
+        },
+        {
+          "path": ".github/workflows/agents_md.yml",
+          "kind": "file"
+        },
+        {
+          "path": ".github/scripts/check_agents_md.py",
+          "kind": "file"
+        },
+        {
+          "path": ".github/scripts/build_agents_map.py",
+          "kind": "file"
+        },
+        {
+          "path": ".agents/skills/agents-map/SKILL.md",
+          "kind": "file"
+        },
+        {
+          "path": ".agents/map/MAP.md",
+          "kind": "file"
+        },
+        {
+          "path": ".agents/map/graph.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "idl/projects/themis/AGENTS.md",
+      "parent": "AGENTS.md",
+      "children": [],
+      "header_ok": true,
+      "related_files": [
+        {
+          "path": "AGENTS.md",
+          "kind": "agents"
+        },
+        {
+          "path": "idl/projects/themis/spacecraft/fields/thm_load_fgm.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/projects/themis/common/thm_load_xxx.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/projects/themis/common/thm_init.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/misc/file_dailynames.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/spedas_tools/spd_download/spd_download.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/general/CDF/spd_cdf2tplot.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/projects/themis/examples/basic/thm_crib_fgm.pro",
+          "kind": "file"
+        },
+        {
+          "path": "idl/projects/themis/tests/thm_python_validation_ut__define.pro",
+          "kind": "file"
+        }
+      ]
+    }
+  ]
+}
