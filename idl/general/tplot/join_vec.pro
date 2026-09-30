@@ -85,7 +85,7 @@ for i=0, nnames-1 do begin
 
   if i gt 0 then begin
     if ~array_equal(d.x, ds[0].x) then begin
-      dprint, 'Error: "'+names[i]+'" and "'+names[0]+'" have conflicting abscissa.", display_object=display_object
+      dprint, 'Error: "'+names[i]+'" and "'+names[0]+'" have conflicting abscissa.', display_object=display_object
       return 
     endif
   endif
