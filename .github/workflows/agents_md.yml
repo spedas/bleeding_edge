@@ -1,0 +1,42 @@
+name: agents_md
+
+# Checks the YAML header of every AGENTS.md (see idl/AGENTS.md and AGENTS.md).
+# idl/ is SVN trunk, so the AGENTS.md files under it are checked with idl/ as
+# the root, the same check a developer runs in a trunk working copy. The
+# GitHub-only root AGENTS.md lists paths from the repository root, so it is
+# checked on its own with the repository root as the root.
+# Runs on every push and pull request, not only when an AGENTS.md changes:
+# renaming or deleting a file that a header lists should show up here too.
+# Pushes made by the mirror workflow don't trigger other workflows, so this
+# also runs weekly, an hour after mirror_bleeding_edge.yml.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "00 13 * * 1"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install PyYAML
+        run: python -m pip install pyyaml
+      # The checker prints "<path>: error|warning: <message>" with paths relative
+      # to its root; sed turns those lines into annotations on the right files.
+      # shell: bash sets pipefail, so the checker's exit status still counts.
+      - name: Check AGENTS.md headers under idl/ (root idl/)
+        shell: bash
+        run: |
+          python idl/agents/scripts/check_agents_md.py --root idl \
+            | sed -E 's#^([^ :]+): (error|warning): #::\2 file=idl/\1::#'
+      - name: Check the root AGENTS.md (root is the repository)
+        if: ${{ !cancelled() }}
+        shell: bash
+        run: |
+          python idl/agents/scripts/check_agents_md.py --root . AGENTS.md \
+            | sed -E 's#^([^ :]+): (error|warning): #::\2 file=\1::#'
