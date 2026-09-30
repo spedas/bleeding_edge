@@ -253,6 +253,12 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
       fname += vars_to_plot[v_idx] + '_'      
     endfor
     
+    ; no spectra found at this time (e.g., TIME or the TRANGE midpoint is outside the data), so there is nothing to set the ranges from
+    if (N_ELEMENTS(xrange) ne 2 or N_ELEMENTS(yrange) ne 2) && undefined(xr) then begin
+      dprint, dlevel=0, 'Error, no valid spectra found at: ' + time_string(t, tformat='YYYY-MM-DD/hh:mm:ss.fff')
+      continue
+    endif
+    
     ; select [xy] range
     if N_ELEMENTS(xrange) ne 2 then xrange = KEYWORD_SET(xlog) ? [min(xr(where(xr>0))), max(xr(where(xr>0)))] : [min(xr), max(xr)]
     if N_ELEMENTS(yrange) ne 2 then yrange = KEYWORD_SET(ylog) ? [min(yr(where(yr>0))), max(yr(where(yr>0)))] : [min(yr), max(yr)]
