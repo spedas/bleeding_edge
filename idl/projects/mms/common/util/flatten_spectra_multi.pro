@@ -137,19 +137,6 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
   leg_y = 0.04
   leg_dy = 0.04
   
-  if ~undefined(thick) && n_elements(thick) ne num_spec && n_elements(thick) ne 1 then begin
-    dprint, dlevel=0, 'Error, the number of elements in thick keyword should match the number of times'
-    undefine, thick
-  endif
-  
-  if ~undefined(linestyle) && n_elements(linestyle) ne num_spec && n_elements(linestyle) ne 1 then begin
-    dprint, dlevel=0, 'Error, the number of elements in linestyle keyword should match the number of times'
-    undefine, linestyle
-  endif
-  
-  if n_elements(thick) eq 1 then thick = replicate(thick, num_spec)
-  if n_elements(linestyle) eq 1 then linestyle = replicate(linestyle, num_spec)
-  
   if ~undefined(trange_in) then begin
     trange = minmax(time_double(trange_in))
     selected_times = trange[0] + (trange[1] - trange[0]) / 2.
@@ -175,6 +162,20 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
   if undefined(colors) || n_elements(colors) lt n_elements(selected_times) then begin
     colors = indgen(n_elements(selected_times),start=0,increment=2)
   endif
+
+  ; thick and linestyle are indexed by the selected times, which can differ from num_spec (TIME, TRANGE, REPLOT)
+  if ~undefined(thick) && n_elements(thick) ne n_elements(selected_times) && n_elements(thick) ne 1 then begin
+    dprint, dlevel=0, 'Error, the number of elements in thick keyword should match the number of times'
+    undefine, thick
+  endif
+
+  if ~undefined(linestyle) && n_elements(linestyle) ne n_elements(selected_times) && n_elements(linestyle) ne 1 then begin
+    dprint, dlevel=0, 'Error, the number of elements in linestyle keyword should match the number of times'
+    undefine, linestyle
+  endif
+
+  if n_elements(thick) eq 1 then thick = replicate(thick, n_elements(selected_times))
+  if n_elements(linestyle) eq 1 then linestyle = replicate(linestyle, n_elements(selected_times))
 
   ;
   ; Plot or save to the file
