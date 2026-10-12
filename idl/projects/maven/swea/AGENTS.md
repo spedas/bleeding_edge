@@ -100,14 +100,17 @@ A typical session (from the crib): `timespan`, `mvn_swe_spice_init`,
 ## Things to know
 
 - Code includes the common blocks with `@mvn_swe_com` (blocks `swe_raw`,
-  `swe_dat`, `swe_cal`). `mvn_scpot` and the pickup-ion model also read them.
+  `swe_dat`, `swe_cal`, `swe_fov`, `swe_cfg`, `swe_spice`). `mvn_scpot` and the
+  pickup-ion model also read them.
 - The getters and plots work the same after an L0 or L2 load. L2 needs about six
   times the memory (a day of survey data is about 4 GB).
 - If the loaded SPICE kernels don't cover the requested time, the loaders prompt
   at the terminal (`read`). Set `spiceinit=1` or `2`, or `/nospice`, in scripts.
 - Quality flags: 0 = affected by the low-energy anomaly, 1 = unknown, 2 = good.
   Moment and potential routines take `qlevel=`.
-- Energies near the spacecraft potential are wrong unless it is known; run
-  `mvn_scpot` first. PADs need MAG data (`mvn_swe_addmag` rotates it to the SWEA
-  frame).
+- For energies near the spacecraft potential, the crib says running `mvn_scpot`
+  is critical and "ignoring it can give incorrect results". PAD packets carry
+  MAG angles "calculated by flight software using a basic calibration";
+  `mvn_swe_getpad` uses MAG1 data instead when `mvn_swe_addmag` has loaded them
+  (rotated to the SWEA frame).
 - Structures carry `units_procedure = 'mvn_swe_convert_units'`.

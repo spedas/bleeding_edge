@@ -68,7 +68,7 @@ design as `projects/vex/` (see `projects/vex/AGENTS.md`).
 
 ## Things to know
 
-- `/no_server` skips the remote listing and uses only the local cache.
+- `/no_server` skips the remote listing and uses only local files.
 - `mex_asp_els_get(time)` and `mex_asp_ima_get(time)` read the common block,
   so run the loader first. Their headers say `MVN_ASP_*`; the names are `mex_`.
 - MARSIS: restricted data from `https://space.physics.uiowa.edu/plasma-wave/marsx/`
@@ -79,4 +79,5 @@ design as `projects/vex/` (see `projects/vex/AGENTS.md`).
   `mex_orbit_num`, which downloads the NAIF orbit file.
 - SPICE kernels come from NAIF via `spice_file_source`
   (`general/spice/spice_file_source.pro`), `MEX/kernels/`, using the meta-kernel
-  `MEX_OPS.TM`. Positions are in MSO.
+  `MEX_OPS.TM`. `mex_eph_mso` is in MSO; `mex_eph_lat`, `mex_eph_lon` and
+  `mex_eph_alt` come from IAU_MARS positions.

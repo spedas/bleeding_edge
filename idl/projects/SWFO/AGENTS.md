@@ -30,9 +30,9 @@ maintenance: |
 
 # SWFO-L1 (SOLAR-1)
 
-NOAA's Space Weather Follow On - Lagrange 1 spacecraft, called SOLAR-1 after
-launch (both names appear in files and variables). SSL built its STIS particle
-instrument; this is SSL's ground-processing code: L0 frame reading and
+NOAA's Space Weather Follow On - Lagrange 1 spacecraft, also called SOLAR-1
+(both names appear in files and variables). This is ground-processing code for
+its STIS particle instrument and the spacecraft: L0 frame reading and
 decommutation, spacecraft and magnetometer packets, STIS products, loaders,
 quicklook plots, and a loader for NOAA's public data.
 
@@ -42,7 +42,7 @@ quicklook plots, and a loader for NOAA's public data.
   registry, level processing, `swfo_stis_load`). See `STIS/AGENTS.md`.
 - `mag/`: `mag/swfo_mag_sci_apdat__define.pro` (MAG packets) and
   `mag/swfo_mag_decom.pro` (1 s and high-rate products).
-- `swfo_sc_<apid>_apdat__define.pro` (APIDs 100-170): spacecraft housekeeping classes.
+- `swfo_sc_<apid>_apdat__define.pro` (APIDs 100-170): spacecraft packet classes.
 - `swfo_load.pro`: loads processed NetCDF files from SSL; `make=` creates them.
 - `swfo_ccsds_frame_read.pro`: fetches L0 frame files by ground station,
   decommutates them, and by default computes STIS L0b to L1b.
@@ -57,7 +57,7 @@ quicklook plots, and a loader for NOAA's public data.
 | Need | Routine | Source | Login |
 |---|---|---|---|
 | Public MAG L3 (1 min, GSE) | `swfo_noaa_load` (default `type='sci_mag-l3'`) | NOAA NCEI file API, then `spd_download` | none |
-| SWPC real-time plasma and MAG (1 min) | `swfo_noaa_load, type='swpc'` | SWPC HAPI via `curl` | none |
+| SWPC plasma and MAG (1 min) | `swfo_noaa_load, type='swpc'` | SWPC HAPI via `curl` | none |
 | Processed STIS/MAG files (team) | `swfo_load` | `http://sprg.ssl.berkeley.edu/data/swfo/data/test3/NCDF/` | `SWFO_USER_PASS` |
 | L0 frames, L0a to L1b | `swfo_ccsds_frame_read`, `swfo_stis_load` | sprg `swfo/aws/...` | `SWFO_USER_PASS` |
 
@@ -73,8 +73,9 @@ quicklook plots, and a loader for NOAA's public data.
   `swfo_stis_sci_level_2`, giving unprefixed `stis_l2_*` variables.
 - `make=2` loops over days: `swfo_ccsds_frame_read`, then `swfo_load, make=1`,
   which writes each decommutated product to the NetCDF tree. `make=3` with
-  `/mk_l0b`, `/mk_l1a`, `/mk_l1b`, `/mk_mag` rebuilds those products and their
-  30 s/300 s reductions when the inputs are newer.
+  `/mk_l0b`, `/mk_l1a`, `/mk_l1b` rebuilds those products and their
+  30 s/300 s reductions when the inputs are newer; `/mk_mag` writes `maghr`,
+  `mag1s` and `mag1s_30s`.
 
 ## Things to know
 

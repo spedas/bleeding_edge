@@ -13,6 +13,7 @@ related_files:
   - general/CDF/spd_cdf2tplot.pro
   - projects/themis/examples/basic/thm_crib_fgm.pro
   - projects/themis/tests/thm_python_validation_ut__define.pro
+  - projects/themis/state/thm_load_state_relpath.pro
 maintenance: |
   Update when thm_load_xxx's keywords or flow change, when a THEMIS loader is
   added or renamed, or when a subfolder gets its own AGENTS.md.
@@ -31,7 +32,7 @@ maintenance: |
   engine `thm_load_xxx`, and plotting helpers.
 - `examples/basic/`, `examples/advanced/`: crib sheets (`thm_crib_*.pro`), the
   quickest way to see how a routine is meant to be called.
-- `tests/`: mgunit tests, e.g. `tests/thm_python_validation_ut__define.pro`,
+- `tests/`: one mgunit test, `tests/thm_python_validation_ut__define.pro`,
   which compares results with pySPEDAS.
 - `deprecated/`: old code; skip it.
 
@@ -52,6 +53,9 @@ maintenance: |
 5. `thm_load_xxx` runs the post-processing helper with `call_procedure`. For FGM
    this calibrates L1 data (`thm_cal_fgm`) and handles coordinates.
 
-The other instrument loaders follow the same pattern, so a loader's path and
-post-processing helpers are usually inside its own file. The example
+Many other loaders (e.g. `thm_load_scm`, `thm_load_esa`, `thm_load_sst`,
+`thm_load_state`, `thm_load_gmag`) follow the same pattern, and their path and
+post-processing helpers are usually inside their own file
+(`state/thm_load_state_relpath.pro` is separate). Not all do: `thm_load_efi`
+and `thm_load_mom`, for example, do not call `thm_load_xxx`. The example
 `examples/basic/thm_crib_fgm.pro` shows typical calls.

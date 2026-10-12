@@ -52,7 +52,8 @@ NOAA NCEI netCDF files. GOES-R (16 and later) is a separate mission folder,
   `goes_read_config.pro`, `goes_write_config.pro` and `goes_config_filedir.pro`
   keep the saved configuration.
 - `goes_combine_tdata.pro`: post-processing that merges per-channel variables
-  into multi-dimensional ones (one `goes_combine_*_data` routine per datatype).
+  into multi-dimensional ones (`goes_combine_*_data` routines; MAGED and MAGPD
+  share `goes_combine_magpart_data`).
 - `goes_lib.pro`: a library file of helpers (pitch angles, omni fluxes,
   contamination correction) used by overview plots and cribs.
 - `goes_load_pos.pro`: spacecraft position from SSCWeb.
@@ -95,10 +96,11 @@ NOAA NCEI netCDF files. GOES-R (16 and later) is a separate mission folder,
 
 - Probes 16 and 17 are refused here with a message pointing to
   `goesr_load_data` (`projects/goesr/goesr_load_data.pro`).
-- Magnetometer data are in ENP, the GOES native frame (E earthward and N
-  eastward in the orbit plane, P northward, normal to it); `enp_matrix_make`
-  (`general/cotrans/special/enp/enp_matrix_make.pro`) builds rotations to
-  other frames.
+- Magnetometer `H` data are combined in ENP (E: satellite to Earth and N:
+  east, in the orbital plane; P: north, perpendicular to it); other `fgm`
+  variables are in spacecraft or sensor coordinates. `enp_matrix_make`
+  (`general/cotrans/special/enp/enp_matrix_make.pro`) builds GEI-to-ENP
+  rotation matrices (use `tvector_rotate` with `/invert` for ENP to GEI).
 - The `goes_lib` helpers are defined inside `goes_lib.pro`, so IDL cannot find
   them by name until that file is compiled. Call `goes_lib` first, as
   `goes_overview_plot.pro` and `goes_load_crib_sheet.pro` do.
@@ -110,7 +112,7 @@ NOAA NCEI netCDF files. GOES-R (16 and later) is a separate mission folder,
 - `goes_mag_load` and `goes_ep_load` in `general/missions/goes/`
   (`general/missions/goes/goes_mag_load.pro`,
   `general/missions/goes/goes_ep_load.pro`) are older, unrelated loaders of
-  SPDF key-parameter CDFs through `!istp`.
+  SPDF `k0` CDFs through `!istp`.
 
 ## Examples
 

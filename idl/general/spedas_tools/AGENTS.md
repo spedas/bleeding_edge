@@ -35,7 +35,7 @@ maintenance: |
 
 # SPEDAS tools
 
-Self-contained tools shared by all missions, above all the downloader
+Self-contained tools, above all the downloader
 `spd_download`. `README.txt` asks that code here run with only `general/`
 on the path and that changes get QA testing, since much code depends on it.
 
@@ -101,6 +101,6 @@ on the path and that changes get QA testing, since much code depends on it.
   under `local_data_dir` (default `hapi/`, relative to the current directory),
   names variables `prefix + lowercase(parameter) + suffix`, and needs IDL 8.3+.
 - Despite `README.txt`, `hapi_load_data` and `spd_run_py_validation` call
-  `spd_addslash` (`spedas_gui/utilities/spd_addslash.pro`), and
+  `spd_addslash` (`spedas_gui/utilities/spd_addslash.pro`).
   `spd_flipbookify` needs `spd_slice2d`
   (`general/science/spd_slice2d/spd_slice2d.pro`).

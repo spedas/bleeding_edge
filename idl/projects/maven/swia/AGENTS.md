@@ -31,7 +31,7 @@ maintenance: |
 Code for SWIA (Solar Wind Ion Analyzer). It loads L0 or L2 data into the
 `mvn_swia_data` common block and tplot, builds 3D data structures for the
 generic particle routines, computes moments (including separate proton and alpha
-moments), and makes the L2 CDF files. Written by the SWIA team (J. Halekas).
+moments), and makes the L2 CDF files. Most routines are by J. Halekas.
 
 ## Layout
 
@@ -83,6 +83,10 @@ moments), and makes the L2 CDF files. Written by the SWIA team (J. Halekas).
   `conv_units`, `n_3d`, `v_3d`, `plot3d_new` and `spec3d` work on them. Their
   angles are in instrument coordinates. Onboard moments come as
   `mvn_swim_velocity` (instrument frame) and `mvn_swim_velocity_mso`.
-- Solar wind temperatures from full distributions include alphas; use the
-  proton/alpha routines to separate them.
+- `mvn_swia_crib.pro` warns that moments computed with the standard routines
+  (`n_3d`, `v_3d`, `t_3d`) on the 3D structures have a solar wind temperature
+  "contaminated by alphas". For separate proton and alpha moments it uses
+  `mvn_swia_protonalphamoms` on fine distributions ("simple energy bisection and
+  partial moment computation"); its header says it "does not work if
+  distribution is too hot and they overlap".
 - SWIA does not measure below about 25 eV (see the SWEA crib).

@@ -87,7 +87,7 @@ wrappers add spacecraft frames on top: `thm_cotrans`
 
 - Coordinate system names are lower case strings in
   `dlimits.data_att.coord_sys` (`gse`, `gsm`, `sm`, `gei`, `geo`, `mag`,
-  `j2000`, `gseq`, `hee`, `hae`, `heeq`, `agsm`). Loaders set it
+  `j2000`, `gseq`, `hee`, `hae`, `heeq`, `agsm`). Some loaders set it
   (`spd_cdf2tplot` does from the CDF `COORDINATE_SYSTEM` attribute); if it
   is missing `cotrans` accepts any input. `/ignore_dlimits` skips the check.
 - GEI here is true of date (TOD); J2000 is the separate `j2000` system.

@@ -32,8 +32,8 @@ maintenance: |
 
 # SECS (IDL)
 
-Spherical Elementary Current Systems maps of the northern high-latitude
-ionosphere, derived from ground magnetometers (archive by J. Weygand, served
+Spherical Elementary Currents maps of the ionosphere over the northern
+hemisphere, derived from ground magnetometers (archive by J. Weygand, served
 from the UCLA Virtual Magnetospheric Observatory). Two products: EICS
 (equivalent ionospheric currents, horizontal Jx/Jy) and SECA (current
 amplitudes). Data are ASCII files, not CDF.
@@ -74,9 +74,11 @@ amplitudes). Data are ASCII files, not CDF.
 - Each file is a whole map, and the readers append one row per grid point: `x`
   repeats the file's time for every point, and `y` holds that point's values.
   These are not ordinary time series, and even minutes of data are large.
-- Coordinates are geographic: `*_latlong` is geographic latitude and longitude
-  (`coord_sys` `'geo'`). EICS currents are in mA/m (Jx north, Jy east); SECA
-  amplitudes are in A.
+- Coordinates are geographic: `*_latlong` is geographic latitude and longitude.
+  EICS currents are in mA/m (Jx north, Jy east); SECA amplitudes are in A. The
+  readers build dlimits with `coord_sys` `'geo'` and these units, but pass the
+  undefined variable `dlimit` to `store_data`, so the tplot variables do not
+  carry them.
 - The overlay plots call `secs_load_data` themselves and then
   `thm_asi_create_mosaic` (`projects/themis/ground/thm_asi_create_mosaic.pro`),
   so they need THEMIS ASI data and the THEMIS code on the path (see

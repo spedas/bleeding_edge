@@ -45,7 +45,8 @@ maintenance: |
 
 Ground magnetometers (THEMIS GBO/EPO sites and many partner networks) and the
 THEMIS all-sky imagers (ASI), keograms (ASK) and REGO imagers, plus station
-lists, mosaics and pseudo-AE indices. Variables are prefixed `thg_`.
+lists, mosaics and pseudo-AE indices. Most variables are prefixed `thg_`
+(REGO uses `clg_`; `thm_load_bas_gmag` makes `thm_mag_<site>`).
 
 ## Layout
 
@@ -59,15 +60,15 @@ lists, mosaics and pseudo-AE indices. Variables are prefixed `thg_`.
   has ASI sites in code. No code reads the `THEMIS_GMAG_Station_List_*.xlsx`
   spreadsheets.
 - Imagers: `thm_load_asi.pro` (`asf` full images in hourly files, `ast`
-  thumbnails in daily files), `thm_load_asi_cal.pro` (pointing and mapping),
+  thumbnails in daily files), `thm_load_asi_cal.pro` (calibration parameters),
   `thm_load_ask.pro` (keograms, all sites in one daily file; `/rego` for
   REGO), `thm_load_rego.pro`.
 - Mosaics: `thm_asi_create_mosaic.pro`, `thm_rego_create_mosaic.pro`,
   `thm_asi_merge_mosaic.pro`; helpers in `asi_mosaic/` (`thm_mosaic_array.pro`
   loads images and cal data, `thm_map_set.pro` and `thm_map_add.pro` draw maps;
   `thm_map_add.pro` restores `asi_mosaic/thm_map_add.sav`).
-- Indices: `thm_make_ae.pro` computes pseudo AE/AL/AU from loaded
-  `thg_mag_*` variables; `thm_load_pseudoae.pro` loads precomputed ones.
+- Indices: `thm_make_ae.pro` computes pseudo AE/AL/AU from `thg_mag_*`
+  variables (it loads them unless `/no_load`); `thm_load_pseudoae.pro` loads precomputed ones.
 - Plotting: `thm_gmag_stackplot.pro` and other `thm_*gmag*`/`*stackplot*` files.
 - `test_ask_cal2.pro`: manual check of ASK calibration file versions.
 
@@ -85,7 +86,8 @@ lists, mosaics and pseudo-AE indices. Variables are prefixed `thg_`.
 
 ## Things to know
 
-- Output variables are `thg_mag_<site>` with H, D, Z components in nT. AARI
+- Output variables are `thg_mag_<site>` (BAS: `thm_mag_<site>`) with H, D, Z
+  components in nT. AARI
   stations (`variation_site` in `thm_load_gmag.pro`) give only variations and
   are labeled dH, dD, dZ. Variometer sites also have `_100ms` 10 Hz versions.
 - Servers differ by network: most sites use `!themis`; CARISMA switches

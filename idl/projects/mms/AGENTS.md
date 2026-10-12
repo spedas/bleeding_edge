@@ -99,9 +99,10 @@ Instrument folders have one loader each, all calling `mms_load_data`:
   directory, then `~/.mms_sitl_login.sav`) or shows a login widget; an empty
   username means public access. The connection is cached for 24 hours (see
   `common/AGENTS.md`). `/always_prompt` forces a new login.
-- `!mms.remote_data_dir` only affects SPDF loads; the SDC host is fixed in
-  `sdc/`. Local paths come from `mms_config` (`common/mms_config.pro`) and the
-  `MMS_DATA_DIR`, `SPEDAS_DATA_DIR` or `ROOT_DATA_DIR` environment variables.
+- `!mms.remote_data_dir` has no effect on SDC loads (`mms_init` header); the
+  SDC host is fixed in `sdc/`. Local paths come from `mms_config`
+  (`common/mms_config.pro`) and the `MMS_DATA_DIR`, `SPEDAS_DATA_DIR` or
+  `ROOT_DATA_DIR` environment variables.
 - `about_mms.txt` notes that SDC access needs IDL 8.4 and CDF 3.6.3+ (leap
   seconds); `mms_init` prints a warning and stops (`stop`) on older CDF.
 - GUI plugin: `common/gui/`, registered in `spedas_gui/plugins/mms_plugin.txt`.

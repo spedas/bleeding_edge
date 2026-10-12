@@ -65,8 +65,8 @@ fits). L1 files hold raw ADC counts; loaders calibrate them unless `type='raw'`.
 
 ## Layout
 
-- `thm_load_{fgm,efi,scm,fft,fbk,fit}.pro`: loaders, each with its `_post`
-  (and sometimes `_relpath`) helper above the main routine.
+- `thm_load_{fgm,efi,scm,fft,fbk,fit}.pro`: loaders. All but EFI have a
+  `_post` helper above the main routine (FGM also a `_relpath` helper).
 - `thm_cal_<inst>.pro`: L1 calibration. Helpers: FGM
   `thm_cal_fgm_dac_offset.pro`, `thm_cal_fgm_spin_harmonics.pro`,
   `thm_cal_fgm_spintone_removal.pro`, `fgm_bad_bz.pro`; EFI
@@ -77,8 +77,9 @@ fits). L1 files hold raw ADC counts; loaders calibrate them unless `type='raw'`.
 - `spinfit.pro`, `thm_spinfit.pro`, `thm_spinavg.pro`: spin fits and spin
   averages of loaded E or B variables.
 - `LASP/`: EFI burst cleanup (`LASP/thm_efi_clean_efp.pro`,
-  `LASP/thm_efi_clean_efw.pro`, `thm_lsp_*`); meant for particle or wave
-  bursts, not whole orbits.
+  `LASP/thm_efi_clean_efw.pro`, `thm_lsp_*`); they can work on one day of
+  data, but a `trange` around a single particle (EFP) or wave (EFW) burst
+  greatly reduces run time.
 - `fgm_wave_survey/make_fgm_wave_survey_dynspec.pro`: FGM wave survey plots.
 - `thm_cal_efi_nonTD.pro`, `thm_get_efi_cal_pars_nonTD.pro`: deprecated stubs.
 
@@ -113,7 +114,7 @@ fits). L1 files hold raw ADC counts; loaders calibrate them unless `type='raw'`.
   `thm_cal_scm` calls `thm_load_state`. `use_eclipse_corrections` (0, 1, 2)
   picks the spin model variant. EFI `_dot0` (Ez from E.B=0) loads FGM itself.
 - `thm_load_fgm` defaults to `coord='dsl'`. Units: raw ADC; calibrated nT (FGM,
-  SCM) or mV/m (EFI). EFI labels are `e12 e34 e56` in `ssl`/`spg`, else `Ex Ey Ez`.
+  SCM) or mV/m (EFI). EFI labels are `E12 E34 E56` in `ssl`/`spg`, else `Ex Ey Ez`.
 - Loaders read whole days. For L1, `thm_load_fgm` widens requests under 10
   minutes (spin calibration); `thm_load_efi` pads 30 minutes and clips back.
 - Datatypes: FGM `fgl fgh fge` (`fgs` at L2), EFI `vaf vap vaw vbf vbp vbw`

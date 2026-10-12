@@ -35,9 +35,9 @@ maintenance: |
 # tplot
 
 The tplot system: in-memory storage of named time series ("tplot variables"),
-their plot options, and the routines that plot them. Almost every SPEDAS
-loader ends by calling `store_data`, and almost every analysis routine starts
-with `get_data`.
+their plot options, and the routines that plot them. `store_data` (called in
+about 1,700 files) creates tplot variables and `get_data` (about 1,400 files)
+reads them.
 
 ## Layout
 
@@ -71,7 +71,7 @@ with `get_data`.
 - `dtype`: 1 = normal x/y; 2 = obsolete array of structures; 3 = pseudo
   variable (data is a list of other tplot names, overplotted in one panel);
   4 = a `dynamicarray` object (`general/tools/misc/dynamicarray__define.pro`),
-  used by SPP and SWFO packet-decommutation code.
+  used in SPP, SWFO and ESCAPADE code.
 - `get_data, name, t, y, v` or `get_data, name, data=d, dlimits=dl, limits=l,
   alimits=al`. The real keywords are `data_str`, `dlimits_str`, ...; the short
   forms work by IDL keyword abbreviation. `alimits` merges dlimits then
@@ -97,8 +97,9 @@ loop over their components with overplot.
 - Names may not contain spaces or `* ? [ ] \`; `store_data` replaces them
   with `$`.
 - `timerange()` with no argument and no `timespan` set calls `timespan`, which
-  prompts on stdin. Loaders call `timerange(trange)`, so pass `trange=` or run
-  `timespan` first in batch scripts.
+  prompts on stdin. Loaders such as `thm_load_xxx` and `mms_load_data` call
+  `timerange(trange)`, so pass `trange=` or run `timespan` first in batch
+  scripts.
 - Helpers live in `general/misc/`: `time_double`
   (`general/misc/time/time_double.pro`) and `str_element`
   (`general/misc/str_element.pro`), which edits option structures.

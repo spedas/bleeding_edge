@@ -34,7 +34,7 @@ maintenance: |
 
 # BARREL (IDL)
 
-BARREL (Balloon Array for RBSP Relativistic Electron Losses) flew X-ray
+BARREL flew X-ray
 balloon payloads in several campaigns (launch-order IDs 1xx to 4xx). This
 folder loads their CDFs (X-ray spectra, magnetometer, GPS ephemeris,
 housekeeping) and has a separate package for spectral fitting.

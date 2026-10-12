@@ -88,5 +88,4 @@ potential). Written by the LPW team at LASP (C. Fowler, L. Andersson).
   `/notatlasp` and `/noserver` keywords as the header describes.
 - LPW packets in the shared L0 dispatcher are handled by
   `projects/maven/sep/mvn_lpw_handler.pro` (currently commented out there);
-  `projects/maven/swea/mvn_lpw_load_dlm.pro` is another author's variant of
-  `mvn_lpw_load`.
+  `projects/maven/swea/mvn_lpw_load_dlm.pro` is a variant of `mvn_lpw_load`.

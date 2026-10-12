@@ -64,8 +64,9 @@ level 1 and level 2 netCDF files. The plugin is labelled beta
    `LEVEL.1/FUV/YYYY/DOY/ICON_L1_FUV_LWP_YYYY-MM-DD_v??r???.NC`; `fversion` and
    `frevision` pin the version, otherwise wildcards are used.
 4. `file_dailynames` expands them (`general/misc/file_dailynames.pro`). For
-   L1 EUV and MIGHTI, which have several files a day, `icon_euv_filenames` and
-   `icon_mighti_filenames` list the remote folder with `spd_download_expand`,
+   L1 EUV and MIGHTI (`instrument='mighti'` only), which have several files a
+   day, `icon_euv_filenames` and `icon_mighti_filenames` list the remote
+   folder with `spd_download_expand`,
    keep the highest version and revision, and select files inside the time
    range.
 5. `spd_download` (`general/spedas_tools/spd_download/spd_download.pro`)
@@ -82,6 +83,6 @@ level 1 and level 2 netCDF files. The plugin is labelled beta
   loading.
 - Tplot names are the netCDF variable names; no prefix is added.
 - On IDL 8.4 and later the loader replaces double backslashes in the remote
-  path, so Windows network paths work.
+  path with single ones.
 - `.NC` files are netCDF, read with IDL's `ncdf_*` routines; there is no CDF
   step.

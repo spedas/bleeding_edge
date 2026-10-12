@@ -23,6 +23,7 @@ related_files:
   - spedas_gui/plugins/themis_plugin.txt
   - spedas_gui/plugins/a_spedas_configsettings.txt
   - spedas_gui/api_examples/load_data_tab/yyy_ui_load_data.pro
+  - spedas_gui/api_examples/data_processing/spd_ui_superpo_options.pro
   - spedas_gui/isee3d/isee_3d.pro
   - projects/themis/spedas_plugin/load_data/thm_ui_load_data_file.pro
 maintenance: |
@@ -52,8 +53,8 @@ folders and are registered here through plugin text files.
   `spd_init_tests` used by mission test suites).
 - `plugins/`: one `*_plugin.txt` per mission or tool (see below).
 - `misc/`: `spedas_init` and the SPEDAS configuration tab.
-- `api_examples/`: template plugins named `yyy_*` for load tabs, config tabs,
-  menus and data processing. Start here when writing a plugin.
+- `api_examples/`: template plugins for load tabs, config tabs and menus
+  (named `yyy_*`) and data processing (`spd_ui_superpo_options.pro`). Start here when writing a plugin.
 - `isee3d/`: ISEE 3D particle-distribution viewer (`isee_3d.pro`, `stel3d`),
   called from THEMIS, MMS and ERG code; comments are partly in Japanese.
 - `Resources/` (bitmaps, color table, text; found with `getresourcepath`),
@@ -90,8 +91,9 @@ folders and are registered here through plugin text files.
 - `!spedas` holds the live `loadedData`, `windowStorage`, `drawObject` and
   `historyWin` objects so command-line code (`tplot_gui`) can reach the GUI. Its
   settings are saved to `spedas_config.txt` by `misc/spedas_write_config.pro`.
-- GUI variables are copies: `loadedData->add` stores pointers to a tplot
-  variable's data, which must have double-precision times. Changing the tplot
+- GUI variables are copies: `loadedData->add` reads the tplot variable with
+  `get_data` and stores new pointers to that data, which must have
+  double-precision times. Changing the tplot
   variable later does not change the GUI copy.
 - Plot model: `spd_ui_windows` (`objects/spd_ui_windows__define.pro`) holds
   pages (`spd_ui_window`), which hold panels (`spd_ui_panel`) and their traces.

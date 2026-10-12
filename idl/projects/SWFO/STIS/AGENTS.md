@@ -47,7 +47,7 @@ maintenance: |
 
 # SWFO STIS
 
-Ground processing for STIS, SSL's ion and electron sensor on SWFO-L1
+Ground processing for STIS, the ion and electron sensor on SWFO-L1
 (SOLAR-1), plus the packet framework the whole SWFO folder uses. It is a copy
 of the PSP SWEAP framework (`projects/SPP/COMMON/`), renamed `swfo_`.
 
@@ -55,7 +55,7 @@ of the PSP SWEAP framework (`projects/SPP/COMMON/`), renamed `swfo_`.
 
 - Readers, subclasses of `socket_reader` (`general/misc/file_stuff/socket_reader__define.pro`):
   `ccsds_frame_reader__define.pro` (L0 transfer frames), `ccsds_reader__define.pro`,
-  `cmblk_reader__define.pro` (SSL "common block" GSE files), `gsemsg_reader__define.pro`,
+  `cmblk_reader__define.pro` ("common block" GSE files), `gsemsg_reader__define.pro`,
   `ptp_reader__define.pro`, JSON/ASCII readers, and lab-equipment readers (`gse_*`).
 - APID registry: `swfo_apdat_info.pro`, `swfo_apdat.pro`, base class
   `swfo_gen_apdat__define.pro`. `swfo_stis_apdat_init.pro` registers every
@@ -85,8 +85,8 @@ of the PSP SWEAP framework (`projects/SPP/COMMON/`), renamed `swfo_`.
    30-min averages.
 2. `swfo_apdat_info, /cr, /print, /sort, /uniq, /merge` (`/cr` is
    `create_tplot_vars`) makes L0a tplot variables (`swfo_stis_sci_*`, ...).
-3. `/l0b`, `/l1a`, `/l1b`, `/l2` compute each level in memory with the
-   `cal=` dictionary from `swfo_stis_inst_response_calval` and store
+3. `/l0b`, `/l1a`, `/l1b`, `/l2` compute each level in memory (L1a and L1b
+   with the `cal=` dictionary from `swfo_stis_inst_response_calval`) and store
    `swfo_stis_L0b`, `swfo_stis_L1a`, `swfo_stis_L1b`, `swfo_stis_L2`.
 4. `swfo_stis_tplot, /setlim, cal=cal` sets plot limits.
 

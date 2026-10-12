@@ -66,11 +66,13 @@ and moments, L0 decoding and calibration, and the team's L2/L3 production.
 
 1. It builds the day list from `trange` (or `timerange()`) and the product list
    from `sta_apid` (array or space-separated string; `c?`, `d?` expand). The
-   default is all products: 2a, c0-cf, d0-db.
+   default is all products: 2a, c0, c2, c4, c6, c8, ca, cc, cd, ce, cf, d0, d1,
+   d4, d6, d7, d8, d9, da, db.
 2. For each product and day it fetches
    `maven/data/sci/sta/l2/YYYY/MM/mvn_sta_l2_<apid>*_YYYYMMDD_vNN.cdf` with
    `mvn_pfp_spd_download` (`projects/maven/general/mvn_pfp_spd_download.pro`),
-   where NN comes from `mvn_sta_current_sw_version()`. `/no_update` only looks locally.
+   where NN comes from `mvn_sta_current_sw_version()`. `/no_update` uses a local
+   file if one exists and otherwise still downloads.
 3. `mvn_sta_cmn_l2read` reads each file into an array of structures; days are
    concatenated and clipped to the time range.
 4. Each product goes into its own common block, e.g.
@@ -92,7 +94,8 @@ then fills the same common blocks, followed by dead-time and quality-flag loads.
   over a time range; without `tt=` it asks for two clicks in the tplot window.
 - 4D structures carry `units_procedure = 'mvn_sta_convert_units'`, so generic
   `conv_units` works. Moment functions take `mass=` and `m_int=`; `n_4d`, `nb_4d`
-  and `j_4d` correct for the structure's `sc_pot` (STATIC's own estimate in L2).
+  and `j_4d` correct for the structure's `sc_pot` (the potential stored in the L2
+  CDFs or calculated by `mvn_sta_scpot_load`).
 - The loader only finds files of the current software version; to read an older
   version pass `l2_version_in`.
 - `L3_DO_NOT_USE/` is still on the path: `nbc_4d` there is called by name from

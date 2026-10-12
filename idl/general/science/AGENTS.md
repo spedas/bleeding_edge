@@ -43,14 +43,14 @@ polarization and multitaper spectral analysis.
 
 ## Layout
 
-- Top level: 3D-structure routines from Wind 3DP. `3d_structure.pro` is
+- Top level: 3D-structure routines. `3d_structure.pro` is
   documentation only. Units: `conv_units`, `convert_esa_units`,
   `convert_flux_units`. Moments: `n_3d`, `v_3d`, `p_3d`, `t_3d`, `j_3d`;
   `get_3dt` runs one over a time series. Plots: `spec3d`, `plot3d`, `padplot`,
   the old `slice2d`.
 - `wind/`: more 3D-structure routines, notably `moments_3d`
-  (`wind/moments_3d.pro`), the moment engine behind particle products; the rest
-  are Wind 3DP drivers that call `get_el`, `get_pl` etc. from
+  (`wind/moments_3d.pro`), the moment engine behind particle products; some of the
+  rest are Wind 3DP drivers that call `get_el`, `get_pl` etc. from
   `projects/wind/3dp/idl/`.
 - `spd_part_products/`: `spd_pgs_*` building blocks for spectrograms and
   moments. There is no `spd_part_products` routine; missions write the driver.

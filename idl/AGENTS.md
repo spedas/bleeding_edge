@@ -62,7 +62,7 @@ IDL has no imports. Calling `foo` runs the first `foo.pro` found on `!PATH`.
 - 76 file names exist in more than one folder (mostly under
   `general/missions/rbsp/`). Which copy runs depends on `!PATH` order.
 - Routines are also called by name from strings (`call_procedure`,
-  `call_function`, `execute`; about 750 calls). Grep for the name in quotes too,
+  `call_function`, `execute`; about 620 calls outside comments). Grep for the name in quotes too,
   e.g. `'thm_load_fgm_relpath'`.
 - `f(x)` can be a function call or array indexing; the syntax alone doesn't say.
 - Most files open with a `;+` ... `;-` comment header describing usage and
@@ -89,7 +89,7 @@ a name plus pointers to the data, limits and dlimits.
   `spd_cdf2tplot` (`general/CDF/spd_cdf2tplot.pro`) stores CDF contents as
   tplot variables.
 - Mission settings such as the data server live in system variables set by an
-  init routine (for example `!themis`, set by `thm_init`), not in arguments.
+  init routine (for example `!themis`, set by `thm_init`).
 - Conventions differ by mission. THEMIS uses one shared load engine (see
   `projects/themis/AGENTS.md`); some older code still downloads with
   `file_retrieve` (`general/misc/file_retrieve.pro`).
@@ -97,7 +97,7 @@ a name plus pointers to the data, limits and dlimits.
 ## Skip when searching
 
 - Legacy folders: `obsolete/`, `deprecated/`, `old/`, `BACKUP/`,
-  `L3_DO_NOT_USE/` (25 in total).
+  `L3_DO_NOT_USE/` (24 in total).
 - Generated documentation: the `*_spd_doc*.html` pages.
 - Data: calibration tables (`.txt`, `.dat`, `.sav`) and SPICE kernels.
 
@@ -115,6 +115,15 @@ List only files that are in the source tree. Name files that only a build
 creates, such as the zip's svn_version_info.txt, in plain text rather than as
 code, so the check below gives the same result in an SVN working copy and in an
 unpacked zip.
+
+Write only what the code or its comments show. Every statement about what a
+routine does, its keywords and defaults, or the science or instrument behind it
+must be checkable against a file in this tree; if you can't point to one, leave
+the statement out. Keep the source's own terms (for example "onboard moments",
+"L2", or a coordinate system name) instead of paraphrasing them, because
+dropping a qualifier can change the meaning. Don't generalize from a few
+examples ("all loaders", "always"), and don't state counts that will go stale.
+When you revise an AGENTS.md, keep text that a maintainer added by hand.
 
 To check the headers, run `python agents/scripts/check_agents_md.py --strict`
 from this folder (needs PyYAML). The script finds this folder from its own

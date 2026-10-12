@@ -3,6 +3,7 @@ related_files:
   - projects/themis/AGENTS.md
   - projects/themis/spacecraft/particles/thm_part_products/thm_part_products.pro
   - projects/themis/spacecraft/particles/thm_part_products/thm_part_load.pro
+  - projects/themis/spacecraft/particles/thm_part_products/thm_pgs_clean_esa.pro
   - projects/themis/spacecraft/particles/thm_part_dist.pro
   - projects/themis/spacecraft/particles/thm_part_dist_array.pro
   - projects/themis/spacecraft/particles/thm_part_getspec.pro
@@ -74,11 +75,15 @@ loaders, 3D distribution access, and spectrogram, moment and slice tools.
   `SST/SST_cal_workdir/` is not scratch: its `thm_load_sst2.pro` and
   `thm_part_dist2.pro` are the default (calibrated) path.
 - `moments/`: on-board moments `thm_load_mom.pro` (L2 via
-  `thm_load_mom_l2.pro`), ground moments `thm_load_gmom.pro`,
+  `thm_load_mom_l2.pro`), L2 ground-calculated combined ESA+SST moments
+  `thm_load_gmom.pro` (header: "VERY EXPERIMENTAL"),
   `thm_part_moments.pro` (wrapper). `moments/README` explains `th?_pxxm_pot`.
 - `combined/thm_part_combine.pro`: merged ESA+SST distributions (`dist_array`).
 - `slices/`: `thm_part_slice2d.pro` (wraps `spd_slice2d`), `thm_part_slice1d.pro`;
-  `slices/core/` serves only `thm_part_slice2d_old`.
+  `slices/core/` holds `thm_part_slice2d_old` and helpers, some of which
+  (`thm_part_slice2d_getvel`, `_getsun`, `_cotrans`, `_fac`,
+  `thm_part_slice1d_r`, `_xy`) `thm_part_slice2d.pro` and
+  `thm_part_slice1d.pro` also call.
 - `deprecated/`, `thm_cal_mom.pro`: old code; skip.
 
 ## How thm_part_products works
@@ -109,12 +114,16 @@ loaders, 3D distribution access, and spectrogram, moment and slice tools.
   `th?_fgs` (`thm_load_fgm`), `th?_state_pos` (`thm_load_state`) and
   `th?_pxxm_pot` (`thm_load_mom`) unless `mag_name`, `pos_name`, `sc_pot_name`
   say otherwise. Units default to `eflux`, which moments require. ESA
-  background removal needs `thm_load_esa_bkg` first.
+  background is removed with `thm_esa_bgnd_remove` unless
+  `esa_bgnd_advanced` is set, which needs `thm_load_esa_bkg` first
+  (`thm_part_products/thm_pgs_clean_esa.pro`).
 - Calibration files come from the THEMIS server via `spd_download`: SST
   `th?/l1/sst/0000/th?_ps?f_calib_params_v02.txt`, moments
   `th?/l1/mom/0000/th?_l1_mom_cal_v03.txt`. `SST/SST_cal_workdir/cal_files/`
   holds reference copies only (`README.txt`).
-- `thm_part_getspec` and `thm_part_moments` only wrap `thm_part_products`.
+- `thm_part_getspec` and `thm_part_moments` are wrappers around
+  `thm_part_products`; unlike it, `thm_part_getspec` loads state, FIT `fgs`
+  and the distributions itself.
 
 ## Examples
 

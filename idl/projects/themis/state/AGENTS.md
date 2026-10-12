@@ -59,10 +59,13 @@ frames. The spin model itself is in `projects/themis/spin/`.
   variables, GEI true of date), needed for `sse` and `sel`.
 - `thm_load_ssc.pro`: orbits, including predicted ones, from SSCWeb/CDAWeb.
 - `thm_interpolate_state.pro`, `thm_sunpulse.pro`, `thm_spin_phase.pro`:
-  interpolate the 1-minute spin period and phase (`ssl2dsl /interpolate_state`,
-  `projects/themis/spacecraft/fields/thm_spinfit.pro`, and MMS
-  `projects/mms/common/cotrans/dmpa2gse.pro` use them).
-- `thm_load_state2.pro`, `thm_load_state3.pro`: unused variants.
+  interpolate the 1-minute spin period and phase (`ssl2dsl /interpolate_state`
+  and `projects/themis/spacecraft/fields/thm_spinfit.pro` use them; in MMS
+  `projects/mms/common/cotrans/dmpa2gse.pro` the `thm_interpolate_state`
+  calls are commented out).
+- `thm_load_state2.pro`, `thm_load_state3.pro`: variants. Nothing calls
+  `thm_load_state3`; `thm_load_state2` is called only by
+  `thm_file_download2`, which nothing calls.
 - `cotrans/`: `thm_cotrans.pro` and its single steps (`ssl2dsl.pro`,
   `dsl2gse.pro`, `gse2sse.pro`, `sse2sel.pro`); boundary-normal coordinates
   (`thm_cotrans_lmn.pro`, `thm_gsm2lmn_wrap.pro`); field-aligned matrices
@@ -87,8 +90,9 @@ frames. The spin model itself is in `projects/themis/spin/`.
 ## Things to know
 
 - Native frames: `pos` (km), `vel` (km/s), `spinras`, `spindec` are GEI;
-  `spinalpha`, `spinbeta` are `spg`. `thm_cotrans` warns that it ignores the
-  rotational term when transforming velocities.
+  `spinalpha`, `spinbeta` are `spg`. When `thm_load_state` transforms
+  velocities with `coord`, it warns that `thm_cotrans` does not account for
+  the rotational component.
 - The spin model is global state: objects in the common block
   `spinmodel_common` (`projects/themis/spin/spinmodel_get_ptr.pro`),
   filled by `thm_load_state, /get_support_data` (unless `/no_spin`) or by

@@ -47,13 +47,14 @@ plugin. The CDF loaders most users want (`wi_mfi_load`, `wi_swe_load`,
 ## Layout
 
 - `3dp/idl/`: IDL side of the 3DP level-zero reader: `load_3dp_data`,
-  `init_wind_lib`, the `wind_com` common block, about 60 `get_*` functions that
-  return one 3D distribution or moment set, and the prebuilt libraries
+  `init_wind_lib`, the `wind_com` common block, 59 `get_*` routines (functions
+  such as `get_el` that return one 3D structure, and procedures such as
+  `get_pmom2` and `get_spec` that store tplot variables), and the prebuilt libraries
   `wind3dp_lib_<os>_<arch>.so`.
 - `3dp/wind_lib/`: C source of the decommutator (`3dp/wind_lib/makefile`,
   `3dp/wind_lib/wind_idl.c` and the `*_dcm.c` decoders) plus old binaries.
-- `3dp/README.txt`, `3dp/idl_3dp.init`: notes and a csh setup script from the
-  original Berkeley install (sets `WIND_DATA_DIR` and related variables).
+- `3dp/README.txt`, `3dp/idl_3dp.init`: a one-line note and a csh setup script
+  to source from `.cshrc` (sets `WIND_DATA_DIR` and related variables).
 - `spedas_plugin/`: GUI load tab. `spedas_plugin/wind_ui_load_data.pro` builds it,
   `spedas_plugin/wind_ui_import_data.pro` calls the loaders, and
   `spedas_plugin/wind_fileconfig.pro` edits `!wind`. It is registered by
@@ -74,9 +75,9 @@ plugin. The CDF loaders most users want (`wi_mfi_load`, `wi_swe_load`,
    `wi_lz_3dp_YYYYMMDD_v0?.dat` files with `file_dailynames` and `file_retrieve`
    (`general/misc/file_dailynames.pro`, `general/misc/file_retrieve.pro`)
    using `!wind`, and writes a temporary index under `IDL_TMPDIR`.
-4. `call_external(wind_lib, 'load_data_files_idl', ...)` loads the decoded
-   packets into the library's memory. Nothing is stored in tplot yet.
-5. Each `get_*` function (for example `3dp/idl/get_el.pro` for EESA Low) calls
+4. `call_external(wind_lib, 'load_data_files_idl', ...)` loads the LZ data
+   files into memory. Nothing is stored in tplot yet.
+5. A `get_*` function such as `3dp/idl/get_el.pro` (EESA Low) calls
    the library again with `call_external` and returns one 3D structure; the
    structure's `UNITS_PROCEDURE` names the unit converter, such as
    `convert_esa_units` (`general/science/convert_esa_units.pro`).
@@ -109,4 +110,4 @@ plugin. The CDF loaders most users want (`wi_mfi_load`, `wi_swe_load`,
 
 `general/missions/wind/wi_crib.pro` shows the CDF loaders. There is no crib
 for the level-zero reader; the `;+` headers of `get_el`, `get_spec` and
-`load_3dp_data` are the documentation.
+`load_3dp_data` describe their usage.

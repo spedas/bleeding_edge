@@ -83,14 +83,14 @@ Load 3-D flux (`erg_load_mepe, datatype='3dflux'` gives
 `erg_mepe_l2_3dflux_FEDU`; see `erg/examples/erg_crib_mepe.pro`), then call
 `erg_mep_part_products` with `outputs` (`energy`, `phi`, `theta`, `pa`, `gyro`,
 `moments`). It calls `erg_mepe_get_dist` per time and the shared `spd_pgs_*`
-routines. `pa`, `gyro` and `moments` need `mag_name` (normally
-`erg_mgf_l2_mag_8sec_dsi`) and `pos_name`; `erg_pgs_make_fac` uses
+routines. `pa` and `gyro` need `mag_name` (normally
+`erg_mgf_l2_mag_8sec_dsi`) and `pos_name`; `moments` uses `mag_name` if given; `erg_pgs_make_fac` uses
 `erg_cotrans`. `erg_lep_part_products` handles LEP-e and LEP-i;
 `erg_lepe_part_products` and `erg_lepi_part_products` are one-instrument versions.
 
 ## Things to know
 
-- SGA and SGI spin with the spacecraft; DSI is despun. `erg_cotrans` chains
+- SGI is a spinning system and DSI is despun. `erg_cotrans` chains
   SGA - SGI - DSI - J2000, taking the system from the last `_xxx` of the tplot
   name; use the general `cotrans` from J2000 to GSE/GSM.
 - Unless `/noload`, `erg_cotrans` downloads attitude (`erg_load_att`, text

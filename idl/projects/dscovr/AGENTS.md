@@ -39,7 +39,7 @@ maintenance: |
 
 # DSCOVR (IDL)
 
-Loaders and plots for DSCOVR at L1: the fluxgate magnetometer, the Faraday cup
+Loaders and plots for DSCOVR: the fluxgate magnetometer, the Faraday cup
 (solar wind protons), and orbit and attitude, all as daily CDFs from SPDF. Also
 an object for comparing DSCOVR with Wind or ACE.
 
@@ -94,7 +94,8 @@ for each quantity with an uncertainty, adds `+DY` and `-DY` variables and a
   or `SPEDAS_DATA_DIR` + `dsc/`).
 - Loader keywords `no_download`, `no_update` and `verbose` default to the
   `!dsc` values.
-- Vector components are GSE (also RTN for the magnetometer).
+- Vector components are GSE (also RTN for the magnetometer, and J2000 for the
+  orbit, renamed from GCI).
 - `dsc_mission_compare__plot.pro` loads comparison data by calling
   `wi_mfi_load`/`wi_swe_load` or `ace_mfi_load`/`ace_swe_load` through
   `call_procedure`, and the `*_ezname` helpers through `call_function`; those

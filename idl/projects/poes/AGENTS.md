@@ -80,7 +80,7 @@ and Electron Detector (MEPED), plus footprint and L-shell ephemeris.
   `'metop1'`, `'metop2'`, and so on. Tplot names start with the probe name, for
   example `noaa19_ted_ele_flux_tel0_fixed`.
 - Because the split and fix steps rename variables, the names you get differ
-  from the CDF variable names; use the `tplotnames` keyword to see them.
+  from the CDF variable names. `poes_load_data` has no `tplotnames` keyword.
 - `datatype` defaults to `'*'` (every variable in the file).
 - The GUI tab (`spedas_plugin/poes_ui_import_data.pro`) calls `poes_load_data`
   with the default SPDF source.

@@ -46,8 +46,8 @@ CDF. Two parallel read chains exist: the original `cdf2tplot` and the newer
 - Utilities: `cdf_var_atts`, `print_cdf_info`, `cdf2idltype`/`idl2cdftype`,
   `cdf_set_cdf27` (CDF 2.7 backward-compatible output), `make_cdf_index.pro`.
 - `obsolete/`: older readers and writers (`loadallcdf`, `loadcdfstr`,
-  `loadcdf2`, `makecdf`, `cdf_to_tplot`). Not dead: Wind, FAST, STEREO code
-  and `make_cdf_index.pro` still call them.
+  `loadcdf2`, `makecdf`, `cdf_to_tplot`). Not dead: Wind, FAST, STEREO, SPP
+  code and `make_cdf_index.pro` still call them.
 
 ## How the readers work
 

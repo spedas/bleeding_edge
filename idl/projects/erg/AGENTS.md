@@ -53,8 +53,8 @@ networks ERG-SC distributes. It is maintained upstream as the "ERG-SC plug-in".
 
 Both use `file_dailynames`, `spd_download` and mostly `cdf2tplot`
 (`general/CDF/cdf2tplot.pro`) with a `prefix=`. Most then print the PI
-and rules-of-the-road text from the CDF global attributes (not the orbit,
-attitude and SuperDARN loaders). A typical ground loader is
+and rules-of-the-road text from the CDF global attributes (not `erg_load_orb`,
+`erg_load_orb_predict`, `erg_load_att` or `erg_load_sdfit`). A typical ground loader is
 `ground/geomag/erg_load_gmag_isee_fluxgate.pro`.
 
 ## Things to know
