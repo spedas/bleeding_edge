@@ -54,6 +54,10 @@ the SDC. The main program is the EVA widget GUI. Most of this needs MMS team
 SDC credentials. Burst segment status (`bss/`) is also used by
 `projects/mms/common/`.
 
+The tools in this directory are used in critical MMS operational workflows.  
+Do not make any modifications here without explicit instructions from an MMS 
+SITL team member.
+
 ## Layout
 
 - `eva/`: EVA. `eva/eva.pro` builds the window from modules in `eva/source/`:

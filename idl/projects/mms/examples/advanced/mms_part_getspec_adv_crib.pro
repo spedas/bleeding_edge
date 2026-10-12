@@ -12,9 +12,9 @@
 ; Suggestions for this crib sheet:
 ;     https://github.com/spedas/bleeding_edge/issues
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2023-08-14 12:51:35 -0700 (Mon, 14 Aug 2023) $
-;$LastChangedRevision: 31999 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-09-29 15:58:24 -0700 (Tue, 29 Sep 2026) $
+;$LastChangedRevision: 34925 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/examples/advanced/mms_part_getspec_adv_crib.pro $
 ;-
 
@@ -88,5 +88,42 @@ stop
 ; remove the solar wind component from the DIS DF data prior to performing the calculations
 mms_part_getspec, trange=['2016-12-07/14:40', '2016-12-07/15:15'], instrument='fpi', species='i', probe=1, /remove_fpi_sw
 tplot, 'mms1_dis_dist_fast_energy'
+stop
+
+; override the support-data tplot variables used by mms_part_getspec
+; mag_name should contain magnetic field data for pitch-angle/FAC products
+; use sc_pot_name (with underscores) for spacecraft potential data; scpot_name is not a keyword
+; vel_name should contain bulk velocity data in km/s for /subtract_bulk
+trange = ['2015-10-16/13:05:40', '2015-10-16/13:06:40']
+
+; load the default support data, then copy it to custom names to demonstrate
+; the override keyword syntax without changing the science inputs
+mms_load_fgm, probe=1, trange=trange, data_rate='brst', level='l2', $
+              varformat='*_fgm_b_gse_*', /time_clip
+mms_load_edp, probe=1, trange=trange, data_rate='brst', level='l2', $
+              datatype='scpot', varformat='*_edp_scpot_*', /time_clip
+copy_data, 'mms1_fgm_b_gse_brst_l2_bvec', 'mms1_custom_fgm_b_gse_brst_l2_bvec'
+copy_data, 'mms1_edp_scpot_brst_l2', 'mms1_custom_edp_scpot_brst_l2'
+
+mms_part_getspec, trange=trange, instrument='fpi', species='e', probe=1, $
+                  data_rate='brst', level='l2', output='pa moments', $
+                  suffix='_custom_support', $
+                  mag_name='mms1_custom_fgm_b_gse_brst_l2_bvec', $
+                  sc_pot_name='mms1_custom_edp_scpot_brst_l2'
+tplot, ['mms1_des_dist_brst_pa_custom_support', $
+        'mms1_des_dist_brst_density_custom_support']
+stop
+
+; vel_name is used when subtracting the bulk velocity from the distribution
+mms_load_fpi, probe=1, trange=trange, data_rate='brst', level='l2', $
+              datatype='dis-moms', /time_clip
+copy_data, 'mms1_dis_bulkv_gse_brst', 'mms1_custom_dis_bulkv_gse_brst'
+
+mms_part_getspec, trange=trange, instrument='fpi', species='i', probe=1, $
+                  data_rate='brst', level='l2', output='energy pa', $
+                  /subtract_bulk, suffix='_custom_vel', $
+                  vel_name='mms1_custom_dis_bulkv_gse_brst'
+tplot, ['mms1_dis_dist_brst_energy_custom_vel', $
+        'mms1_dis_dist_brst_pa_custom_vel']
 
 end

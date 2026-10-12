@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-08-07 07:52:37 -0700 (Fri, 07 Aug 2026) $
-; $LastChangedRevision: 34713 $
+; $LastChangedDate: 2026-10-06 21:32:41 -0700 (Tue, 06 Oct 2026) $
+; $LastChangedRevision: 34951 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_kernels.pro $
 ;
 ;-
@@ -202,9 +202,12 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
 
            undefine, wg, vg, nwg, nvg
         ENDIF ELSE BEGIN
-           tck_s = time_double(FILE_BASENAME(ck), tformat=bc[0])
-           tck_e = time_double(FILE_BASENAME(ck), tformat=bc[1])
-           
+           is_rec = (FILE_BASENAME(ck)).matches('-rec_')
+           ck = ck[SORT(TEMPORARY(is_rec))]
+
+           tck_s = time_double(STREGEX(FILE_BASENAME(ck), '[0-9]{8}-[0-9]{8}', /extract), tformat='YYYYMMDD-????????')
+           tck_e = time_double(STREGEX(FILE_BASENAME(ck), '[0-9]{8}-[0-9]{8}', /extract), tformat='????????-YYYYMMDD')
+
            ; Only using the latest version.
            ick = UNIQ(tck_s)
            ck  = ck[ick]
@@ -223,9 +226,17 @@ FUNCTION esc_spice_kernels, trange=itime, verbose=verbose, blue=blue, gold=gold,
               ENDIF
            ENDIF ELSE BEGIN
               wmx = WHERE((tck_s[w] - tck[0]) LE 0., nwmx)
-              w = w[wmx[-1]:*]
+              wg = WHERE((FILE_BASENAME(ck[w[wmx]])).matches('-rec_'), nwg, complement=vg, ncomplement=nvg)
+              IF nwg GT 0 THEN BEGIN
+                 wmx = [wmx[vg[-1]], wmx[wg[-1]]]
+                 wg = WHERE((FILE_BASENAME(ck[w])).matches('-rec_'), nwg, complement=vg, ncomplement=nvg)
+                 w = [w[wmx[0]:wg[0]-1], w[wmx[1]:*]]
+              ENDIF ELSE w = w[wmx[-1]:*]
+              
+              ;w = w[wmx[-1]:*]
               undefine, wmx, nwmx
               pck = 0
+              undefine, wg, vg, nwg, nvg
            ENDELSE 
            IF src.no_server EQ 1 THEN ck = ck.replace(src.local_data_dir, '') $
            ELSE ck = ck.replace(src.remote_data_dir, '')

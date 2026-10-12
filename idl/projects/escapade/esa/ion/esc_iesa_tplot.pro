@@ -18,8 +18,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-07-13 11:35:00 -0700 (Mon, 13 Jul 2026) $
-; $LastChangedRevision: 34635 $
+; $LastChangedDate: 2026-10-06 00:03:28 -0700 (Tue, 06 Oct 2026) $
+; $LastChangedRevision: 34944 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_tplot.pro $
 ;
 ;-
@@ -45,7 +45,7 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits, blue
   IF undefined(blue) THEN gflg = 1 ELSE gflg = FIX(gold)
 
   tnow = SYSTIME(/sec)
-  prod = ['F4D', 'FM', 'FE', 'SW']
+  prod = ['F4D', 'FM', 'FE', 'SW', 'RT']
   prob = 'ESC-P'
   p = ['b', 'g']
   
@@ -257,6 +257,56 @@ PRO esc_iesa_tplot, verbose=verbose, tname=tname, data=data, limits=limits, blue
      undefine, dat
   ENDFOR 
 
+  ; Background Rates (rt)
+  cvar = 'escp_iesa_rt'
+  FOR i=1, 2 DO BEGIN           ; FM1 = BLUE, FM2 = GOLD
+     IF i EQ 1 THEN IF ~(bflg) THEN CONTINUE
+     IF i EQ 2 THEN IF ~(gflg) THEN CONTINUE
+
+     IF i EQ 1 THEN prefix = cvar.replace('p', 'b') ELSE prefix = cvar.replace('p', 'g')
+     IF i EQ 1 THEN probe = prob.replace('P', 'B') ELSE probe = prob.replace('P', 'G')
+
+     undefine, EXECUTE("dat = SCOPE_VARFETCH(prefix, common='esc_iesa_rt_com')")
+     IF ~is_struct(dat) THEN CONTINUE
+
+     time = 0.5d0 * (dat.time + dat.end_time)
+     IF i EQ 1 THEN probe = prob.replace('P', 'B') ELSE probe = prob.replace('P', 'G')
+     tags = TAG_NAMES(dat)
+
+     w = WHERE(tags.matches('_CNTS$'), nw)
+     IF nw GT 0 THEN BEGIN
+        cdat = LONARR(N_ELEMENTS(dat), nw)
+        FOR j=0, nw-1 DO cdat[*, j] = dat.(w[j])
+        labs = (tags[w]).replace('_CNTS', '')
+        labs[-2] = 'STA-NSTO'
+        labs[-1] = 'STO-NSTA'
+        store_data, prefix + '_cnts', data={x: time, y: TEMPORARY(cdat)}, $
+                    dlim={ytitle: probe + ' ' + prod[4], ysubtitle: 'Counts [#]', colors: [4, 5, 2, 6, 0, 1], labels: TEMPORARY(labs), labflag: -1, $
+                          ylog: 1, ytickunits: 'scientific'}
+     ENDIF 
+     w = WHERE(tags.matches('_RATE$'), nw)
+     IF nw GT 0 THEN BEGIN
+        cdat = FLTARR(N_ELEMENTS(dat), nw)
+        FOR j=0, nw-1 DO cdat[*, j] = dat.(w[j])
+        labs = (tags[w]).replace('_RATE', '')
+        labs[-2] = 'STA-NSTO'
+        labs[-1] = 'STO-NSTA'
+        store_data, prefix + '_rate', data={x: time, y: TEMPORARY(cdat)}, $
+                    dlim={ytitle: probe + ' ' + prod[4], ysubtitle: 'Rates [Hz]', colors: [4, 5, 2, 6, 0, 1], labels: TEMPORARY(labs), labflag: -1, $
+                          ylog: 1, ytickunits: 'scientific'}
+     ENDIF 
+     w = WHERE(tags.matches('_EFF$'), nw)
+     IF nw GT 0 THEN BEGIN
+        cdat = FLTARR(N_ELEMENTS(dat), nw + 1)
+        FOR j=0, nw-1 DO cdat[*, j] = dat.(w[j])
+        cdat[*, -1] = cdat[*, 0] * cdat[*, 1] ; Total efficiency
+        store_data, prefix + '_eff', data={x: time, y: TEMPORARY(cdat)}, $
+                    dlim={ytitle: probe + ' ' + prod[4], ysubtitle: 'Efficiency', colors: [2, 6, 0], labels: [(tags[w]).replace('_EFF', ''), 'TOTAL'], labflag: -1, $
+                          ylog: 1, ytickunits: 'scientific'}
+     ENDIF
+     undefine, dat
+  ENDFOR 
+  
   tn = tnames('*', create_time=ctime)
   w = WHERE(ctime GT tnow, nw)
   IF nw GT 0 THEN tname = tn[w] $

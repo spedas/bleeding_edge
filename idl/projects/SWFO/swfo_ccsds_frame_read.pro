@@ -132,12 +132,12 @@ pro swfo_ccsds_frame_read,reader=rdr,trange=trange,files=files,current=current,$
   
   object_dir = 'ops'
   stations = ['xxx','WCD','CBU','RXWCD','RXCBU']  ; for future use
-  GCCS = 0
+  GCCS = 1 ; Ops stopped updating on Aug 10 2026, switched to GCCS
 
   case station of
     'WCD': begin
       if keyword_set(GCCS) then begin
-        pathname = 'swfo/aws/GCCS/SOLAR-1/L0/SWFOWCD/swfowcd-archive-sl1/YYYY/DOY/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
+        pathname = 'swfo/aws/GCCS/SOLAR-1/L0/SWFOWCD/swfo-archive-sl1/YYYY/DOY/OR_SWFOWCD-L0_SL1_sYYYYDOYhh'
       endif else begin
         pathname = 'swfo/aws/'+object_dir+'/SWFO-L1/l0/SWFOWCD/YYYY/mth/YYYYMMDD/OR_SWFOWCD-L0_SL1_sYYYYDOYhh' 
       endelse

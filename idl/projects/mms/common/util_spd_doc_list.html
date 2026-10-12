@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep 22 15:46:21 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
  
 <HR>
  
@@ -156,8 +156,8 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        [XY]LOG:   [XY] axis in log format
        [XY]RANGE: 2 element vector that sets [XY] axis range
        NOLEGEND:  Disable legend display
-       COLORS:    n element vector that sets the colors of the line in order that they are in tplot_vars.options.varnames
-                  n is number of tplot variables in tplot_vars.options.varnames
+       COLORS:    n element vector that sets the colors of the spectra in order of the selected times
+                  n is the number of selected times/spectra
              
        PNG:         save png from the displayed windows (cannot be used with /POSTRSCRIPT keyword)
        POSTRSCRIPT: create postscript files instead of displaying the plot
@@ -167,6 +167,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
        
        TIME:        if the keyword is specified the time is determined from the variable, not from the cursor pick.
        TRANGE:      Two-element time range over which data will be averaged. 
+                    If TIME and TRANGE are both supplied, TRANGE is used and the representative time is the range midpoint.
        SAMPLES:     Number of nearest samples to time to average. Override trange.      
        WINDOW:      Length in seconds over which data will be averaged. Override trange.
        CENTER_TIME: Flag denoting that time should be midpoint for window instead of beginning.
@@ -193,9 +194,9 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mm
      
      work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
      
-$LastChangedBy: egrimes $
-$LastChangedDate: 2023-05-19 14:15:46 -0700 (Fri, 19 May 2023) $
-$LastChangedRevision: 31868 $
+$LastChangedBy: jwl $
+$LastChangedDate: 2026-09-29 15:36:08 -0700 (Tue, 29 Sep 2026) $
+$LastChangedRevision: 34924 $
 $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra_multi.pro $
 </PRE><P>
 <STRONG>(See <A href="util/flatten_spectra_multi.pro">projects/mms/common/util/flatten_spectra_multi.pro</A>)</STRONG><P>

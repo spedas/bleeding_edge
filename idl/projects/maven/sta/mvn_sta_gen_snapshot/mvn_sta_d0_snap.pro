@@ -147,8 +147,8 @@
 ;                 conflict, keywords set explicitly take precedence over KEY.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-17 10:39:15 -0700 (Thu, 17 Sep 2026) $
-; $LastChangedRevision: 34907 $
+; $LastChangedDate: 2026-09-30 20:09:50 -0700 (Wed, 30 Sep 2026) $
+; $LastChangedRevision: 34934 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_d0_snap.pro $
 ;
 ;BASED ON:      tsnap.pro
@@ -174,7 +174,7 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
                 yticks=yticks
 
   common sta_fov_com, time, delta_t, counts, phi, theta, energy, mass_arr, sphi, sthe, bphi, bthe, $
-                      metric1, metric2, metric3, mso
+                      metric1, metric2, metric3, mso, bin_sc
 
 ; Set keywords using the KEY structure
 
@@ -251,9 +251,9 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
     return
   endif
 
-  if (showdir) then begin
+  redraw = 0  ; starting position is to not redraw the time series plot
 
-    redraw = 0
+  if (showdir) then begin
 
 ; Check if sufficient SPICE information exists to transform the Sun
 ; and magnetic field directions into the STATIC frame.  Create or
@@ -390,11 +390,12 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
   if (refresh) then begin
     time = dtime
     ntimes = ndtimes
-    counts = fltarr(ntimes,32,64,8)  ; 32e64a2m at each time
+    counts = fltarr(ntimes,32,64,8)  ; 32e64a8m at each time
     phi = counts
     theta = counts
     energy = fltarr(ntimes,32)       ; not a function of angle or mass
     mass_arr = fltarr(32,8)          ; not a function of time or angle
+    bin_sc = intarr(ntimes,64)       ; spacecraft blockage (0=blocked, 1=open)
 
     for i=0L,(ntimes-1L) do begin
       dat = call_function(routine, time[i])
@@ -402,6 +403,7 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
       phi[i,*,*,*] = dat.phi
       theta[i,*,*,*] = dat.theta
       energy[i,*] = dat.energy[*,0,0]
+      bin_sc[i,*] = dat.bins_sc
     endfor
     mass_arr = mean(dat.mass_arr, dim=2)
     undefine, dat
@@ -423,7 +425,7 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
   metric3 = replicate(!values.f_nan, ntimes, 8, nmass)
 
   for j=0,(nmass-1) do begin
-    if (~find_handle(var[tmass[j]]) or refresh) then begin
+    if ((find_handle(var[tmass[j]]) eq 0) or refresh) then begin
       y = replicate(!values.f_nan, ntimes, 6)
       v = y
       w = replicate(!values.f_nan, ntimes, 18)
@@ -538,19 +540,20 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
 
   for j=0,(n_elements(tmass)-1) do begin
     vname = var[tmass[j]] + '_sm'
-    if (~find_handle(vname) or refresh) then begin
+    if ((find_handle(vname) eq 0) or refresh) then begin
       cname = var[tmass[j]]
       if gotspice then cname = [cname, 'Sun_STATIC_The']
       if gotmag then cname = [cname, 'Mag_STATIC_The']
       store_data, vname, data=cname
       ylim, vname, -45, 45, 0
+      zlim, vname, 1e0, 1e4, 1
       i = where(names eq vname, count)
       if (count eq 0L) then addnames = [addnames, vname]
     endif
   endfor
 
   vname = 'sta_' + apid + '_fov_edge'
-  if (~find_handle(vname) or refresh) then begin
+  if ((find_handle(vname) eq 0) or refresh) then begin
     store_data, vname, data=var1[tmass]
     ylim, vname, 0.1, 100., 1
     options, vname, 'ytitle', 'sta ' + apid + '!cEdge Metric'
@@ -562,7 +565,7 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
   endif
 
   vname = 'sta_' + apid + '_fov_cntr'
-  if (~find_handle(vname) or refresh) then begin
+  if ((find_handle(vname) eq 0) or refresh) then begin
     store_data, vname, data=var2[tmass]
     ylim, vname, 0, 1, 0
     options, vname, 'ytitle', 'sta ' + apid + '!cCntr El Metric'
@@ -574,7 +577,7 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
   endif
 
   vname = 'sta_' + apid + '_fov_cntr_az'
-  if (~find_handle(vname) or refresh) then begin
+  if ((find_handle(vname) eq 0) or refresh) then begin
     store_data, vname, data=var3[tmass]
     ylim, vname, 0, 1, 0
     options, vname, 'ytitle', 'sta ' + apid + '!cCntr Az Metric'
@@ -622,7 +625,9 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
   if (n_elements(xsize) eq 0) then xsize = 800
   if (n_elements(ysize) eq 0) then ysize = 400
 
-  Twin = !d.window
+  tplot_options, get=topt
+  str_element, topt, 'window', success=ok
+  Twin = ok ? topt.window : !d.window
   win, /free, monitor=monitor, secondary=secondary, xsize=xsize, ysize=ysize, dx=dx, dy=dy, $
        corner=corner, center=center, xcenter=xcenter, ycenter=ycenter, xpos=xpos, ypos=ypos, $
        norm=norm, full=full, xfull=xfull, yfull=yfull
@@ -642,8 +647,8 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
 ; Make snapshot(s)
 
   wset, Twin
-  if (npts eq 1) then print,"Select time(s).  Right button any time to exit." $
-                 else print,"Select start and stop time(s).  Right button any time to exit."
+  if (npts eq 1) then print,"Left button to select time(s).  Right button to exit." $
+                 else print,"Left button to select start and stop time(s).  Right button to exit."
   ctime,t,npoints=npts,silent=2  ; on first call to ctime, don't wait for button up transition
 
   if (size(t,/type) eq 2) then begin
@@ -688,34 +693,36 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
         dcnt1 = sqrt(cnt1) > (0.01*cnt1)              ; uncertainty estimate
         u = mean(mass_arr[endx,*], dim=1)             ; average over energy
         pos = mso[*,i]                                ; MSO position of s/c
+        blk = reform(bin_sc[i,*], 4, 16)              ; spacecraft blockage
       endif
     endif else begin
       emean = mean(energy[i:j,*], dim=1)
       endx = where((emean ge erange[0]) and (emean le erange[1]), count)
       if (count gt 0L) then begin
         phi0 = reform(phi[i:j,endx,*,mass])
-        phi0 = mean(phi0, dim=1)                      ; average over time
-        phi0 = reform(mean(phi0, dim=1), 4, 16)       ; average over erange
-        x = reform(phi0[0,*])                         ; phi not a function of theta
+        phi0 = mean(phi0, dim=1)                        ; average over time
+        phi0 = reform(mean(phi0, dim=1), 4, 16)         ; average over erange
+        x = reform(phi0[0,*])                           ; phi not a function of theta
         the0 = reform(theta[i:j,endx,*,mass])
-        the0 = mean(the0, dim=1)                      ; average over time
-        the0 = reform(mean(the0, dim=1), 4, 16)       ; average over erange
-        y = the0[*,0]                                 ; theta not a function of phi
+        the0 = mean(the0, dim=1)                        ; average over time
+        the0 = reform(mean(the0, dim=1), 4, 16)         ; average over erange
+        y = the0[*,0]                                   ; theta not a function of phi
         cnt0 = reform(counts[i:j,endx,*,mass])
-        cnt0 = reform(total(cnt0, 1))                 ; sum over time
-        z = transpose(reform(total(cnt0, 1), 4, 16))  ; sum over erange
-        dz = sqrt(z) > (0.01*z)                       ; uncertainty estimate
-        zthe = total(z, 1)                            ; sum over phi
-        dzthe = sqrt(zthe) > (0.01*zthe)              ; uncertainty estimate
-        zphi = total(z, 2)                            ; sum over theta
-        dzphi = sqrt(zphi) > (0.01*zphi)              ; uncertainty estimate
+        cnt0 = reform(total(cnt0, 1))                   ; sum over time
+        z = transpose(reform(total(cnt0, 1), 4, 16))    ; sum over erange
+        dz = sqrt(z) > (0.01*z)                         ; uncertainty estimate
+        zthe = total(z, 1)                              ; sum over phi
+        dzthe = sqrt(zthe) > (0.01*zthe)                ; uncertainty estimate
+        zphi = total(z, 2)                              ; sum over theta
+        dzphi = sqrt(zphi) > (0.01*zphi)                ; uncertainty estimate
         cnt1 = reform(counts[i:j,endx,*,*])
-        cnt1 = total(cnt1, 1)                         ; sum over time
-        cnt1 = total(cnt1, 1)                         ; sum over energy
-        cnt1 = total(cnt1, 1)                         ; sum over angle
-        dcnt1 = sqrt(cnt1) > (0.01*cnt1)              ; uncertainty estimate
-        u = mean(mass_arr[endx,*], dim=1)             ; average over energy
-        pos = mean(mso[*,i:j], dim=2)                 ; MSO position of s/c
+        cnt1 = total(cnt1, 1)                           ; sum over time
+        cnt1 = total(cnt1, 1)                           ; sum over energy
+        cnt1 = total(cnt1, 1)                           ; sum over angle
+        dcnt1 = sqrt(cnt1) > (0.01*cnt1)                ; uncertainty estimate
+        u = mean(mass_arr[endx,*], dim=1)               ; average over energy
+        pos = mean(mso[*,i:j], dim=2)                   ; MSO position of s/c
+        blk = reform(min(bin_sc[i:j,*], dim=1), 4, 16)  ; spacecraft blockage
       endif
     endelse
 
@@ -817,7 +824,14 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
       endif else tmsg = title[0]
       str_element, lim, 'title', apid + ' : ' + tmsg, /add
       specplot, x, y, z, limits=lim
+
       ssize = 2.0
+      for jj=1,4 do begin         ; spacecraft blockage
+        for ii=1,16 do begin
+          if ~blk[jj-1,ii-1] then oplot, [x[ii]], [y[jj]], psym=7, symsize=ssize, color=1
+        endfor
+      endfor
+
       if (showdir) then begin
         if (gotspice) then begin
           xyouts, [sphi[i]], [sthe[i]-4.0], "!9n!1H", charsize=ssize, charthick=2, color=1, align=0.5

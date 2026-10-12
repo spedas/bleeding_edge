@@ -23,9 +23,9 @@
 ;     no_color_setup   added to prevent cronjob to crash, hfrey, 2007-02-10
 ;
 ;
-; $LastChangedBy: jwl $
-; $LastChangedDate: 2025-08-20 16:06:21 -0700 (Wed, 20 Aug 2025) $
-; $LastChangedRevision: 33566 $
+; $LastChangedBy: dcarpenter $
+; $LastChangedDate: 2026-10-06 10:13:19 -0700 (Tue, 06 Oct 2026) $
+; $LastChangedRevision: 34946 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/tracers/common/tracers_config.pro $
 ;
 ;-
@@ -65,7 +65,26 @@ pro tracers_config, colortable=colortable, no_color_setup=no_color_setup
   ; Global Sytem Variables
   ;------------------------
   ; Please note: These settings will affect all IDL routines, NOT JUST tracers routines!
+
   
+
+  ; Define TRACERS portal URL and data paths
+  ; ---------------------------------------------------
+  if undefined(url_username) or undefined(url_password) then begin
+      check = getenv('TRACERS_USER_PASS')
+      if check eq '' then begin
+          print, 'Please input TRACERS url username and password as keywords'
+          print, 'If you would like to access the internal teams data.'
+          print, 'Otherwise use public data and ignore this message.'
+          print, ''
+      end else begin
+          uspw = strsplit(check, ':', /extract)
+          url_username = uspw[0]
+          url_password = uspw[1]
+      end
+  end
+
+
 
   ;====
   ;===== COLOR SETUP

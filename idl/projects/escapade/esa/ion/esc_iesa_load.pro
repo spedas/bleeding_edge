@@ -36,8 +36,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-06-15 15:43:47 -0700 (Mon, 15 Jun 2026) $
-; $LastChangedRevision: 34585 $
+; $LastChangedDate: 2026-10-06 00:03:28 -0700 (Tue, 06 Oct 2026) $
+; $LastChangedRevision: 34944 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_load.pro $
 ;
 ;-
@@ -49,11 +49,15 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
   COMMON esc_iesa_f4d_com, escb_iesa_f4d, escg_iesa_f4d, escb_iesa_f4d_par, escg_iesa_f4d_par ; Fine 4D       (0x125)
   COMMON esc_iesa_sw_com,   escb_iesa_sw,  escg_iesa_sw,  escb_iesa_sw_par, escg_iesa_sw_par  ; Solar Wind    (0x139)
 
+  COMMON esc_iesa_rt_com,   escb_iesa_rt,  escg_iesa_rt                                       ; Background Rates (0x149)
+  
   IF KEYWORD_SET(clear) THEN BEGIN
      undefine,  escb_iesa_fe,  escg_iesa_fe,  escb_iesa_fe_par, escg_iesa_fe_par
      undefine,  escb_iesa_fm,  escg_iesa_fm,  escb_iesa_fm_par, escg_iesa_fm_par
      undefine, escb_iesa_f4d, escg_iesa_f4d, escb_iesa_f4d_par, escg_iesa_f4d_par
      undefine,  escb_iesa_sw,  escg_iesa_sw,  escb_iesa_sw_par, escg_iesa_sw_par
+
+     undefine,  escb_iesa_rt,  escg_iesa_rt
   ENDIF 
   
   IF undefined(itime) THEN get_timespan, trange ELSE trange = itime
@@ -82,7 +86,7 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
   IF ~undefined(ipath) THEN yyyymm = ''
 
   IF KEYWORD_SET(all) THEN aflg = 1 ELSE aflg = 0
-  
+
   FOR i=0, N_ELEMENTS(probes)-1 DO FOR j=0, N_ELEMENTS(prod)-1 DO BEGIN
      prefix = fname.replace('esc-p', 'esc-' + (probes[i]).substring(0, 0))
      prefix = yyyymm + prefix.replace('lvl', lvl)
@@ -106,23 +110,7 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
 
      prefix = (probes[i]).substring(0, 0) + '_eesai_'
      vname = cdfi.vars.name
-     
-     ndat  = N_ELEMENTS(*cdfi.vars[0].dataptr)
-     undefine, data, param
 
-     IF prod[j] EQ 'fm' THEN BEGIN
-        w = WHERE(vname EQ prefix + 'nenergy', nw)
-        IF nw EQ 1 THEN nenergy = *cdfi.vars[w].dataptr
-     ENDIF 
-
-     IF ~(aflg) THEN BEGIN
-        dformat = esc_iesa_struct(prod[j], probe=probes[i], nenergy=TEMPORARY(nenergy))
-        tags = TAG_NAMES(dformat)
-     ENDIF ELSE BEGIN
-        data = REPLICATE(esc_iesa_struct(prod[j], probe=probes[i], nenergy=TEMPORARY(nenergy)), ndat)
-        tags = TAG_NAMES(data[0])
-     ENDELSE
-     
      DEFSYSV, '!CDF_LEAP_SECONDS', exists=exists
      IF NOT KEYWORD_SET(exists) THEN BEGIN
         cdf_leap_second_init
@@ -130,64 +118,96 @@ PRO esc_iesa_load, itime, product=product, data=data, verbose=verbose, level=lev
         IF NOT KEYWORD_SET(exists) THEN BEGIN
            dprint, dlevel=2, 'Error: !CDF_LEAP_SECONDS, must be defined to convert CDFs with TT2000 times.'
            RETURN
-        ENDIF
+           ENDIF
      ENDIF
-
-     IF ~(aflg) THEN BEGIN
-        FOR k=0L, N_ELEMENTS(tags)-1 DO BEGIN
-           it = WHERE(vname EQ prefix + (tags[k]).tolower(), nt)
-           IF nt EQ 0 THEN str_element, param, tags[k], dformat.(k), /add $
-           ELSE BEGIN
-              IF (*(cdfi.vars[it].attrptr)).var_type EQ 'metadata' THEN str_element, param, tags[k], *(cdfi.vars[it].dataptr), /add $
-              ELSE str_element, data, tags[k], *(cdfi.vars[it].dataptr), /add
-           ENDELSE 
-        ENDFOR
-        it = strfilter(vname.replace(prefix, ''), tags.tolower(), /negate, /index, count=nt)
-        FOR k=1L, nt-1 DO BEGIN
-           IF (*(cdfi.vars[it[k]].attrptr)).var_type EQ 'metadata' THEN IF ~tag_exist((*(cdfi.vars[it[k]].attrptr)), 'dict_key', /quiet) THEN $
-              str_element, param, (vname[it[k]]).replace(prefix, ''), *(cdfi.vars[it[k]].dataptr), /add 
-        ENDFOR 
-        str_element, data, 'time', time_double(*(cdfi.vars[0].dataptr), /tt2000), /add
-        str_element, data, 'end_time', data.time + data.dp_cadence, /add
-        str_element, data, 'cnts', data.data, /add
-        extract_tags, param, TEMPORARY(param), except=['time', 'end_time', 'cnts']
-     ENDIF ELSE BEGIN
-        data.time = time_double(*(cdfi.vars[0].dataptr), /tt2000)
-
-        is = WHERE(vname EQ prefix + 'spoiler_state', n_is)
-        ip = WHERE(vname EQ prefix + 'sweep_table', n_ip)
-        IF (n_is + n_ip) EQ 2 THEN emode = 7B * (*cdfi.vars[is].dataptr) + (*cdfi.vars[ip].dataptr)
-        ia = WHERE(vname EQ prefix + 'lut_phi_ind', n_ia)
-        IF n_ia GT 0 THEN amode = *cdfi.vars[ia].dataptr
      
+     IF (prod[j]).matches('^f') OR (prod[j]).matches('sw') THEN sci = 1 ELSE sci = 0
+     ndat  = N_ELEMENTS(*cdfi.vars[0].dataptr)
+     
+     IF (sci) THEN BEGIN
+        undefine, data, param
+
+        IF prod[j] EQ 'fm' THEN BEGIN
+           w = WHERE(vname EQ prefix + 'nenergy', nw)
+           IF nw EQ 1 THEN nenergy = *cdfi.vars[w].dataptr
+        ENDIF 
+
+        IF ~(aflg) THEN BEGIN
+           dformat = esc_iesa_struct(prod[j], probe=probes[i], nenergy=TEMPORARY(nenergy))
+           tags = TAG_NAMES(dformat)
+        ENDIF ELSE BEGIN
+           data = REPLICATE(esc_iesa_struct(prod[j], probe=probes[i], nenergy=TEMPORARY(nenergy)), ndat)
+           tags = TAG_NAMES(data[0])
+        ENDELSE
+
+        IF ~(aflg) THEN BEGIN
+           FOR k=0L, N_ELEMENTS(tags)-1 DO BEGIN
+              it = WHERE(vname EQ prefix + (tags[k]).tolower(), nt)
+              IF nt EQ 0 THEN str_element, param, tags[k], dformat.(k), /add $
+              ELSE BEGIN
+                 IF (*(cdfi.vars[it].attrptr)).var_type EQ 'metadata' THEN str_element, param, tags[k], *(cdfi.vars[it].dataptr), /add $
+                 ELSE str_element, data, tags[k], *(cdfi.vars[it].dataptr), /add
+              ENDELSE 
+           ENDFOR
+           it = strfilter(vname.replace(prefix, ''), tags.tolower(), /negate, /index, count=nt)
+           FOR k=1L, nt-1 DO BEGIN
+              IF (*(cdfi.vars[it[k]].attrptr)).var_type EQ 'metadata' THEN IF ~tag_exist((*(cdfi.vars[it[k]].attrptr)), 'dict_key', /quiet) THEN $
+                 str_element, param, (vname[it[k]]).replace(prefix, ''), *(cdfi.vars[it[k]].dataptr), /add 
+           ENDFOR 
+           str_element, data, 'time', time_double(*(cdfi.vars[0].dataptr), /tt2000), /add
+           str_element, data, 'end_time', data.time + data.dp_cadence, /add
+           str_element, data, 'cnts', data.data, /add
+           extract_tags, param, TEMPORARY(param), except=['time', 'end_time', 'cnts']
+        ENDIF ELSE BEGIN
+           data.time = time_double(*(cdfi.vars[0].dataptr), /tt2000)
+           
+           is = WHERE(vname EQ prefix + 'spoiler_state', n_is)
+           ip = WHERE(vname EQ prefix + 'sweep_table', n_ip)
+           IF (n_is + n_ip) EQ 2 THEN emode = 7B * (*cdfi.vars[is].dataptr) + (*cdfi.vars[ip].dataptr)
+           ia = WHERE(vname EQ prefix + 'lut_phi_ind', n_ia)
+           IF n_ia GT 0 THEN amode = *cdfi.vars[ia].dataptr
+           
+           FOR k=1L, cdfi.nv-1 DO BEGIN
+              it = WHERE(prefix + tags.tolower() EQ vname[k], nt)
+              IF nt EQ 0 THEN CONTINUE
+              
+              IF (*(cdfi.vars[k].attrptr)).var_type EQ 'metadata' THEN BEGIN
+                 IF cdfi.vars[k].d[0] EQ 14 THEN BEGIN
+                    IF undefined(amode) OR (cdfi.vars[k].d[2] NE 128) THEN data.(it) = TRANSPOSE((*(cdfi.vars[k].dataptr))[emode, *, *, *], SHIFT([0:ndimen(*(cdfi.vars[k].dataptr))-1], -1)) $
+                    ELSE BEGIN
+                       aidx = INTARR(data[0].nbins, 8)
+                       FOR ia=0, 7 DO aidx[*, ia] = REFORM(TRANSPOSE(amode[*, ia] ## REPLICATE(1L, 8) + 16L * REPLICATE(1L, data[0].nanode) ## INDGEN(data[0].ndef)), data[0].nbins)
+                       aidx = REBIN(TRANSPOSE(aidx[*, data.lut_id]), ndat, data[0].nbins, /sample)
+                       eidx = REBIN(emode, ndat, data[0].nbins, /sample)
+                       
+                       tdata = REFORM(TRANSPOSE(*(cdfi.vars[k].dataptr), [0, 2, 1, 3]), cdfi.vars[k].d[0]*cdfi.vars[k].d[2], cdfi.vars[k].d[1], cdfi.vars[k].d[3])
+                       idx = eidx + LONG(cdfi.vars[k].d[0]) * aidx
+                       tdata = TRANSPOSE(REFORM(tdata[idx, *, *], ndat, data[0].nbins, cdfi.vars[k].d[1], cdfi.vars[k].d[3]), [2, 1, 3, 0])
+                       data.(it) = TEMPORARY(tdata)
+                       
+                       undefine, aidx, eidx, idx
+                    ENDELSE 
+                 ENDIF ELSE BEGIN
+                    IF ndimen(*(cdfi.vars[k].dataptr)) LE 1 THEN data.(it) = REPLICATE(*(cdfi.vars[k].dataptr), ndat) $
+                    ELSE data.(it) = REBIN(*(cdfi.vars[k].dataptr), [(SIZE(*(cdfi.vars[k].dataptr)))[1:-3], ndat], /sample)
+                 ENDELSE 
+              ENDIF ELSE data.(it) = TRANSPOSE(*(cdfi.vars[k].dataptr), SHIFT([0:ndimen(*(cdfi.vars[k].dataptr))-1], -1))
+           ENDFOR
+           data.end_time = data.time + data.dp_cadence
+           data.cnts     = data.data
+        ENDELSE
+     ENDIF ELSE BEGIN
+        undefine, data, tags
+        data = REPLICATE(esc_iesa_struct(prod[j], probe=probes[i]), ndat)
+        tags = TAG_NAMES(data[0])
+
         FOR k=1L, cdfi.nv-1 DO BEGIN
            it = WHERE(prefix + tags.tolower() EQ vname[k], nt)
            IF nt EQ 0 THEN CONTINUE
-           
-           IF (*(cdfi.vars[k].attrptr)).var_type EQ 'metadata' THEN BEGIN
-              IF cdfi.vars[k].d[0] EQ 14 THEN BEGIN
-                 IF undefined(amode) OR (cdfi.vars[k].d[2] NE 128) THEN data.(it) = TRANSPOSE((*(cdfi.vars[k].dataptr))[emode, *, *, *], SHIFT([0:ndimen(*(cdfi.vars[k].dataptr))-1], -1)) $
-                 ELSE BEGIN
-                    aidx = INTARR(data[0].nbins, 8)
-                    FOR ia=0, 7 DO aidx[*, ia] = REFORM(TRANSPOSE(amode[*, ia] ## REPLICATE(1L, 8) + 16L * REPLICATE(1L, data[0].nanode) ## INDGEN(data[0].ndef)), data[0].nbins)
-                    aidx = REBIN(TRANSPOSE(aidx[*, data.lut_id]), ndat, data[0].nbins, /sample)
-                    eidx = REBIN(emode, ndat, data[0].nbins, /sample)
-                    
-                    tdata = REFORM(TRANSPOSE(*(cdfi.vars[k].dataptr), [0, 2, 1, 3]), cdfi.vars[k].d[0]*cdfi.vars[k].d[2], cdfi.vars[k].d[1], cdfi.vars[k].d[3])
-                    idx = eidx + LONG(cdfi.vars[k].d[0]) * aidx
-                    tdata = TRANSPOSE(REFORM(tdata[idx, *, *], ndat, data[0].nbins, cdfi.vars[k].d[1], cdfi.vars[k].d[3]), [2, 1, 3, 0])
-                    data.(it) = TEMPORARY(tdata)
-                    
-                    undefine, aidx, eidx, idx
-                 ENDELSE 
-              ENDIF ELSE BEGIN
-                 IF ndimen(*(cdfi.vars[k].dataptr)) LE 1 THEN data.(it) = REPLICATE(*(cdfi.vars[k].dataptr), ndat) $
-                 ELSE data.(it) = REBIN(*(cdfi.vars[k].dataptr), [(SIZE(*(cdfi.vars[k].dataptr)))[1:-3], ndat], /sample)
-              ENDELSE 
-           ENDIF ELSE data.(it) = TRANSPOSE(*(cdfi.vars[k].dataptr), SHIFT([0:ndimen(*(cdfi.vars[k].dataptr))-1], -1))
-        ENDFOR
+           data.(it) = *cdfi.vars[k].dataptr
+        ENDFOR 
+        data.time = time_double(*(cdfi.vars[0].dataptr), /tt2000)
         data.end_time = data.time + data.dp_cadence
-        data.cnts     = data.data
      ENDELSE
 
      undefine, EXECUTE('esc' + probes[i].substring(0, 0) + '_iesa_' + prod[j] + ' = data')

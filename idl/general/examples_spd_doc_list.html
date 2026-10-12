@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep 22 15:46:21 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
  
 <HR>
  
@@ -36,6 +36,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#CRIB_TPLOT">CRIB_TPLOT</A>
 <LI><A HREF="#CRIB_TPLOT_ANNOTATION">CRIB_TPLOT_ANNOTATION</A>
 <LI><A HREF="#CRIB_TPLOT_EXPORT_PRINT">CRIB_TPLOT_EXPORT_PRINT</A>
+<LI><A HREF="#CRIB_TPLOT_GREEK_LETTERS">CRIB_TPLOT_GREEK_LETTERS</A>
+<br>Demonstrates how to use IDL text-formatting escape sequences for
 <LI><A HREF="#CRIB_TPLOT_LAYOUT">CRIB_TPLOT_LAYOUT</A>
 <LI><A HREF="#CRIB_TPLOT_MULTIAXIS">CRIB_TPLOT_MULTIAXIS</A>
 <LI><A HREF="#CRIB_TPLOT_OPLOT_CONTOURS">CRIB_TPLOT_OPLOT_CONTOURS</A>
@@ -46,6 +48,9 @@ This page was created by the IDL library routine
 <LI><A HREF="#CRIB_TPLOT_WINDOW">CRIB_TPLOT_WINDOW</A>
 <LI><A HREF="#CRIB_TPLOTXY">CRIB_TPLOTXY</A>
 <LI><A HREF="#INIT_CRIB_COLORS">INIT_CRIB_COLORS</A>
+<LI><A HREF="#TEST_FLATTEN_SPECTRA_MULTI">TEST_FLATTEN_SPECTRA_MULTI</A>
+<br>Test crib for the COLORS and TRANGE keywords of flatten_spectra_multi
+<LI><A HREF="#TEST_POLAR_TO_XYZ">TEST_POLAR_TO_XYZ</A>
 <LI><A HREF="#TIME_CORRELATE_CRIB.PRO">TIME_CORRELATE_CRIB.PRO</A>
 <br>crib sheet demonstrating the use of:
 <br>
@@ -478,7 +483,7 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <A NAME="CRIB_TPLOT_EXPORT_PRINT">
 <H2>CRIB_TPLOT_EXPORT_PRINT</H2></A>
 <A HREF="#CRIB_TPLOT_ANNOTATION">[Previous Routine]</A>
-<A HREF="#CRIB_TPLOT_LAYOUT">[Next Routine]</A>
+<A HREF="#CRIB_TPLOT_GREEK_LETTERS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME: crib_tplot_export_print
@@ -511,9 +516,48 @@ Warning: this crib uses some data from the THEMIS branch.  You'll require those 
 <STRONG>(See <A href="examples/crib_tplot_export_print.pro">general/examples/crib_tplot_export_print.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="CRIB_TPLOT_GREEK_LETTERS">
+<H2>CRIB_TPLOT_GREEK_LETTERS</H2></A>
+<A HREF="#CRIB_TPLOT_EXPORT_PRINT">[Previous Routine]</A>
+<A HREF="#CRIB_TPLOT_LAYOUT">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ NAME:
+     crib_tplot_greek_letters
+
+ PURPOSE:
+     Demonstrates how to use IDL text-formatting escape sequences for
+     Greek letters in tplot component labels (legends) and axis titles.
+
+ NOTES:
+     The !X escape returns text to the default font.  Existing SPEDAS
+     loaders use these same escapes in ytitles, for example !4h!X for
+     theta, !4u!X for phi, and !4l!X for micro-style labels.
+
+     These are IDL direct-graphics text/font escapes used by existing
+     SPEDAS labels.  Exact glyph appearance can depend on the active
+     graphics device/font and IDL runtime.
+
+     To run from IDL:
+       .compile crib_tplot_greek_letters
+       crib_tplot_greek_letters
+
+     Type &quot;.c&quot; at each stop to continue through the examples.
+
+ SEE ALSO:
+     crib_tplot, crib_tplot_annotation, crib_tplot_panel_labels
+
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-09-29 15:07:36 -0700 (Tue, 29 Sep 2026) $
+ $LastChangedRevision: 34922 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/examples/crib_tplot_greek_letters.pro $
+</PRE><P>
+<STRONG>(See <A href="examples/crib_tplot_greek_letters.pro">general/examples/crib_tplot_greek_letters.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="CRIB_TPLOT_LAYOUT">
 <H2>CRIB_TPLOT_LAYOUT</H2></A>
-<A HREF="#CRIB_TPLOT_EXPORT_PRINT">[Previous Routine]</A>
+<A HREF="#CRIB_TPLOT_GREEK_LETTERS">[Previous Routine]</A>
 <A HREF="#CRIB_TPLOT_MULTIAXIS">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -809,7 +853,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/exa
 <A NAME="INIT_CRIB_COLORS">
 <H2>INIT_CRIB_COLORS</H2></A>
 <A HREF="#CRIB_TPLOT_WINDOW">[Previous Routine]</A>
-<A HREF="#TIME_CORRELATE_CRIB.PRO">[Next Routine]</A>
+<A HREF="#TEST_FLATTEN_SPECTRA_MULTI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 NAME: init_crib_colors
@@ -827,9 +871,93 @@ ARGUMENTS:
 <STRONG>(See <A href="examples/init_crib_colors.pro">general/examples/init_crib_colors.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="TEST_FLATTEN_SPECTRA_MULTI">
+<H2>TEST_FLATTEN_SPECTRA_MULTI</H2></A>
+<A HREF="#INIT_CRIB_COLORS">[Previous Routine]</A>
+<A HREF="#TEST_POLAR_TO_XYZ">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+ PROCEDURE:
+         test_flatten_spectra_multi
+
+ PURPOSE:
+         Test crib for the COLORS and TRANGE keywords of flatten_spectra_multi
+         (spedas/bleeding_edge issues #52 and #53; PR #423, hand-merged into SVN r34924).
+         Uses synthetic tplot spectra, so nothing is downloaded.
+
+ KEYWORDS:
+         PNG:      also save a PNG of the flatten_spectra_multi window (window 1) for each visual case
+         PNG_DIR:  full path of the folder for the PNG files (default: the IDL working directory)
+         PAUSE:    seconds to wait after each visual case (default: 1)
+
+ USAGE:
+         IDL&gt; .compile /path/to/test_flatten_spectra_multi.pro
+         IDL&gt; test_flatten_spectra_multi
+         IDL&gt; test_flatten_spectra_multi, /png, png_dir='/tmp/fsm_test', pause=3
+
+         Every check prints PASS, FAIL or INFO, and a summary is printed at the end.
+         Every visual case prints what window 1 should show.
+
+ NOTES:
+         Needs a windowing graphics device (X or WIN): flatten_spectra_multi always calls WINDOW, 1.
+
+         No cursor clicks are needed with r34924 or later. An older flatten_spectra_multi ignores
+         TRANGE, so the cases that pass only TRANGE wait for cursor clicks in the tplot window.
+
+         Checks labelled [fix] test the follow-up commits on the fix-flatten-spectra-multi branch
+         (THICK/LINESTYLE sized by the selected times; no IDL error when no spectra exist at the
+         selected time). They are expected to FAIL against r34924 alone. All other checks
+         should PASS against r34924.
+
+         The color checks read window 1 back with TVRD(TRUE=1) and count the pixels that have
+         the RGB value of a color index in the current color table. Index 0 (black) is never
+         checked because the axes use it. The checks are skipped (INFO) if the device is not
+         X or WIN, or if decomposed color is on.
+
+         Synthetic data (t0 = 2020-01-01/00:00:00, 16 energies from 10 eV to 10 keV):
+           fsm_test_a: 61 samples every 10 s, y[i, *] = (1+i)^2 * shape, 1-D energy table
+           fsm_test_b: 31 samples every 20 s, y[i, *] = (3 + 0.5*i^3) * shape, 1-D energy table
+           fsm_test_c: same times as fsm_test_a, y = 0.5 * fsm_test_a, energy table
+                       that changes with time (2-D v)
+         The reference averages are computed here with an explicit loop over the samples with
+         trange[0] &lt;= t &lt;= trange[1], independently of flatten_spectra_multi.
+</PRE><P>
+<STRONG>(See <A href="examples/test_flatten_spectra_multi.pro">general/examples/test_flatten_spectra_multi.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="TEST_POLAR_TO_XYZ">
+<H2>TEST_POLAR_TO_XYZ</H2></A>
+<A HREF="#TEST_FLATTEN_SPECTRA_MULTI">[Previous Routine]</A>
+<A HREF="#TIME_CORRELATE_CRIB.PRO">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:  test_polar_to_xyz
+PURPOSE:  Round-trip tests for polar_to_xyz (spedas/bleeding_edge issue #22).
+   Builds synthetic x,y,z data, runs xyz_to_polar -&gt; polar_to_xyz in each mode
+   (separate or single variables, latitude or co-latitude, degrees or radians,
+   /clock, /negate, component orders, different time grids, arrays and
+   structures) and prints PASS or FAIL with the largest absolute difference.
+   It also checks hand-computed points and the error handling.
+
+   The expected values of the hand-computed points, and every round trip
+   below, were checked in numpy with check_polar_to_xyz.py (same folder),
+   which mirrors cart_to_sphere, xyz_to_polar, sphere_to_cart and
+   polar_to_xyz step by step.
+
+USAGE:  (SPEDAS, including the new idl/general/science/polar_to_xyz.pro, on !path)
+   .compile test_polar_to_xyz
+   test_polar_to_xyz
+
+   Messages printed by polar_to_xyz during the error-handling tests are
+   expected. xyz_to_polar also prints floating-point warnings for the zero
+   and z-axis vectors.
+</PRE><P>
+<STRONG>(See <A href="examples/test_polar_to_xyz.pro">general/examples/test_polar_to_xyz.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="TIME_CORRELATE_CRIB.PRO">
 <H2>TIME_CORRELATE_CRIB.PRO</H2></A>
-<A HREF="#INIT_CRIB_COLORS">[Previous Routine]</A>
+<A HREF="#TEST_POLAR_TO_XYZ">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  NAME:

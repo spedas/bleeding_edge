@@ -1,6 +1,11 @@
 pro psp_fld_options, type = type, level = level
   compile_opt idl2
 
+  if n_elements(type) eq 0 then begin
+    print, 'must specify type'
+    return
+  endif
+
   if n_elements(level) eq 0 then level = 2
 
   ; MARK: Color Table Definition
@@ -344,5 +349,80 @@ pro psp_fld_options, type = type, level = level
         options, tname, 'color_table', psp_fld_sensor_color_table
       endif
     endforeach
+  endif
+
+  if type eq 'dust' then begin
+    options, 'psp_fld_l3_dust_V2_rate_raw', 'colors', [1]
+    options, 'psp_fld_l3_dust_V2_rate_raw', 'labels', 'raw'
+    options, 'psp_fld_l3_dust_V2_rate_raw', 'line_colors', 9
+    options, 'psp_fld_l3_dust_V2_rate_raw', 'psym', -1
+
+    options, 'psp_fld_l3_dust_V2_rate_ucc', 'colors', [3]
+    options, 'psp_fld_l3_dust_V2_rate_ucc', 'labels', 'ucc'
+    options, 'psp_fld_l3_dust_V2_rate_ucc', 'line_colors', 9
+    options, 'psp_fld_l3_dust_V2_rate_ucc', 'psym', -2
+
+    options, 'psp_fld_l3_dust_V2_rate_wav', 'colors', [5]
+    options, 'psp_fld_l3_dust_V2_rate_wav', 'labels', 'wav'
+    options, 'psp_fld_l3_dust_V2_rate_wav', 'line_colors', 9
+    options, 'psp_fld_l3_dust_V2_rate_wav', 'psym', -4
+
+    options, 'psp_fld_l3_dust_V2_dfb_rate', 'labels', 'DFB'
+    options, 'psp_fld_l3_dust_V2_dfb_rate', 'psym', -5
+
+    store_data, 'psp_fld_l3_dust_V2_rates', $
+      data = ['psp_fld_l3_dust_V2_rate_' + ['raw', 'ucc', 'wav'], $
+        'psp_fld_l3_dust_V2_dfb_rate']
+
+    options, 'psp_fld_l3_dust_V2_rates', 'labflag', 1
+    options, 'psp_fld_l3_dust_V2_rates', 'ytitle', 'Rates'
+    options, 'psp_fld_l3_dust_V2_rates', 'panel_size', 2
+
+    options, 'psp_fld_l3_dust_V2_rate_ej2000_x', 'colors', 'b'
+    options, 'psp_fld_l3_dust_V2_rate_ej2000_x', 'labels', 'X'
+    options, 'psp_fld_l3_dust_V2_rate_ej2000_y', 'colors', 'g'
+    options, 'psp_fld_l3_dust_V2_rate_ej2000_y', 'labels', 'Y'
+    options, 'psp_fld_l3_dust_V2_rate_ej2000_z', 'colors', 'r'
+    options, 'psp_fld_l3_dust_V2_rate_ej2000_z', 'labels', 'Z'
+
+    store_data, 'psp_fld_l3_dust_V2_rates_ej2000', $
+      data = 'psp_fld_l3_dust_V2_rate_ej2000_' + ['x', 'y', 'z']
+
+    options, 'psp_fld_l3_dust_V2_rates_ej2000', 'ytitle', 'Position!CEJ2000'
+    options, 'psp_fld_l3_dust_V2_rates_ej2000', 'panel_size', 0.5
+
+    options, 'psp_fld_l3_dust_V2_rate_encounter', 'ynozero', 1
+    options, 'psp_fld_l3_dust_V2_rate_encounter', 'panel_size', 0.5
+    options, 'psp_fld_l3_dust_V2_rate_encounter', 'psym', 1
+    options, 'psp_fld_l3_dust_V2_rate_encounter', 'ytitle', 'Encounter'
+
+    get_data, 'psp_fld_l3_dust_V2_rate_encounter', data = d_enc
+
+    options, 'psp_fld_l3_dust_V2_rate_encounter', 'yrange', $
+      [min(d_enc.y) - 1, max(d_enc.y) + 1]
+    options, 'psp_fld_l3_dust_V2_rate_encounter', 'ystyle', 1
+
+    options, 'psp_fld_l3_dust_V2_rate_inoutbound', 'yrange', [-1.5, 1.5]
+    options, 'psp_fld_l3_dust_V2_rate_inoutbound', 'ystyle', 1
+    options, 'psp_fld_l3_dust_V2_rate_inoutbound', 'panel_size', 0.5
+    options, 'psp_fld_l3_dust_V2_rate_inoutbound', 'psym', 1
+    options, 'psp_fld_l3_dust_V2_rate_inoutbound', 'ytitle', 'In/Out'
+
+    options, 'psp_fld_l3_dust_V2_rate_dist_Rs', 'panel_size', 0.5
+    options, 'psp_fld_l3_dust_V2_rate_dist_Rs', 'ytitle', 'Distance'
+
+    options, 'psp_fld_l3_dust_ej2000_pointing_sc_?_vector', 'colors', 'bgr'
+    options, 'psp_fld_l3_dust_ej2000_pointing_sc_?_vector', 'labels', ['X', 'Y', 'Z']
+    options, 'psp_fld_l3_dust_ej2000_pointing_sc_?_vector', 'panel_size', 0.5
+
+    options, 'psp_fld_l3_dust_ej2000_pointing_sc_x_vector', 'ytitle', 'Pointing!CX EJ2000'
+
+    options, 'psp_fld_l3_dust_V2_tds_event_peak_mV', 'ytitle', 'TDS V2 Peak'
+    options, 'psp_fld_l3_dust_V2_tds_event_rms_mV', 'ytitle', 'TDS V2 RMS'
+
+    options, 'psp_fld_l3_dust_V2_dfb_event_peak_mV', 'ytitle', 'DFB V2 Peak'
+    options, 'psp_fld_l3_dust_V2_dfb_event_rms_mV', 'ytitle', 'DFB V2 RMS'
+
+    options, 'psp_fld_l3_dust*_mV', 'datagap', 3600d
   endif
 end

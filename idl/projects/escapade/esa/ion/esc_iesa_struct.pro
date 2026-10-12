@@ -26,8 +26,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-04-24 16:30:43 -0700 (Fri, 24 Apr 2026) $
-; $LastChangedRevision: 34394 $
+; $LastChangedDate: 2026-10-06 00:03:28 -0700 (Tue, 06 Oct 2026) $
+; $LastChangedRevision: 34944 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/esa/ion/esc_iesa_struct.pro $
 ;
 ;-
@@ -40,7 +40,8 @@ FUNCTION esc_iesa_struct, prod, probe=probe, blue=blue, gold=gold, verbose=verbo
      dprint, dlevel=2, verbose=verbose, "Data product name is not specified. Default is 'f4d', i.e., Fine 4D."
      abbreviation = 'f4d'
   ENDIF
-  
+
+  diag = 0
   abb = prod.tolower()
   CASE abb OF
      'fe': BEGIN
@@ -80,48 +81,66 @@ FUNCTION esc_iesa_struct, prod, probe=probe, blue=blue, gold=gold, verbose=verbo
         sname = 'esc_eesai_cd'
         nbins = [16, 4, 11, 2]
         apid  = ''
-     END 
+     END
+     ELSE: diag = 1
   ENDCASE
-
-  ; Energies,       Deflectors,       Azimuth Anodes,   Masses
-  en = nbins[0]  &  dn = nbins[1]  &  an = nbins[2]  &  mn = nbins[3]
 
   IF KEYWORD_SET(blue) THEN probe = 'BLUE'
   IF KEYWORD_SET(gold) THEN probe = 'GOLD'
-  
   IF  undefined(probe)  THEN probe = 'BLUE'
-  IF ~undefined(nengy)  THEN en = nengy
-  IF ~undefined(nmass)  THEN mn = nmass
-  IF ~undefined(nanode) THEN an = nanode
-  IF ~undefined(ndef)   THEN dn = ndef
-  bn = dn * an                  ; nbins = number of total angular bins
   
-  data_name = dname + ' ' + 'enedndanamnm'
-  data_name = data_name.replace('en', roundst(en))
-  data_name = data_name.replace('dn', roundst(dn))
-  data_name = data_name.replace('an', roundst(an))
-  data_name = data_name.replace('mn', roundst(mn))
+  IF ~(diag) THEN BEGIN
+     ; Energies,       Deflectors,       Azimuth Anodes,   Masses
+     en = nbins[0]  &  dn = nbins[1]  &  an = nbins[2]  &  mn = nbins[3]
 
-  data_name = data_name.replace('1e', '')
-  data_name = data_name.replace('1d', '')
-  IF data_name.contains('11a') EQ 0 THEN data_name = data_name.replace('1a', '')
-  data_name = data_name.replace('1m', '')
+     IF ~undefined(nengy)  THEN en = nengy
+     IF ~undefined(nmass)  THEN mn = nmass
+     IF ~undefined(nanode) THEN an = nanode
+     IF ~undefined(ndef)   THEN dn = ndef
+     bn = dn * an               ; nbins = number of total angular bins
+     
+     data_name = dname + ' ' + 'enedndanamnm'
+     data_name = data_name.replace('en', roundst(en))
+     data_name = data_name.replace('dn', roundst(dn))
+     data_name = data_name.replace('an', roundst(an))
+     data_name = data_name.replace('mn', roundst(mn))
+     
+     data_name = data_name.replace('1e', '')
+     data_name = data_name.replace('1d', '')
+     IF data_name.contains('11a') EQ 0 THEN data_name = data_name.replace('1a', '')
+     data_name = data_name.replace('1m', '')
   
-  format = {project_name: 'ESCAPADE', spacecraft: probe.toupper(), data_name: data_name, apid: apid, $
-            units_name: 'counts', units_procedure: 'esc_iesa_convert_units', time: dnan, end_time: dnan, $
-            delta_t: dnan, integ_t: dnan, quality_flag: 0B, att_state: 0B, spoiler_state: 0B, padding: 0B, $
-            sweep_table: 0B, lut_id: 0B, dp_cadence: 0B, num_accum: 0B, att_ind: 0B, valid: 0B, $
-            nenergy: en, energy: REFORM(FLTARR(en, bn, mn)), denergy: REFORM(FLTARR(en, bn, mn)), $
-            nbins: bn, bins: REFORM(FLTARR(en, bn, mn)), ndef: dn, nanode: an, theta: REFORM(FLTARR(en, bn, mn)), dtheta: REFORM(FLTARR(en, bn, mn)), $
-            phi: REFORM(FLTARR(en, bn, mn)), dphi: REFORM(FLTARR(en, bn, mn)), domega: REFORM(FLTARR(en, bn, mn)), gf: REFORM(FLTARR(en, bn, mn)), eff: REFORM(FLTARR(en, bn, mn)), $
-            geom_factor: 1., nmass: mn, mass: 0.0104389, mass_arr: REFORM(FLTARR(en, bn, mn)), charge: 1., sc_pot: nan, magf: FLTARR(3), $
-            bkg: REFORM(FLTARR(en, bn, mn)), dead: REFORM(FLTARR(en, bn, mn)), cnts: REFORM(FLTARR(en, bn, mn)), data: REFORM(FLTARR(en, bn, mn))}  
+     format = {project_name: 'ESCAPADE', spacecraft: probe.toupper(), data_name: data_name, apid: apid, $
+               units_name: 'counts', units_procedure: 'esc_iesa_convert_units', time: dnan, end_time: dnan, $
+               delta_t: dnan, integ_t: dnan, quality_flag: 0B, att_state: 0B, spoiler_state: 0B, padding: 0B, $
+               sweep_table: 0B, lut_id: 0B, dp_cadence: 0B, num_accum: 0B, att_ind: 0B, valid: 0B, $
+               nenergy: en, energy: REFORM(FLTARR(en, bn, mn)), denergy: REFORM(FLTARR(en, bn, mn)), $
+               nbins: bn, bins: REFORM(FLTARR(en, bn, mn)), ndef: dn, nanode: an, theta: REFORM(FLTARR(en, bn, mn)), dtheta: REFORM(FLTARR(en, bn, mn)), $
+               phi: REFORM(FLTARR(en, bn, mn)), dphi: REFORM(FLTARR(en, bn, mn)), domega: REFORM(FLTARR(en, bn, mn)), gf: REFORM(FLTARR(en, bn, mn)), eff: REFORM(FLTARR(en, bn, mn)), $
+               geom_factor: 1., nmass: mn, mass: 0.0104389, mass_arr: REFORM(FLTARR(en, bn, mn)), charge: 1., sc_pot: nan, magf: FLTARR(3), $
+               bkg: REFORM(FLTARR(en, bn, mn)), dead: REFORM(FLTARR(en, bn, mn)), cnts: REFORM(FLTARR(en, bn, mn)), data: REFORM(FLTARR(en, bn, mn))}  
+     
 
-
-  IF abb EQ 'fm' AND en GT 1 THEN BEGIN
-     str_element, format, 'energy_min', REFORM(FLTARR(en, bn, mn)), /add
-     str_element, format, 'energy_max', REFORM(FLTARR(en, bn, mn)), /add
-  ENDIF 
+     IF abb EQ 'fm' AND en GT 1 THEN BEGIN
+        str_element, format, 'energy_min', REFORM(FLTARR(en, bn, mn)), /add
+        str_element, format, 'energy_max', REFORM(FLTARR(en, bn, mn)), /add
+     ENDIF 
+  ENDIF ELSE BEGIN
+     CASE abb OF
+        'rt': BEGIN             ; Background rates
+           dname = 'Background Rates'
+           sname = 'esc_eesai_rt'
+           apid  = '0x149'
+           
+           format = {project_name: 'ESCAPADE', spacecraft: probe.toupper(), apid: apid, $
+                     time: dnan, end_time: dnan, att_state: 0B, spoiler_state: 0B, sweep_table: 0B, dp_cadence: 0B, $
+                     sample_index: UINT(0), anode_pos: ULONG(0), step_pos: ULONG(0), $
+                     valid_cnts: 0L,  nonvalid_cnts: 0L,  start_cnts: 0L,  stop_cnts: 0L,  start_no_stop_cnts: 0L,  stop_no_start_cnts: 0L, $
+                     valid_rate: nan, nonvalid_rate: nan, start_rate: nan, stop_rate: nan, start_no_stop_rate: nan, stop_no_start_rate: nan, $
+                     start_eff:  nan, stop_eff:      nan }
+        END 
+     ENDCASE 
+  ENDELSE
   
   str = CREATE_STRUCT(name=sname, format)
   RETURN, str

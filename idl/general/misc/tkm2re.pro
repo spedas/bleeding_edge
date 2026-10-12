@@ -27,8 +27,8 @@
 ;
 ;
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-06-20 01:49:27 -0700 (Sat, 20 Jun 2026) $
-;$LastChangedRevision: 34594 $
+;$LastChangedDate: 2026-09-29 14:25:55 -0700 (Tue, 29 Sep 2026) $
+;$LastChangedRevision: 34920 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tkm2re.pro $
 ;-
 
@@ -97,6 +97,10 @@ for i = 0,n_elements(names)-1 do begin
      str_element,data_att,'units',label,/add
      str_element,dl,'data_att',data_att,/add
    endelse
+
+   ; str_element may not update an existing nested units field in-place on
+   ; all IDL runtimes, so assign the ensured field explicitly.
+   dl.data_att.units = label
    
    str_element,dl,'ysubtitle',success=s    
    

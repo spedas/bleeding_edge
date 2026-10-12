@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep 22 15:46:22 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
  
 <HR>
  
@@ -77,55 +77,107 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/tr
 <A HREF="#TRACERS_GET_LOCAL_FILES">[Previous Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
-NAME: 
-  tracers_load_data
-
-KEYWORDS (commonly used by other load routines):
-         trange:       time range of interest [starttime, endtime] with the format
-                       ['YYYY-MM-DD','YYYY-MM-DD'] or to specify more or less than a day
-                       ['YYYY-MM-DD/hh:mm:ss','YYYY-MM-DD/hh:mm:ss']
-         probes:       list of probes, valid values for TRACERS probes are ['1','2'].
-                       if no probe is specified the default is probe 'a'
-         level:        indicates level of data processing. levels include 'l1' and 'l2'
-                       The default if no level is specified is 'l1' (l1 default needs to be confirmed)
-         datatype:     depends on the instrument, see header for the instruments load routine
-         data_rate:    instrument data rates 
-         tplotnames:   returns a list of the names of the tplot variables loaded by the load routine
-         get_support_data: load support data (defined by VAR_TYPE=&quot;support_data&quot; in the CDF)
-         no_color_setup: don't setup graphics configuration; use this keyword when you're 
-                       using this load routine from a terminal without an X server running
-         no_time_clip: don't clip the data to the requested time range; note that if you do use 
-                       this keyword you may load a longer time range than requested. 
-         no_update:    (NOT YET IMPLEMENTED) set this flag to preserve the original data. if not set and newer 
-                       data is found the existing data will be overwritten
-         suffix:       appends a suffix to the end of the tplot variable name. this is useful for
-                       preserving original tplot variable.
-         varformat:    should be a string (wildcards accepted) that will match the CDF variables
-                       that should be loaded into tplot variables
-         cdf_filenames:  this keyword returns the names of the CDF files used when loading the data
-         cdf_version:  specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
-         cdf_records: specify the # of records to load from the CDF files; this is useful
-             for grabbing one record from a CDF file
-         spdf:         grab the data from the SPDF instead of TRACERS server - ***NOTE: only state and epdef data are 
-                       at SPDF available
-         available:    (NOT YET IMPLEMENTED) returns a list of files available at the SDC for the requested parameters
-                       this is useful for finding which files would be downloaded (along with their sizes) if
-                       you didn't specify this keyword (also outputs total download size)
-         versions:     this keyword returns the version #s of the CDF files used when loading the data
-         no_time_sort:    set this flag to not order by time and remove duplicates
-         tt2000: flag for preserving TT2000 timestamps found in CDF files (note that many routines in
-                       SPEDAS (e.g., tplot.pro) do not currently support these timestamps)
-         pred: set this flag for 'predicted' state data. default state data is 'definitive'. 
-         public_data: set this flag to retrieve data from the public area (default is private dir) 
-;          
-EXAMPLE:
-   tracers_load_data,probe='a'
- 
+NAME:
+       tracers_load_data
+DESCRIPTION:
+       Download L1A, L1B, L2, or L3 TRACERS data from the public portal, team data archive, or SPDF
+PARAMETERS:
+       trange (in, optional, STRING | Array[STRING]): 
+           Time range of interest [starttime, endtime]. 
+           Expects format: 'YYYY-MM-DD' or 'YYYY-MM-DD/hh:mm:ss'. 
+           If not set, prompts user to input start datetime and duration (number of days to load).
+       probes (in, optional, STRING | Array[STRING]):
+           Spacecraft to load. 
+           Options are: '1', '2', 'ts1', 'ts2', '*', or 'all'. 
+           Inputs of '*' or 'all' load both TS1 and TS2 data.
+           If not set, defaults to '2'. 
+       levels (in, optional, STRING):
+           Data processing level. 
+           Options are: 'l1a', 'l1b', 'l2' and 'l3'. Public data portal only contains 'l2' and 'l3' data.
+           If not set, defaults to 'l2'. 
+       instrument (in, optional, STRING):
+           Instrument to load. 
+           Options are: 'ace', 'aci', 'efi', 'mag', 'magic', 'msc'. 
+           If not set, defaults to 'ace'.
+       datatypes_in (in, optional, STRING | Array[STRING])
+           Instrument data product to load.
+           Setting wildcard '*' will load all data products for given instrument.
+           The data products for each processing level and instrument are as follows (first listed is default):
+               * L2:
+                   * ACE: 'def'
+                   * ACI: 'ipd'
+                   * EFI: 'eac', 'ehf', 'hsk', 'vdc'
+                   * MAG: 'bdc-16sps'
+               * L3:
+                   * ACE: 'pitch-angle-dist'
+       cdf_version:
+           specify a specific CDF version # to load (e.g., cdf_version='4.3.0')
+       data_rates
+           Instrument data rates
+       local_data_dir
+       source
+       login_info
+       tplotnames: 
+           returns a list of the names of the tplot variables loaded by the load routine
+       varformat: 
+           should be a string (wildcards accepted) that will match the CDF variables that should be loaded into 
+           tplot variables
+       suffix: 
+           appends a suffix to the end of the tplot variable name. this is useful for preserving original tplot 
+           variable.
+       cdf_records: 
+           specify the # of records to load from the CDF files; this is useful for grabbing one record from a CDF
+           file
+KEYWORDS:
+       spdf: 
+           grab the data from the SPDF instead of TRACERS server - ***NOTE: only state and epdef data are at SPDF
+           available
+       pred: 
+           set this flag for 'predicted' state data. default state data is 'definitive'.
+       get_support_data: 
+           load support data (defined by VAR_TYPE=&quot;support_data&quot; in the CDF)
+       no_time_sort: 
+           set this flag to not order by time and remove duplicates
+       no_color_setup: 
+           don't setup graphics configuration; use this keyword when you're using this load routine from a 
+           terminal without an X server running
+       no_time_clip: 
+           don't clip the data to the requested time range; note that if you do use this keyword you may load a 
+           longer time range than requested.
+       no_update: (NOT YET IMPLEMENTED) 
+           set this flag to preserve the original data. if not set and newer data is found the existing data will 
+           be overwritten
+       no_download:
+       tt2000: 
+           flag for preserving TT2000 timestamps found in CDF files (note that many routines in SPEDAS 
+           (e.g., tplot.pro) do not currently support these timestamps)
+       public_data: 
+           set this flag to retrieve data from the public area (default is private dir)
+       versions:
+           this keyword returns the version #s of the CDF files used when loading the data
+       cdf_filenames:
+           this keyword returns the names of the CDF files used when loading the data
+USAGE:
+       tracers_load_data,probe='2'
+AUTHOR:
+       Adapted from the TRACERS Mission package, written by S. Shaver, S. Henderson, C. Piker, with 
+       contributions from the TRACERS Science Operations and Instrument Teams.
+       Written by D. Carpenter and J. Lewis, 2026
 NOTES:
-   Since there is no data server - yet - files must reside locally.
-   Current file naming convention is el[a/b]_ll_instr_yyyymmdd_v0*.cdf.
-   Temporary fix for state CDF - state CDFs are the only CDFs that have version v02
-     
+       is trange bidirectional?
+       data_rates for future dev?
+       default datatype for each instrument?
+       versions vs CDF version? versions is bidirectional to contain loaded versions, cdf_version is input to constrain file version
+       ;    case instrument of
+        'ace':dtype_opts=['def']
+        'aci':dtype_opts=['ipd']
+        'efi':dtype_opts=['eac','ehf','hsk','vdc']
+        'mag':dtype_opts=['bdc-16sps']
+        'magic':dtype_opts=['bdc-16sps']
+        'msc':dtype_opts=['bac']
+        else:dtype_opts=['**']
+    endcase
+
 </PRE><P>
 <STRONG>(See <A href="load_data/tracers_load_data.pro">projects/tracers/load_data/tracers_load_data.pro</A>)</STRONG><P>
 <HR>

@@ -24,8 +24,8 @@
 ;             not affect the user's environment.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-07 18:25:49 -0700 (Mon, 07 Sep 2026) $
-; $LastChangedRevision: 34876 $
+; $LastChangedDate: 2026-09-30 17:35:54 -0700 (Wed, 30 Sep 2026) $
+; $LastChangedRevision: 34932 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_tplot.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -680,20 +680,20 @@ pro mvn_sta_cio_tplot, pans=pans, color_table=ctab, color_reverse=crev, line_sch
     get_data,'sthe',data=sthe
     get_data,'sthe_app',data=sthe_app
     get_data,'rthe_app',data=rthe_app
-    y = replicate(0,npts,2)              ; black = neither is optimized
+    y = replicate(!values.f_nan,npts,2)  ; blank = neither is optimized
     indx = where(abs(sthe.y - 45) lt 5, count)
-    if (count gt 0) then y[indx,*] = 1   ; blue = only SWEA is optimized
+    if (count gt 0) then y[indx,*] = 1.  ; blue = only SWEA is optimized
     indx = where((abs(sthe_app.y) le 5) and $
                  (abs(rthe_app.y) le 10), count)
-    if (count gt 0) then y[indx,*] = 2   ; yellow = only STATIC is optimized (no twist)
+    if (count gt 0) then y[indx,*] = 2.  ; yellow = only STATIC is optimized (no twist)
     indx = where((abs(sthe.y - 45) lt 5) and $
                  (abs(sthe_app.y) le 5) and $
                  (abs(rthe_app.y) le 10), count)
-    if (count gt 0) then y[indx,*] = 3   ; red = both STATIC and SWEA are optimized
+    if (count gt 0) then y[indx,*] = 3.  ; red = both STATIC and SWEA are optimized
     indx = where((alt lt 1000.) or (mso_x gt 0.), count)
-    if (count gt 0L) then y[indx,*] = 0  ; black = spacecraft not in CIO region of space
+    if (count gt 0L) then y[indx,*] = !values.f_nan  ; blank = spacecraft not in CIO region of space
 
-    bname = 'cio_bar'
+    bname = 'mvn_cio_bar'
     store_data,bname,data={x:sthe.x, y:y, v:[0,1]}
     ylim,bname,0,1,0
     zlim,bname,0,3,0
@@ -708,6 +708,14 @@ pro mvn_sta_cio_tplot, pans=pans, color_table=ctab, color_reverse=crev, line_sch
     options,bname,'xstyle',4
     options,bname,'ystyle',4
     options,bname,'no_color_scale',1
+
+    print,''
+    print,'Cool Ion Outflow bar color key:'
+    print,'  blank  = neither is optimized or s/c not in CIO region of space'
+    print,'  blue   = only SWEA is optimized'
+    print,'  yellow = only STATIC is optimized'
+    print,'  red    = both SWEA and STATIC are optimized'
+    print,''
 
 ; Ephemeris
 

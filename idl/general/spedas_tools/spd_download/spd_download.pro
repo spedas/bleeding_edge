@@ -114,9 +114,9 @@
 ;     ignore_filedate, archive_ext, archive_dir, min_age_limit
 ;
 ;
-;$LastChangedBy: nikos $
-;$LastChangedDate: 2019-04-25 15:32:56 -0700 (Thu, 25 Apr 2019) $
-;$LastChangedRevision: 27093 $
+;$LastChangedBy: jwl $
+;$LastChangedDate: 2026-09-29 14:48:30 -0700 (Tue, 29 Sep 2026) $
+;$LastChangedRevision: 34921 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/spd_download/spd_download.pro $
 ;
 ;-
@@ -214,6 +214,23 @@ if n_elements(local_path) ne 1 then begin
   return, output
 endif
 
+
+;warn when wildcard characters appear before the final remote path component
+;because the remote path is also used to derive local_file below
+if strpos(remote_path,'*') ne -1 || strpos(remote_path,'?') ne -1 || strpos(remote_path,'[') ne -1 then begin
+  dprint, dlevel=1, 'Warning: wildcard characters in remote directory components may produce unexpected local paths: ' + $
+    remote_path
+endif
+
+for i=0, n_elements(remote_file)-1 do begin
+  remote_dir = file_dirname(remote_file[i])
+  if remote_dir ne '.' && remote_dir ne '' then begin
+    if strpos(remote_dir,'*') ne -1 || strpos(remote_dir,'?') ne -1 || strpos(remote_dir,'[') ne -1 then begin
+      dprint, dlevel=1, 'Warning: wildcard characters in remote directory components may produce unexpected local paths: ' + $
+        remote_file[i]
+    endif
+  endif
+endfor
 
 ;complete remote file path(s)
 url = remote_path + remote_file

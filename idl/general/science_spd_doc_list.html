@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Tue Sep 22 15:46:21 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
  
 <HR>
  
@@ -67,6 +67,7 @@ This page was created by the IDL library routine
 <br>Draws a series of 3d color plots, one plot per energy step.
 <LI><A HREF="#PLOT3D_OPTIONS">PLOT3D_OPTIONS</A>
 <LI><A HREF="#PLOT_MAP">PLOT_MAP</A>
+<LI><A HREF="#POLAR_TO_XYZ">POLAR_TO_XYZ</A>
 <LI><A HREF="#PRESTENS">PRESTENS</A>
 <LI><A HREF="#REFORM_3D_STRUCT">REFORM_3D_STRUCT</A>
 <br>If a 3-d data structure has fromat (nenergy, nphi, ntheta) reform into (nenergy, nbins)
@@ -1024,7 +1025,7 @@ LAST MODIFICATION:	@(#)plot3d_options.pro	1.10 96/09/24
 <A NAME="PLOT_MAP">
 <H2>PLOT_MAP</H2></A>
 <A HREF="#PLOT3D_OPTIONS">[Previous Routine]</A>
-<A HREF="#PRESTENS">[Next Routine]</A>
+<A HREF="#POLAR_TO_XYZ">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
  PROCEDURE:
@@ -1056,9 +1057,122 @@ LAST MODIFICATION:	@(#)plot3d_options.pro	1.10 96/09/24
 <STRONG>(See <A href="science/plot_map.pro">general/science/plot_map.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="POLAR_TO_XYZ">
+<H2>POLAR_TO_XYZ</H2></A>
+<A HREF="#PLOT_MAP">[Previous Routine]</A>
+<A HREF="#PRESTENS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:  polar_to_xyz, rtp
+            polar_to_xyz, r, theta, phi
+PURPOSE: Calculates x, y and z given magnitude, theta and phi. This is the
+         inverse of xyz_to_polar, and a tplot wrapper around sphere_to_cart.
+INPUT:   Either one argument holding all three components (RTP), or three
+         arguments holding them separately (R, THETA, PHI).
+   One argument, RTP. Several options exist:
+    string:    name(s) of tplot variable(s) whose data.y is an array(n,3).
+               Wildcards are allowed.
+    structure: data.y is assumed to contain the array(n,3)
+    array(n,3)   n by (r,theta,phi components), in the order set by ORDER
+    array(3)     vector:  [r,theta,phi]
+   Three arguments, R, THETA, PHI. Each one may be:
+    string:    the name of one tplot variable holding one value per time
+    structure: {x:times, y:values}
+    array(n)   or a scalar, which is used for every sample (R=1 gives unit
+               vectors). Arrays given with tplot variables must already be
+               on the output time grid.
+RETURN VALUES: through the XYZ keyword, and as a new tplot variable when an
+    input is a tplot variable.
+KEYWORDS:
+   XYZ:        Named variable in which the result is returned: the name of
+               the new tplot variable if an input is a tplot variable, a
+               structure {x:times, y:array(n,3)} if an input is a structure,
+               otherwise an array(n,3) (array(3) for a single vector).
+   ORDER:      One argument only: the order of the components along the
+               second dimension of RTP. A 3-element string array or one string
+               separated by commas or spaces. Default: 'r,theta,phi'.
+               Accepted names are r, mag, magnitude; theta, th, t, con;
+               phi, ph, p, clk. The one-letter form may be written without
+               separators, e.g. order='ptr' is the same as order='phi,theta,r'.
+   NEWNAME:    Name of the output tplot variable. Only one tplot variable may
+               be converted when NEWNAME is set.
+   SUFFIX:     Suffix of the output tplot variable name. Default: '_xyz'.
+   TPLOTNAMES: Named variable in which the names of the new tplot variables
+               are returned.
+   ERROR:      Named variable set to 1 on success and 0 on failure. With
+               several tplot variables it is 1 only if all were converted.
+OPTION KEYWORDS:  These describe the input angles and match the xyz_to_polar
+   keywords of the same name, so the same keywords undo xyz_to_polar.
+   CO_LATITUDE:   If set, theta is co-latitude (0&lt;=theta&lt;=180). Otherwise
+                  theta is latitude (-90&lt;=theta&lt;=90), the xyz_to_polar default.
+   RADIANS:       If set, theta and phi are in radians. Otherwise they are in
+                  degrees, as xyz_to_polar returns them.
+   CLOCK:         If set, theta and phi are the cone and clock angles made by
+                  xyz_to_polar,/clock.
+   NEGATE:        If set, the result is negated, undoing xyz_to_polar,/negate.
+   Phi may be in any range (-180 to 180, 0 to 360, or beyond), so the
+   xyz_to_polar keywords PH_0_360 and PH_HIST are not needed here.
+
+SEE ALSO:
+  xyz_to_polar.pro, sphere_to_cart.pro, cart_to_sphere.pro
+
+EXAMPLES:
+
+     Undoing xyz_to_polar:
+xyz_to_polar,'Vp',magnitude=m,theta=th,phi=ph  ; makes 'Vp_mag','Vp_th','Vp_phi'
+polar_to_xyz,m,th,ph        ; makes 'Vp_xyz', equal to 'Vp' to rounding error
+xyz_to_polar,'Vp',/co_latitude,/clock
+polar_to_xyz,'Vp_mag','Vp_con','Vp_clk',/co_latitude,/clock,newname='Vp2'
+
+     Angles in radians, theta as co-latitude:
+polar_to_xyz,'pos_r','pos_colat','pos_lon',/radians,/co_latitude
+    This makes 'pos_r_xyz'.
+
+     One variable holding (phi, theta, r):
+polar_to_xyz,'B_sph',order='phi,theta,r'      ; makes 'B_sph_xyz'
+
+     Unit vectors from direction angles:
+polar_to_xyz,1.,'B_th','B_phi',newname='B_dir'
+
+     Passing arrays:
+polar_to_xyz,[2.,30.,45.],xyz=v        ; v = [1.2247449, 1.2247449, 1.0000000]
+polar_to_xyz,mag,th,ph,xyz=vecs        ; vecs will be an array(n,3)
+polar_to_xyz,[[mag],[th],[ph]],xyz=vecs ; same result
+
+NOTES:
+   Output name: the input name plus SUFFIX. With separate variables it is
+   built from R, with a trailing '_mag' removed, so 'Vp_mag','Vp_th','Vp_phi'
+   give 'Vp_xyz'. If R is not a tplot variable, THETA (without '_th' or
+   '_con') is used, then PHI (without '_phi' or '_clk').
+   Separate tplot variables on different time grids are interpolated with
+   tinterpol_mxn onto the times of the first one given (R, then THETA, then
+   PHI). Phi is unwrapped first so it interpolates across the +-180 degree
+   cut. Times outside an input's time range get NaN.
+   dlimits are copied from the R (or RTP) tplot variable, so units and
+   coordinate system carry over. Labels become x,y,z and colors [2,4,6];
+   ylog, yrange, min_value and max_value are removed because they apply to
+   the magnitude, not to signed components. Limits are not copied.
+   The result is double if any input is double, float otherwise, as for
+   xyz_to_polar. A magnitude of 0 gives [0,0,0] whatever the angles
+   (xyz_to_polar returns a NaN theta for a zero vector).
+   Unlike xyz_to_polar, numbers are always data, never tplot variable
+   indices.
+   What cannot be undone: xyz_to_polar,/quick_mag makes no angles, samples
+   that MAX_VALUE/MIN_VALUE replaced by MISSING are lost, and xyz_to_polar
+   does not copy dlimits (labels, units, coordinate system) to its outputs.
+
+CREATED BY:  Zesen Huang  2026-09-29  (spedas/bleeding_edge issue #22)
+ $LastChangedBy: jwl $
+ $LastChangedDate: 2026-09-30 11:39:38 -0700 (Wed, 30 Sep 2026) $
+ $LastChangedRevision: 34929 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/science/polar_to_xyz.pro $
+</PRE><P>
+<STRONG>(See <A href="science/polar_to_xyz.pro">general/science/polar_to_xyz.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="PRESTENS">
 <H2>PRESTENS</H2></A>
-<A HREF="#PLOT_MAP">[Previous Routine]</A>
+<A HREF="#POLAR_TO_XYZ">[Previous Routine]</A>
 <A HREF="#P_3D">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

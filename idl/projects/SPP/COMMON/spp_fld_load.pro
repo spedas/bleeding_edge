@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2023
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2026-06-26 16:33:12 -0700 (Fri, 26 Jun 2026) $
-; $LastChangedRevision: 34608 $
+; $LastChangedDate: 2026-10-07 14:53:18 -0700 (Wed, 07 Oct 2026) $
+; $LastChangedRevision: 34954 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -399,6 +399,9 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
       endif
     endif else if level eq 1.5 then begin
       pathformat = 'TYPE/YYYY/MM/spp_fld_l1b_TYPE_YYYYMMDD_v??.cdf'
+      if type eq 'magi_SC_4_Sa_per_Cyc' or $
+        type eq 'magi_RTN_4_Sa_per_Cyc' then $
+        pathformat = 'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDD_v??.cdf'
       if type eq 'magi_SC' then begin
         pathformat = 'TYPE/YYYY/MM/psp_fld_l1b_TYPE_YYYYMMDDhh_v??.cdf'
         resolution = 3600l * 6l ; hours
