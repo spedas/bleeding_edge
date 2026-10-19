@@ -19,15 +19,15 @@
 ;                   default is 0.0 ('1970-01-01/00:00:00.000')
 ;
 ; Notes:
-;     This format is used by GOES 16 and 17 and reprocessed files for GOES 8-15.
+;     This format is used by GOES 16+ and reprocessed files for GOES 8-15.
 ;     Uses the HDF5 IDL library.
 ;     HELP, 'hdf5', /DLM
-;     https://www.l3harrisgeospatial.com/docs/hdf5_overview.html
+;     https://nv5geospatialsoftware.com/docs/hdf_overview.html
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2025-11-07 11:02:21 -0800 (Fri, 07 Nov 2025) $
-; $LastChangedRevision: 33840 $
+; $LastChangedDate: 2026-10-15 18:38:10 -0700 (Thu, 15 Oct 2026) $
+; $LastChangedRevision: 34986 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf2tplot.pro $
 ;-
 
@@ -57,6 +57,13 @@ function hdf_merge_cdf_struct, cdf_struct, final_cdf_struct
     av = a.vars[i]
     if av.DATAPTR eq ptr_new() then continue else d1 = *(av.DATAPTR)
     if v.DATAPTR eq ptr_new() then continue else d2 = *(v.DATAPTR)
+    if av.recvary eq 0 then continue ; static tables are retained once
+    time_first = 0b
+    str_element, *av.attrptr, 'HDF_TIME_FIRST', time_first
+    if keyword_set(time_first) then begin
+      a.vars[i].dataptr = ptr_new([d1, d2]) ; normalized arrays have time first
+      continue
+    endif
     if n_elements(d1.dim) eq 0 then d = d1
     if n_elements(d1.dim) eq 1 then d = [d1, d2]
     if n_elements(d1.dim) eq 2 then begin
@@ -71,7 +78,7 @@ function hdf_merge_cdf_struct, cdf_struct, final_cdf_struct
 end
 
 pro hdf2tplot, filenames, tplotnames=tplotnames, varnames=varnames, merge=merge, prefix=prefix, suffix=suffix, verbose=verbose, $
-  gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, time_offset=time_offset, time_var=time_var, _extra=_extra
+  gatt2istp=gatt2istp, vatt2istp=vatt2istp, coord_list=coord_list, time_offset=time_offset, time_var=time_var, time_dict=time_dict, _extra=_extra
 
   compile_opt idl2
   ; Set verbose.
@@ -93,7 +100,9 @@ pro hdf2tplot, filenames, tplotnames=tplotnames, varnames=varnames, merge=merge,
 
   ; Find which varnames to load.
   final_cdf_struct = ''
-  if ~keyword_set(varnames) || varnames eq '' || varnames eq '*' || varnames eq 'all' then begin
+  load_all = n_elements(varnames) eq 0
+  if ~load_all then load_all = total((varnames eq '') or (varnames eq '*') or (varnames eq 'all')) gt 0
+  if load_all then begin
     varnames = '*'
     if vbs ge 6 then dprint, verbose=verbose, dlevel=6, 'hdf2tplot: Will load all variables into an IDL structure.'
   endif
@@ -109,7 +118,7 @@ pro hdf2tplot, filenames, tplotnames=tplotnames, varnames=varnames, merge=merge,
 
     ; Change the previously created struct into a struct readable by cdf_info_to_tplot.
     cdf_struct = hdf_to_cdfstruct(hdfi, fname, varnames=varnames, verbose=verbose, gatt2istp=gatt2istp, vatt2istp=vatt2istp, $
-      coord_list=coord_list, time_offset=time_offset, time_var=time_var, _extra=_extra)
+      coord_list=coord_list, time_offset=time_offset, time_var=time_var, time_dict=time_dict, _extra=_extra)
     if size(cdf_struct, /type) ne 8 then begin
       msg = 'hdf2tplot: Cannot convert the HDF-5 IDL structure into a CDF structure: cdf_struct was invalid.'
       dprint, dlevel=1, verbose=verbose, msg

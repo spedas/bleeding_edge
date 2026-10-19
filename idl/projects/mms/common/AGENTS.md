@@ -71,20 +71,21 @@ Code shared by all MMS instruments: `!mms` setup, SDC login, the load engine
   `mms_load_data_spdf.pro` (`/spdf` path), `mms_get_local_files.pro` (offline
   search), `mms_files_in_interval.pro`, `mms_check_file_exists.pro`.
 - `mms_data_fetch/`: SDC queries. `mms_get_science_file_info.pro` is used by
-  `mms_load_data`; `mms_data_fetch.pro` and `mms_check_local_cache.pro` are
-  an older fetcher still used by the SITL loaders in `projects/mms/sitl/`.
+  `mms_load_data`; `mms_data_fetch.pro` and `mms_check_local_cache.pro` (SDC
+  query with local caching) are used by the SITL loaders in `projects/mms/sitl/`.
 - `cdf/`: `mms_cdf2tplot.pro` (MMS variant used by the SPDF and SITL paths;
   the main path uses `spd_cdf2tplot`), `unh_mms_file_filter.pro` (version
   filtering for `cdf_version`, `min_version`, `latest_version`).
 - `cotrans/` (`mms_cotrans.pro`, `mms_qcotrans.pro`, `mms_cotrans_lmn.pro`,
   `dmpa2gse.pro`, `dmpa2dsl.pro`), `curlometer/` (`mms_curl.pro`,
   `mms_lingradest.pro`), `util/` (`flatten_spectra.pro`, `mms_jdote.pro`,
-  velocity frames), `tai/` (helpers for `mms_jdote`), `events/mms_event_search.pro`.
+  velocity frames), `tai/` (`mms_jdote` defines its own modified copies of some
+  of these), `events/mms_event_search.pro`.
 - `data_status_bar/`: burst, fast and SROI segment bars (`mms_load_brst_segments.pro`,
   `spd_mms_load_bss.pro`); uses `mms_bss_load` from `projects/mms/sitl/bss/`.
 - `gui/`: SPEDAS GUI plugin (`spedas_gui/plugins/mms_plugin.txt`);
-  `quicklook/`, `validation/`: plots and SDC comparisons; `tests/`: mgunit
-  tests run by `tests/mms_run_all_tests.pro`.
+  `quicklook/`, `validation/`: quicklook plots and validation scripts;
+  `tests/`: mgunit tests run by `tests/mms_run_all_tests.pro`.
 
 ## How mms_load_data works
 
@@ -119,8 +120,9 @@ Code shared by all MMS instruments: `!mms` setup, SDC login, the load engine
 - Coordinates: `mms_cotrans` (DMPA, DSL, geophysical) needs
   `mms<p>_defatt_spinras`/`spindec` from `mms_load_state` for DMPA;
   `mms_qcotrans` needs MEC quaternions `mms<p>_mec_quat_eci_to_<coord>` from
-  `mms_load_mec`. Neither loads them. `cotrans/dmpa2gse.pro` calls THEMIS
-  `thm_interpolate_state`.
+  `mms_load_mec`. Neither loads them. `cotrans/dmpa2gse.pro` interpolates the
+  spin axis with `interpol`; its THEMIS `thm_interpolate_state` calls are
+  commented out.
 
 ## Examples
 

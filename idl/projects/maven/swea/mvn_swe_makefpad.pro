@@ -30,8 +30,8 @@
 ;                 data structure: swe_fpad, swe_fpad_arc.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-06-23 16:20:25 -0700 (Mon, 23 Jun 2025) $
-; $LastChangedRevision: 33414 $
+; $LastChangedDate: 2026-10-13 13:37:14 -0700 (Tue, 13 Oct 2026) $
+; $LastChangedRevision: 34968 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makefpad.pro $
 ;
 ;CREATED BY:    David L. Mitchell  03-29-14
@@ -168,8 +168,8 @@ pro mvn_swe_makefpad, units=units, tplot=tplot, merge=merge, pans=pans, pfile=pf
       endif else ok125 = 0
 
       if (ok200 and ok200h) then begin
-        get_data,'swe_pad_resample_200eV',data=lores,dlim=dlim
-        get_data,'swe_pad_resample_32hz_200eV',data=hires,dlim=dlim
+        get_data,'swe_pad_resample_200eV',data=lores,dlim=lolim
+        get_data,'swe_pad_resample_32hz_200eV',data=hires,dlim=hilim
 
         dt = hires.x - shift(hires.x, 1)
         dt[0] = 1D
@@ -179,24 +179,27 @@ pro mvn_swe_makefpad, units=units, tplot=tplot, merge=merge, pans=pans, pfile=pf
           hires.y[((indx-1L) > 0L),*] = !values.f_nan
         endif
 
-        yhi = hires.y
         nlo = n_elements(lores.x)
         nhi = n_elements(hires.x)
         ntot = nlo + nhi
         x = [lores.x, hires.x]
         y = fltarr(ntot,128)
         y[0L:(nlo-1L),*] = lores.y
-        y[nlo:(ntot-1L),*] = yhi
+        y[nlo:(ntot-1L),*] = hires.y
         v = fltarr(ntot,128)
         v[0L:(nlo-1L),*] = lores.v
         v[nlo:(ntot-1L),*] = hires.v
+        nfactor = fltarr(ntot)
+        nfactor[0L:(nlo-1L)] = lolim.nfactor
+        nfactor[nlo:(ntot-1L)] = hilim.nfactor
 
         indx = sort(x)
         x = x[indx]
         y = y[indx,*]
         v = v[indx,*]
+        str_element, hilim, 'nfactor', nfactor[indx], /add_replace
         pname = 'swe_pad_resample_200eV_merge'
-        store_data,pname,data={x:x, y:y, v:v},dlim=dlim
+        store_data,pname,data={x:x, y:y, v:v, nfactor:nfactor[indx]},dlim=hilim
         options,pname,'ztitle','Norm'
         options,pname,'x_no_interp',1
         options,pname,'datagap',4D
@@ -204,8 +207,8 @@ pro mvn_swe_makefpad, units=units, tplot=tplot, merge=merge, pans=pans, pfile=pf
       endif else print,"No 200-eV data to merge."
 
       if (ok50 and ok50h) then begin
-        get_data,'swe_pad_resample_50eV',data=lores,dlim=dlim
-        get_data,'swe_pad_resample_32hz_50eV',data=hires,dlim=dlim
+        get_data,'swe_pad_resample_50eV',data=lores,dlim=lolim
+        get_data,'swe_pad_resample_32hz_50eV',data=hires,dlim=hilim
 
         dt = hires.x - shift(hires.x, 1)
         dt[0] = 1D
@@ -226,13 +229,17 @@ pro mvn_swe_makefpad, units=units, tplot=tplot, merge=merge, pans=pans, pfile=pf
         v = fltarr(ntot,128)
         v[0L:(nlo-1L),*] = lores.v
         v[nlo:(ntot-1L),*] = hires.v
+        nfactor = fltarr(ntot)
+        nfactor[0L:(nlo-1L)] = lolim.nfactor
+        nfactor[nlo:(ntot-1L)] = hilim.nfactor
 
         indx = sort(x)
         x = x[indx]
         y = y[indx,*]
         v = v[indx,*]
+        str_element, hilim, 'nfactor', nfactor[indx], /add_replace
         pname = 'swe_pad_resample_50eV_merge'
-        store_data,pname,data={x:x, y:y, v:v},dlim=dlim
+        store_data,pname,data={x:x, y:y, v:v, nfactor:nfactor[indx]},dlim=hilim
         options,pname,'ztitle','Norm'
         options,pname,'x_no_interp',1
         options,pname,'datagap',4D
@@ -240,8 +247,8 @@ pro mvn_swe_makefpad, units=units, tplot=tplot, merge=merge, pans=pans, pfile=pf
       endif else print,"No 50-eV data to merge."
 
       if (ok125 and ok125h) then begin
-        get_data,'swe_pad_resample_125eV',data=lores,dlim=dlim
-        get_data,'swe_pad_resample_32hz_125eV',data=hires,dlim=dlim
+        get_data,'swe_pad_resample_125eV',data=lores,dlim=lolim
+        get_data,'swe_pad_resample_32hz_125eV',data=hires,dlim=hilim
 
         dt = hires.x - shift(hires.x, 1)
         dt[0] = 1D
@@ -262,13 +269,17 @@ pro mvn_swe_makefpad, units=units, tplot=tplot, merge=merge, pans=pans, pfile=pf
         v = fltarr(ntot,128)
         v[0L:(nlo-1L),*] = lores.v
         v[nlo:(ntot-1L),*] = hires.v
+        nfactor = fltarr(ntot)
+        nfactor[0L:(nlo-1L)] = lolim.nfactor
+        nfactor[nlo:(ntot-1L)] = hilim.nfactor
 
         indx = sort(x)
         x = x[indx]
         y = y[indx,*]
         v = v[indx,*]
+        str_element, hilim, 'nfactor', nfactor[indx], /add_replace
         pname = 'swe_pad_resample_125eV_merge'
-        store_data,pname,data={x:x, y:y, v:v},dlim=dlim
+        store_data,pname,data={x:x, y:y, v:v, nfactor:nfactor[indx]},dlim=hilim
         options,pname,'ztitle','Norm'
         options,pname,'x_no_interp',1
         options,pname,'datagap',4D

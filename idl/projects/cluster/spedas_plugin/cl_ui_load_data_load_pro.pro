@@ -90,7 +90,7 @@ pro cl_ui_load_data_load_pro,$
        cl_load_aspoc, probes=probes, trange=timeRange
      end
      'dwp': cl_load_dwp, probes=probes, trange=timeRange
-     'cis':   cl_load_fgm, probes=probes, trange=timeRange
+     'cis':   cl_load_cis, probes=probes, trange=timeRange
      'edi':   cl_load_edi, probes=probes, trange=timeRange
      'efw':   cl_load_efw, probes=probes, trange=timeRange
      'fgm':   cl_load_fgm, probes=probes, trange=timeRange

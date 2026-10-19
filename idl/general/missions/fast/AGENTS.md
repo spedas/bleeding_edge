@@ -63,7 +63,8 @@ body of original mission-operations code. The GUI plugin is separate, in
 - `fa_fields/`: L2 fields loaders `fa_fields/fa_despun_e_load.pro`,
   `fa_fields/fa_dsp_load.pro`, `fa_fields/fa_sfa_load.pro`, the SPDF
   magnetometer loader `fa_fields/fa_load_mag_hr_dcb.pro`, a crib, and
-  `l2util/` CDF writers. The `temp_fa_load_sfa_*.pro` files are drafts.
+  `l2util/` CDF writers. The `temp_fa_load_sfa_*.pro` files are "Temporary"
+  programs that load SFA files created from Level0 data via SDT.
 - `fa_k0/`: key-parameter loaders `fa_k0/fa_k0_load.pro` (SSL server) and
   `fa_k0/istp_fa_k0_load.pro` (SPDF).
 - `fa_ops/`: about 480 files of the original operations software, which read
@@ -90,7 +91,7 @@ body of original mission-operations code. The GUI plugin is separate, in
    (`fa_esa/get_l2/get_fa2_ies.pro`).
 5. With `/tplot`, `fa_esa_l2_tplot` makes quick-look spectrograms;
    `fa_esa_l2_pad` and `fa_esa_l2_edist` make pitch-angle and energy
-   distributions.
+   spectra.
 
 The fields loaders use the same orbit-based paths but load with `cdf2tplot`
 (`general/CDF/cdf2tplot.pro`), so their output is in tplot.
@@ -103,7 +104,8 @@ The fields loaders use the same orbit-based paths but load with `cdf2tplot`
   `information/`. The first `fa_init` in a session needs the server, even for
   orbit/time conversion alone. `.fast_master` in the local data folder turns
   downloads off; `SPEDAS_DATA_DIR` and `FAST_REMOTE_DATA_DIR` override folders.
-- Orbit numbers run from 1 to 51315.
+- `fa_orbit_to_time` accepts orbit numbers 1 to 51314 (`fa_orbitrange`
+  checks 1 to 51315).
 - `fa_ops/` needs SDT (Science Data Tool) and its shared library: routines such
   as `fa_ops/get_md_from_sdt.pro` use `call_external` on `loadSDTBufLib.so`, so
   they fail in a normal IDL session. `fa_ops/README.pro` says to put the folder

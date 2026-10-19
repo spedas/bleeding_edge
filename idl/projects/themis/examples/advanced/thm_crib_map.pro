@@ -23,9 +23,9 @@
 ;  -all these examples reset the plotting window
 ;
 ;
-;$LastChangedBy: aaflores $
-;$LastChangedDate: 2015-05-22 16:54:25 -0700 (Fri, 22 May 2015) $
-;$LastChangedRevision: 17683 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+;$LastChangedRevision: 34975 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/examples/advanced/thm_crib_map.pro $
 ;-
 
@@ -56,8 +56,8 @@ end
 pro thm_map_ex_3
   compile_opt idl2
     thm_init ;ensure !themis is defined
-    sav_file = spd_download(remote_file='thg/l2/asi/cal/thm_map_add.sav', _extra=!themis)
-    restore, sav_file
+    ; thm_map_add.sav ships with SPEDAS (asi_mosaic directory) -- no download
+    restore, file_which('thm_map_add.sav')
     usersym,[-1,0,1,0,-1],[0,1,0,-1,0],/fill
     thm_map_set,scale=50e6
     loadct,39
@@ -118,8 +118,8 @@ end
 pro thm_map_ex_6
   compile_opt idl2
    thm_init ;ensure !themis is defined
-   sav_file = spd_download(remote_file='thg/l2/asi/cal/thm_map_add.sav', _extra=!themis)
-   restore, sav_file
+   ; thm_map_add.sav ships with SPEDAS (asi_mosaic directory) -- no download
+   restore, file_which('thm_map_add.sav')
    thm_map_set
    thm_map_add,invariant_lats=[65,70,75],invariant_color=250,invariant_thick=1,/invariant_lons
    thm_map_add,asi_fovs=1,asi_fov_color=0,asi_fov_thick=2
@@ -173,8 +173,8 @@ end
 pro thm_map_ex_9
   compile_opt idl2
    thm_init ;ensure !themis is defined
-   sav_file = spd_download(remote_file='thg/l2/asi/cal/thm_map_add.sav', _extra=!themis)
-   restore, sav_file
+   ; thm_map_add.sav ships with SPEDAS (asi_mosaic directory) -- no download
+   restore, file_which('thm_map_add.sav')
    usersym,[-1,0,1,0,-1],[0,1,0,-1,0],/fill
    w=where(thg_map_gb_sites.abbreviation eq 'GILL')
    tt=thg_map_gb_sites[w[0]]

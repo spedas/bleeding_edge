@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Oct 19 03:28:07 2026.<P>
  
 <HR>
  
@@ -159,6 +159,11 @@ ro test_ask_cal2, station, cal01, cal02
 
  KEYWORD PARAMETERS:
     cal_files		calibration files if they do not need to be read
+    ucalgary_pgm	load images and calibration from the data archive
+			(/ucalgary_pgm on thm_load_asi and thm_load_asi_cal)
+			instead of the default Berkeley CDFs
+    cdf_legacy	force the Berkeley CDF path; wins over ucalgary_pgm
+			(which path is the default is decided in thm_asi_use_archive)
     pgm_file   	do not read CDF, but pgm-files
     verbose    	print some diagnostics
     insert		insert stop before end of program
@@ -247,9 +252,9 @@ ro test_ask_cal2, station, cal01, cal02
  NOTES:
 
  VERSION:
-   $LastChangedBy: jwl $
-   $LastChangedDate: 2023-12-30 17:48:10 -0800 (Sat, 30 Dec 2023) $
-   $LastChangedRevision: 32328 $
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+   $LastChangedRevision: 34975 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_asi_create_mosaic.pro $
 
 </PRE><P>
@@ -282,6 +287,11 @@ ro test_ask_cal2, station, cal01, cal02
 
  KEYWORD PARAMETERS:
     cal_files		calibration files if they do not need to be read
+    ucalgary_pgm	load images and calibration from the data archive
+			(/ucalgary_pgm on thm_load_asi and thm_load_asi_cal)
+			instead of the default Berkeley CDFs
+    cdf_legacy	force the Berkeley CDF path; wins over ucalgary_pgm
+			(which path is the default is decided in thm_asi_use_archive)
     pgm_file   	do not read CDF, but pgm-files
     verbose    	print some diagnostics
     insert		insert stop before end of program
@@ -617,9 +627,15 @@ Procedure: THM_LOAD_ASI
           single string delimited by spaces, e.g., 'fykn gako'
   datatype = request 'ast' or 'asf', default is 'asf', can also be 'all'.
   TRANGE= (Optional) Time range of interest  (2 element array), if
-          this is not set, the default is to prompt the user. Note
-          that if the input time range is not a full day, a full
-          day's data is loaded
+          this is not set, the default is to prompt the user. The
+          default CDF path loads whole hourly (asf) or daily (ast)
+          CDFs without clipping; the /UCALGARY_PGM path fetches only
+          the file granules covering the range (1-min files for asf,
+          hourly files for ast) and clips the output to TRANGE unless
+          /NO_TIME_CLIP is set
+  /NO_TIME_CLIP /UCALGARY_PGM path only: store every frame of every
+          fetched file instead of clipping the output to TRANGE (output
+          then aligns to file-granule boundaries)
   level = the level of the data, the default is 'l2', or level-2
           data. A string (e.g., 'l2') or an integer can be used. 'all'
           can be passed in also, to get all levels.
@@ -639,6 +655,12 @@ Procedure: THM_LOAD_ASI
                 variable xxx
    /CURSOR	get time range with cursor
    /TIME       specify just one time (record) for data
+   /UCALGARY_PGM load from the THEMIS ASI data archive
+               (api.phys.ucalgary.ca / data.phys.ucalgary.ca) instead of
+               the default Berkeley CDF path (see Notes)
+   /CDF_LEGACY explicitly select the Berkeley CDF path. This is the
+               default (decided in thm_asi_use_archive), so the keyword is a
+               no-op unless /UCALGARY_PGM is also set, in which case /CDF_LEGACY wins.
 
 Example:
    thm_load_asi,site='atha',time='2007-03-23/05:00:00'
@@ -649,11 +671,21 @@ Notes:
    thm_load_asi,site=vn,/valid_names
  No further action will be taken.
 
+ By default this loader reads the Berkeley thg_l1_asf/ast CDFs, as it
+ always has. With /ucalgary_pgm it instead downloads from the THEMIS ASI
+ data archive (api.phys.ucalgary.ca / data.phys.ucalgary.ca):
+   asf &lt;- THEMIS_ASI_RAW (1-min PGM bundles; pixel values are bit-identical
+          to the legacy CDFs)
+   ast &lt;- THEMIS_ASI_VEC1024 (same 1024-superpixel bin product as the
+          legacy ast CDFs, but 8-bit scaled: legacy counts ~ 33x these
+          values)
+ Archive files are cached under !themis.local_data_dir + 'thg/asi/'.
+
 
 Written by: Ken Bromund ????,   Jan 5 2007
- $LastChangedBy: egrimes $
- $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
- $LastChangedRevision: 26397 $
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+ $LastChangedRevision: 34975 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi.pro $
 </PRE><P>
 <STRONG>(See <A href="ground/thm_load_asi.pro">projects/themis/ground/thm_load_asi.pro</A>)</STRONG><P>
@@ -688,6 +720,16 @@ Written by: Ken Bromund ????,   Jan 5 2007
    /VALID_NAMES
    /CURSOR	get time range with cursor
    REGO	read cal-file for REGO camera instead of THEMIS
+   UCALGARY_PGM	build the calibration structure from skymap .sav files
+		(datasets THEMIS_ASI_SKYMAP_IDLSAV / REGO_SKYMAP_IDLSAV,
+		fetched from api.phys.ucalgary.ca) via
+		thm_asi_cal_adapter[_rego] instead of the default Berkeley
+		thg_l2_asc / rego_l2_asc cal CDFs. The adapter replicates
+		the legacy cal CDF variable set/order; magnetic coordinate
+		variables (_mlat/_mlon) are NaN on this path.
+   CDF_LEGACY	explicitly select the Berkeley cal CDF path. This is the
+		default (decided in thm_asi_use_archive), so the keyword is a
+		no-op unless /UCALGARY_PGM is also set, in which case /CDF_LEGACY wins.
 
  HISTORY:
    adapted from thm_load_asi
@@ -702,9 +744,9 @@ Written by: Ken Bromund ????,   Jan 5 2007
  No further action will be taken.
 
 Written by: Harald Frey,   Jan 26 2007
-   $LastChangedBy: jwl $
-   $LastChangedDate: 2023-12-30 17:48:10 -0800 (Sat, 30 Dec 2023) $
-   $LastChangedRevision: 32328 $
+   $LastChangedBy: nikos $
+   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+   $LastChangedRevision: 34975 $
    $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 </PRE><P>
 <STRONG>(See <A href="ground/thm_load_asi_cal.pro">projects/themis/ground/thm_load_asi_cal.pro</A>)</STRONG><P>
@@ -750,15 +792,45 @@ keywords:
   get_support_data = does nothing.  present only for consistency with other
                 load routines
   rego		read red-line data instead of THEMIS white light
+  ucalgary_pgm	stitch keograms from the hourly keogram products on
+		data.phys.ucalgary.ca instead of the default Berkeley
+		daily ask CDFs (see Notes)
+  cdf_legacy	explicitly select the Berkeley CDF path. This is the
+		default (decided in thm_asi_use_archive), so the keyword is a
+		no-op unless /ucalgary_pgm is also set, in which case /cdf_legacy wins.
 
 Example:
    thg_load_ask
 Notes:
   This routine is (should be) platform independent.
 
+  By default keograms are read from the Berkeley daily ask CDFs, as
+  always. With /ucalgary_pgm, THEMIS keograms are instead stitched from
+  the archived hourly keogram product on data.phys.ucalgary.ca
+  (THEMIS_ASI_HOURLY_KEOGRAM_PGM, ~300 KB/site-hour). Variable names
+  and structures are unchanged.
+  Cadence is one column per 6 s (600 columns/hour) vs one column per
+  3-s frame in the legacy CDFs -- visually equivalent; column values
+  are closely correlated (0.98-0.99) but not byte-identical, since the
+  archive keograms were generated onsite with a slightly different
+  column extraction than the Berkeley CDF pipeline used.
+  With /ucalgary_pgm, REGO (/rego) keograms are likewise stitched from
+  the archived hourly keogram product (clg_ask_* variables, 1200
+  columns/hour = full 3-s cadence), read from the 16-bit grayscale PNG
+  container which covers the whole mission.
+  IMPORTANT: archive REGO keogram values are display-scaled, NOT counts
+  (the THEMIS keogram products are counts). The generator maps a fixed
+  count window onto 0-65535 and clips outside it, so faint pixels
+  bottom out at 0 and bright aurora saturates. The keograms plot
+  correctly -- structure and timing are right -- but the values are not
+  photometric. This is flagged in the variable units ('scaled'), on the
+  color bar, and by a message at load time.
+  The default Berkeley CDF path gives exact legacy values and is the
+  supported way to get count-accurate REGO keograms.
 
- $LastChangedBy: hfrey $
- $LastChangedDate: 2021-12-29 13:22:57 -0800 (Wed, 29 Dec 2021) $
+
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
  $LastChangedRevision: Added valid_names output option$
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_ask.pro $
 </PRE><P>
@@ -1224,9 +1296,14 @@ Procedure: THM_LOAD_ASI
           single string delimited by spaces, e.g., 'fykn gako'
   datatype = request 'ast' or 'asf', default is 'asf', can also be 'all'.
   TRANGE= (Optional) Time range of interest  (2 element array), if
-          this is not set, the default is to prompt the user. Note
-          that if the input time range is not a full day, a full
-          day's data is loaded
+          this is not set, the default is to prompt the user. The
+          default CDF path loads whole hourly CDFs without clipping;
+          the /UCALGARY_PGM path fetches only the 1-min rgf files
+          covering the range and clips the output to TRANGE unless
+          /NO_TIME_CLIP is set
+  /NO_TIME_CLIP /UCALGARY_PGM path only: store every frame of every
+          fetched file instead of clipping the output to TRANGE (output
+          then aligns to 1-min file boundaries)
   level = the level of the data, the default is 'l2', or level-2
           data. A string (e.g., 'l2') or an integer can be used. 'all'
           can be passed in also, to get all levels.
@@ -1246,6 +1323,15 @@ Procedure: THM_LOAD_ASI
                 variable xxx
    /CURSOR	get time range with cursor
    /TIME       specify just one time (record) for data
+   /UCALGARY_PGM load raw REGO PGM frames from the data archive
+               (api.phys.ucalgary.ca / data.phys.ucalgary.ca, dataset
+               REGO_RAW) instead of the default Berkeley clg_l1_rgf CDFs.
+               Frames are bit-identical to the CDF frames after the
+               pinned orientation transform. Archive files are cached
+               under !themis.local_data_dir + 'thg/asi/'.
+   /CDF_LEGACY explicitly select the Berkeley CDF path. This is the
+               default (decided in thm_asi_use_archive), so the keyword is a
+               no-op unless /UCALGARY_PGM is also set, in which case /CDF_LEGACY wins.
 
 Example:
    thm_load_asi,site='atha',time='2007-03-23/05:00:00'
@@ -1258,9 +1344,9 @@ Notes:
 
 
 Written by: Ken Bromund ????,   Jan 5 2007
- $LastChangedBy: egrimes $
- $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
- $LastChangedRevision: 26397 $
+ $LastChangedBy: nikos $
+ $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+ $LastChangedRevision: 34975 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_rego.pro $
 </PRE><P>
 <STRONG>(See <A href="ground/thm_load_rego.pro">projects/themis/ground/thm_load_rego.pro</A>)</STRONG><P>
@@ -1516,6 +1602,11 @@ Example:
 
  KEYWORD PARAMETERS:
     cal_files		calibration files if they do not need to be read
+    ucalgary_pgm	load images and calibration from the data archive
+			(/ucalgary_pgm on thm_load_rego and thm_load_asi_cal)
+			instead of the default Berkeley CDFs
+    cdf_legacy	force the Berkeley CDF path; wins over ucalgary_pgm
+			(which path is the default is decided in thm_asi_use_archive)
     pgm_file   	do not read CDF, but pgm-files
     verbose    	print some diagnostics
     insert		insert stop before end of program

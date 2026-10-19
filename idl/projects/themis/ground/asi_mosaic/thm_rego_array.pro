@@ -1,7 +1,8 @@
 PRO thm_rego_array,iyear_in,im1,id,ih,im,is,tgb_sites,$
                      img1,cor1,ele1,www1,n_sites,verbose=verbose,$
                      cal_files=cal_files,thumb=thumb,$
-                     show=show,exclude=exclude,insert=insert
+                     show=show,exclude=exclude,insert=insert,$
+                     ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
 ;+
 ; NAME: thm_rego_array
@@ -75,16 +76,16 @@ PRO thm_rego_array,iyear_in,im1,id,ih,im,is,tgb_sites,$
 ;
 ; VERSION:
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2024-12-13 09:03:48 -0800 (Fri, 13 Dec 2024) $
-; $LastChangedRevision: 32990 $
+; $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+; $LastChangedRevision: 34975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/asi_mosaic/thm_rego_array.pro $
 ;     
 ;-
 
-	; path to data
-sav_relpathname = 'thg/l2/asi/cal/thm_map_add.sav'
-sav_file = spd_download(remote_file=sav_relpathname, _extra=!themis)
-restore, sav_file
+	; thm_map_add.sav ships with the SPEDAS distribution (same directory as
+	; this routine); no download needed (previously fetched from Berkeley)
+rt_info = routine_info('thm_rego_array', /source)
+restore, file_dirname(rt_info.path) + path_sep() + 'thm_map_add.sav'
 
 	; correct date
 if iyear_in lt 50 then iy=2000+iyear_in else iy=iyear_in
@@ -138,7 +139,7 @@ if w(0) ne -1 then begin
 
 		; imager data, full or thumb
        if keyword_set(thumb) then begin
-         thm_load_rego,site=station_string,time=time,datatype='ast'
+         thm_load_rego,site=station_string,time=time,datatype='ast',ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
          get_data,'clg_ast_'+station_string,data=dat
          endif else begin
          if (station_string eq 'kian' or $
@@ -160,7 +161,7 @@ if w(0) ne -1 then begin
              station_string eq 'tpas' or $
              station_string eq 'nrsq') then continue
    
-         thm_load_rego,site=station_string,time=time,datatype='rgf'
+         thm_load_rego,site=station_string,time=time,datatype='rgf',ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
          get_data,'clg_rgf_'+station_string,data=dat
          endelse
 
@@ -172,7 +173,7 @@ if w(0) ne -1 then begin
            station_index=where((strpos(cal_files.vars[0].name,station_string)) ne -1)
            cal=cal_files[station_index]
            endif else $
-           thm_load_asi_cal,station_string,cal,/rego,verbose=verbose,trange=time_double(time)
+           thm_load_asi_cal,station_string,cal,/rego,verbose=verbose,trange=time_double(time),ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
          	; get longitude/latitude arrays
           case 1 of

@@ -49,17 +49,33 @@ pro sec_ascii2tplot,files,prefix=prefix,suffix=suffix,verbose=verbose,tplotnames
   if keyword_set(prefix) then tn = prefix+tn
   if keyword_set(suffix) then tn = tn+suffix
   sec_latlong = {x:data[*,0], y:data[*,1:2] }
-  store_data, tn, data = sec_latlong, dlimit = dlimit
+  store_data, tn, data = sec_latlong, dlimit = dlimits
   tplotnames = keyword_set(tplotnames) ? [tplotnames,tn] : tn
 
   ;  Insert Lat Long into tplot format
-  dlimits.labels = ['J']
-  dlimits.units = 'A'
+  ; The original code reassigned the labels array like this:
+  ; dlimits.labels = ['J']
+  ; dlimits.units = 'A'
+  ;
+  ; IDL doesn't allow changing the length of an array in an already-defined structure!  This ends up giving you
+  ; ['J', 'Longitude'] as the labels attribute, where the intented value is just ['J'].  JWL 2026-10-14
+  
+
+  ; Redefine the structure instead of altering its elements
+  labels = ['J']
+  dlimits = { files: files,     $
+    spec: 0B,         $
+    log: 0B,          $
+    labels: labels,   $
+    labflag: 1,       $
+    coord_sys: 'geo', $
+    units: 'A' }
+  
   tn = 'secs_seca_amp'
   if keyword_set(prefix) then tn = prefix+tn
   if keyword_set(suffix) then tn = tn+suffix
   sec_amp = {x:data[*,0], y:data[*,3] }
-  store_data, tn, data = sec_amp, dlimit = dlimit
+  store_data, tn, data = sec_amp, dlimit = dlimits
   tplotnames = keyword_set(tplotnames) ? [tplotnames,tn] : tn
 
 end

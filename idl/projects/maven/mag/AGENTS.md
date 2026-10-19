@@ -32,7 +32,7 @@ maintenance: |
 # MAVEN MAG (IDL)
 
 Code for the MAVEN magnetometers (two sensors: MAG1 outboard, MAG2 inboard).
-Users load the save files made from the MAG team's STS files with
+Users load the save files made from the MAG STS files with
 `mvn_mag_load`; the rest decodes L0 packets, makes those save files, or computes
 field geometry.
 
@@ -55,7 +55,7 @@ field geometry.
   frame and straight-line tracing to an altitude (need ephemeris).
 - `mvn_mag_ql.pro`, `mvn_mag_ql_tsmaker.pro`, `maven_mag_pkts_read.pro` and small
   helpers (`bitlis`, `checksum_16bits`, `marker_search`, `parsestr`, `cmsystime`):
-  the MAG team's quicklook from raw packet files.
+  MAG quicklook processing from raw packet files.
 
 ## How `mvn_mag_load` works
 

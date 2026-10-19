@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Oct 19 03:28:07 2026.<P>
  
 <HR>
  
@@ -90,11 +90,12 @@ This page was created by the IDL library routine
 
  Purpose:
      Loads data from GOES-R satelites (GOES-16, GOES-17, GOES-18, GOES-19)
-     or reprocessed data from earlier satelites (GOES 8-15): hires mag and xrs.
+     or reprocessed data from earlier satelites (GOES 8-15).
 
  Keywords:
      trange:       Time range of interest
-     datatype:     Type of GOES-R data to be loaded. Valid data types are:
+     datatype:     Type of GOES-R data to be loaded.
+                   Valid data types for L2 data are:
                      'mag': Magnetometer (default: 1 min, 'hires': 0.1 sec)
                             For GOES 8-15, only hires is available.
                      'xrs': EXIS X-Ray Sensor (default: 1 min, 'hires': 1 sec);
@@ -103,26 +104,34 @@ This page was created by the IDL library routine
                              (default: 5 min, hires: 1 min)
                      'sgps': Solar and Galactic Proton Sensors (SGPS)
                              (default: 5 min, Hires: 1 min)
+                   Valid data types for L1 data, probes 16+, are:
+                     'mag': Magnetometer
+                     'xrs': EXIS X-Ray Sensor (two bands, 0.05-0.4 nm, 0.1-0.8 nm)
+                     'mpsh': SEISS Magnetospheric Particle Sensor–High Energy
+                     'euvs': EXIS Extreme Ultraviolet Sensor
+                     'sgps': Solar and Galactic Proton Sensors (SGPS)
+
      prefix:        String to append to the beginning of the loaded tplot variables
      suffix:        String to append to the end of the loaded tplot variables
-     prefix:        String to append to the beginning of the loaded tplot variables
-     probes:        Array of GOES spacecrafts (8-17). Default is probes=['16'].
-     varnames:      Array of names of variables to load. Defaults is all (*)
+     probes:        Array of GOES spacecrafts (8-19). Default is probes=['16'].
+     level:         'l1' or 'l2' (default). L1 is only for probes 16-19.
+     source:        Retrieval settings structure; defaults to !goesr.
      downloadonly: Download files but don't load them into tplot.
      hires:        If set, download full data files (larger files, can be over 180MB).
                    If not set, use lowest available resolution (default).
      no_time_clip: Don't clip the tplot variables.
-     get_support_data: Keep the support data.
+     get_support_data: For l1 files only. Load all auxiliary variables; otherwise load science
+                       variables and required time/coordinate datasets. 
 
  Notes:
-     NOAA Site:  https://www.ngdc.noaa.gov/stp/satellite/goes-r.html
+     NOAA Site:  https://www.ncei.noaa.gov/products/satellite/goes-r
      data GOES 16-19:   https://data.ngdc.noaa.gov/platforms/solar-space-observing-satellites/goes/
      reprocessed data GOES 8-15: https://www.ncei.noaa.gov/data/goes-space-environment-monitor/access/science/
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2026-08-03 12:06:55 -0700 (Mon, 03 Aug 2026) $
- $LastChangedRevision: 34700 $
+ $LastChangedDate: 2026-10-15 18:38:10 -0700 (Thu, 15 Oct 2026) $
+ $LastChangedRevision: 34986 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/goesr/goesr_load_data.pro $
 </PRE><P>
 <STRONG>(See <A href="goesr/goesr_load_data.pro">projects/goesr/goesr_load_data.pro</A>)</STRONG><P>

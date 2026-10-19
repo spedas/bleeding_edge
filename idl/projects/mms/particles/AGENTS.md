@@ -52,7 +52,7 @@ views. The heavy lifting is the mission-independent `spd_pgs_*` code in
 
 ## Layout
 
-- `mms_part_getspec.pro`: the usual entry point. Loads the distribution and
+- `mms_part_getspec.pro`: the usual entry point. Loads the distribution, and
   support data if missing, then calls `mms_part_products` per probe.
 - `mms_part_products.pro`: core routine; takes the name of a tplot variable
   holding FPI or HPCA distributions (e.g. `mms1_dis_dist_brst`).
@@ -76,10 +76,10 @@ views. The heavy lifting is the mission-independent `spd_pgs_*` code in
 
 ## How mms_part_getspec works
 
-1. It loads, only when not already present, the distribution
-   (`mms_load_fpi` `d?s-dist` or `mms_load_hpca` `ion`), FGM L2
-   `mms?_fgm_b_gse_*_bvec`, MEC position, EDP spacecraft potential (for
-   moments or photoelectron corrections) and bulk velocity (`/subtract_bulk`).
+1. It loads the distribution (`mms_load_fpi` `d?s-dist` or `mms_load_hpca`
+   `ion`) and bulk velocity (`/subtract_bulk`) and, only when not already
+   present, FGM L2 `mms?_fgm_b_gse_*_bvec`, MEC position and EDP spacecraft
+   potential (for moments or photoelectron corrections).
    Support data span the request plus 60 s on each side.
 2. `mms_part_products` gets sample times and structures from `mms_get_dist`,
    cleans them (`mms_pgs_clean_data`), applies the DES photoelectron model

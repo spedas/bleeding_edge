@@ -26,6 +26,7 @@ related_files:
   - projects/kaguya/general/spice/kernels/fk/GSE_080125.tf
   - general/spedas_tools/spd_download/spd_download.pro
   - general/spice/spice_vector_rotate.pro
+  - general/spice/spice_body_pos.pro
 maintenance: |
   Update when kgy_map_load or kgy_lrs_load change their flow, default data
   versions or servers, when the PACE/LMAG common blocks change, or when a
@@ -36,7 +37,8 @@ maintenance: |
 
 Loaders and analysis for the Kaguya lunar orbiter: MAP-PACE particle sensors
 (ESA-S1 and ESA-S2 electrons, IMA and IEA ions), the LMAG magnetometer, the
-LRS radio sounder, and SPICE geometry. `kgy_crib.pro` walks through all of it.
+LRS radio sounder, and SPICE geometry. `kgy_crib.pro` walks through
+`kgy_map_load`, `kgy_map_make_pad` and `kgy_lrs_load`.
 
 ## Layout
 
@@ -47,7 +49,8 @@ LRS radio sounder, and SPICE geometry. `kgy_crib.pro` walks through all of it.
   `kgy_read_tof`), 3-D structures (`kgy_esa1_get3d`, `kgy_esa2_get3d`,
   `kgy_ima_get3d`, `kgy_iea_get3d`), units and frames
   (`kgy_pace_convert_units`, `kgy_pace_convert_frame`), moments (`kgy_n_3d`,
-  `kgy_v_3d`, ..., `kgy_mom_calc`), and IMA mass spectra.
+  `kgy_v_3d`, ..., `kgy_mom_calc`), and IMA energy-TOF and H+/O+ spectra
+  (`kgy_ima_emspec`, `kgy_ima_hospec`).
 - `map/lmag/`: `kgy_read_lmag`; the SVM crustal-field model of Tsunakawa et
   al. 2015 (`kgy_svm_load`, `kgy_svm_get`, `kgy_svm_pred`); `kgy_calc_bcon`.
 - `lrs/`: `kgy_lrs_load` (NPW and WFC spectra from CDF).
@@ -70,7 +73,7 @@ LRS radio sounder, and SPICE geometry. `kgy_crib.pro` walks through all of it.
 4. `kgy_map_make_tplot` turns the common blocks into tplot variables
    (`kgy_esa1_en_eflux`, `kgy_ima_en_counts`, `kgy_lmag_Bgse`, ...).
 5. Unless `/nospice`, `kgy_spice_kernels(/load)` fetches kernels from DARTS,
-   and the loader uses `spice_vector_rotate` to add `kgy_lmag_Bsat`,
+   and the loader uses `spice_vector_rotate` and `spice_body_pos` to add `kgy_lmag_Bsat`,
    `kgy_lmag_Bsse`, `kgy_lmag_Rsse`, `kgy_lmag_alt` and `kgy_lmag_sza`,
    skipping times in the kernel gaps listed by `kgy_ck_gaps`/`kgy_spk_gaps`.
 
@@ -91,7 +94,7 @@ layout (`pace/`, `lmag/` below the local data directory).
 - Data versions are fixed defaults because the loaders can't search versions:
   PBF `003` and LMAG `1.0` in `kgy_map_load`, LRS `010` in `kgy_lrs_load`.
 - `kgy_lrs_load` deletes existing `kgy_lrs_*` variables unless `/append`, and
-  loads WFC only for even hours.
+  skips odd hours when downloading WFC files.
 - Frames: LMAG files give ME (Moon mean-Earth) and GSE; SSE comes from
   `general/spice/kernels/fk/SSE_080125.tf`. Altitude uses a lunar radius of
   1737.4 km.

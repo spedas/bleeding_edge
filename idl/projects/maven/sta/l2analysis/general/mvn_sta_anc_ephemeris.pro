@@ -122,7 +122,7 @@ if not keyword_set(spicekernels) then begin
 endif
 
 ;Check whether the times fall within kernel coverage for the SPK files: First find SPK files loaded:
-iFI = where(strmatch(spicekernels, '*'+sl+'spk'+sl+'*'), niFI)
+iFI = where(strmatch(spicekernels, '*'+sl+'spk'+'*'), niFI) ;CMF: 2026-10-18: BP noted, remove +sl after 'spk' otherwise it breaks on Windows
 
 if niFI eq 0 then begin
   print, rname+" : I couldn't find any SPICE spk files loaded. Have you set timespan and run spicekernels=mvn_spice_kernels(/load)?"

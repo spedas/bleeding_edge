@@ -48,7 +48,7 @@ pro eic_ascii2tplot,files,prefix=prefix,suffix=suffix,verbose=verbose,tplotnames
   if keyword_set(prefix) then tn = prefix+tn
   if keyword_set(suffix) then tn = tn+suffix
   eic_latlong = {x:data[*,0], y:data[*,1:2] }
-  store_data, tn, data = eic_latlong, dlimit = dlimit
+  store_data, tn, data = eic_latlong, dlimit = dlimits
   tplotnames = keyword_set(tplotnames) ? [tplotnames,tn] : tn
 
   ;  Insert Lat Long into tplot format
@@ -58,7 +58,7 @@ pro eic_ascii2tplot,files,prefix=prefix,suffix=suffix,verbose=verbose,tplotnames
   if keyword_set(prefix) then tn = prefix+tn
   if keyword_set(suffix) then tn = tn+suffix
   eic_jxy = {x:data[*,0], y:data[*,3:4] }
-  store_data, tn, data = eic_jxy, dlimit = dlimit
+  store_data, tn, data = eic_jxy, dlimit = dlimits
   tplotnames = keyword_set(tplotnames) ? [tplotnames,tn] : tn
 
 end

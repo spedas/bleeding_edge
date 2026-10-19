@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Oct 19 03:28:07 2026.<P>
  
 <HR>
  
@@ -20,6 +20,7 @@ This page was created by the IDL library routine
 <UL>
 <H1>projects/themis/examples/basic</H1>
 <LI><A HREF="#THM_CRIB_ASI">THM_CRIB_ASI</A>
+<LI><A HREF="#THM_CRIB_ASI_UCNEW">THM_CRIB_ASI_UCNEW</A>
 <LI><A HREF="#THM_CRIB_COTRANS">THM_CRIB_COTRANS</A>
 <LI><A HREF="#THM_CRIB_EFI">THM_CRIB_EFI</A>
 <LI><A HREF="#THM_CRIB_ESA">THM_CRIB_ESA</A>
@@ -35,6 +36,8 @@ This page was created by the IDL library routine
 <LI><A HREF="#THM_CRIB_PART_PRODUCTS">THM_CRIB_PART_PRODUCTS</A>
 <br>Demonstrate basic usage of routine for generating particle moments and spectra.
 <LI><A HREF="#THM_CRIB_PART_SLICE2D">THM_CRIB_PART_SLICE2D</A>
+<LI><A HREF="#THM_CRIB_REGO">THM_CRIB_REGO</A>
+<LI><A HREF="#THM_CRIB_REGO_UCNEW">THM_CRIB_REGO_UCNEW</A>
 <LI><A HREF="#THM_CRIB_SCM">THM_CRIB_SCM</A>
 <LI><A HREF="#THM_CRIB_SST">THM_CRIB_SST</A>
 <LI><A HREF="#THM_CRIB_STATE">THM_CRIB_STATE</A>
@@ -46,7 +49,7 @@ This page was created by the IDL library routine
 <H1>Routine Descriptions</H1>
 <A NAME="THM_CRIB_ASI">
 <H2>THM_CRIB_ASI</H2></A>
-<A HREF="#THM_CRIB_COTRANS">[Next Routine]</A>
+<A HREF="#THM_CRIB_ASI_UCNEW">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 thm_crib_asi.pro
@@ -65,9 +68,28 @@ Written by Harald Frey
 <STRONG>(See <A href="basic/thm_crib_asi.pro">projects/themis/examples/basic/thm_crib_asi.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_CRIB_ASI_UCNEW">
+<H2>THM_CRIB_ASI_UCNEW</H2></A>
+<A HREF="#THM_CRIB_ASI">[Previous Routine]</A>
+<A HREF="#THM_CRIB_COTRANS">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+thm_crib_asi_ucnew.pro
+usage:
+ .run thm_crib_asi_ucnew
+
+ updated with data past 2006-01-01, Oct. 20, 2010
+ updated data archive loading path and sub-hour loading notes, Sept. 23, 2026
+
+Written by Harald Frey, 2007-02-11
+Modified by Darren Chaddock, 2026-09-23
+</PRE><P>
+<STRONG>(See <A href="basic/thm_crib_asi_ucnew.pro">projects/themis/examples/basic/thm_crib_asi_ucnew.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_CRIB_COTRANS">
 <H2>THM_CRIB_COTRANS</H2></A>
-<A HREF="#THM_CRIB_ASI">[Previous Routine]</A>
+<A HREF="#THM_CRIB_ASI_UCNEW">[Previous Routine]</A>
 <A HREF="#THM_CRIB_EFI">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -433,7 +455,7 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <A NAME="THM_CRIB_PART_SLICE2D">
 <H2>THM_CRIB_PART_SLICE2D</H2></A>
 <A HREF="#THM_CRIB_PART_PRODUCTS">[Previous Routine]</A>
-<A HREF="#THM_CRIB_SCM">[Next Routine]</A>
+<A HREF="#THM_CRIB_REGO">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 Purpose: A basic overview of how to obtain and plot two-dimentional slices of 
@@ -508,9 +530,54 @@ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/th
 <STRONG>(See <A href="basic/thm_crib_part_slice2d.pro">projects/themis/examples/basic/thm_crib_part_slice2d.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="THM_CRIB_REGO">
+<H2>THM_CRIB_REGO</H2></A>
+<A HREF="#THM_CRIB_PART_SLICE2D">[Previous Routine]</A>
+<A HREF="#THM_CRIB_REGO_UCNEW">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+thm_crib_rego.pro
+usage:
+ .run thm_crib_rego
+
+Purpose: demonstrate loading and displaying data from the Redline
+ Emission Geospace Observatory (REGO) all-sky imager array.
+
+ REGO keograms and images are read from the Berkeley clg_l1 CDFs and the
+ calibration from the Berkeley rego_l2_asc cal CDFs, in the same way as the
+ THEMIS ASI data in thm_crib_asi.
+
+Written by: Darren Chaddock, 2026-08-11
+</PRE><P>
+<STRONG>(See <A href="basic/thm_crib_rego.pro">projects/themis/examples/basic/thm_crib_rego.pro</A>)</STRONG><P>
+<HR>
+ 
+<A NAME="THM_CRIB_REGO_UCNEW">
+<H2>THM_CRIB_REGO_UCNEW</H2></A>
+<A HREF="#THM_CRIB_REGO">[Previous Routine]</A>
+<A HREF="#THM_CRIB_SCM">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+thm_crib_rego_ucnew.pro
+usage:
+ .run thm_crib_rego_ucnew
+
+Purpose: demonstrate loading and displaying data from the Redline
+ Emission Geospace Observatory (REGO) all-sky imager array.
+
+ REGO data is loaded from the data archive at data.phys.ucalgary.ca.
+
+ Calibration structures are built from the REGO skymaps
+ (thm_load_asi_cal,/rego).
+
+Written by: Darren Chaddock, 2026-09-23
+</PRE><P>
+<STRONG>(See <A href="basic/thm_crib_rego_ucnew.pro">projects/themis/examples/basic/thm_crib_rego_ucnew.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="THM_CRIB_SCM">
 <H2>THM_CRIB_SCM</H2></A>
-<A HREF="#THM_CRIB_PART_SLICE2D">[Previous Routine]</A>
+<A HREF="#THM_CRIB_REGO_UCNEW">[Previous Routine]</A>
 <A HREF="#THM_CRIB_SST">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>

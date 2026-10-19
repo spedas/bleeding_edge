@@ -29,8 +29,8 @@
 ; 2019-12-23, egrimes, created based on mms_init
 ;
 ; $LastChangedBy: jwl $
-; $LastChangedDate: 2021-07-08 16:21:36 -0700 (Thu, 08 Jul 2021) $
-; $LastChangedRevision: 30111 $
+; $LastChangedDate: 2026-10-14 12:55:43 -0700 (Wed, 14 Oct 2026) $
+; $LastChangedRevision: 34977 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/cluster/cluster_science_archive/cl_csa_config.pro $
 ;
 ;-
@@ -76,7 +76,7 @@ PRO cl_csa_config, no_color_setup=no_color_setup, colortable=colortable
     !cluster_csa.LOCAL_DATA_DIR = spd_addslash(getenv('SPEDAS_DATA_DIR'))+'cluster_csa/'
    
   if getenv('CLUSTER_CSA_DATA_DIR') ne '' then $
-    !cluster_csa.local_data_dir = getenv('CLUSTER__CSA_DATA_DIR')
+    !cluster_csa.local_data_dir = getenv('CLUSTER_CSA_DATA_DIR')
   !cluster_csa.local_data_dir = spd_addslash(!cluster_csa.local_data_dir)
   
   if getenv('MIRROR_DATA_DIR') ne '' then begin

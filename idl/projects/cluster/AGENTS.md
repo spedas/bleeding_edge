@@ -44,7 +44,8 @@ datasets from ESA's Cluster Science Archive (CSA) through `cl_load_csa`.
 - `cluster_science_archive/`: `cluster_science_archive/cl_load_csa.pro`, its own
   init and config (`cluster_science_archive/cl_csa_init.pro`, `!cluster_csa`),
   and a crib.
-- `examples/cl_load_crib.pro`: loads and plots each instrument from SPDF.
+- `examples/cl_load_crib.pro`: loads and plots FGM, EDI, EFW, DWP, CIS, STAFF,
+  RAPID and PEACE data from SPDF.
 - `spedas_plugin/`: two GUI tabs, `spedas_plugin/cl_ui_load_data.pro` (SPDF) and
   `spedas_plugin/cl_csa_ui_load_data.pro` (CSA), registered by
   `spedas_gui/plugins/cl_plugin.txt` and
@@ -89,10 +90,10 @@ returned `.tar.gz` under `!spedas.temp_dir`, unpacks it, copies each CDF to
 - `cl_load_data` ignores `!cluster.remote_data_dir`: without the
   `remote_data_dir` keyword it always uses SPDF.
 - CSA dataset names are case-sensitive.
-- `cluster_science_archive/cluster_csa_cdf_check.pro` is a developer script with
-  hard-coded local paths; skip it.
+- `cluster_science_archive/cluster_csa_cdf_check.pro` (`pro cluster_cdf_check`)
+  has hard-coded local paths; skip it.
 
 ## Examples
 
-`examples/cl_load_crib.pro` (SPDF, all instruments) and
+`examples/cl_load_crib.pro` (SPDF, eight of the eleven instruments) and
 `cluster_science_archive/cl_load_csa_crib.pro` (CSA).

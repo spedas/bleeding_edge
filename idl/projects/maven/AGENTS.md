@@ -38,6 +38,7 @@ related_files:
   - projects/maven/morbit.pro
   - projects/maven/swea/mvn_swe_crib.pro
   - projects/maven/sep/mvn_lpw_handler.pro
+  - projects/maven/sep/mvn_sep_batch.pro
   - projects/maven/swea/mvn_sta_coldion.pro
   - projects/maven/swea/mvn_mag_tplot.pro
 maintenance: |
@@ -50,9 +51,9 @@ maintenance: |
 # MAVEN (IDL)
 
 Code for MAVEN (Mars Atmosphere and Volatile EvolutioN). Each instrument team
-wrote its own loaders, common blocks and conventions; there is no shared load
-engine like THEMIS's `thm_load_xxx`. What the instruments share is file
-retrieval, SPICE and orbit tools in `general/`.
+wrote its own loaders and conventions (some also their own common blocks);
+there is no shared load engine like THEMIS's `thm_load_xxx`. What the
+instruments share is file retrieval, SPICE and orbit tools in `general/`.
 
 ## Layout
 
@@ -61,7 +62,8 @@ The first nine entries have their own AGENTS.md.
 - `sta/`: STATIC ion mass spectrometer (`mvn_sta_l2_load`).
 - `swea/`: SWEA electrons (`mvn_swe_load_l2`); also STATIC cold-ion code.
 - `swia/`: SWIA solar wind ions (`mvn_swia_load_l2_data`).
-- `sep/`: SEP energetic particles (`mvn_sep_load`); also the SSL batch job.
+- `sep/`: SEP energetic particles (`mvn_sep_load`); also the cron batch job
+  `mvn_sep_batch.pro`.
 - `mag/`: magnetometer (`mvn_mag_load`).
 - `lpw/`: Langmuir probe and waves (`mvn_lpw_load_l2`).
 - `general/`: shared retrieval, SPICE, orbit numbers, geometry, `mvn_scpot`.
@@ -75,7 +77,7 @@ The first nine entries have their own AGENTS.md.
   path `/disks/data/maven/data/sci/iuv/`.
 - `acc/`: accelerometer L3 (`mvn_acc_load_l3`; needs SPICE).
 - `kp/`: SSL-side KP maintenance; read KP files with `quicklook/mvn_qlook_load_kp.pro`.
-- `eph/`: older ephemeris tools: `get_mvn_eph` (SPICE, common `mvn_eph_com`),
+- `eph/`: ephemeris tools: `get_mvn_eph` (SPICE, common `mvn_eph_com`),
   `mvn_pfp_cotrans` (rotate SWIA/SWEA/STATIC angles), `mvn_phobos_tplot`.
 - `maven_orbit_tplot/`: `maven_orbit_tplot` makes orbit and plasma-region tplot
   variables from save files in `maven/anc/spice/sav/`; `maven_orbit_snap` plots.
@@ -86,7 +88,7 @@ The first nine entries have their own AGENTS.md.
 - `spedas_plugin/`: GUI plugin for KP data (`spedas_gui/plugins/maven_pfp_plugin.txt`).
 - `misg/`, `obsolete/`, top-level `gseos_*` and `tek*`: prelaunch ground-test
   code; skip.
-- Top level: `mvn_spc_met_to_unixtime.pro` (spacecraft clock to Unix time),
+- Top level: `mvn_spc_met_to_unixtime.pro` (MET to Unix time),
   `mvn_spc_apid_file_read.pro` (packet file reader), `mav_gse_structure_append.pro`
   (live despite its name: packet handlers append decoded data with it),
   `mvn_pf_make_cdf.pro` (generic PDS CDF writer), `morbit.pro` (Kepler orbits).
@@ -116,8 +118,8 @@ The first nine entries have their own AGENTS.md.
   folder (`sep/mvn_lpw_handler.pro`, `swea/mvn_sta_coldion.pro`,
   `swea/mvn_mag_tplot.pro`); search by name. `projects/emm/` has `mvn_*` files too.
 - No MAVEN system variable: download settings live in common
-  `mvn_file_source_com` (`general/mvn_file_source.pro`). L0 and other team data
-  need credentials from `MAVENPFP_USER_PASS` or `mvn_set_userpass`.
+  `mvn_file_source_com` (`general/mvn_file_source.pro`). Credentials for the
+  remote server come from `MAVENPFP_USER_PASS` or `mvn_set_userpass`.
 - SWEA, SWIA and STATIC load into common blocks and make tplot variables only on
   request; their 3D structures carry `units_procedure` for `conv_units`.
 - Orbit numbers follow NAIF (increment at periapsis): `general/mvn_orbit_num.pro`.

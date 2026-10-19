@@ -1,8 +1,8 @@
 ;+
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2025-07-24 16:40:58 -0700 (Thu, 24 Jul 2025) $
-; $LastChangedRevision: 33496 $
+; $LastChangedDate: 2026-10-14 21:59:01 -0700 (Wed, 14 Oct 2026) $
+; $LastChangedRevision: 34983 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/fields/util/psp_fld_tplot_abc.pro $
 ;
 ;-
@@ -32,7 +32,7 @@ pro psp_fld_tplot_abc
       str_element, lim, 'panel_label', pl, success = has_pl
 
       if has_pl eq 0 then $
-        tplot_panel_label, name, lbl[i], /lower_left
+        tplot_panel_label, name, lbl[i], 0.08, 0.8
 
       ; from an earlier version before tplot_panel_label routine was created
       ; c = tplot_vars.settings.clip[*, i]

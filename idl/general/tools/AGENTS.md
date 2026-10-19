@@ -31,7 +31,7 @@ maintenance: |
 
 # General tools
 
-Older utility routines: curve fitting, small array and structure helpers, and
+Utility routines: curve fitting, small array and structure helpers, and
 simple operations on tplot variables. Most tplot-variable processing lives
 elsewhere (see Things to know).
 
@@ -45,7 +45,8 @@ elsewhere (see Things to know).
   (`misc/dynamicarray__define.pro`), and the widget tools `exec` and `recorder`.
 - `tplot/`: tplot-variable arithmetic (`add_data`, `dif_data`, `mult_data`,
   `div_data`, `ang_data`, `avg_data`, `deriv_data`, `delta_data`), sampling
-  (`tsample`, `tdexists`), output (`tplot_ascii`, `tprint`), and old loaders.
+  (`tsample`), an existence check (`tdexists`), output (`tplot_ascii`,
+  `tprint`), and old loaders.
 - `tplot/wvlt/`: `wav_data` (`tplot/wvlt/wav_data.pro`), a Morlet wavelet
   transform of a tplot variable, built on the Torrence and Compo `wavelet`.
   Its `.BAK` and `.old` files are dead copies.

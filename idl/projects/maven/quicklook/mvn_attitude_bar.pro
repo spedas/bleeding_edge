@@ -9,6 +9,7 @@
 ;    green  = Fly +/- Y
 ;    red    = Fly-Z (including up and down variants)
 ;    purple = Fly+Z (including up and down variants)
+;    blank  = none of the above (usually during transitions)
 ;
 ;USAGE:
 ;  mvn_attitude_bar
@@ -22,8 +23,8 @@
 ;       KEY:      Print out the color key and return.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2024-01-08 16:12:18 -0800 (Mon, 08 Jan 2024) $
-; $LastChangedRevision: 32344 $
+; $LastChangedDate: 2026-10-13 13:48:47 -0700 (Tue, 13 Oct 2026) $
+; $LastChangedRevision: 34970 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -112,6 +113,7 @@ printkey:
   print,'  green  = Fly +/- Y'
   print,'  red    = Fly-Z (including up and down variants)'
   print,'  purple = Fly+Z (including up and down variants)'
+  print,'  blank  = none of the above (usually during transitions)'
   print,''
 
 end

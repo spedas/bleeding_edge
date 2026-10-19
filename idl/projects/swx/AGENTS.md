@@ -67,8 +67,8 @@ All files are at the top level.
    `file_retrieve` from `sprg.ssl.berkeley.edu`, and runs
    `ptp_reader(mission='SWX')` (`projects/SWFO/STIS/ptp_reader__define.pro`),
    which sets its decom procedure to the string `'swx_ccsds_spkt_handler'`.
-2. `swx_ccsds_spkt_handler` calls `swx_ccsds_decom` to read the header, APID
-   and MET, and converts MET with `swx_spc_met_to_unixtime` (epoch 2010-01-01
+2. `swx_ccsds_spkt_handler` calls `swx_ccsds_decom`, which reads the header,
+   APID and MET and converts MET with `swx_spc_met_to_unixtime` (epoch 2010-01-01
    minus 3 leap seconds; SPICE clock-drift correction is off by default).
 3. `swx_apdat(apid)` returns the object that `swx_apdat_init` registered with
    `swx_apdat_info, apid, apid_obj='<class>', tname=...`; its `handler` method
@@ -95,6 +95,6 @@ All files are at the top level.
   class name in quotes.
 - `swx_swem_events_strings.pro` defines `spp_swp_swem_events_strings`, the same
   name as the SPP routine, which is what `swx_swem_events_apdat` calls.
-- Local data use SPP paths: `swx_spane_file_retrieve` takes its source from
+- SWX reuses SPP file handling: `swx_spane_file_retrieve` takes its source from
   `spp_file_source`, and `swx_init_realtime` records GSE streams under
   `root_data_dir()` + `spp/data/sci/sweap/prelaunch/` with `spp_ptp_recorder`.

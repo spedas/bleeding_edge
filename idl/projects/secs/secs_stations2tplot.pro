@@ -49,7 +49,7 @@ pro secs_stations2tplot,file,date,prefix=prefix,suffix=suffix,verbose=verbose,tp
   if keyword_set(prefix) then tn = prefix+tn
   if keyword_set(suffix) then tn = tn+suffix
   secs_stations = {x:date, y:data.names, v:data.latlongs}
-  store_data, tn, data = secs_stations, dlimit = dlimit
+  store_data, tn, data = secs_stations, dlimit = dlimits
   tplotnames = keyword_set(tplotnames) ? [tplotnames,tn] : tn
 
 end

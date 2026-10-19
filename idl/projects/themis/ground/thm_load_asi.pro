@@ -28,9 +28,15 @@ end
 ;          single string delimited by spaces, e.g., 'fykn gako'
 ;  datatype = request 'ast' or 'asf', default is 'asf', can also be 'all'.
 ;  TRANGE= (Optional) Time range of interest  (2 element array), if
-;          this is not set, the default is to prompt the user. Note
-;          that if the input time range is not a full day, a full
-;          day's data is loaded
+;          this is not set, the default is to prompt the user. The
+;          default CDF path loads whole hourly (asf) or daily (ast)
+;          CDFs without clipping; the /UCALGARY_PGM path fetches only
+;          the file granules covering the range (1-min files for asf,
+;          hourly files for ast) and clips the output to TRANGE unless
+;          /NO_TIME_CLIP is set
+;  /NO_TIME_CLIP /UCALGARY_PGM path only: store every frame of every
+;          fetched file instead of clipping the output to TRANGE (output
+;          then aligns to file-granule boundaries)
 ;  level = the level of the data, the default is 'l2', or level-2
 ;          data. A string (e.g., 'l2') or an integer can be used. 'all'
 ;          can be passed in also, to get all levels.
@@ -50,6 +56,12 @@ end
 ;                variable xxx
 ;   /CURSOR	get time range with cursor
 ;   /TIME       specify just one time (record) for data
+;   /UCALGARY_PGM load from the THEMIS ASI data archive
+;               (api.phys.ucalgary.ca / data.phys.ucalgary.ca) instead of
+;               the default Berkeley CDF path (see Notes)
+;   /CDF_LEGACY explicitly select the Berkeley CDF path. This is the
+;               default (decided in thm_asi_use_archive), so the keyword is a
+;               no-op unless /UCALGARY_PGM is also set, in which case /CDF_LEGACY wins.
 ;
 ;Example:
 ;   thm_load_asi,site='atha',time='2007-03-23/05:00:00'
@@ -60,11 +72,21 @@ end
 ;   thm_load_asi,site=vn,/valid_names
 ; No further action will be taken.
 ;
+; By default this loader reads the Berkeley thg_l1_asf/ast CDFs, as it
+; always has. With /ucalgary_pgm it instead downloads from the THEMIS ASI
+; data archive (api.phys.ucalgary.ca / data.phys.ucalgary.ca):
+;   asf <- THEMIS_ASI_RAW (1-min PGM bundles; pixel values are bit-identical
+;          to the legacy CDFs)
+;   ast <- THEMIS_ASI_VEC1024 (same 1024-superpixel bin product as the
+;          legacy ast CDFs, but 8-bit scaled: legacy counts ~ 33x these
+;          values)
+; Archive files are cached under !themis.local_data_dir + 'thg/asi/'.
+;
 ;
 ;Written by: Ken Bromund ????,   Jan 5 2007
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26397 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+; $LastChangedRevision: 34975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi.pro $
 ;-
 ;
@@ -116,11 +138,12 @@ pro thm_load_asi,site = site, datatype = datatype, trange = trange, $
                  downloadonly = downloadonly, $
                  no_download=no_download, relpathnames_all=relpathnames_all, $
                  valid_names = valid_names, $
-                 cursor=cursor, time=time, $
+                 cursor=cursor, time=time, no_time_clip=no_time_clip, $
                  cdf_data=cdf_data, $
                  suffix=suffix,$
                  get_support_data=get_support_data, $
-                 progobj=progobj, files=files
+                 progobj=progobj, files=files, $
+                 ucalgary_pgm=ucalgary_pgm, cdf_legacy=cdf_legacy
 ;                   _extra = _extra
 
 ;thm_load_asi_file_move_onetime    ; delete this line after local caches have had time to be corrected (i.e. after July 30, 2007
@@ -137,6 +160,60 @@ pro thm_load_asi,site = site, datatype = datatype, trange = trange, $
 ; Use the cursor to determine what asi's to load.
      site = strmid(var,3,4,/reverse)
      if (verbose gt 10) then stop,time_string(trange),site
+  endif
+
+; /ucalgary_pgm path: load from the data archive at data.phys.ucalgary.ca
+; (api.phys.ucalgary.ca) instead of Berkeley CDFs. The default is the
+; Berkeley CDF path below; /cdf_legacy selects it explicitly and takes
+; precedence if both keywords are set. /valid_names and cdf_data requests
+; are always handled by the CDF code since they need no data download.
+  if thm_asi_use_archive(ucalgary_pgm=ucalgary_pgm, cdf_legacy=cdf_legacy) && $
+     ~keyword_set(valid_names) && ~arg_present(cdf_data) then begin
+     vsites = strsplit('atha chbg ekat fsmi fsim fykn gako gbay gill '+ $
+              'inuv kapu kian kuuj mcgr pgeo pina rank snkq tpas whit yknf '+ $
+              'nrsq snap talo', ' ', /extract)
+     vdts = ['asf', 'ast']
+     ; resolve site selection with the same helper the legacy path uses, so
+     ; that 'all', wildcards, arrays and space-delimited strings all behave
+     ; as documented (strlowcase here rather than /ignore_case, which would
+     ; assign back into the caller's site/datatype variables)
+     if keyword_set(site) then begin
+        my_sites = ssl_check_valid_name(strlowcase(site), vsites, /include_all)
+        nsites = keyword_set(my_sites) ? n_elements(my_sites) : 0
+     endif else begin
+        my_sites = vsites
+        nsites = n_elements(vsites)
+     endelse
+     ; resolve datatype selection
+     if keyword_set(datatype) then begin
+        my_dts = ssl_check_valid_name(strlowcase(datatype), vdts, /include_all)
+        ndts = keyword_set(my_dts) ? n_elements(my_dts) : 0
+     endif else begin
+        my_dts = vdts
+        ndts = n_elements(vdts)
+     endelse
+     if nsites eq 0 then begin
+        dprint, dlevel=0, verbose=verbose, 'thm_load_asi: no valid sites in: ' + strjoin(site, ' ')
+        return
+     endif
+     if ndts eq 0 then begin
+        dprint, dlevel=0, verbose=verbose, 'thm_load_asi: no valid datatypes in: ' + strjoin(datatype, ' ')
+        return
+     endif
+     ; accumulate into locals across the datatype loop and assign out once:
+     ; the worker appends to files/relpathnames_all, but the legacy loaders
+     ; assigned them, and callers (the GUI in particular) reuse one variable
+     ; across calls
+     for j = 0, ndts-1 do begin
+        thm_asi_load_img, sites=my_sites, datatype=my_dts[j], $
+           trange=trange, time=time, no_time_clip=no_time_clip, suffix=suffix, $
+           downloadonly=downloadonly, no_download=no_download, $
+           verbose=verbose, files=asi_files, relpathnames_all=asi_relpaths, $
+           tplotnames=tplotnames
+     endfor
+     files = (n_elements(asi_files) gt 0) ? asi_files : ''
+     relpathnames_all = (n_elements(asi_relpaths) gt 0) ? asi_relpaths : ''
+     return
   endif
 
   thm_load_xxx,sname=site, datatype=datatype, trange=trange, $

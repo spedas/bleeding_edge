@@ -23,9 +23,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-;$LastChangedRevision: 33563 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2026-10-16 18:06:37 -0700 (Fri, 16 Oct 2026) $
+;$LastChangedRevision: 34987 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spedas_write_config.pro $
 ;-
 
@@ -52,7 +52,8 @@ Pro spedas_write_config, copy = copy, _extra = _extra
     if ~keyword_set(!spedas) then begin
      ; tmp_struct=file_retrieve(/structure_format)
       tmp_struct = create_struct('browser_exe', '', 'temp_dir', '', $
-                   'temp_cdf_dir', '','geopack_param_dir', '', 'linux_fix', 0)
+                   'temp_cdf_dir', '', 'hapi_data_dir', spd_default_local_data_dir() + 'hapi' + path_sep(), $
+                   'geopack_param_dir', '', 'linux_fix', 0)
 ;      str_element,tmp_struct,'browser_exe','',/add
 ;      str_element,tmp_struct,'temp_dir','',/add
 ;      str_element,tmp_struct,'temp_cdf_dir','',/add

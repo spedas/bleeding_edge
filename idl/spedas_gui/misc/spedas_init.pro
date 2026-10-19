@@ -4,9 +4,9 @@
 ;PURPOSE:    Initializes system variables for spedas data.
 ;            Can be called from idl_startup to set custom locations.
 ;
-;$LastChangedBy: egrimes $
-;$LastChangedDate: 2019-08-30 10:22:52 -0700 (Fri, 30 Aug 2019) $
-;$LastChangedRevision: 27701 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2026-10-16 18:06:37 -0700 (Fri, 16 Oct 2026) $
+;$LastChangedRevision: 34987 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spedas_init.pro $
 ;-
 
@@ -15,12 +15,14 @@ pro spedas_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=rem
   compile_opt idl2
 
   spedas_reset = 1
+  hapi_data_dir = spd_default_local_data_dir() + 'hapi' + path_sep()
 
   defsysv,'!spedas',exists=exists
   if (not keyword_set(exists)) then begin ;if !spedas is not defined
     tmp_struct = {browser_exe: '', $    ; location of the local browser executable
                   temp_dir: '', $
                   temp_cdf_dir: '', $
+                  hapi_data_dir: hapi_data_dir, $
                   geopack_param_dir: '', $ ;location for geopack parameters
                   linux_fix: 0b, $
                   renderer:1B,$  ;OS specific rendering options should go here
@@ -37,11 +39,19 @@ pro spedas_init, reset=reset, local_data_dir=local_data_dir, remote_data_dir=rem
     defsysv,'!spedas',tmp_struct
   endif
 
+  ; Add the new setting without resetting an existing session.
+  if ~in_set('HAPI_DATA_DIR', tag_names(!spedas)) then begin
+    tmp_struct = !spedas
+    str_element, tmp_struct, 'hapi_data_dir', hapi_data_dir, /add
+    defsysv, '!spedas', tmp_struct
+  endif
+
   ftest = spedas_read_config()
   if (keyword_set(reset)) or not (size(ftest, /type) eq 8) then begin ;if it was not saved before or if it is reset
     tmp_struct = {browser_exe: '', $    ; location of the local browser executable
                   temp_dir: '', $
                   temp_cdf_dir: '', $
+                  hapi_data_dir: hapi_data_dir, $
                   geopack_param_dir: '', $
                   linux_fix: 0b, $
                   renderer:1B,$  ;OS specific rendering options should go here

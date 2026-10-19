@@ -51,7 +51,7 @@ maintenance: |
 
 # MAVEN shared code (general)
 
-Routines all MAVEN instrument code relies on: file retrieval from the SSL server,
+Routines shared by MAVEN instrument code: file retrieval from the SSL server,
 SPICE kernels, orbit numbers, spacecraft geometry, and the spacecraft potential.
 
 ## Layout
@@ -76,7 +76,8 @@ SPICE kernels, orbit numbers, spacecraft geometry, and the spacecraft potential.
 - `mvn_spc_unixtime_to_met.pro`: inverse of `mvn_spc_met_to_unixtime`
   (`projects/maven/mvn_spc_met_to_unixtime.pro`, one level up).
 - Generic helpers with non-MAVEN names (`file_search_plus`, `roundst`, `num2string`,
-  `mso2lt`, ...); SSL-only `mvn_common_l0_file_transfer.pro`.
+  `mso2lt`, ...); `mvn_common_l0_file_transfer.pro` links the newest local L0
+  files into `maven/data/sci/pfp/l0_all/YYYY/MM/`.
 
 ## How `mvn_pfp_file_retrieve` finds files
 
@@ -104,12 +105,13 @@ SPICE C kernels use it.
   changes options for the session; its header forbids `/set` and `/reset` in
   distributed code. If `<root>/maven/.master` exists, nothing is downloaded.
 - Credentials: `mvn_set_userpass` or env `MAVENPFP_USER_PASS` (base64 of
-  `user:pass`; default derived from `$USER`). L0 and other team files need them.
+  `user:pass`; default derived from `$USER`).
 - `mvn_spice_kernels` takes kernel types 'STD','SCK','FRM','IK','SPK','CK',
   'CK_APP','CK_SWE'. Most come from NAIF via `spice_file_source`
   (`general/spice/spice_file_source.pro`); FRM and IK are the bundled files whose
   versions are hardcoded in `spice/mvn_spice_kernels.pro`. Its header warns not to use
-  `/load` inside load routines; `mvn_spice_load` clears all loaded kernels first.
+  `/load` inside load routines; `mvn_spice_load` clears all loaded kernels first
+  (default `clear=1`).
 - Orbit numbers follow the NAIF convention (increment at periapsis).
   `mvn_orbit_num` caches NAIF `.orb` files in common `mvn_orbit_num_com`.
 - `mvn_scpot` reads SWEA spectra from the SWEA common blocks

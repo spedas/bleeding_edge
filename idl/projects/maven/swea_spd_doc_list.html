@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Oct 19 03:28:07 2026.<P>
  
 <HR>
  
@@ -136,6 +136,8 @@ This page was created by the IDL library routine
 <br>Initializes SWEA common block (mvn_swe_com).
 <LI><A HREF="#MVN_SWE_KP">MVN_SWE_KP</A>
 <br>Calculates SWEA key parameters.  The result is stored in tplot variables,
+<LI><A HREF="#MVN_SWE_LOAD_HIRES">MVN_SWE_LOAD_HIRES</A>
+<br>Restores SWEA hires data from save files.
 <LI><A HREF="#MVN_SWE_LOAD_HSK">MVN_SWE_LOAD_HSK</A>
 <br>Reads in MAVEN Level 0 telemetry files (PFDPU packets wrapped in
 <LI><A HREF="#MVN_SWE_LOAD_L0">MVN_SWE_LOAD_L0</A>
@@ -4178,7 +4180,7 @@ FILE: mvn_swe_init.pro
 <A NAME="MVN_SWE_KP">
 <H2>MVN_SWE_KP</H2></A>
 <A HREF="#MVN_SWE_INIT">[Previous Routine]</A>
-<A HREF="#MVN_SWE_LOAD_HSK">[Next Routine]</A>
+<A HREF="#MVN_SWE_LOAD_HIRES">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
 PROCEDURE: 
@@ -4272,9 +4274,51 @@ OUTPUTS:
 <STRONG>(See <A href="swea/mvn_swe_kp.pro">projects/maven/swea/mvn_swe_kp.pro</A>)</STRONG><P>
 <HR>
  
+<A NAME="MVN_SWE_LOAD_HIRES">
+<H2>MVN_SWE_LOAD_HIRES</H2></A>
+<A HREF="#MVN_SWE_KP">[Previous Routine]</A>
+<A HREF="#MVN_SWE_LOAD_HSK">[Next Routine]</A>
+<A HREF="#ROUTINELIST">[List of Routines]</A>
+<PRE>
+PROCEDURE:   mvn_swe_load_hires
+PURPOSE:
+  Restores SWEA hires data from save files.
+
+USAGE:
+  mvn_swe_load_hires
+
+INPUTS:
+       None.
+
+KEYWORDS:
+       TRANGE:    Time range to load, in any format accepted by time_double().
+                  If only one time is provided, one UT day of data is loaded
+                  that includes the time specified.
+
+                  If not specified, get the time range from the tplot common
+                  block (via timespan).
+
+       TPLOT:     Make a time series plot of the result.  Default = 1 (yes).
+
+       NOGUFF:    Don't ask questions; just do whatever this procedure thinks
+                  is necessary.  This may include (re-)initializing SPICE.
+
+NOTE: This procedure supercedes swe_restore_hires.pro.
+
+ $LastChangedBy: dmitchell $
+ $LastChangedDate: 2026-10-13 13:38:02 -0700 (Tue, 13 Oct 2026) $
+ $LastChangedRevision: 34969 $
+ $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_hires.pro $
+
+CREATED BY:    David L. Mitchell
+FILE: mvn_swe_load_hires.pro
+</PRE><P>
+<STRONG>(See <A href="swea/mvn_swe_load_hires.pro">projects/maven/swea/mvn_swe_load_hires.pro</A>)</STRONG><P>
+<HR>
+ 
 <A NAME="MVN_SWE_LOAD_HSK">
 <H2>MVN_SWE_LOAD_HSK</H2></A>
-<A HREF="#MVN_SWE_KP">[Previous Routine]</A>
+<A HREF="#MVN_SWE_LOAD_HIRES">[Previous Routine]</A>
 <A HREF="#MVN_SWE_LOAD_L0">[Next Routine]</A>
 <A HREF="#ROUTINELIST">[List of Routines]</A>
 <PRE>
@@ -4985,8 +5029,8 @@ KEYWORDS:
                  data structure: swe_fpad, swe_fpad_arc.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-06-23 16:20:25 -0700 (Mon, 23 Jun 2025) $
- $LastChangedRevision: 33414 $
+ $LastChangedDate: 2026-10-13 13:37:14 -0700 (Tue, 13 Oct 2026) $
+ $LastChangedRevision: 34968 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_makefpad.pro $
 
 CREATED BY:    David L. Mitchell  03-29-14
@@ -9442,9 +9486,11 @@ INPUTS:
 KEYWORDS:
        TPLOT:     Make a time series plot of the result.  Default = 1 (yes).
 
+NOTE: This procedure has been superceded by mvn_swe_load_hires.pro.
+
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2025-12-04 14:59:15 -0800 (Thu, 04 Dec 2025) $
- $LastChangedRevision: 33902 $
+ $LastChangedDate: 2026-10-13 14:04:44 -0700 (Tue, 13 Oct 2026) $
+ $LastChangedRevision: 34971 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_restore_hires.pro $
 
 CREATED BY:    David L. Mitchell

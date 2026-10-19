@@ -19,6 +19,11 @@
 ;
 ; KEYWORD PARAMETERS:
 ;    cal_files		calibration files if they do not need to be read
+;    ucalgary_pgm	load images and calibration from the data archive
+;			(/ucalgary_pgm on thm_load_rego and thm_load_asi_cal)
+;			instead of the default Berkeley CDFs
+;    cdf_legacy	force the Berkeley CDF path; wins over ucalgary_pgm
+;			(which path is the default is decided in thm_asi_use_archive)
 ;    pgm_file   	do not read CDF, but pgm-files
 ;    verbose    	print some diagnostics
 ;    insert		insert stop before end of program
@@ -115,6 +120,8 @@
 
 PRO THM_REGO_CREATE_MOSAIC,time,$
     cal_files=cal_files,$              ; calibration files already read
+    ucalgary_pgm=ucalgary_pgm,$          ; load images and calibration from the data archive (see thm_load_rego)
+    cdf_legacy=cdf_legacy,$            ; force the Berkeley CDF path (see thm_asi_use_archive)
     gif_out=gif_out,$                  ; output in gif file
     verbose=verbose,$                  ; print debug messages
     pgm_file=pgm_file,$                ; read raw pgm files
@@ -241,15 +248,40 @@ if (names[0] ne '') then store_data,delete=names
 
 	; load cal_files once for the whole loop
 if keyword_set(stoptime) then begin
-  if keyword_set(show) then thm_load_asi_cal,show,cal_files,/rego else $
-  thm_load_asi_cal,'atha fsmi fsim gill kakt luck rank resu talo',cal_files,/rego
+  if keyword_set(show) then thm_load_asi_cal,show,cal_files,/rego,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy else $
+  thm_load_asi_cal,'atha fsmi fsim gill kakt luck rank resu talo',cal_files,/rego,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
   endif
 
 	; automatic center plot
 if keyword_set(autocenter) then begin
-   thm_load_asi_cal,show[0],cal_file0
-   central_lat=*cal_file0.vars[21].dataptr
-   central_lon=*cal_file0.vars[20].dataptr
+   if thm_asi_use_archive(ucalgary_pgm=ucalgary_pgm, cdf_legacy=cdf_legacy) then begin
+      ; data archive path: centre on the REGO site (not the THEMIS camera
+      ; at the same site) and find the site-centre variables by name, so
+      ; REGO-only sites work and the cal variable order does not matter
+      if ~keyword_set(show) then begin
+         dprint, dlevel=0, 'thm_rego_create_mosaic: /autocenter needs show=<site>; ignored'
+      endif else begin
+         thm_load_asi_cal,show[0],cal_file0,/rego,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
+         if ~is_struct(cal_file0) then begin
+            dprint, dlevel=0, 'thm_rego_create_mosaic: no REGO calibration for ' + $
+               show[0] + '; /autocenter ignored'
+         endif else begin
+            ilat = where(strmatch(cal_file0.vars.name, 'clg_asc_*_glat'), nlat)
+            ilon = where(strmatch(cal_file0.vars.name, 'clg_asc_*_glon'), nlon)
+            if (nlat gt 0) and (nlon gt 0) then begin
+               central_lat=*cal_file0.vars[ilat[0]].dataptr
+               central_lon=*cal_file0.vars[ilon[0]].dataptr
+            endif else begin
+               dprint, dlevel=0, 'thm_rego_create_mosaic: site-centre variables not found in ' + $
+                  'REGO calibration for ' + show[0] + '; /autocenter ignored'
+            endelse
+         endelse
+      endelse
+   endif else begin
+      thm_load_asi_cal,show[0],cal_file0
+      central_lat=*cal_file0.vars[21].dataptr
+      central_lon=*cal_file0.vars[20].dataptr
+   endelse
    endif
 
 	; point to run another mosaic
@@ -275,7 +307,7 @@ if not keyword_set(no_midnight) then begin
 thm_rego_array,year,month,day,hour,minute,second,strlowcase(site),$
         image,corners,elevation,pixel_illuminated,n_sites,verbose=verbose,$
         cal_files=cal_files,thumb=thumb,$
-        show=show,exclude=exclude,insert=insert
+        show=show,exclude=exclude,insert=insert,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
 	; exclude unwanted sites
 if keyword_set(exclude) then begin
@@ -415,7 +447,7 @@ if keyword_set(gif_out) then begin
 if keyword_set(zbuffer) then zbuffer=tvrd()
 if not keyword_set(keep_z) and keyword_set(zbuffer) then begin
      device,/close
-     set_plot,'x'
+     if (!version.os_family eq 'Windows') then set_plot,'win' else set_plot,'x'
    endif
 
 endfor
@@ -581,7 +613,7 @@ if keyword_set(gif_out) then begin
 if keyword_set(zbuffer) then zbuffer=tvrd()
 if not keyword_set(keep_z) and keyword_set(zbuffer) then begin
    device,/close
-   set_plot,'x'
+   if (!version.os_family eq 'Windows') then set_plot,'win' else set_plot,'x'
    endif
 
 endelse	; single time

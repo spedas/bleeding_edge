@@ -8,10 +8,12 @@
 ; HISTORY:
 ; VERSION:
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2024-12-13 09:03:48 -0800 (Fri, 13 Dec 2024) $
-;   $LastChangedRevision: 32990 $
+;   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+;   $LastChangedRevision: 34975 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/asi_mosaic/thm_map_add_asi_fovs.pro $
 ;-
+; user modification: broadened integer-type test (is_int) so asi_fovs=1
+; works under compile_opt idl2
 
 ;---------------------------------------------------------------------------------
 ;(c) Eric Donovan and Brian Jackel - 2007
@@ -28,8 +30,12 @@ pro thm_map_add_asi_fovs,t_in,asi_fovs=asi_fovs,$
       jd=size(kk,/n_dimensions)
       je=size(kk,/n_elements)
       w=[-1]
-      if jt eq 2 and jd eq 0 then w=where(t_in.themis_asi eq 1)
-      if jt eq 2 and jd eq 1 then w=kk
+      ; any integer type counts as numeric input (a literal 1 is LONG under
+      ; compile_opt idl2, which the old jt eq 2 test silently rejected --
+      ; asi_fovs=1 drew nothing in thm_crib_map ex_4/ex_5)
+      is_int = (jt ge 1 and jt le 3) or (jt ge 12 and jt le 15)
+      if is_int and jd eq 0 then w=where(t_in.themis_asi eq 1)
+      if is_int and jd eq 1 then w=kk
       if jt eq 7 and jd eq 0 then kk=[kk]
       if jt eq 7 then begin
         nt=0

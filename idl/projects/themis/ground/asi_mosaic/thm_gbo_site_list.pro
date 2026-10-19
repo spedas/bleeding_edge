@@ -10,8 +10,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2024-12-13 08:57:41 -0800 (Fri, 13 Dec 2024) $
-;   $LastChangedRevision: 32989 $
+;   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+;   $LastChangedRevision: 34975 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/asi_mosaic/thm_gbo_site_list.pro $
 ;-
 
@@ -28,31 +28,33 @@
 
 function thm_gbo_site_list,site_list_in,verbose=verbose
       site_list=site_list_in
-      
-      compile_opt idl2, hidden
-      
-	; hfrey
-      restore,!themis.local_data_dir+'thg/l2/asi/cal/thm_map_add.sav'
+	; thm_map_add.sav ships with the SPEDAS distribution (asi_mosaic
+	; directory); previously restored from the downloaded Berkeley copy
+      rt_info = routine_info('thm_gbo_site_list', /source, /functions)
+      restore, file_dirname(rt_info.path) + path_sep() + 'thm_map_add.sav'
       jt=size(site_list,/type)
       jd=size(site_list,/n_dimensions)
       je=size(site_list,/n_elements)
       w=[-1]
-      if jt eq 2 and jd eq 0                  then w=where(THG_MAP_GB_SITES.themis_asi eq 1)
-      if ((jt eq 2) or (jt eq 3)) and jd eq 1 then w=site_list
+      ; any integer type counts as numeric input (a literal 1 is LONG under
+      ; compile_opt idl2, which the old jt eq 2 test silently rejected)
+      is_int = (jt ge 1 and jt le 3) or (jt ge 12 and jt le 15)
+      if is_int and jd eq 0 then w=where(THG_MAP_GB_SITES.themis_asi eq 1)
+      if is_int and jd eq 1 then w=site_list
       if jt eq 7                              then begin
         if jd eq 0 then site_list=[site_list]
         nt=0
         for i=0,n_elements(site_list)-1 do begin
-           b=strlowcase(site_list[i])
+           b=strlowcase(site_list(i))
            wt=where(strlowcase(THG_MAP_GB_SITES.abbreviation) eq b)
-           if wt[0] ne -1 then begin
-              if nt eq 0 then w[nt]=wt[0]
-              if nt eq 1 then w=[w,wt[0]]
+           if wt(0) ne -1 then begin
+              if nt eq 0 then w(nt)=wt(0)
+              if nt eq 1 then w=[w,wt(0)]
               nt=1
            endif
         endfor
       endif
-      if keyword_set(verbose) then if w[0] eq -1 then dprint, 'C101(thm_gbo_site_list): site_list not valid'
+      if keyword_set(verbose) then if w(0) eq -1 then dprint, 'C101(thm_gbo_site_list): site_list not valid'
 return,w
 end
 ;--------------------------------------------------------------------------------------

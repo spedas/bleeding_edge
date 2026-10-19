@@ -40,7 +40,7 @@ maintenance: |
 NASA's twin Mars orbiters Blue and Gold. Loaders for the L1 CDFs of EMAG
 (magnetometer), EESA-e and EESA-i (electron and ion analyzers), ELP,
 housekeeping and ephemeris, plus SPICE, raw L0 packet tools and quicklook
-plots. Every routine starts with `esc_`.
+plots. Every file name starts with `esc_`.
 
 ## Layout
 
@@ -76,8 +76,11 @@ plots. Every routine starts with `esc_`.
 4. `cdf2tplot, prefix='esc'` makes `escb_emag_<frame>` and `escg_emag_<frame>`,
    then `esc?_emag_tot` and, for both probes, `esc_emag_tot`.
 
-`ipath=` reads local files instead. `esc_elp_load`, `esc_eph_load`,
-`esc_esa_hk_load`, `esc_eesa_load` and `esc_iesa_load` follow the same steps.
+`ipath=` reads local files instead (`esc_esa_hk_load`, `esc_eesa_load` and
+`esc_iesa_load` have it too). `esc_elp_load`, `esc_eph_load`,
+`esc_esa_hk_load`, `esc_eesa_load` and `esc_iesa_load` follow steps 1-3, except
+that `esc_iesa_load` does not call `esc_mission_phase`: it reads the science
+folder unless `/prelaunch` or `/commissioning` is set.
 
 ## Things to know
 
@@ -89,7 +92,8 @@ plots. Every routine starts with `esc_`.
 - The ESA loaders fill common blocks, not tplot: `esc_eesa_load` fills
   `esc_eesa_{spec,pad,f3d,pot}_com` (`escb_eesa_f3d`, `escg_eesa_f3d`, ...),
   `esc_iesa_load` fills `esc_iesa_{fe,fm,f4d,sw}_com`, `esc_esa_hk_load` fills
-  `esc_esa_ahk_com`/`esc_esa_dhk_com`. Run `esc_eesa_tplot` or `esc_iesa_tplot`
+  `esc_esa_ahk_com`/`esc_esa_dhk_com` (with `/tplot` it also makes tplot
+  variables). Run `esc_eesa_tplot` or `esc_iesa_tplot`
   afterwards; they read the blocks by name with `SCOPE_VARFETCH`. Default
   products: `f3d` (EESA-e), `f4d` (EESA-i).
 - ESCAPADE needs SPP and SWFO code on `!PATH`: `esa/common/esc_ccsds_decom.pro`

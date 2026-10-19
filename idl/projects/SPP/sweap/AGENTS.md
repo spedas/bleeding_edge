@@ -53,11 +53,13 @@ decommutation, sweep tables, flight configuration, calibration.
 - `SWEM/`: SWEM APID classes and the L1 housekeeping loader `SWEM/spp_swp_swem_load.pro`.
 - `COMMON/`: `COMMON/spp_swp_load.pro`, the APID table `COMMON/spp_swp_apdat_init.pro`,
   `COMMON/spp_ccsds_spkt_handler.pro`, the crib `COMMON/spp_swp_crib.pro`.
-  `COMMON/TABLES/`: older sweep-table code; `COMMON/obsolete/`: skip.
-- `decom/`: packet decommutators, one file per flight-software version in
-  `decom/spane/` and `decom/spani/`. `tables/`: sweep-table generation.
+  `COMMON/TABLES/`: sweep-table code without the `spp_swp_` prefix; `COMMON/obsolete/`: skip.
+- `decom/`: packet decommutators in `decom/common/`, `decom/spane/` and
+  `decom/spani/`, some in several versions (`spp_swp_spane_slow_hkp_v*x_decom.pro`). `tables/`: sweep-table generation.
 - `magSwing/`, `wpc/`: pre-launch ground-test code. `BACKUP/`: skip.
-  `spp_swp_functions.pro`, `spp_swp_startup.pro`: old, mostly superseded.
+  `spp_swp_functions.pro` (its `spp_swp_ptp_file_read` notes it "should now
+  replaced by spp_ptp_file_read"), `spp_swp_startup.pro` (calls the obsolete
+  `spp_apid_data`).
 
 ## Loaders
 
@@ -78,8 +80,8 @@ All use `spp_file_retrieve` (SSL server, `SPP_USER_PASS`; see
 - SPC has two unrelated loaders:
   - `spp_swp_spc_load` (`SPC/spp_swp_spc_load.pro`), team server: default
     `type='l3i'` from `psp/data/sci/sweap/spc/L3/` (also `l2`, `l1`), prefix
-    `psp_swp_spc_<type>_`. It makes `DQF_bits`; `/nul_bad` sets flagged samples
-    to NaN; `/extras` derives temperatures and SPAN-i-frame angles. `/peaktrack`,
+    `psp_swp_spc_<type>_`. It makes `DQF_bits`; `/nul_bad` sets samples to NaN where
+    `DQF_bits and mask` is nonzero (default `mask=1`); `/extras` derives temperatures and SPAN-i-frame angles. `/peaktrack`,
     `/fullscan`, `/flowangle` restore daily tplot save files instead.
   - `psp_load_swp` (`SPC/L3i/load/psp_load_swp.pro`), public: L3i from SPDF
     (`https://spdf.gsfc.nasa.gov/pub/data/psp/sweap/spc/l3/l3i/`) with

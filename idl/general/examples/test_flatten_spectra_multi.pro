@@ -9,13 +9,13 @@
 ;
 ; KEYWORDS:
 ;         PNG:      also save a PNG of the flatten_spectra_multi window (window 1) for each visual case
-;         PNG_DIR:  full path of the folder for the PNG files (default: the IDL working directory)
+;         DIR:      full path of the folder for the PNG files (default: the IDL working directory)
 ;         PAUSE:    seconds to wait after each visual case (default: 1)
 ;
 ; USAGE:
 ;         IDL> .compile /path/to/test_flatten_spectra_multi.pro
 ;         IDL> test_flatten_spectra_multi
-;         IDL> test_flatten_spectra_multi, /png, png_dir='/tmp/fsm_test', pause=3
+;         IDL> test_flatten_spectra_multi, /png, dir='/tmp/fsm_test', pause=3
 ;
 ;         Every check prints PASS, FAIL or INFO, and a summary is printed at the end.
 ;         Every visual case prints what window 1 should show.
@@ -210,7 +210,7 @@ pro fsm_make_data, t0
   options, 'fsm_test_c', ytitle='fsm_test_c!C2-D v'
 end
 
-pro test_flatten_spectra_multi, png=png, png_dir=png_dir, pause=pause
+pro test_flatten_spectra_multi, png=png, dir=png_dir, pause=pause
   compile_opt idl2
   common fsm_test_com, n_pass, n_fail, n_info, failed
 

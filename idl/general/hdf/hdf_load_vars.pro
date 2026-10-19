@@ -14,8 +14,8 @@
 ;
 ;
 ; $LastChangedBy: nikos $
-; $LastChangedDate: 2020-12-21 10:54:55 -0800 (Mon, 21 Dec 2020) $
-; $LastChangedRevision: 29544 $
+; $LastChangedDate: 2026-10-15 18:38:10 -0700 (Thu, 15 Oct 2026) $
+; $LastChangedRevision: 34986 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_load_vars.pro $
 ;-
 
@@ -24,7 +24,6 @@ function hdf_load_vars, file, varnames=varnames, verbose=verbose, _extra=_extra
   compile_opt idl2
   ; Set verbose.
   vbs = keyword_set(verbose) ? verbose : 0
-  ;file = 'C:\\work\\goes 16-17\\dn_magn-l2-hires_g16_d20200816_v1-0-1.nc'
 
   if file_test(file) eq 0 then begin
     msg = "Error hdf_load_vars: File not found: " + file
@@ -45,10 +44,22 @@ function hdf_load_vars, file, varnames=varnames, verbose=verbose, _extra=_extra
     time_offset = time_double('2000-01-01/12:00:00.000')
   endif
 
-  if ~keyword_set(varnames) || varnames eq '' || varnames eq '*' || varnames eq 'all' then begin
+  ; Parse once and select the union of patterns, preserving order and avoiding
+  ; duplicate entries. Keep the file header even when no datasets match.
+  load_all = n_elements(varnames) eq 0
+  if ~load_all then load_all = total((varnames eq '') or (varnames eq '*') or (varnames eq 'all')) gt 0
+  if load_all then begin
     H5_LIST, file, output=outlist
-  endif else begin
+  endif else if n_elements(varnames) eq 1 then begin
+    ; Preserve H5_LIST's existing scalar-filter semantics.
     H5_LIST, file, filter=varnames, output=outlist
+  endif else begin
+    H5_LIST, file, output=outlist
+    keep = bytarr(n_elements(outlist[0, *]))
+    keep[0] = 1b
+    foreach pattern, varnames do keep = keep or strmatch(outlist[1, *], pattern)
+    idx = where(keep, count)
+    outlist = outlist[*, idx]
   endelse
 
   return, outlist

@@ -51,8 +51,8 @@
 ;     work in progress; suggestions, comments, complaints, etc: egrimes@igpp.ucla.edu
 ;     
 ;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-09-29 15:36:08 -0700 (Tue, 29 Sep 2026) $
-;$LastChangedRevision: 34924 $
+;$LastChangedDate: 2026-10-13 10:36:50 -0700 (Tue, 13 Oct 2026) $
+;$LastChangedRevision: 34964 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/mms/common/util/flatten_spectra_multi.pro $
 ;-
 
@@ -137,19 +137,6 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
   leg_y = 0.04
   leg_dy = 0.04
   
-  if ~undefined(thick) && n_elements(thick) ne num_spec && n_elements(thick) ne 1 then begin
-    dprint, dlevel=0, 'Error, the number of elements in thick keyword should match the number of times'
-    undefine, thick
-  endif
-  
-  if ~undefined(linestyle) && n_elements(linestyle) ne num_spec && n_elements(linestyle) ne 1 then begin
-    dprint, dlevel=0, 'Error, the number of elements in linestyle keyword should match the number of times'
-    undefine, linestyle
-  endif
-  
-  if n_elements(thick) eq 1 then thick = replicate(thick, num_spec)
-  if n_elements(linestyle) eq 1 then linestyle = replicate(linestyle, num_spec)
-  
   if ~undefined(trange_in) then begin
     trange = minmax(time_double(trange_in))
     selected_times = trange[0] + (trange[1] - trange[0]) / 2.
@@ -175,6 +162,20 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
   if undefined(colors) || n_elements(colors) lt n_elements(selected_times) then begin
     colors = indgen(n_elements(selected_times),start=0,increment=2)
   endif
+
+  ; thick and linestyle are indexed by the selected times, which can differ from num_spec (TIME, TRANGE, REPLOT)
+  if ~undefined(thick) && n_elements(thick) ne n_elements(selected_times) && n_elements(thick) ne 1 then begin
+    dprint, dlevel=0, 'Error, the number of elements in thick keyword should match the number of times'
+    undefine, thick
+  endif
+
+  if ~undefined(linestyle) && n_elements(linestyle) ne n_elements(selected_times) && n_elements(linestyle) ne 1 then begin
+    dprint, dlevel=0, 'Error, the number of elements in linestyle keyword should match the number of times'
+    undefine, linestyle
+  endif
+
+  if n_elements(thick) eq 1 then thick = replicate(thick, n_elements(selected_times))
+  if n_elements(linestyle) eq 1 then linestyle = replicate(linestyle, n_elements(selected_times))
 
   ;
   ; Plot or save to the file
@@ -251,6 +252,12 @@ pro flatten_spectra_multi, num_spec, xlog=xlog, ylog=ylog, xrange=xrange, yrange
       ; filename if we need to save file
       fname += vars_to_plot[v_idx] + '_'      
     endfor
+    
+    ; no spectra found at this time (e.g., TIME or the TRANGE midpoint is outside the data), so there is nothing to set the ranges from
+    if (N_ELEMENTS(xrange) ne 2 or N_ELEMENTS(yrange) ne 2) && undefined(xr) then begin
+      dprint, dlevel=0, 'Error, no valid spectra found at: ' + time_string(t, tformat='YYYY-MM-DD/hh:mm:ss.fff')
+      continue
+    endif
     
     ; select [xy] range
     if N_ELEMENTS(xrange) ne 2 then xrange = KEYWORD_SET(xlog) ? [min(xr(where(xr>0))), max(xr(where(xr>0)))] : [min(xr), max(xr)]

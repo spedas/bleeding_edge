@@ -16,6 +16,7 @@ related_files:
   - general/misc/system/initct.pro
   - general/misc/system/wget/ssl_wget.pro
   - general/misc/popen.pro
+  - general/misc/popen_com.pro
   - general/misc/tinterpol.pro
   - general/misc/mso2lt.pro
   - projects/maven/general/mso2lt.pro
@@ -52,7 +53,7 @@ tools.
 
 ## Main groups
 
-- Time: all SPEDAS times are double Unix seconds (`time_double`). Strings
+- Time: times are double Unix seconds (`time_double`). Strings
   default to `YYYY-MM-DD/hh:mm:ss`; `time_string(t, tformat=...)` and
   `time_double(s, tformat=...)` share format tokens (`YYYY`, `MM`, `DD`, `DOY`,
   `hh`, `.fff`, ...), which `file_dailynames` and `file_retrieve` also use.
@@ -64,7 +65,7 @@ tools.
   `file_http_copy`. Newer loaders use `spd_download`
   (`general/spedas_tools/spd_download/spd_download.pro`); both are in wide
   use (IUGONET, RBSP, MAVEN, SPP still call `file_retrieve`).
-- Local data root: `root_data_dir()` returns `$ROOT_DATA_DIR` if set, else
+- Local data root: `root_data_dir()` returns `$ROOT_DATA_DIR` if set, else (on Unix)
   `/disks/data/` if it exists, else `~/data/`. `spd_default_local_data_dir()`
   always returns `~/data/` and ignores the environment variable.
 - Structures and arrays: `str_element` (get/add/delete a tag; nested names
@@ -86,7 +87,7 @@ tools.
 
 - Common blocks: `dprint_com`, `file_retrieve_com` (after a failed connection
   `file_retrieve` stops trying until `no_internet_until`), `root_data_dir_com`,
-  `colors_com`, `popen_com`.
+  `colors_com`, `hardcopy_stuff2` (declared in `popen_com.pro`).
 - TT2000 conversions need `!CDF_LEAP_SECONDS`, set by `cdf_leap_second_init`,
   which downloads `CDFLeapSeconds.txt` from https://cdf.gsfc.nasa.gov/html/
   into `root_data_dir()+'misc/'`.

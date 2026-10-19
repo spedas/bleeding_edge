@@ -1,8 +1,8 @@
 ;+
 ;PROCEDURE:   mvn_cio_bar
 ;PURPOSE:
-;  Creates a color bar showing when the cold ion configuration geometry is
-;  partially of completely achieved:
+;  Creates a color bar showing when the cool ion configuration geometry is
+;  partially or completely achieved:
 ;
 ;      blank  = neither is optimized or s/c not in CIO region of space
 ;      blue   = only SWEA is optimized
@@ -21,6 +21,7 @@
 ;
 ;       COLOR_TABLE:   Color table for color bar.  Default = 43 (custom rainbow).
 ;                      This works for all color table files (STD, SPP, CSV).
+;                      See color_table_crib for details.
 ;
 ;       COLOR_REVERSE: If set, reverse color table.  Default = 0 (no).
 ;
@@ -28,12 +29,12 @@
 ;
 ;       KEY:           Print the color key and return.
 ;
-;       Note: Color table is internal to the tplot variable and does not affect
-;             the user's environment.
+;       Note: COLOR_TABLE and COLOR_REVERSE are internal to the tplot variable 
+;             and do not affect the user's environment.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-16 16:13:22 -0700 (Wed, 16 Sep 2026) $
-; $LastChangedRevision: 34904 $
+; $LastChangedDate: 2026-10-13 13:36:18 -0700 (Tue, 13 Oct 2026) $
+; $LastChangedRevision: 34967 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/maven_orbit_tplot/mvn_cio_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -106,7 +107,7 @@ pro mvn_cio_bar, pans=bname, color_table=ctab, color_reverse=crev, delta_t=dt, k
 printkey:
 
   print,''
-  print,'Cold Ion Outflow bar color key:'
+  print,'Cool Ion Outflow bar color key:'
   print,'  blank  = neither is optimized or s/c not in CIO region of space'
   print,'  blue   = only SWEA is optimized'
   print,'  yellow = only STATIC is optimized'

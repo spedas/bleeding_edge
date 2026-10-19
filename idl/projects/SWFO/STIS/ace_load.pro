@@ -4,6 +4,10 @@
 ; and the quicklook (updated throughout day).
 ; Intended for comparison/baseline study with STIS.
 ;
+; 10/18/26: Now saves all data to local_data_dir + /misc/ace,
+; since that is the designated location for cached files
+; downloaded from the internet.
+;
 ; Example call (returns all ACE RTSW data):
 ;  > ace_load, /tplot
 ;  > tplot, 'ace_*_epam_*_flux'
@@ -15,13 +19,13 @@
 ;  > tplot, 'ace_*_epam_*_flux'
 ;
 ; Missing functionality:
-; - Generalize ace_rtsw_load & ace_quicklook_read for any instrument
+; - Generalize ace_quicklook_read for any instrument
 ; - Preferred retrieval of Level 2 data once available from CDAweb/ASC
 ; - Mask keyword for errant data
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-06-05 15:21:55 -0700 (Fri, 05 Jun 2026) $
-; $LastChangedRevision: 34553 $
+; $LastChangedDate: 2026-10-18 17:55:40 -0700 (Sun, 18 Oct 2026) $
+; $LastChangedRevision: 34995 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/ace_load.pro $
 
 function ace_struct_template, instrument
@@ -160,7 +164,7 @@ pro ace_rtsw_load, instrument, data_struct, use_nascom=use_nascom,$
   ; so if you are looking at sameday
   ; data, pull from sohoftp instead.
   ; Files are identical, so can use same load routine.
-  if ~keyword_set(use_nascom) then use_nascom = 0
+  if ~keyword_set(use_nascom) then use_nascom = 1
   if n_elements(trange) ne 2 then trange=timerange(trange)
   if (trange[1] gt (systime(1)) - 60*60*24) then use_nascom = 1
 
@@ -192,11 +196,11 @@ pro ace_rtsw_load, instrument, data_struct, use_nascom=use_nascom,$
   if use_nascom then begin
     remote_path = 'https://sohoftp.nascom.nasa.gov/sdb/goes/ace/daily/'
     files = spd_download_plus(remote_file=fname_daily, remote_path=remote_path,$
-                              local_path=local_data_dir + 'ace/rtsw/', /last_version)
+                              local_path=local_data_dir + 'misc/ace/rtsw/', /last_version)
   endif else begin
     remote_path = "https://izw1.caltech.edu/ACE/ASC/DATA/RTSW/"
     files = spd_download_plus(remote_file=fname_daily, remote_path=remote_path,$
-                              local_path=local_data_dir + 'ace/rtsw/',$
+                              local_path=local_data_dir + 'misc/ace/rtsw/',$
                               url_username='SRL', url_password='ForthRules', /last_version)
   endelse
 
@@ -319,7 +323,7 @@ pro ace_quicklook_read, epam_struct
   quicklook_url = 'https://izw1.caltech.edu/ACE/ASC/DATA/epam_browse/EPAM_quicklook.txt'
   psource = file_retrieve(/default_structure,local_data_dir=local_data_dir)
   files = spd_download_plus(remote_file=quicklook_url,$
-                            local_path=local_data_dir + 'ace/', /last_version)
+                            local_path=local_data_dir + 'misc/ace/', /last_version)
   ; paths = spd_download(remote_file=epam_quicklook_url, local_path='/Users/rjolitz/Desktop/EPAM/')
   if file_test(files[0]) eq 0 then begin
     dprint, 'No EPAM quicklook data found, returning...'
@@ -383,31 +387,34 @@ pro ace_rtsw_tplot, data_struct, instrument, prefix=prefix, spec=spec
 
   if ~keyword_set(prefix) then prefix = 'ace'
   prefix = prefix + '_' + instrument + '_'
-
-  ; Parameters for a spectra plot with a logarithmic y and z axes
-  ; with a spec range of 10^-2 to 10^3 and y range of 10-600 keV
-  if keyword_set(spec) then begin
-    dl = {spec: 1, ylog: 1, zrange: [1e-2, 1e3], zlog: 1}
-    l = {ystyle: 1, ylog: 1, yrange: [10, 6000]}
-  endif else begin
-    dl = {ylog:1,ystyle:1}
-    l = {yrange:[1e-5,1e5]}
-  endelse
   time = data_struct.time_unix
 
   xyz_dl = {labflag: -1, labels:['Bx','By','Bz'],colors:'bgr'}
 
   if instrument.startswith('epam') then begin
+
+    ; Parameters for a spectra plot with a logarithmic y and z axes
+    ; with a spec range of 10^-2 to 10^3 and y range of 10-600 keV
+    if keyword_set(spec) then begin
+      dl = {spec: 1, ylog: 1, zrange: [1e-2, 1e3], zlog: 1}
+      l = {ystyle: 1, ylog: 1, yrange: [10, 6000]}
+      epam_elec_flux_dl = dl
+      epam_prot_flux_dl = dl
+    endif else begin
+      l = {yrange:[1e-5,1e5]}
+      epam_elec_flux_dl = {ylog:1,ystyle:1, labflag: -1, labels:['38-53 keV','175-315 keV']};,colors:'bgr'}
+      epam_prot_flux_dl = {ylog:1,ystyle:1, labflag: -1, labels:['47-68 keV', '115-195 keV', '310-580 keV', '795-1193 keV', '1-1.9 MeV']}
+    endelse
     store_data, prefix + 'elec_status', $
         data={x: time, y: data_struct.elec_status}, dl={psym: 2}
     store_data, prefix + 'elec_flux', $
         data={x: time, v: transpose(data_struct.elec_energy),$
-              y: transpose(data_struct.elec_flux)}, dl=dl, limits=l
+              y: transpose(data_struct.elec_flux)}, dl=epam_elec_flux_dl, limits=l
     store_data, prefix + 'proton_status', $
         data={x: time, y: data_struct.proton_status}, dl={psym: 2}
     store_data, prefix + 'proton_flux', $
         data={x: time, v: transpose(data_struct.proton_energy),$
-              y: transpose(data_struct.proton_flux)}, dl=dl, limits=l
+              y: transpose(data_struct.proton_flux)}, dl=epam_prot_flux_dl, limits=l
   endif else if instrument.startswith('swepam') then begin
     store_data, prefix + 'status', data={x: time, y: data_struct.status}, dl={psym: 2}
     store_data, prefix + 'proton_density', $
@@ -442,7 +449,7 @@ end
 ;;;;
 
 pro ace_load, download=download, notplot=notplot, quicklook=quicklook,$
-   trange=trange, cadence=cadence, ext=ext
+   trange=trange, cadence=cadence, ext=ext, use_nascom=use_nascom
 
   instruments = ['mag', 'sis', 'epam', 'swepam']
   cadence = ['1m', '5m', '5m', '1m']
@@ -450,7 +457,7 @@ pro ace_load, download=download, notplot=notplot, quicklook=quicklook,$
   for i=0, n_elements(instruments) - 1 do begin
 
     ace_rtsw_load, instruments[i], struct_rtsw, trange=trange,$
-      cadence=cadence[i], ext=ext, download=download
+      cadence=cadence[i], ext=ext, download=download, use_nascom=use_nascom
 
     if ~keyword_set(notplot) then ace_rtsw_tplot, struct_rtsw, instruments[i], prefix='ace_rtsw'
 

@@ -19,6 +19,11 @@
 ;
 ; KEYWORD PARAMETERS:
 ;    cal_files		calibration files if they do not need to be read
+;    ucalgary_pgm	load images and calibration from the data archive
+;			(/ucalgary_pgm on thm_load_asi and thm_load_asi_cal)
+;			instead of the default Berkeley CDFs
+;    cdf_legacy	force the Berkeley CDF path; wins over ucalgary_pgm
+;			(which path is the default is decided in thm_asi_use_archive)
 ;    pgm_file   	do not read CDF, but pgm-files
 ;    verbose    	print some diagnostics
 ;    insert		insert stop before end of program
@@ -107,15 +112,17 @@
 ; NOTES:
 ;
 ; VERSION:
-;   $LastChangedBy: jwl $
-;   $LastChangedDate: 2023-12-30 17:48:10 -0800 (Sat, 30 Dec 2023) $
-;   $LastChangedRevision: 32328 $
+;   $LastChangedBy: nikos $
+;   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+;   $LastChangedRevision: 34975 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_asi_create_mosaic.pro $
 ;
 ;-
 
 PRO THM_ASI_CREATE_MOSAIC,time,$
     cal_files=cal_files,$              ; calibration files already read
+    ucalgary_pgm=ucalgary_pgm,$          ; load images and calibration from the data archive (see thm_load_asi)
+    cdf_legacy=cdf_legacy,$            ; force the Berkeley CDF path (see thm_asi_use_archive)
     gif_out=gif_out,$                  ; output in gif file
     verbose=verbose,$                  ; print debug messages
     pgm_file=pgm_file,$                ; read raw pgm files
@@ -243,15 +250,24 @@ if (names[0] ne '') then store_data,delete=names
 
 	; load cal_files once for the whole loop
 if keyword_set(stoptime) then begin
-  if keyword_set(show) then thm_load_asi_cal,show,cal_files else $
-  thm_load_asi_cal,'atha chbg ekat fsmi fsim fykn gako gbay gill inuv kapu kian kuuj mcgr pgeo pina rank snkq tpas whit yknf nrsq snap talo',cal_files
+  if keyword_set(show) then thm_load_asi_cal,show,cal_files,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy else $
+  thm_load_asi_cal,'atha chbg ekat fsmi fsim fykn gako gbay gill inuv kapu kian kuuj mcgr pgeo pina rank snkq tpas whit yknf nrsq snap talo',cal_files,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
   endif
 
 	; automatic center plot
 if keyword_set(autocenter) then begin
-   thm_load_asi_cal,show[0],cal_file0
-   central_lat=*cal_file0.vars[21].dataptr
-   central_lon=*cal_file0.vars[20].dataptr
+   thm_load_asi_cal,show[0],cal_file0,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
+   ; look up the site-center variables by name rather than by position
+   ; (robust across cal file versions and the skymap adapter)
+   ilat = where(strmatch(cal_file0.vars.name, 'thg_asc_*_glat'), nlat)
+   ilon = where(strmatch(cal_file0.vars.name, 'thg_asc_*_glon'), nlon)
+   if (nlat gt 0) and (nlon gt 0) then begin
+      central_lat=*cal_file0.vars[ilat[0]].dataptr
+      central_lon=*cal_file0.vars[ilon[0]].dataptr
+   endif else begin
+      central_lat=*cal_file0.vars[21].dataptr
+      central_lon=*cal_file0.vars[20].dataptr
+   endelse
    endif
 
 	; point to run another mosaic
@@ -278,7 +294,7 @@ thm_mosaic_array,year,month,day,hour,minute,second,strlowcase(site),$
         image,corners,elevation,pixel_illuminated,n_sites,verbose=verbose,$
         cal_files=cal_files,pgm_file=pgm_file,thumb=thumb,special=special,$
         show=show,exclude=exclude,full_minute=full_minute,merge=merge,$
-        mask_file=mask_file,block_moon=block_moon
+        mask_file=mask_file,block_moon=block_moon,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
 	; exclude unwanted sites
 if keyword_set(exclude) then begin

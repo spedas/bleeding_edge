@@ -55,7 +55,7 @@ GUI plugin.
   `_fbk`, ...), calibration (`rbsp_efw_cal_*`), spin fits and coordinate
   routines. Subfolders: `calibration_files/` (response functions, event
   tables), `cdf_file_production/` and `l1_to_l2/` (team code that writes
-  L2/L3 CDFs), `cdf_partial_load/`, `examples/` (about 30 cribs), `utils/`,
+  L2/L3 CDFs), `cdf_partial_load/`, `examples/` (30 files, mostly cribs), `utils/`,
   `rbsp_phasef/` (see Things to know).
 - `emfisis/` (`emfisis/rbsp_load_emfisis.pro`, `!rbsp_emfisis`), `rbspice/`
   (`rbspice/rbsp_load_rbspice.pro`, `!rbsp_rbspice`), `ect/`
@@ -78,8 +78,8 @@ GUI plugin.
 3. `cdf2tplot` (`general/CDF/cdf2tplot.pro`) stores `rbspX_efw_<type>`.
 4. With the default `type='calibrated'` it calls `rbsp_efw_cal_waveform`
    (`efw/rbsp_efw_cal_waveform.pro`), which takes gains and offsets from
-   `rbsp_efw_get_cal_params` and, for burst data, removes the instrument
-   response with `rbsp_efw_deconvol_inst_resp`.
+   `rbsp_efw_get_cal_params` and, for `eb1`, `eb2`, `mscb1` and `mscb2`,
+   removes the instrument response with `rbsp_efw_deconvol_inst_resp`.
 
 The other instruments follow the same init-then-download pattern with their own
 system variable. ECT uses `spd_cdf2tplot` (`general/CDF/spd_cdf2tplot.pro`)
@@ -93,7 +93,7 @@ IDL runs whichever same-named file comes first on `!PATH`; check with
 - `efw/` top level versus `efw/calibration_files/`: ten response and
   calibration routines exist in both (`rbsp_adc_response`,
   `rbsp_efw_deconvol_inst_resp`, `rbsp_efw_get_gain_results`, ...). The
-  `efw/calibration_files/` copies are the maintained ones (revised in 2020;
+  `efw/calibration_files/` copies are the newer ones (revised in 2020;
   the top-level copies date from 2012-2014). Most differ only in comments, but
   `efw/calibration_files/rbsp_efw_get_gain_results.pro` adds search-coil phase
   curves that `efw/rbsp_efw_get_gain_results.pro` lacks.
@@ -106,16 +106,18 @@ IDL runs whichever same-named file comes first on `!PATH`; check with
 
 ## Things to know
 
-- Coordinates: EFW data start in spinning UVW; DSC is the despun frame; MGSE
-  (modified GSE: x along the spin axis, y in the ecliptic plane and duskward,
-  equal to GSE when the spin axis points at the Sun) is the usual output
-  (`efw/rbsp_uvw_to_mgse.pro`, `efw/rbsp_gse2mgse.pro`).
+- Coordinates: EFW data start in spinning UVW; DSC is the despun frame, and
+  `rbsp_load_efw_waveform` returns DSC unless `coord='uvw'`. MGSE (modified
+  GSE: x along the spin axis, y in the ecliptic plane and duskward, equal to
+  GSE when the spin axis points at the Sun) comes from
+  `efw/rbsp_uvw_to_mgse.pro` and `efw/rbsp_gse2mgse.pro`.
 - `!rbsp_rbspice` stores its server and local folder with a `?` that
   `rbsp_load_rbspice` replaces with the probe letter
   (`rbspice/rbsp_rbspice_config.pro`), and it reads files with
   `mms_cdf2tplot`, so the MMS code must be on the path.
 - `rbsp_load_spice_state` needs the ICY SPICE library (`icy_test`).
-- `efw/rbsp_phasef/` is the team's final (Phase F) reprocessing code. It calls
+- `efw/rbsp_phasef/` is Phase F code (`file_production/`,
+  `intermediate_data_production/`, `misc/`, ...). It calls
   helper functions that are not in this repository (`join_path`,
   `get_var_data`, `prepare_files`, ...), and reads from
   `http://rbsp.space.umn.edu/rbsp_efw` (`rbsp_efw_phasef_get_server`), so most

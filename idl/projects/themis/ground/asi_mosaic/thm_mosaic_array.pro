@@ -13,8 +13,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2024-12-13 09:03:48 -0800 (Fri, 13 Dec 2024) $
-;   $LastChangedRevision: 32990 $
+;   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+;   $LastChangedRevision: 34975 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/asi_mosaic/thm_mosaic_array.pro $
 ;-
 
@@ -26,14 +26,15 @@ pro thm_mosaic_array,iyear_in,im1,id,ih,im,is,tgb_sites,$
                      special=special,local=local,$
                      pgm_file=pgm_file,cal_files=cal_files,thumb=thumb,$
                      show=show,exclude=exclude,full_minute=full_minute,$
-                     merge=merge,mask_file=mask_file,block_moon=block_moon
+                     merge=merge,mask_file=mask_file,block_moon=block_moon,$
+                     ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
 ; we will figure out the mask later, hfrey, 2009-09-30
 
-  ;kbromund
-  sav_relpathname = 'thg/l2/asi/cal/thm_map_add.sav'
-  sav_file = spd_download(remote_file=sav_relpathname, _extra=!themis)
-  restore, sav_file
+  ; thm_map_add.sav ships with the SPEDAS distribution (same directory as
+  ; this routine); no download needed (previously fetched from Berkeley)
+  rt_info = routine_info('thm_mosaic_array', /source)
+  restore, file_dirname(rt_info.path) + path_sep() + 'thm_map_add.sav'
   if iyear_in lt 50 then iy=2000+iyear_in else iy=iyear_in
   date_string=string(iy,im1,id,format='(i4.4,2i2.2)')
   date_and_hour_string=date_string+'_'+string(ih,im,format='(2i2.2)')
@@ -83,14 +84,14 @@ if keyword_set(verbose) then dprint, 'After init: ',systime(1)-verbose,$
 ;stop              
 		; imager data
        if keyword_set(thumb) then begin
-         thm_load_asi,site=station_string,time=time,datatype='ast'
+         thm_load_asi,site=station_string,time=time,datatype='ast',ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
          get_data,'thg_ast_'+station_string,data=dat
        endif else begin
          merge_thumb=0
-         thm_load_asi,site=station_string,time=time,datatype='asf'
+         thm_load_asi,site=station_string,time=time,datatype='asf',ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
          get_data,'thg_asf_'+station_string,data=dat
          if (keyword_set(merge) and size(dat,/type) ne 8) then begin
-           thm_load_asi,site=station_string,time=time,datatype='ast'
+           thm_load_asi,site=station_string,time=time,datatype='ast',ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
            get_data,'thg_ast_'+station_string,data=dat
            if (size(dat,/type) eq 8) then merge_thumb=1
            merge_special[i_sites]=1
@@ -105,7 +106,7 @@ if keyword_set(verbose) then dprint, 'After init: ',systime(1)-verbose,$
            station_index=where((strpos(cal_files.vars[0].name,station_string)) ne -1)
            cal=cal_files[station_index]
            endif else $
-           thm_load_asi_cal,station_string,cal,verbose=verbose,trange=time_double(time)
+           thm_load_asi_cal,station_string,cal,verbose=verbose,trange=time_double(time),ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
          	; get longitude/latitude arrays
 ;Temp fix for missing calibration data, skip this one

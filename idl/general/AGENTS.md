@@ -37,7 +37,7 @@ maintenance: |
 
 # general/
 
-Mission-independent libraries used by every SPEDAS mission: tplot storage and
+Mission-independent libraries shared by SPEDAS missions: tplot storage and
 plotting, time and file utilities, downloading, CDF I/O, coordinate
 transforms, particle and wave analysis, and SPICE. Older mission loaders that
 never moved to `projects/` are here too, in `missions/`.
@@ -74,7 +74,7 @@ Other folders:
 - `mini/`: the `calc` mini-language (`mini/calc.pro`) for arithmetic on tplot
   variables, e.g. `calc, '"tha_pos_re" = "tha_state_pos"/6371.2'`; its parse
   tables are precompiled `.sav` files. Crib: `examples/crib_calc.pro`.
-- `key_param/`: 1990s ISTP key-parameter loaders (`load_wi_*`, `load_ace_*`,
+- `key_param/`: key-parameter loaders (`load_wi_*`, `load_ace_*`,
   `load_kp`, `load_dst`); most read through `loadallcdf` from
   `CDF/obsolete/`.
 - `hdf/`: `hdf2tplot` (`hdf/hdf2tplot.pro`) for HDF-5/netCDF-4 files.
@@ -92,10 +92,10 @@ Other folders:
 - The typical loader chain crosses four folders: `file_dailynames` (misc) ->
   `spd_download` (spedas_tools) -> `spd_cdf2tplot` or `cdf2tplot` (CDF) ->
   `store_data` (tplot).
-- Times everywhere are double Unix seconds (`time_double`), and coordinate
+- Times are double Unix seconds (`time_double`), and coordinate
   systems are tracked in `dlimits.data_att.coord_sys`.
 - Folder names repeat: `tools/tplot/` and `tools/misc/` are different from
   `tplot/` and `misc/`. The multi-hop `spd_cotrans` is in
   `spedas_gui/utilities/cotrans/spd_cotrans.pro`, not in `cotrans/`.
-- `*_spd_doc_list.html` files next to each folder are generated documentation;
+- `*_spd_doc_list.html` files next to folders are generated documentation;
   skip them when searching.

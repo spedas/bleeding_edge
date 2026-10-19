@@ -24,7 +24,6 @@ related_files:
   - general/cotrans/aacgm/aacgmidl.pro
   - general/cotrans/lmn_transform/gsm2lmn_wrap.pro
   - projects/mms/common/cotrans/mms_cotrans_lmn.pro
-  - projects/cassini/das2dlm_cassini_init.pro
   - projects/iugonet/load/iug_load_smart.pro
   - projects/goes/goes_load_pos.pro
 maintenance: |
@@ -57,8 +56,8 @@ SPEDAS.
   functions must be installed separately.
 - `das2pro/`: pure-IDL das2 client (MIT license, `das2pro/README.md`). No SPEDAS
   routine calls it.
-- `developers/`: routines contributed outside the core team: `solarwind/`
-  (`solarwind_load`, OMNI/Wind solar wind shifted to the bow shock) and
+- `developers/`: `solarwind/` (`solarwind_load`, OMNI-2, HRO or WIND solar
+  wind data time-shifted to the bow-shock nose) and
   `outliers_and_convolution/`.
 - `misc/savetomain.pro`: Coyote library debugging helper.
 - `spdfcdas/`: NASA SPDF CDAS web-services client (`Spdf*` classes, NOSA
@@ -74,7 +73,7 @@ SPEDAS.
   (`spedas_gui/panels/spd_ui_field_models.pro`), ELFIN and RBSP code, and
   `general/misc/neutral_sheet.pro`, which calls `geopack_recalc` directly.
 - ICY: `spice_test` (`general/spice/spice_test.pro`) checks the DLM; the
-  `cspice_*` calls are in `general/spice/`, MAVEN and RBSP code.
+  `cspice_*` calls are mostly in `general/spice/`, MAVEN and RBSP code.
 - AACGM-v2: call `aacgmidl_v2` first; it sets the `AACGM_v2_DAT_PREFIX` and
   `IGRF_COEFFS` environment variables to the bundled files and compiles the
   library. Only an ELFIN crib sheet uses it; ELFIN and SECS plots use the v1
@@ -82,9 +81,9 @@ SPEDAS.
   `projects/erg/ground/radar/superdarn/sdaacgmlib/`.
 - FITS: IUGONET loaders (e.g. `projects/iugonet/load/iug_load_smart.pro`)
   and EMM EMUS code.
-- das2dlm: the Cassini loaders (`projects/cassini/das2dlm_cassini_init.pro`
-  and the other `das2dlm_load_cassini_*`).
-- `solarwind_load`: the LMN transforms,
+- das2dlm: the Cassini loaders (`das2dlm_load_cassini_*` in
+  `projects/cassini/`).
+- `solarwind_load`: the LMN transforms, e.g.
   `general/cotrans/lmn_transform/gsm2lmn_wrap.pro` and
   `projects/mms/common/cotrans/mms_cotrans_lmn.pro`.
 - CDAS and CDAWlib: the GUI's CDAWeb loader,

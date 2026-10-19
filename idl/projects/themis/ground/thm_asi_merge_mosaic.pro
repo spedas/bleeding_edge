@@ -19,6 +19,11 @@
 ;
 ; KEYWORD PARAMETERS:
 ;    cal_files		calibration files if they do not need to be read
+;    ucalgary_pgm	load images and calibration from the data archive
+;			(/ucalgary_pgm on thm_load_asi and thm_load_asi_cal)
+;			instead of the default Berkeley CDFs
+;    cdf_legacy	force the Berkeley CDF path; wins over ucalgary_pgm
+;			(which path is the default is decided in thm_asi_use_archive)
 ;    pgm_file   	do not read CDF, but pgm-files
 ;    verbose    	print some diagnostics
 ;    insert		insert stop before end of program
@@ -110,6 +115,8 @@
 
 PRO THM_ASI_MERGE_MOSAIC,time,$
     cal_files=cal_files,$              ; calibration files already read
+    ucalgary_pgm=ucalgary_pgm,$          ; load images and calibration from the data archive (see thm_load_asi)
+    cdf_legacy=cdf_legacy,$            ; force the Berkeley CDF path (see thm_asi_use_archive)
     gif_out=gif_out,$                  ; output in gif file
     verbose=verbose,$                  ; print debug messages
     pgm_file=pgm_file,$                ; read raw pgm files
@@ -231,19 +238,30 @@ n1=256l*256l
 names=tnames('thg_as*')
 if (names[0] ne '') then store_data,delete=names
 
-	;load weights
-file_loc=!themis.local_data_dir+'thg/l2/asi/cal/'
-file_weights = file_loc+'true_weights_new.sav'
+	;load weights (hosted on the data archive (data.phys.ucalgary.ca); previously
+	;fetched from themis.ssl.berkeley.edu -- same file, md5-identical).
+	;cached under thg/asi/aux/ with the other archive-served data; a
+	;copy already cached in the old thg/l2/asi/cal/ location is moved over
+	;so it is not re-downloaded (302 MB)
+cfg = thm_asi_config()
+file_loc = !themis.local_data_dir + cfg.cache_subdir + 'aux' + path_sep()
+file_weights = file_loc + 'true_weights_new.sav'
 if ~file_test(file_weights) then begin
-  paths = spd_download( remote_file='http://themis.ssl.berkeley.edu/data/themis/thg/l2/asi/cal/true_weights_new.sav', $
-                        local_path=file_loc)
+  old_copy = !themis.local_data_dir + 'thg/l2/asi/cal/true_weights_new.sav'
+  if file_test(old_copy) then begin
+    file_mkdir, file_loc
+    file_move, old_copy, file_weights
+  endif else begin
+    paths = spd_download( remote_file=cfg.url_true_weights, $
+                          local_path=file_loc, user_agent=cfg.user_agent)
+  endelse
 endif
 restore,file_weights
 
 	; load cal_files once for the whole loop
 if keyword_set(stoptime) then begin
-  if keyword_set(show) then thm_load_asi_cal,show,cal_files else $
-  thm_load_asi_cal,'atha chbg ekat fsmi fsim fykn gako gbay gill inuv kapu kian kuuj mcgr pgeo pina rank snkq tpas whit yknf nrsq snap talo',cal_files
+  if keyword_set(show) then thm_load_asi_cal,show,cal_files,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy else $
+  thm_load_asi_cal,'atha chbg ekat fsmi fsim fykn gako gbay gill inuv kapu kian kuuj mcgr pgeo pina rank snkq tpas whit yknf nrsq snap talo',cal_files,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
   endif
 
 	; point to run another mosaic
@@ -270,7 +288,7 @@ thm_mosaic_array,year,month,day,hour,minute,second,strlowcase(site),$
         image,corners,elevation,pixel_illuminated,n_sites,verbose=verbose,$
         cal_files=cal_files,pgm_file=pgm_file,$
         show=show,exclude=exclude,$
-        mask=mask
+        mask=mask,ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
 	; determine which sites to plot
 site_exist=intarr(n_sites)
@@ -494,7 +512,7 @@ if keyword_set(gif_out) then begin
 if keyword_set(zbuffer) then zbuffer=tvrd()
 if not keyword_set(keep_z) and keyword_set(zbuffer) then begin
    device,/close
-   set_plot,'x'
+   if (!version.os_family eq 'Windows') then set_plot,'win' else set_plot,'x'
    endif
 
 	; loop of mosaics

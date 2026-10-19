@@ -144,8 +144,9 @@ Other folders (entry point first):
   data loader.
 - `lomonosov/`: `lomonosov/lomo_load_data.pro` (ELFIN-L on Lomonosov); `!lomo`
   from `lomonosov/lomo_init.pro`.
-- `lusee/`: `lusee/lusee_load.pro`, LuSEE-Night L1 test files read through the
-  PSP FIELDS L1 reader in `SPP/`.
+- `lusee/`: `lusee/lusee_load.pro`, LuSEE L1 CDFs (EM test files with
+  `em_test=`) read through the PSP FIELDS L1 reader (`spp_fld_load_l1`) in
+  `SPP/`.
 - `mica/`: `mica/mica_load_induction.pro`, UNH induction-coil magnetometers.
 - `omni/`: `omni/omni_load_data.pro` (OMNI HRO CDFs from SPDF, `!omni`) and
   `omni/omni_solarwind_load.pro` (pressure and Bz for LMN transforms).
@@ -184,13 +185,14 @@ Most missions follow the pattern of `goes/goes_load_data.pro`:
 ## Missions that deviate
 
 - THEMIS (`thm_load_xxx`, `themis/common/thm_load_xxx.pro`), MMS
-  (`mms_load_data`) and ELFIN (`elf_load_data`) send every instrument loader
-  through one shared load engine; see their AGENTS.md. MMS data come from the
+  (`mms_load_data`) and ELFIN (`elf_load_data`) route many of their instrument
+  loaders through one shared load engine; see their AGENTS.md. MMS data come from the
   LASP SDC, which can ask for a login.
-- MAVEN, SPP, Kaguya, ESCAPADE and SWFO: no system variable; a
-  `<prefix>_file_source` function keeps the source structure in a common block
-  (e.g. `maven/general/mvn_file_source.pro`), and `<prefix>_file_retrieve`
-  downloads with `file_retrieve`. BARREL also downloads with `file_retrieve`.
+- MAVEN, SPP, Kaguya, ESCAPADE and SWFO: no system variable for the data
+  source; a `<prefix>_file_source` function keeps the source structure in a
+  common block (e.g. `maven/general/mvn_file_source.pro`), and
+  `<prefix>_file_retrieve` downloads with `file_retrieve` (Kaguya's
+  `kgy_file_retrieve` uses `spd_download`). BARREL also downloads with `file_retrieve`.
 - DSCOVR: `!dsc` is its own structure, not a `file_retrieve` one.
 - No init at all: Akebono, MICA, MEX and VEX build sources or URLs inside each
   loader.
@@ -204,6 +206,7 @@ Most missions follow the pattern of `goes/goes_load_data.pro`:
 ## Things to know
 
 - Mission folders often call code from other missions: THEMIS routines are used
-  widely (`thm_init` for colors, ASI mosaics in SECS), RBSPICE uses
+  widely (`thm_init` in Akebono, ELFIN and GOES code, `thm_asi_create_mosaic`
+  in SECS), RBSPICE uses
   `mms_cdf2tplot`, and LuSEE uses the SPP FIELDS reader.
 - `*_spd_doc_list.html` files beside the folders are generated documentation.

@@ -40,6 +40,8 @@ related_files:
   - projects/mms/sitl/interface/mms_convert_fom_unix2tai.pro
   - projects/mms/sitl/interface/get_latest_fom_from_soc.pro
   - projects/themis/common/thm_init.pro
+  - projects/mms/sitl/interface/mms_put_back_structure.pro
+  - projects/mms/sitl/eva/source/cw_sitl/eva_sitl_submit_bakstr.pro
 maintenance: |
   Update when EVA's modules or parameter sets move, when the FOM, ABS, GLS or
   back-structure submission path to the SDC changes, or when the SITL data
@@ -66,7 +68,7 @@ SITL team member.
   `cw_sitluplink/`, `cw_sitlsubmit/`. `eva/parameterSets/*.txt` define the plot
   panel sets; `eva/source/script/` holds command-line tools and
   `eva_script_guide.pdf`; `eva/data/` has demo save files.
-- `interface/`: FOM, ABS (automated burst selection), GLS (ground loop
+- `interface/`: FOM, ABS, GLS (ground loop
   selection) and back-structure (burst segment status table) access:
   `mms_get_abs_fom_files.pro`, `mms_get_back_structure.pro`,
   `mms_check_fom_structure.pro` (limits before submission),
@@ -91,8 +93,8 @@ SITL team member.
    checks it with `mms_check_fom_structure` and saves it to a local file.
 3. `mms_put_fom_structure` then calls `submit_mms_sitl_selections`
    (`projects/mms/sdc/submit_mms_sitl_selections.pro`), which uploads the
-   file over `get_mms_sitl_connection`. `mms_submit_back_structure` does the
-   same for back-structure edits.
+   file over `get_mms_sitl_connection`. `mms_put_back_structure` (called by
+   `eva_sitl_submit_bakstr`) does the same for back-structure edits.
 
 ## Things to know
 
@@ -102,7 +104,7 @@ SITL team member.
   `mms_sitl_connection` with the science loaders
   (`projects/mms/common/AGENTS.md`), so
   one login serves both for 24 hours.
-- SITL loaders mostly use the older `mms_data_fetch` and
+- SITL loaders mostly use `mms_data_fetch` and
   `mms_check_local_cache` (`projects/mms/common/mms_data_fetch/`); some
   call `mms_load_data`. Files go to `!mms.local_data_dir`.
 - EVA runs `thm_init` and `mms_init`, and uses common blocks

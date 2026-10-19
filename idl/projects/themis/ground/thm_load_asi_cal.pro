@@ -22,6 +22,16 @@
 ;   /VALID_NAMES
 ;   /CURSOR	get time range with cursor
 ;   REGO	read cal-file for REGO camera instead of THEMIS
+;   UCALGARY_PGM	build the calibration structure from skymap .sav files
+;		(datasets THEMIS_ASI_SKYMAP_IDLSAV / REGO_SKYMAP_IDLSAV,
+;		fetched from api.phys.ucalgary.ca) via
+;		thm_asi_cal_adapter[_rego] instead of the default Berkeley
+;		thg_l2_asc / rego_l2_asc cal CDFs. The adapter replicates
+;		the legacy cal CDF variable set/order; magnetic coordinate
+;		variables (_mlat/_mlon) are NaN on this path.
+;   CDF_LEGACY	explicitly select the Berkeley cal CDF path. This is the
+;		default (decided in thm_asi_use_archive), so the keyword is a
+;		no-op unless /UCALGARY_PGM is also set, in which case /CDF_LEGACY wins.
 ;
 ; HISTORY:
 ;   adapted from thm_load_asi
@@ -36,15 +46,16 @@
 ; No further action will be taken.
 ;
 ;Written by: Harald Frey,   Jan 26 2007
-;   $LastChangedBy: jwl $
-;   $LastChangedDate: 2023-12-30 17:48:10 -0800 (Sat, 30 Dec 2023) $
-;   $LastChangedRevision: 32328 $
+;   $LastChangedBy: nikos $
+;   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+;   $LastChangedRevision: 34975 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_asi_cal.pro $
 ;-
 ;
 pro thm_load_asi_cal,site,cal_struc,trange=trange,verbose=verbose,all=all $
    ,downloadonly=downloadonly,valid_names = vstats, $
-   cursor=cursor,rego=rego,file_version_in=file_version_in
+   cursor=cursor,rego=rego,file_version_in=file_version_in, $
+   ucalgary_pgm=ucalgary_pgm,cdf_legacy=cdf_legacy
 
 thm_init
 
@@ -80,6 +91,32 @@ if not keyword_set(stats) then  begin
 endif
 
 if keyword_set(verbose) then printdat,stats,/value,'Stations'
+
+; /ucalgary_pgm path: build the calibration structure from skymaps
+; (THEMIS_ASI_SKYMAP_IDLSAV / REGO_SKYMAP_IDLSAV via api.phys.ucalgary.ca)
+; instead of the Berkeley thg_l2_asc / rego_l2_asc CDFs. The adapter
+; output replicates the legacy cal variable set/order, so downstream
+; consumers are unaffected. The default is the Berkeley CDF path below;
+; /cdf_legacy selects it explicitly and wins if both keywords are set.
+if thm_asi_use_archive(ucalgary_pgm=ucalgary_pgm, cdf_legacy=cdf_legacy) then begin
+   n_loaded = 0
+   for i=0,n_elements(stats)-1 do begin
+      skymap = thm_asi_skymap(stats[i], time, verbose=verbose, $
+         filename=skfile, rego=rego)
+      if ~is_struct(skymap) then begin
+         dprint, dlevel=1, verbose=verbose, 'thm_load_asi_cal: no skymap for ' + stats[i]
+         if (n_elements(stats) eq 1) then cal_struc = -1
+         continue
+      endif
+      if keyword_set(rego) then $
+         cal = thm_asi_cal_adapter_rego(skymap, stats[i], skfile) $
+      else $
+         cal = thm_asi_cal_adapter(skymap, stats[i], skfile)
+      if (n_loaded gt 0) then cal_struc = [cal_struc, cal] else cal_struc = cal
+      n_loaded += 1
+   endfor
+   return
+endif
 
 	    ; loop over all stations
 for i=0,n_elements(stats)-1 do begin

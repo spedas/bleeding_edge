@@ -34,9 +34,10 @@ maintenance: |
 
 # ELFIN
 
-Loaders and analysis for the two ELFIN CubeSats (probes `a` and `b`): the
+Loaders and analysis for the two ELFIN probes (`a` and `b`): the
 fluxgate magnetometer (FGM), energetic particle detectors (EPD; `pef`/`pes`
-electrons, `pif`/`pis` ions), magnetoresistive magnetometers (MRMa, MRMi),
+electrons, `pif`/`pis` ions), MRM data (`mrma` from the ACB board, `mrmi`
+from the IDPU board),
 state and attitude, plus plot production for the ELFIN web site.
 
 ## Layout
@@ -59,7 +60,7 @@ state and attitude, plus plot production for the ELFIN web site.
   `spedas_gui/plugins/elfin_plugin.txt`.
 - `examples/`: cribs (`examples/elf_load_epd_crib.pro`, ...). `tests/`:
   command-line scripts (`tests/elf_fgm_load_cltestsuite.pro`) run with `.go`.
-- `elf_load_prm.pro`: local ELFIN-L data from Lomonosov (standalone).
+- `elf_load_prm.pro`: loads ELFIN PRM Lomonosov data (standalone).
   Skip `load_data/obsolete/` and `plots/obsolete/`.
 
 ## How `elf_load_epd` loads data
@@ -76,8 +77,8 @@ state and attitude, plus plot production for the ELFIN web site.
 3. `spd_cdf2tplot` stores the files (L2 EPD uses `elf_cdf2tplot`), then
    `elf_load_data` time-clips, sorts and removes duplicate times.
 4. For L1, `elf_epd_l1_postproc` converts the spin period and calls
-   `elf_cal_epd`, which gets calibration from `elf_get_epd_calibration` and
-   `elf_read_epd_cal_data` (a text file downloaded from
+   `elf_cal_epd`, which gets calibration from `elf_get_epd_calibration`; for
+   EPD-E that calls `elf_read_epd_cal_data` (a text file downloaded from
    `<probe>/calibration_files/` on the server).
 
 FGM, MRM and state follow the same engine; `elf_load_fgm` then runs

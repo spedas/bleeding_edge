@@ -28,9 +28,14 @@ end
 ;          single string delimited by spaces, e.g., 'fykn gako'
 ;  datatype = request 'ast' or 'asf', default is 'asf', can also be 'all'.
 ;  TRANGE= (Optional) Time range of interest  (2 element array), if
-;          this is not set, the default is to prompt the user. Note
-;          that if the input time range is not a full day, a full
-;          day's data is loaded
+;          this is not set, the default is to prompt the user. The
+;          default CDF path loads whole hourly CDFs without clipping;
+;          the /UCALGARY_PGM path fetches only the 1-min rgf files
+;          covering the range and clips the output to TRANGE unless
+;          /NO_TIME_CLIP is set
+;  /NO_TIME_CLIP /UCALGARY_PGM path only: store every frame of every
+;          fetched file instead of clipping the output to TRANGE (output
+;          then aligns to 1-min file boundaries)
 ;  level = the level of the data, the default is 'l2', or level-2
 ;          data. A string (e.g., 'l2') or an integer can be used. 'all'
 ;          can be passed in also, to get all levels.
@@ -50,6 +55,15 @@ end
 ;                variable xxx
 ;   /CURSOR	get time range with cursor
 ;   /TIME       specify just one time (record) for data
+;   /UCALGARY_PGM load raw REGO PGM frames from the data archive
+;               (api.phys.ucalgary.ca / data.phys.ucalgary.ca, dataset
+;               REGO_RAW) instead of the default Berkeley clg_l1_rgf CDFs.
+;               Frames are bit-identical to the CDF frames after the
+;               pinned orientation transform. Archive files are cached
+;               under !themis.local_data_dir + 'thg/asi/'.
+;   /CDF_LEGACY explicitly select the Berkeley CDF path. This is the
+;               default (decided in thm_asi_use_archive), so the keyword is a
+;               no-op unless /UCALGARY_PGM is also set, in which case /CDF_LEGACY wins.
 ;
 ;Example:
 ;   thm_load_asi,site='atha',time='2007-03-23/05:00:00'
@@ -62,9 +76,9 @@ end
 ;
 ;
 ;Written by: Ken Bromund ????,   Jan 5 2007
-; $LastChangedBy: egrimes $
-; $LastChangedDate: 2018-12-21 11:50:27 -0800 (Fri, 21 Dec 2018) $
-; $LastChangedRevision: 26397 $
+; $LastChangedBy: nikos $
+; $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+; $LastChangedRevision: 34975 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/thm_load_rego.pro $
 ;-
 ;
@@ -116,11 +130,12 @@ pro thm_load_rego,site = site, datatype = datatype, trange = trange, $
                  downloadonly = downloadonly, $
                  no_download=no_download, relpathnames_all=relpathnames_all, $
                  valid_names = valid_names, $
-                 cursor=cursor, time=time, $
+                 cursor=cursor, time=time, no_time_clip=no_time_clip, $
                  cdf_data=cdf_data, $
                  suffix=suffix,$
                  get_support_data=get_support_data, $
-                 progobj=progobj, files=files
+                 progobj=progobj, files=files, $
+                 ucalgary_pgm=ucalgary_pgm, cdf_legacy=cdf_legacy
 ;                   _extra = _extra
 
 ;thm_load_rego_file_move_onetime    ; delete this line after local caches have had time to be corrected (i.e. after July 30, 2007
@@ -137,6 +152,45 @@ pro thm_load_rego,site = site, datatype = datatype, trange = trange, $
 ; Use the cursor to determine what asi's to load.
      site = strmid(var,3,4,/reverse)
      if (verbose gt 10) then stop,time_string(trange),site
+  endif
+
+; /ucalgary_pgm path: load from the data archive at data.phys.ucalgary.ca
+; (dataset REGO_RAW via api.phys.ucalgary.ca) instead of Berkeley CDFs.
+; Raw PGM frames are bit-identical to the legacy clg_l1_rgf CDF frames
+; after the pinned orientation transform. The default is the Berkeley CDF
+; path below; /cdf_legacy selects it explicitly and takes precedence if
+; both keywords are set. /valid_names and cdf_data requests are always
+; handled by the CDF code (no download).
+  if thm_asi_use_archive(ucalgary_pgm=ucalgary_pgm, cdf_legacy=cdf_legacy) && $
+     ~keyword_set(valid_names) && ~arg_present(cdf_data) then begin
+     vsites = strsplit('atha fsmi fsim gill kakt luck lyrn rank resu talo', $
+              ' ', /extract)
+     ; resolve sites with the same helper the legacy path uses, so that
+     ; 'all', wildcards, arrays and space-delimited strings all behave as
+     ; documented (strlowcase here rather than /ignore_case, which would
+     ; assign back into the caller's site variable)
+     if keyword_set(site) then begin
+        my_sites = ssl_check_valid_name(strlowcase(site), vsites, /include_all)
+        nsites = keyword_set(my_sites) ? n_elements(my_sites) : 0
+     endif else begin
+        my_sites = vsites
+        nsites = n_elements(vsites)
+     endelse
+     if nsites eq 0 then begin
+        dprint, dlevel=0, verbose=verbose, 'thm_load_rego: no valid sites in: ' + strjoin(site, ' ')
+        return
+     endif
+     ; accumulate into locals and assign out once: the worker appends to
+     ; files/relpathnames_all, but the legacy loaders assigned them, and
+     ; callers (the GUI in particular) reuse one variable across calls
+     thm_asi_load_img, sites=my_sites, datatype='rgf', $
+        trange=trange, time=time, no_time_clip=no_time_clip, suffix=suffix, $
+        downloadonly=downloadonly, no_download=no_download, $
+        verbose=verbose, files=asi_files, relpathnames_all=asi_relpaths, $
+        tplotnames=tplotnames
+     files = (n_elements(asi_files) gt 0) ? asi_files : ''
+     relpathnames_all = (n_elements(asi_relpaths) gt 0) ? asi_relpaths : ''
+     return
   endif
 
   datatype='rgf'

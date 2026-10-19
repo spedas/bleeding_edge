@@ -9,9 +9,9 @@
 ;
 ;HISTORY:
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2025-08-20 11:11:05 -0700 (Wed, 20 Aug 2025) $
-;$LastChangedRevision: 33563 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2026-10-16 18:06:37 -0700 (Fri, 16 Oct 2026) $
+;$LastChangedRevision: 34987 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/misc/spd_ui_spedas_fileconfig.pro $
 ;--------------------------------------------------------------------------------
 
@@ -46,6 +46,7 @@ pro spd_ui_spedas_init_struct,state,struct
   
   widget_control,state.tempdir,set_value=struct.temp_dir
   widget_control,state.browserexe,set_value=struct.browser_exe
+  widget_control,state.hapidir,set_value=struct.hapi_data_dir
   widget_control,state.tempcdfdir,set_value=struct.temp_cdf_dir  
   widget_control,state.geoparamdir,set_value=struct.geopack_param_dir
   ;widget_control,state.v_droplist,set_combobox_select=struct.verbose
@@ -148,6 +149,22 @@ PRO spd_ui_spedas_fileconfig_event, event
 
   END
 
+  'HAPIDIR': BEGIN
+    widget_control, state.hapidir, get_value=currentDir
+    !spedas.hapi_data_dir = currentDir[0]
+  END
+
+  'HAPIDIRBTN': BEGIN
+    dirName = Dialog_Pickfile(Title='Select the directory for HAPI files:', $
+      Dialog_Parent=state.master, /must_exist, /DIRECTORY)
+    if is_string(dirName) then begin
+      if dirName ne '' then begin
+        !spedas.hapi_data_dir = dirName
+        widget_control, state.hapidir, set_value=dirName
+      endif
+    endif
+  END
+
   'TEMPCDFDIR': BEGIN
 
     widget_control, state.tempcdfdir, get_value=currentDir
@@ -242,6 +259,7 @@ PRO spd_ui_spedas_fileconfig_event, event
     !spedas=state.spedas_cfg_save
     widget_control,state.browserexe,set_value=!spedas.browser_exe
     widget_control,state.tempdir,set_value=!spedas.temp_dir
+    widget_control,state.hapidir,set_value=!spedas.hapi_data_dir
     widget_control,state.tempcdfdir,set_value=!spedas.temp_cdf_dir
     widget_control,state.geoparamdir,set_value=!spedas.geopack_param_dir
     Widget_Control, state.fixlinux, Set_Button=!spedas.linux_fix
@@ -355,6 +373,11 @@ PRO spd_ui_spedas_fileconfig, tab_id, historyWin, statusBar
   tempcdfdir = widget_text(rbase1, /edit, xsiz = 50, /all_events, uval='TEMPCDFDIR', val = !spedas.temp_cdf_dir)
   tempcdfdirbtn = widget_button(rbase1,value='Browse', uval='TEMPCDFDIRBTN', /align_center)
 
+  hbase = widget_base(configbase, /row, /align_left, ypad=1)
+  hlabel = widget_label(hbase, value='Directory for HAPI files:  ')
+  hapidir = widget_text(hbase, /edit, xsiz=50, /all_events, uval='HAPIDIR', val=!spedas.hapi_data_dir)
+  hapidirbtn = widget_button(hbase, value='Browse', uval='HAPIDIRBTN', /align_center)
+
   rbase2 = widget_base(configbase, /row, /align_left, ypad=1)
   flabe22 = widget_label(rbase2, value = 'Directory for Geopack params: ')
   geoparamdir = widget_text(rbase2, /edit, xsiz = 50, /all_events, uval='GEOPARAMDIR', val = !spedas.geopack_param_dir)
@@ -367,7 +390,7 @@ PRO spd_ui_spedas_fileconfig, tab_id, historyWin, statusBar
   
   ;dynamically ensure label sizes are equal
   label_xsize = 0
-  dir_labels = [flabel, flabel1, flabel2, root_label]
+  dir_labels = [flabel, flabel1, flabel2, hlabel, root_label]
   for i=0, n_elements(dir_labels)-1 do begin
     geo = widget_info(dir_labels[i],/geo)
     label_xsize = geo.scr_xsize > label_xsize
@@ -409,7 +432,7 @@ PRO spd_ui_spedas_fileconfig, tab_id, historyWin, statusBar
   def_values=['0','0','0','2',0]
   
   state = {spedas_cfg_save:spedas_cfg_save, spd_ui_cfg_sav:spd_ui_cfg_sav, $
-    master:master, browserexe:browserexe, tempdir:tempdir, tempcdfdir:tempcdfdir, geoparamdir:geoparamdir, $
+    master:master, browserexe:browserexe, tempdir:tempdir, tempcdfdir:tempcdfdir, hapidir:hapidir, geoparamdir:geoparamdir, $
     v_values:v_values, v_droplist:v_droplist, statusBar:statusBar, fixlinux:fixlinux, $
     def_values:def_values, historyWin:historyWin, tab_id:tab_id, linux_fix:linux_fix, $
     tmp_pathbase:tmp_pathbase, tmppath:tmppath, tmp_button:tmp_button, tmp_browsebtn:tmp_browsebtn}

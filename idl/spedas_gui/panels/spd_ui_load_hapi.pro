@@ -11,9 +11,9 @@
 ;   Currently, this server does not behave as a standard HAPI server in some aspects
 ;   (needs passowrd, catalog contains non-available datasets, error 500 responses from server).
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-09-10 23:32:13 -0700 (Thu, 10 Sep 2026) $
-;$LastChangedRevision: 34884 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2026-10-16 18:06:37 -0700 (Fri, 16 Oct 2026) $
+;$LastChangedRevision: 34987 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/spedas_gui/panels/spd_ui_load_hapi.pro $
 ;-
 
@@ -288,7 +288,8 @@ Pro spd_ui_load_hapi_event, ev
         endif
         hapi_sosmag_load_data, trange=[starttime, endtime], dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix
       endif else begin
-        hapi_load_data, trange=[starttime, endtime], dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix
+        hapi_load_data, trange=[starttime, endtime], dataset=dataset, server=server, tplotnames=tplotvars, prefix=prefix, $
+          local_data_dir=!spedas.hapi_data_dir
       endelse
 
       if undefined(tplotvars) || n_elements(tplotvars) lt 1 then begin

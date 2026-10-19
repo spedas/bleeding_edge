@@ -60,8 +60,8 @@
 ;
 ; VERSION:
 ;   $LastChangedBy: nikos $
-;   $LastChangedDate: 2024-12-13 09:03:48 -0800 (Fri, 13 Dec 2024) $
-;   $LastChangedRevision: 32990 $
+;   $LastChangedDate: 2026-10-14 09:54:40 -0700 (Wed, 14 Oct 2026) $
+;   $LastChangedRevision: 34975 $
 ;   $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/ground/asi_mosaic/thm_asi_imager_readfile.pro $
 ;-
 
@@ -283,7 +283,7 @@ END
 
 ;Benchmark/optimizing (note ALL_METADATA=0)
 
-;Windows share is bandwidth limited by UCalgary 100 Mbps network:
+;Windows share is bandwidth limited by a 100 Mbps network:
 ;
 ; f=findfile('\data\themis\imager\stream0\2005\12\09\atha_themis02\ut08\*full.*',COUNT=nf)
 ; THEMIS_IMAGER_READFILE,f[*],images,metadata,COUNT=nframes,DEBUG=1

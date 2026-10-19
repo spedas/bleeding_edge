@@ -64,9 +64,9 @@ AGENTS.md.
   `projects/omni/omni_load_data.pro` (`!omni`).
 - `ace/`: `ace/ace_mfi_load.pro`, `ace/ace_swe_load.pro`, `ace/ace_epm_load.pro`
   (SPDF via `!istp`); `ace/ace_mag_swepam_load.pro` and
-  `ace/noaa_ace_nrt_load.pro` (NOAA real-time 1-minute text files via `!ace`,
-  set by `ace/ace_init.pro`). `ace/spdf_file_source.pro` is a generic helper
-  despite its location.
+  `ace/noaa_ace_nrt_load.pro` (1-minute average ASCII text files via `!ace`,
+  set by `ace/ace_init.pro`). `ace/spdf_file_source.pro` is a generic SPDF
+  helper despite its location; its header says it "isn't used any more".
 - `fast/`: FAST auroral satellite, about 600 files. See `fast/AGENTS.md`.
 - `goes/`: `goes/goes_mag_load.pro` and `goes/goes_ep_load.pro`, SPDF
   key-parameter CDFs via `!istp`.
@@ -74,8 +74,9 @@ AGENTS.md.
   `kyoto/kyoto_load_dst.pro` are current (`spd_download`);
   `kyoto/kyoto_ae_load.pro` and `kyoto/kyoto_dst_load.pro` are older
   (`file_retrieve`). Cribs: `kyoto_crib_*.pro`.
-- `lanl/`: `lanl/lanl_mpa_load.pro`, `lanl/lanl_spa_load.pro` (LANL
-  geosynchronous plasma and particle data, SPDF via `!istp`).
+- `lanl/`: `lanl/lanl_mpa_load.pro`, `lanl/lanl_spa_load.pro` (LANL MPA and
+  SPA data; `k0` CDFs from SPDF via `!istp`. `lanl_spa_load` defaults to
+  `datatype='sp'`, `.sopaflux` files from `sprg.ssl.berkeley.edu`).
 - `noaa/`: `noaa/noaa_load_kp.pro` (Kp and Ap from NOAA NGDC).
 - `rbsp/`: Van Allen Probes (EFW, EMFISIS, RBSPICE, ECT, state). See
   `rbsp/AGENTS.md`.

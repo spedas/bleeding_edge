@@ -1,0 +1,5 @@
+For up-to-date information about GMAG stations, see:
+https://themis.ssl.berkeley.edu/gmag/gmags.csv
+
+For GMAG data availability, see:
+https://themis.ssl.berkeley.edu/gmag/gmag_list.php

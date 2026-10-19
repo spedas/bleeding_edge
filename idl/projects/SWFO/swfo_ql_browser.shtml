@@ -809,6 +809,7 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 			<option value="summ" />Summary
 			<option value="health" />Health
 			<option value="noise" />Noise
+			<option value="ace" />EPAM-STIS
 		</select>
     	<select name='plotDuration' id="plotDuration" onchange="syncBottomToTop()">
 			<option value="1d" />1 Day
@@ -866,6 +867,7 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 			<option value="summ" />Summary
 			<option value="health" />Health
 			<option value="noise" />Noise
+			<option value="ace" />EPAM-STIS
 		</select>
     	<select name='plotDuration' id="plotDuration_bottom" onchange="syncTopToBottom()">
 			<option value="1d" />1 Day

@@ -75,7 +75,7 @@ The instrument loaders except `psp_load_swp` download from
 - Folder names differ in case: `COMMON/` here and in `sweap/COMMON/`, but
   `fields/common/`, `sweap/SPAN/common/` and `sweap/decom/common/`.
 - Settings are not in a `!` system variable: server and login sit in the
-  `spp_file_source` common block (see `COMMON/AGENTS.md`). Exceptions:
+  `spp_file_source_com` common block (see `COMMON/AGENTS.md`). Exceptions:
   `!psp_sweap` (only for `psp_load_swp`) and `!SPP_FLD_TMLIB` (FIELDS L1).
 - Local files mirror the server under `root_data_dir()`, e.g.
   `psp/data/sci/fields/l2/...` and `psp/data/sci/sweap/...`.

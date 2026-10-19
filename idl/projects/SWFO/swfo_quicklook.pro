@@ -73,15 +73,23 @@ end
 ; Note: ACE plot not working yet.
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-08-17 09:27:15 -0700 (Mon, 17 Aug 2026) $
-; $LastChangedRevision: 34746 $
+; $LastChangedDate: 2026-10-18 19:08:12 -0700 (Sun, 18 Oct 2026) $
+; $LastChangedRevision: 34997 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_quicklook.pro $
 ; $ID: $
 
 pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
   plot_types=plot_types, destination_dir=destination_dir,$
   data_resolution=data_resolution, plot_durations=plot_durations,$
-  show=show, live=live
+  show=show, live=live, overlay_epam_stis=overlay_epam_stis, exec=exec
+
+
+  ; Starts the exec window for sweapsoc:
+  if keyword_set(exec) then begin
+    exec, exec_text="swfo_quicklook, /live & swfo_quicklook, trange=systime(1) + [-24*7*3600d, 0]", int=36000    
+
+    return
+  endif
 
   ; ACE currently not working on sweapsoc:
   if ~keyword_set(plot_types) then plot_types = ['health', 'summ', 'ace', 'noise']
@@ -116,26 +124,33 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
   if ~keyword_set(plot_cadence) then plot_cadence = '1d'
   n_plot_types = n_elements(plot_types)
   ace_in_plot_types = where(plot_types eq 'ace', load_ace)
+  noise_in_plot_types = where(plot_types eq 'noise', mk_noise)
+  health_in_plot_types = where(plot_types eq 'health', mk_health)
+  summ_in_plot_types = where(plot_types eq 'summ', mk_summ)
 
   ; STIS datasets needed for making plots:
-  swfo_types = ['stis_l0b', 'stis_l1a', 'stis_l1b']
+  swfo_types = ['stis_l1b']
+  if (mk_noise or mk_health) or mk_summ then swfo_types = [swfo_types, 'stis_l0b']
+  if mk_noise or mk_summ then swfo_types = [swfo_types, 'stis_l1a']
+  ; swfo_types = ['stis_l0b', 'stis_l1a', 'stis_l1b']
 
   ; Resolution of datasets used:
-  if ~keyword_set(data_resolution) then data_resolution = ['fr', '30s', '300s']
+  if ~keyword_set(data_resolution) then data_resolution = ['300s', '30s', 'fr']
 
   ; Make label for the data resolutions:
   data_resolution_label = strarr(n_elements(data_resolution))
   foreach dr, data_resolution, indx do begin
     case dr of
       'fr': label = ''
-      '30s': label = '30-sec '
-      '300s': label = '5-min '
+      '30s': label = '30-sec'
+      '300s': label = '5-min'
       else: label = ''
     endcase
     data_resolution_label[indx] = label
   endforeach
 
   if ~keyword_set(plot_durations) then plot_durations = ['7d', '3d', '1d']
+  if ~keyword_set(overlay_epam_stis) then overlay_epam_stis = 1
 
   ; Set up plot intervals that end every 1-3d 
   ; (depending on plot_cadence) and start every 1-7d before
@@ -218,6 +233,9 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
       res_tplot_prefix = 'fr'
       swfo_types_i = swfo_types
     endelse
+    data_res_name = data_resolution_label[res_index]
+
+    if data_res_name.strlen() ne 0 then data_res_name = data_res_name + ' '
 
     ; fill in the tplot variable info:
     tplot_hkp_var_i = strarr_replace(tplot_hkp_var, '{}', res_tplot_prefix)
@@ -237,7 +255,7 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
       ; Clear out all previously present data
       ; (tplot bogs down when it 'alters' variables, it is
       ; quicker to just delete em all).
-      del_data, '*'
+      del_data, 'swfo*'
 
       ; Load the range:
       tr = [min_start_time_unix_i, end_time_unix_i]
@@ -247,53 +265,56 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
       swfo_stis_tplot, /setl
 
       ; if doing ace, load that as well
-      if load_ace then ace_load, trange=tr
+      ; only need to load once for all resolutions:
+      ace_load, trange=tr
 
-      ; Build a bitplot of useful flags:
-      get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_USER_09', data=user09
+      if mk_summ or mk_noise then begin
+        ; Build a bitplot of useful flags:
+        get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_USER_09', data=user09
 
-      ; The HKP, nse, and sci gap is not updated when the replay
-      ; data fills in, leading to residual "gaps". So those aren't as useful
-      ; for identifying missing data / processing pipeline errors
-      ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_HKP_GAP', data=hkpgap
-      ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_NSE_GAP', data=nsegap
-      ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_SCI_GAP', data=scigap
-      ; gapbit = ishft(user09.y ne 1, 3) or ishft(scigap.y, 2) or ishft(nsegap.y, 1) or hkpgap.y
-      ; store_data, 'swfo_stis_l0b_GAP', data={x: scigap.x, y: gapbit},$
-      ;   dl={tplot_routine: 'bitplot', psyms:1, colors: 'grbk',$
-      ;       labels: ['HKP Gap', 'NSE Gap', 'SCI Gap', 'User09!=1'],$
-      ;       ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 3.5],$
-      ;       yticks: 1, yminor: 1}
+        ; The HKP, nse, and sci gap is not updated when the replay
+        ; data fills in, leading to residual "gaps". So those aren't as useful
+        ; for identifying missing data / processing pipeline errors
+        ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_HKP_GAP', data=hkpgap
+        ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_NSE_GAP', data=nsegap
+        ; get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_SCI_GAP', data=scigap
+        ; gapbit = ishft(user09.y ne 1, 3) or ishft(scigap.y, 2) or ishft(nsegap.y, 1) or hkpgap.y
+        ; store_data, 'swfo_stis_l0b_GAP', data={x: scigap.x, y: gapbit},$
+        ;   dl={tplot_routine: 'bitplot', psyms:1, colors: 'grbk',$
+        ;       labels: ['HKP Gap', 'NSE Gap', 'SCI Gap', 'User09!=1'],$
+        ;       ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 3.5],$
+        ;       yticks: 1, yminor: 1}
 
-      get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_HKP_REPLAY', data=replay
-      get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_SCI_TIME_RES', data=time_res
+        get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_HKP_REPLAY', data=replay
+        get_data, 'swfo_stis_l0b_' + res_tplot_prefix + '_SCI_TIME_RES', data=time_res
 
-      ; Try to flag the gaps indirectly
-      ; Calculate the effective time between frames:
-      tdiff = replay.x - shift(replay.x,1)
+        ; Try to flag the gaps indirectly
+        ; Calculate the effective time between frames:
+        tdiff = replay.x - shift(replay.x,1)
 
-      ; Duration = 1 + time_res should be == tdiff
-      missing_data_flag = (round(tdiff) - time_res.y) ne 1
+        ; Duration = 1 + time_res should be == tdiff
+        missing_data_flag = (round(tdiff) - time_res.y) ne 1
 
-      if res_tplot_prefix eq 'fr' then begin
+        if res_tplot_prefix eq 'fr' then begin
 
-        gapbit = ishft(replay.y, 2) or ishft(user09.y ne 1, 1) or missing_data_flag
-        store_data, 'swfo_stis_l0b_GAP', data={x: replay.x, y: gapbit},$
-          dl={tplot_routine: 'bitplot', psyms:1, colors: 'krbg',$
-              labels: ['Tdiff != Tres', 'User09!=1', 'Replay'],$
-              ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 2.5],$
-              yticks: 1, yminor: 1}
+          gapbit = ishft(replay.y, 2) or ishft(user09.y ne 1, 1) or missing_data_flag
+          store_data, 'swfo_stis_l0b_GAP', data={x: replay.x, y: gapbit},$
+            dl={tplot_routine: 'bitplot', psyms:1, colors: 'krbg',$
+                labels: ['Tdiff != Tres', 'User09!=1', 'Replay'],$
+                ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 2.5],$
+                yticks: 1, yminor: 1}
 
-      endif else begin
+        endif else begin
 
-        gapbit =user09.y ne 1
-        store_data, 'swfo_stis_l0b_GAP', data={x: replay.x, y: gapbit},$
-          dl={tplot_routine: 'bitplot', psyms:1, colors: 'r',$
-              labels: ['User09!=1'],$
-              ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 0.5],$
-              yticks: 1, yminor: 1}
+          gapbit =user09.y ne 1
+          store_data, 'swfo_stis_l0b_GAP', data={x: replay.x, y: gapbit},$
+            dl={tplot_routine: 'bitplot', psyms:1, colors: 'r',$
+                labels: ['User09!=1'],$
+                ytitle: 'Flags', panel_size: 0.25, yrange: [-0.5, 0.5],$
+                yticks: 1, yminor: 1}
 
-      endelse
+        endelse
+      endif
 
       ; Iterate through the possible plots to make:
       foreach plot_name, plot_types do begin
@@ -306,6 +327,8 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
 
         ; Health plot
         if plot_name.startswith('health') then begin
+
+          tplot_options, 'title', data_res_name + 'SOLAR-1 STIS Housekeeping'
 
           ; Apply ylimit & tlimit:
           foreach hkpname, hkp_var do begin
@@ -326,6 +349,8 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
           tplot, tplot_hkp_var_i, window=2
 
         endif else if plot_name.startswith('summ') then begin
+
+          tplot_options, 'title', data_res_name + 'SOLAR-1 STIS Summary'
 
           ; if res_tplot_prefix eq 'fr' then begin
           ;  valid_yrange = [1, 2e5]
@@ -349,19 +374,58 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
 
         endif else if plot_name.startswith('ace') then begin
 
+          ; Enough room for the labels:
+          tplot_options,'title', data_res_name + 'SOLAR-1 STIS (color) versus ACE EPAM (gray, RTSW)'
+          tplot_options,'xmargin',[10,15]
+
           options, 'ace_rtsw_epam_elec_flux',$
             ytitle='5-min ACE Elec Flux', ysubtitle='[#/cm2-s-ster-keV]'
           options, 'ace_rtsw_epam_proton_flux',$
             ytitle='5-min ACE Proton Flux', ysubtitle='[#/cm2-s-ster-keV]'
 
-          options, 'stis_l2_'+res_tplot_prefix+'_ION_FLUX',$
-            ytitle=data_resolution_label[res_index] +'STIS Ion Flux', ysubtitle='[#/cm2-s-ster-keV]'
-          options, 'stis_l2_'+res_tplot_prefix+'_ELEC_FLUX',$
-            ytitle=data_resolution_label[res_index] +'STIS Elec Flux', ysubtitle='[#/cm2-s-ster-keV]'
+
+          stis_l2_ion_tplot_name = 'stis_l2_'+res_tplot_prefix+'_ION_FLUX'
+          stis_l2_elec_tplot_name = 'stis_l2_'+res_tplot_prefix+'_ELEC_FLUX'
+
+          options, stis_l2_ion_tplot_name,$
+            ytitle= data_res_name+'STIS Ion Flux', ysubtitle='[#/cm2-s-ster-keV]',$
+            labels=['30-50 keV','50-100 keV', '100-200 keV', '200-400 keV', '400-800 keV', '800-1600 keV', '1.6-3 MeV'],$
+              ylog=1, ystyle=1, labflag=-1
+          options, stis_l2_elec_tplot_name,$
+            ytitle=data_res_name +'STIS Elec Flux', ysubtitle='[#/cm2-s-ster-keV]',$
+            labels=['30-50 keV','50-100 keV', '100-200 keV', '200-400 keV', '400-800 keV', '800-1600 keV', '1.6-3 MeV'],$
+              ylog=1, ystyle=1, labflag=-1
+
+          ; make new plot:
+          if keyword_set(overlay_epam_stis) then begin
+
+            ; use B+W colortable to contrast the 
+            bw_ct = 42
+            options, 'ace_rtsw_epam_proton_flux', color_table=bw_ct,$
+              colors=55 + indgen(5)*(254-55)/4
+            options, 'ace_rtsw_epam_elec_flux', color_table=bw_ct,$
+              colors=[55, 254]
+
+            store_data, 'epam_stis_proton_flux',$
+              data=[stis_l2_ion_tplot_name, 'ace_rtsw_epam_proton_flux']
+            options, 'epam_stis_proton_flux',$
+              labflag=-1, ytitle="Ion Flux", ysubtitle='[#/cm2-s-ster-keV]', yrange=[1e-6, 1e6]
+
+            store_data, 'epam_stis_elec_flux',$
+              data=[stis_l2_elec_tplot_name, 'ace_rtsw_epam_elec_flux']
+            options, 'epam_stis_elec_flux',$
+              labflag=-1, ytitle="Elec Flux", ysubtitle='[#/cm2-s-ster-keV]', yrange=[1e-6, 1e6]
+
+            ace_var_i = ['epam_stis_elec_flux', 'epam_stis_proton_flux']
+
+
+          endif
 
           tplot, ace_var_i, window=2
 
         endif else if plot_name.startswith('noise') then begin
+
+          tplot_options, 'title', data_res_name + 'SOLAR-1 STIS Noise Summary'
 
           options, 'swfo_stis_l1a_' + res_tplot_prefix + '_NOISE_HISTOGRAM',$
             zrange=[1, 2e3], ytitle='Noise!CHistogram'
@@ -416,10 +480,10 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
             
           ; Redraw the subset timerange:
           tlimit, subset_tr
-
-          ; add a timebar marking the current time if
-          ; live plot
-          if keyword_set(live) then timebar, end_time_unix_i
+          ; add a timebar if within the subset:
+          current_time = systime(1)
+          draw_time_bar = (current_time gt subset_tr[0] and current_time lt subset_tr[1])
+          if draw_time_bar then timebar, end_time_unix_i
 
           ; Redraw the timebars:
           if plot_name.startswith('health') then begin

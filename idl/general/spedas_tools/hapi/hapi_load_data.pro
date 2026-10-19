@@ -50,9 +50,9 @@
 ;         - Requires IDL 8.3 or later due to json_parse + orderedhash usage
 ;         
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-09-14 22:51:17 -0700 (Mon, 14 Sep 2026) $
-;$LastChangedRevision: 34894 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2026-10-16 18:06:37 -0700 (Fri, 16 Oct 2026) $
+;$LastChangedRevision: 34987 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/spedas_tools/hapi/hapi_load_data.pro $
 ;-
 
@@ -127,7 +127,8 @@ pro hapi_load_data, trange=trange, capabilities=capabilities, catalog=catalog, i
   if undefined(path) then path = url_path
   if undefined(port) then port = url_port
   if undefined(scheme) then scheme = url_scheme
-  if undefined(local_data_dir) then local_data_dir = 'hapi/'
+  if undefined(local_data_dir) then $
+    local_data_dir = spd_default_local_data_dir() + 'hapi' + path_sep()
   if undefined(suffix) then suffix = ''
   if undefined(prefix) then prefix=''
         

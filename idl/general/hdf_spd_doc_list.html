@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Oct 10 03:16:20 2026.<P>
+<STRONG>Last modified: </STRONG>Mon Oct 19 03:28:07 2026.<P>
  
 <HR>
  
@@ -52,15 +52,15 @@ This page was created by the IDL library routine
                    default is 0.0 ('1970-01-01/00:00:00.000')
 
  Notes:
-     This format is used by GOES 16 and 17 and reprocessed files for GOES 8-15.
+     This format is used by GOES 16+ and reprocessed files for GOES 8-15.
      Uses the HDF5 IDL library.
      HELP, 'hdf5', /DLM
-     https://www.l3harrisgeospatial.com/docs/hdf5_overview.html
+     https://nv5geospatialsoftware.com/docs/hdf_overview.html
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2025-11-07 11:02:21 -0800 (Fri, 07 Nov 2025) $
- $LastChangedRevision: 33840 $
+ $LastChangedDate: 2026-10-15 18:38:10 -0700 (Thu, 15 Oct 2026) $
+ $LastChangedRevision: 34986 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf2tplot.pro $
 </PRE><P>
 <STRONG>(See <A href="hdf/hdf2tplot.pro">general/hdf/hdf2tplot.pro</A>)</STRONG><P>
@@ -87,8 +87,8 @@ This page was created by the IDL library routine
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2020-12-21 10:54:55 -0800 (Mon, 21 Dec 2020) $
- $LastChangedRevision: 29544 $
+ $LastChangedDate: 2026-10-15 18:38:10 -0700 (Thu, 15 Oct 2026) $
+ $LastChangedRevision: 34986 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_load_vars.pro $
 </PRE><P>
 <STRONG>(See <A href="hdf/hdf_load_vars.pro">general/hdf/hdf_load_vars.pro</A>)</STRONG><P>
@@ -113,17 +113,21 @@ This page was created by the IDL library routine
  Keywords:
          time_var: name of the time variable
                    default is 'time'
+         time_dict: dictionary mapping time variable names to arrays of dependent variable names
+                   overrides time_var and automatic time dependencies when nonempty
+                   each time variable uses its own units unless time_offset is supplied
          time_offset: time offset in miliseconds
                    default is 0.0 ('1970-01-01/00:00:00.000')
          varnames: list of variable names to load
          gatt2istp: dictionary, mapping of HDF global attributes to ISTP global attributes
          vatt2istp: dictionary, mapping of HDF variable attributes to ISTP variable attributes
+         multidim: GOES-R L2 particle layout (mpsh or sgps); time first, static energies
          coord_list: list of coordinate systems, if set the variable name is used for coordinate system
 
 
  $LastChangedBy: nikos $
- $LastChangedDate: 2025-11-07 11:02:21 -0800 (Fri, 07 Nov 2025) $
- $LastChangedRevision: 33840 $
+ $LastChangedDate: 2026-10-15 18:38:10 -0700 (Thu, 15 Oct 2026) $
+ $LastChangedRevision: 34986 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/hdf/hdf_to_cdfstruct.pro $
 </PRE><P>
 <STRONG>(See <A href="hdf/hdf_to_cdfstruct.pro">general/hdf/hdf_to_cdfstruct.pro</A>)</STRONG><P>

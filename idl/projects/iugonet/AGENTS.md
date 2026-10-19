@@ -40,7 +40,7 @@ maintenance: |
 UDAS, the IUGONET plug-in: loaders and plots for ground-based upper-atmosphere
 and geospace data from Japanese institutions (RISH and WDC at Kyoto, NIPR,
 Tohoku, ISEE Nagoya, Kyushu ICSWSE, Kwasan/Hida) and EISCAT, developed with the
-ERG Science Center. `ReadMe.txt` describes every loader in one line.
+ERG Science Center. `ReadMe.txt` describes the top-level loaders in one line each.
 
 ## Layout
 
@@ -62,7 +62,7 @@ ERG Science Center. `ReadMe.txt` describes every loader in one line.
 ## How loaders work
 
 1. A dispatcher named after the instrument, e.g. `load/iug_load_ear.pro`,
-   checks `site`, `datatype` and `parameter` with `ssl_check_valid_name`
+   checks `datatype` and `parameter` with `ssl_check_valid_name`
    (`general/misc/ssl_check_valid_name.pro`; default `'all'`) and calls
    one reader per data type (`iug_load_ear_trop_nc`, `iug_load_ear_iono_er_nc`, ...).
 2. The reader (`load/iug_load_ear_trop_nc.pro`) fills a `file_retrieve(/struct)`

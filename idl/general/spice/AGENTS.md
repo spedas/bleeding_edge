@@ -59,9 +59,10 @@ frame rotations as arrays or tplot variables, with Unix times in and out.
 
 ## How it works
 
-1. `spice_test()` checks for the ICY DLM; the kernel routines call it first and
-   return quietly if ICY is missing (the geometry wrappers don't, and fail on
-   the first `cspice_*` call). ICY is not bundled:
+1. `spice_test()` checks for the ICY DLM; `spice_standard_kernels`,
+   `spice_kernel_load` and `spice_kernel_info` call it first and return
+   quietly if ICY is missing (the geometry wrappers don't, and fail on the
+   first `cspice_*` call). ICY is not bundled:
    `external/IDL_ICY/README.txt` explains the manual install.
 2. A mission kernel routine builds a file list and loads it, e.g.
    `mvn_spice_kernels`

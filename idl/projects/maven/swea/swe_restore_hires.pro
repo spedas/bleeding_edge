@@ -13,15 +13,22 @@
 ;KEYWORDS:
 ;       TPLOT:     Make a time series plot of the result.  Default = 1 (yes).
 ;
+;NOTE: This procedure has been superceded by mvn_swe_load_hires.pro.
+;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2025-12-04 14:59:15 -0800 (Thu, 04 Dec 2025) $
-; $LastChangedRevision: 33902 $
+; $LastChangedDate: 2026-10-13 14:04:44 -0700 (Tue, 13 Oct 2026) $
+; $LastChangedRevision: 34971 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/swe_restore_hires.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;FILE: swe_restore_hires.pro
 ;-
 pro swe_restore_hires, date, tplot=tplot
+
+  yn = 'N'
+  print, '  This procedure has been superceded by mvn_swe_load_hires.'
+  read, yn, prompt='  Continue anyway (y|n) ? ', format='(a1)'
+  if (strupcase(yn) ne 'Y') then return
 
   doplot = (n_elements(tplot) gt 0) ? keyword_set(tplot) : 1
 

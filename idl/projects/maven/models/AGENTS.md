@@ -55,7 +55,8 @@ research study of SEP electrons at periapsis.
    asks at the terminal, or skips (`/nocalc`, for scripts).
 3. `mvn_model_bcrust` gets the MAVEN position in `IAU_MARS` from SPICE and
    evaluates the chosen model. The model keywords are `/morschhauser` (default),
-   `/arkani`, `/cain_2003`, `/cain_2011`, `/purucker`, `/langlais`, `/gao`.
+   `/arkani`, `/cain_2003`, `/cain_2011`, `/purucker`, `/langlais`, `/gao`,
+   `/delcourt_mittelholz`.
 
 `projects/maven/quicklook/mvn_ql_pfp_tplot.pro` calls it whenever it loads
 MAG; its `bcrust` keyword becomes `calc` (0 means `/nocalc`).
@@ -64,10 +65,12 @@ MAG; its `bcrust` keyword becomes `calc` (0 means `/nocalc`).
 
 1. `pui/mvn_pui_data_load.pro` loads MAG, SWIA, STATIC, SEP, SWEA, EUV and SPICE
    for the `timespan` range (`/nodataload` skips this; `/nomag` etc. skip one
-   instrument and fall back to default drivers).
+   instrument; for MAG, SWIA, SWEA and EUV the model then uses default drivers
+   if the data are not already loaded).
 2. It solves pickup-ion trajectories in uniform upstream fields and bins the
    modeled O+ and H+ fluxes into each instrument's energy and angle response
-   (`/do3d` for 3D SWIA and STATIC spectra; needs several GB of memory).
+   (`/do3d` for 3D SWIA and STATIC spectra; the crib says it "requires about
+   7 GB of memory for 1 full day").
 3. Results go to `common mvn_pui_com` (`pui/mvn_pui_commonblock.pro`); then
    `mvn_pui_tplot, /store, /tplot` makes model-data comparison panels.
 
