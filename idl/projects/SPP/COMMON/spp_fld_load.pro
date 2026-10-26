@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2023
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2026-10-07 14:53:18 -0700 (Wed, 07 Oct 2026) $
-; $LastChangedRevision: 34954 $
+; $LastChangedDate: 2026-10-23 12:15:27 -0700 (Fri, 23 Oct 2026) $
+; $LastChangedRevision: 35004 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -475,7 +475,7 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
     pathformat = str_sub(pathformat, 'YYYY/MM/', 'full_mis\sion/')
 
     pathformat = str_sub(pathformat, 'YYYYMMDD', $
-      '20180812_090000_20300101_090000')
+      '20180812_090000_20291231_090000')
 
     ;
     ; Solar Orbiter longterm ephemeris
