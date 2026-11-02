@@ -1,4 +1,34 @@
-pro swfo_load_tplot_store,da
+;+
+;PROCEDURE:  SWFO_LOAD
+;PURPOSE: Loads and/or makes SWFO data products
+; (currently MAG and STIS) for different resolutions.
+;
+; This is the primary routine to access SSL-produced
+; SWFO/SOLAR-1 data products, which are decommutated from
+; the CCSDS packets in an IDL data pipeline
+; that is independent of NOAA NESDIS and NOAA SWPC.
+;
+; A username/password is required to access this data.
+; Ask Davin Larson if you are interested.
+;
+; Example calls:
+;
+; For low resolution (30 sec) Level 1b and Level 2 STIS data:
+;  > swfo_load, types=['stis_l1b'], lowres=1
+;
+; For full resolution Level 0b, 1a, and 1b STIS data:
+;  > swfo_load, types=['stis_l0b', 'stis_l1a', 'stis_l1b'], lowres=0
+;
+; For full resolution Level 1b STIS data and 1 sec averaged MAG data:
+;  > swfo_load, types=['mag1s', 'stis_l1b']
+;
+; $LastChangedBy: $
+; $LastChangedDate: $
+; $LastChangedRevision:  $
+; $URL:  $
+
+
+pro swfo_load_tplot_store,da,cal=cal
 
 
   prefix = 'swfo_'
@@ -35,9 +65,11 @@ pro swfo_load_tplot_store,da
       zlim,tname+'*_EFLUX',1,1e4,1,/default
       options,tname+'_QUALITY_BITS', tplot_routine='bitplot'
       if 1 then begin
-        l2 = swfo_stis_sci_level_2(da.array)
-        l2_da = dynamicarray(l2,name = str_sub(da.name,'_l1b','_l2'))
-        store_data,l2_da.name,data=l2_da,tagnames='*',dlim={ylog:1,ystyle:1,yrange:[1e-5,1e5]}
+        l2 = swfo_stis_sci_level_2(da.array, cal=cal)
+        l2_name = str_sub(tname,'_l1b','_l2')
+        l2_da = dynamicarray(l2,name = l2_name)
+        store_data,l2_da.name,data=l2_da,tagnames='*';,dlim={ylog:1,ystyle:1,yrange:[1e-5,1e5]}
+        options, l2_name+'*FLUX', ylog=1, ystyle=1, yrange=[1e-5,1e5]
       endif
     end
     else: begin
@@ -63,10 +95,16 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
   ,mk_l1a = mk_l1a $
   ,mk_l1b = mk_l1b $
   ,mk_mag = mk_mag $
-  ,station=station, varnames=varnames
+  ,station=station, varnames=varnames, cal=cal, exec=exec
 
+  ; Starts the exec window for sweapsoc:
+  if keyword_set(exec) then begin
+    exec, exec_text="swfo_load, make=2, trange=systime(1)+[-1, 0]*3600d*24*8 & swfo_load, make=3, trange=systime(1)+[-1, 0]*3600d*24*8, /mk_mag, /mk_l0b, /mk_l1a, /mk_l1b", int=600
+    return
+  endif
 
   if isa(user_pass,'string') then setenv,'SWFO_USER_PASS='+user_pass
+  if ~isa(cal,'dictionary') then cal = swfo_stis_inst_response_calval()
 
   swfo_user_pass = getenv('SWFO_USER_PASS')
 
@@ -94,7 +132,9 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
       ;types = ['sc_100','sc_110','stis_hkp2','stis_sci','stis_nse','mag8','mag64']
 
       for tint= tints[0],tints[1]+1 do begin
-        tr= (tint +[0,1]) *res
+        tr= (tint +[0,1]) *res + [-5*60d, 0]
+        ; tr= (tints[0]*res +[0,3600d]) + [-5*60d, 0]
+        ; stop
         swfo_ccsds_frame_read,trange=tr,merge=0,reader=rdr,user_pass=getenv('SWFO_USER_PASS'),station=station
         dh=!null
 
@@ -130,6 +170,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
           if da.size gt 0 then begin
             dprint,key,' ',da.name,da.size
             tr = minmax(da.sample(varname='time') )
+            stop
             if keyword_set(trange) then tr = trange[0] > tr < trange[1]
             da.ncdf_make_file,/append ,resolution=resolution, pathformat=pathname0 ,trange=tr  ; be careful using trange! it can be changed
           endif
@@ -250,7 +291,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
           endif
 
           dprint,'Computing L1a',dlevel=2
-          l1a =swfo_stis_sci_level_1a(l0b_da.array)
+          l1a =swfo_stis_sci_level_1a(l0b_da.array, cal=cal)
           l1a_da =  dynamicarray(name='stis_l1a', l1a ,/no_copy )
           datahash['stis_l1a'] = l1a_da
           l1a_da.ncdf_make_file,resolution = 24*3600d  ,pathformat=pathname0,  append=append
@@ -273,7 +314,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
         if l1b_filetime lt l1a_filetime and keyword_set(mk_l1b) then begin
 
           dprint,'Computing L1b',dlevel=2
-          l1b = swfo_stis_sci_level_1b(l1a_da.array)
+          l1b = swfo_stis_sci_level_1b(l1a_da.array, cal=cal)
           l1b_da =  dynamicarray(name='stis_l1b',l1b,/no_copy )
           datahash['stis_l1b'] = l1b_da
           l1b_da.ncdf_make_file,resolution = 24*3600d   ,pathformat=pathname0,  append=append
@@ -362,7 +403,7 @@ pro swfo_load,make=make,trange=trange,types=types,current=current,datahash=datah
 
   foreach da,datahash,type do begin
     if keyword_set(store) then begin
-      swfo_load_tplot_store,da
+      swfo_load_tplot_store,da,cal=cal
       ; endif
       ;  store_data,'swfo_'+ type,data= datahash[type],tagnames = '*'
     endif

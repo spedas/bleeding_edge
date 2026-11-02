@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Fri Oct 23 15:46:43 2026.<P>
+<STRONG>Last modified: </STRONG>Sun Nov  1 03:16:38 2026.<P>
  
 <HR>
  
@@ -897,8 +897,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2020-05-01 12:26:38 -0700 (Fri, 01 May 2020) $
- $LastChangedRevision: 28659 $
+ $LastChangedDate: 2026-10-31 17:47:45 -0700 (Sat, 31 Oct 2026) $
+ $LastChangedRevision: 35033 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_convert.pro $
 
 CREATED BY:	David L. Mitchell
@@ -997,8 +997,8 @@ KEYWORDS:
      NPTS  : A named variable to hold the number of data points.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
- $LastChangedRevision: 34858 $
+ $LastChangedDate: 2026-10-31 17:48:04 -0700 (Sat, 31 Oct 2026) $
+ $LastChangedRevision: 35034 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1225,11 +1225,13 @@ KEYWORDS:
 
        PANS:          Tplot panel names created when DOPLOT is set.
 
+       VERSION:       CIO database version.  Default = 4.
+
        SUCCESS:       Success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
- $LastChangedRevision: 34858 $
+ $LastChangedDate: 2026-10-31 08:40:17 -0700 (Sat, 31 Oct 2026) $
+ $LastChangedRevision: 35032 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1272,16 +1274,12 @@ KEYWORDS:
 
        L3:            Use STATIC L3 data for densities and temperatures.
 
-       L2_VERSION:    STATIC L2 version to use.  Default = 2.
-                      The STATIC loader does not use file_retreive, so the normal version
-                      control doesn't work.
-
        MAILTO:        Send email to this address on job start and finish.
                       Default = 'calif_dave@icloud.com'
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-03-19 15:27:07 -0700 (Thu, 19 Mar 2026) $
- $LastChangedRevision: 34278 $
+ $LastChangedDate: 2026-10-30 13:34:57 -0700 (Fri, 30 Oct 2026) $
+ $LastChangedRevision: 35031 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 
 CREATED BY:    David L. Mitchell
@@ -1370,8 +1368,8 @@ CREATED BY:      D. L. Mitchell.
 
 LAST MODIFICATION:
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2018-09-09 18:05:59 -0700 (Sun, 09 Sep 2018) $
- $LastChangedRevision: 25764 $
+ $LastChangedDate: 2026-10-26 11:37:05 -0700 (Mon, 26 Oct 2026) $
+ $LastChangedRevision: 35010 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_struct.pro $
 
 </PRE><P>
@@ -1531,11 +1529,8 @@ KEYWORDS:
     TAVG:          Time averaging window size.  Improves statistics and
                    reduces run time.
 
-    NOLOAD:        Skip the step of loading data.
-
-    L2_VERSION:    STATIC L2 version to use.  Default = 3.
-                   The STATIC loader does not use file_retreive, so the normal version
-                   control doesn't work.
+    RELOAD:        Load STATIC data whether or not it's necessary.  Safest for
+                   automated script.
 
     PANS:          Named variable to hold a space delimited string containing
                    the tplot variable(s) created.
@@ -1547,8 +1542,8 @@ KEYWORDS:
     SUCCESS:       Processing success flag.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-09-07 18:25:49 -0700 (Mon, 07 Sep 2026) $
- $LastChangedRevision: 34876 $
+ $LastChangedDate: 2026-10-30 11:14:43 -0700 (Fri, 30 Oct 2026) $
+ $LastChangedRevision: 35027 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_coldion.pro $
 
 CREATED BY:    David L. Mitchell
@@ -4306,8 +4301,8 @@ KEYWORDS:
 NOTE: This procedure supercedes swe_restore_hires.pro.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-10-13 13:38:02 -0700 (Tue, 13 Oct 2026) $
- $LastChangedRevision: 34969 $
+ $LastChangedDate: 2026-10-26 11:35:20 -0700 (Mon, 26 Oct 2026) $
+ $LastChangedRevision: 35008 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_hires.pro $
 
 CREATED BY:    David L. Mitchell
@@ -7156,8 +7151,8 @@ KEYWORDS:
                    Default is current value of swe_verbose.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2023-05-11 10:05:18 -0700 (Thu, 11 May 2023) $
- $LastChangedRevision: 31851 $
+ $LastChangedDate: 2026-10-30 13:31:23 -0700 (Fri, 30 Oct 2026) $
+ $LastChangedRevision: 35030 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_spice_init.pro $
 
 CREATED BY:    David L. Mitchell  09/18/13

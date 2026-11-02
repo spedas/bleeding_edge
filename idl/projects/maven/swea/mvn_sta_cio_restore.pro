@@ -24,11 +24,13 @@
 ;
 ;       PANS:          Tplot panel names created when DOPLOT is set.
 ;
+;       VERSION:       CIO database version.  Default = 4.
+;
 ;       SUCCESS:       Success flag.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
-; $LastChangedRevision: 34858 $
+; $LastChangedDate: 2026-10-31 08:40:17 -0700 (Sat, 31 Oct 2026) $
+; $LastChangedRevision: 35032 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_restore.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -36,7 +38,7 @@
 ;-
 pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
                          result_o1=result_o1, result_o2=result_o2, doplot=doplot, $
-                         pans=pans, success=success
+                         pans=pans, version=version, success=success
 
   common coldion, cio_h, cio_o1, cio_o2
 
@@ -45,8 +47,11 @@ pro mvn_sta_cio_restore, trange, loadonly=loadonly, result_h=result_h, $
   cio_o2 = 0
   success = 0
 
+  version = (size(version,/type) gt 0) ? fix(version[0]) < 4 : 4
+  version = string(version, format='(i2.2)')
+
   rootdir = 'maven/data/sci/sta/l3/cio/YYYY/MM/'
-  fname = 'mvn_sta_cio_YYYYMMDD_v03.sav'
+  fname = 'mvn_sta_cio_YYYYMMDD_v' + version + '.sav'
 
   tplot_options, get_opt=topt
   tspan_exists = (max(topt.trange_full) gt time_double('2013-11-18'))

@@ -1,44 +1,3 @@
-function get_tracers_opts, level_in=level_in, instrument_in=instrument_in, $
-    probes=probes, levels=levels, instruments=instruments, datatypes=datatypes
-
-    probes_opts = ['1','2']
-    levels_opts = ['1a','1b','2','3']
-    instruments_opts = ['ace','aci','efi','mag','magic','msc']
-
-    if keyword_set(probes) then return,probes_opts
-    if keyword_set(levels) then return,levels_opts
-    if keyword_set(instruments) then return,instruments_opts
-    if keyword_set(datatypes) && ~undefined(level_in) && ~undefined(instrument_in) then begin
-        ;if ~in_set(level_in,['l1a','l1b','l2','l3']) then level_in='l'+level_in
-        case instrument_in of
-            'ace': begin
-                    if in_set(level_in,['l1a','l1b','l2']) then datatypes_opts = ['def']
-                    if in_set(level_in,['l3']) then datatypes_opts = ['pitch-angle-dist']
-                end
-            'aci': begin
-                    if in_set(level_in,['l1a','l1b','l2']) then datatypes_opts = ['ipd']
-                end
-            'efi': begin
-                    if in_set(level_in,['l1a','l1b','l2']) then datatypes_opts = ['eac','ehf','hsk','vdc']
-                end
-            'mag': begin
-                    if in_set(level_in,['l1a','l1b','l2']) then datatypes_opts = ['bdc-16sps']
-                end
-            'magic': begin
-                    if in_set(level_in,['l1a','l1b','l2']) then datatypes_opts = ['bdc-16sps']
-                end
-            'msc': begin
-                    if in_set(level_in,['l1a','l1b','l2']) then datatypes_opts = ['bac']
-                end
-        endcase
-        return, datatypes_opts
-    endif else begin
-        dprint,"Insufficient information given"
-        return,["**"]
-    endelse
-
-end
-
 ;+
 ;NAME:
 ;       tracers_load_data
@@ -151,6 +110,60 @@ pro tracers_load_data, trange = trange, probes = probes, datatypes = datatypes, 
     cdf_filenames = cdf_filenames, cdf_version = cdf_version, cdf_records = cdf_records, $
     tt2000 = tt2000 
     
+    
+    ; TODO: need to check against basic functionality of instrument load routines
+    ; TODO: once basic load routines are verified, need to add ACE additional load features
+    ; * tra_ace_load_l2_data includes tplot procedure
+    ; TODO: then, add EPH, ROI, and SW load routines (possibly as separate scripts)
+    
+    ; TODO: verify tplot for instruments
+    ; TODO: if needed, add tplot routines for EPH and SW
+    
+    ; TODO: add crib sheets
+    
+    ; Load routines:
+    ; Instruments:
+    ; * ACE
+    ;   - get_highest_version
+    ;   - tra_ace_convert_units
+    ;   - tra_ace_load_l2_data
+    ;   - tra_ace_make_info_str
+    ;   - tracers_ace_load -- done (needs tra_ace_load_l2_data for L2)
+    ; * ACI
+    ;   - tracers_aci_load -- done
+    ; * EFI
+    ;   - tracers_efi_load_rroglans
+    ;   - tracers_efi_load -- done
+    ; * MSC
+    ;   - tracers_msc_load -- done
+    ; Others:
+    ; * EPH
+    ;   - tracers_eph_load 
+    ; * ROI
+    ;   - tracers_roi_load
+    ; * SW
+    ;   - tracers_sw_load
+    
+    ; tplot:
+    ; Instruments:
+    ; * ACI
+    ; * EFI
+    ; * MSC
+    ; Other:
+    ; * EPH
+    ; * SW
+    
+    ; Crib sheets:
+    ; Instruments:
+    ; * ACE
+    ; * ACI
+    ; * EFI
+    ; * MSC
+    ; Other:
+    ; * EPH
+    ; * ROI (times?)
+    ; * SW
+    
     ;temporary variables to track elapsed times
     t0 = systime(/sec)
     dt_query = 0d
@@ -162,24 +175,22 @@ pro tracers_load_data, trange = trange, probes = probes, datatypes = datatypes, 
     tracers_init, remote_data_dir = remote_data_dir, local_data_dir = local_data_dir, no_color_setup = no_color_setup
     if undefined(source) then source = !tracers
     
+    ; TODO: input option validation?
     probes_opts = ['1','2']
     levels_opts = ['1a','1b','2','3']
     instruments_opts = ['ace','aci','efi','mag','magic','msc']
     
     ; Handle input arguments
     ; Probes:
-    probes_opts = get_tracers_opts(/probes)
     if undefined(probes) then probes = ['2']
     if ~is_array(probes) then probes = strsplit(probes,' ',/extract)
     if in_set('all',probes) or in_set('*',probes) then probes = probes_opts
     probes = strcompress(string(probes), /rem) ; probes should be strings
     probes = strlowcase(probes)
     ; Levels
-    levels_opts = get_tracers_opts(/levels)
     if undefined(level) then level='2'
     level = 'l' + strlowcase(level)
     ; Instruments:
-    instruments_opts = get_tracers_opts(/instruments)
     if undefined(instruments) then instruments = ['all']
     if ~is_array(instruments) then instruments = strsplit(instruments,' ',/extract)
     if in_set('all',instruments) or in_set('*',instruments) then instruments = instruments_opts
@@ -261,29 +272,38 @@ pro tracers_load_data, trange = trange, probes = probes, datatypes = datatypes, 
     undefine, cdf_filenames
     ; Retrieve data:
     for probes_idx = 0, n_elements(probes)-1 do begin
-        probe = 'ts' + probes[probes_idx]
+        probe = probes[probes_idx]
         for instruments_idx = 0, n_elements(instruments)-1 do begin
             instrument = instruments[instruments_idx]
             datatypes_opts = []
             case instrument of
                 'ace': begin
-                    if in_set(level,['l1a','l1b','l2']) then datatypes_opts = ['def']
+                    if in_set(level,['l1a']) then datatypes_opts = ['epd_x2a3','epd_x2b2','epd_x2b3']
+                    if in_set(level,['l1b']) then datatypes_opts = ['epd_x2a3','epd_x2b2','epd_x2b3','hsk-analog_x2a1','hsk-digital_x2a1']
+                    if in_set(level,['l2']) then datatypes_opts = ['def']
                     if in_set(level,['l3']) then datatypes_opts = ['pitch-angle-dist']
                 end
                 'aci': begin
-                    if in_set(level,['l1a','l1b','l2']) then datatypes_opts = ['ipd']
+                    if in_set(level,['l1a','l1b']) then datatypes_opts = ['hsk-anode_x281','hsk-fast_x28c','hsk-fast_x281','hsk_x281','ipd_x292']
+                    if in_set(level,['l2']) then datatypes_opts = ['ipd']
                 end
                 'efi': begin
-                    if in_set(level,['l1a','l1b','l2']) then datatypes_opts = ['eac','ehf','hsk','vdc']
+                    if in_set(level,['l1a']) then datatypes_opts = ['eac_x276','edc-bor_x273','edc-roi_x272','ehf_x277','vdc-bor_x275','vdc-roi_x274']
+                    if in_set(level,['l1b']) then datatypes_opts = ['eac_x276','edc-bor_x273','edc-roi_x272','ehf_x277','vdc-bor_x275','vdc-roi_x274','hsk_x261']
+                    if in_set(level,['l2']) then datatypes_opts = ['eac','ehf','hsk','vdc','edc','edc-roi']
                 end
                 'mag': begin
-                    if in_set(level,['l1a','l1b','l2']) then datatypes_opts = ['bdc-16sps']
+                    if in_set(level,['l1a','l1b']) then datatypes_opts = ['bdc-bor_x233','bdc-roi_x232']
+                    if in_set(level,['l2']) then datatypes_opts = ['bdc-16sps']
                 end
                 'magic': begin
-                    if in_set(level,['l1a','l1b','l2']) then datatypes_opts = ['bdc-16sps']
+                    if in_set(level,['l1a']) then datatypes_opts = ['bdc-bor_x213','bdc-roi_x212']
+                    if in_set(level,['l1b']) then datatypes_opts = ['bdc-bor_x213','bdc-roi_x212','hsk-fast_x201']
+                    if in_set(level,['l2']) then datatypes_opts = ['bdc-16sps']
                 end
                 'msc': begin
-                    if in_set(level,['l1a','l1b','l2']) then datatypes_opts = ['bac']
+                    if in_set(level,['l1a','l1b']) then datatypes_opts = ['bac_x252']
+                    if in_set(level,['l2']) then datatypes_opts = ['bac']
                 end
             endcase
             if n_elements(datatypes_opts) gt 0 then begin
@@ -301,7 +321,7 @@ pro tracers_load_data, trange = trange, probes = probes, datatypes = datatypes, 
                             daily_names = file_dailynames(trange=tr, /unique, times=times)
                             fn_remote_list = make_array(n_elements(daily_names), /string)
                             fn_local_list = make_array(n_elements(daily_names), /string)
-                            for dn=0, n_elements(daily_names)-1 do fn_remote_list[dn] = probe + '_' + level + '_' + instrument + '_' + datatype + '_' + daily_names[dn] + '_v'+cdf_version+'.cdf'
+                            for dn=0, n_elements(daily_names)-1 do fn_remote_list[dn] = 'ts' + probe + '_' + level + '_' + instrument + '_' + datatype + '_' + daily_names[dn] + '_v'+cdf_version+'.cdf'
                             ;clear so new names are not appended to existing array
                             undefine, tplotnames
                             ; clear CDF filenames so we're not appending to an existing array
@@ -315,42 +335,30 @@ pro tracers_load_data, trange = trange, probes = probes, datatypes = datatypes, 
                                 file_local_path = ''
                                 case remote_source of
                                     'spdf': begin
-                                        datatype_dir = datatype
-                                        case instrument of
-                                            'ace': begin
-                                                instrument_dir = instrument + '_cusp-electrons'
-                                                if datatype eq 'def' then datatype_dir = 'def_diff-en-flux'
-                                                if datatype eq 'pitch-angle-dist' then datatype_dir = 'def_pitch-angle-dist'
-                                            end
-                                            'aci': begin
-                                                instrument_dir = instrument + '_cusp-ions'
-                                                if datatype eq 'ipd' then datatype_dir = 'ipd_ion-dist'
-                                            end
-                                            'efi': begin
-                                                if datatype eq 'ehf' then datatype_dir = 'highfrequency'
-                                            end
-                                            'msc': instrument_dir = instrument + '_searchcoil'
-                                            else: instrument_dir = instrument
-                                        endcase
-                                        file_remote_path = 'tracers' + probes[probes_idx] + '/' + instrument_dir + '/' + level + '/' + datatype_dir + '/' + strmid(daily_names[file_idx],0,4) + '/'
+                                        file_remote_path = tracers_make_spdf_url(source_remote_dir=source.remote_data_dir, $
+                                            probe=probe, $
+                                            level=level, $
+                                            instrument=instrument, $
+                                            datatype=datatype, $
+                                            daily_name=daily_names[file_idx])
                                     end
                                     'teams': begin
-                                        case instrument of
-                                            'aci': file_remote_path = strupcase(instrument) + '/' + probe + '/' + level + '/' + instrument + '/' + strmid(daily_names[file_idx],0,4) + '/' + strmid(daily_names[file_idx],4,2) + '/'
-                                            'efi': file_remote_path = strupcase(instrument) + '/' + probe + '/' + level + '/' + strmid(daily_names[file_idx],0,4) + '/' + strmid(daily_names[file_idx],4,2) + '/' + strmid(daily_names[file_idx],6,2) + '/'
-                                            'mag': file_remote_path = strupcase(instrument) + '/' + 'publish' + '/'
-                                            'magic': file_remote_path = strupcase(instrument) + '/' + 'publish' + '/' + strupcase(probe) + '/' + strupcase(level) + '/' + strmid(daily_names[file_idx],0,4) + '/' + strmid(daily_names[file_idx],4,2) + '/' + strmid(daily_names[file_idx],6,2) + '/'
-                                            else: file_remote_path = strupcase(instrument) + '/' + probe + '/' + level + '/' + strmid(daily_names[file_idx],0,4) + '/' + strmid(daily_names[file_idx],4,2) + '/'
-                                        endcase
+                                        file_remote_path = tracers_make_teams_url(source_remote_dir=source.remote_data_dir, $
+                                            probe=probe, $
+                                            level=level, $
+                                            instrument=instrument, $
+                                            datatype=datatype, $
+                                            daily_name=daily_names[file_idx])
                                     end
                                     'public': begin
-                                        case instrument of
-                                            'magic': file_remote_path = strupcase(instrument) + '/' + strupcase(probe) + '/' + strupcase(level) + '/' + strmid(daily_names[file_idx],0,4) + '/' + strmid(daily_names[file_idx],4,2) + '/'
-                                            else: file_remote_path = strupcase(level) + '/' + strupcase(probe) + '/' + strmid(daily_names[file_idx],0,4) + '/' + strmid(daily_names[file_idx],4,2) + '/' + strmid(daily_names[file_idx],6,2) + '/' ; public
-                                        endcase
+                                        file_remote_path = tracers_make_public_url(source_remote_dir=source.remote_data_dir, $
+                                            probe=probe, $
+                                            level=level, $
+                                            instrument=instrument, $
+                                            datatype=datatype, $
+                                            daily_name=daily_names[file_idx])
                                     end
                                 endcase
-                                file_remote_path = source.remote_data_dir + file_remote_path
                                 file_local_path = spd_addslash(local_path + strmid(daily_names[file_idx],0,4) + '/' + strmid(daily_names[file_idx],4,2) + '/' + strmid(daily_names[file_idx],6,2) + '/')
                                 ; Download the data unless told otherwise:
                                 if ~keyword_set(no_download) then begin

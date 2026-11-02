@@ -73,8 +73,8 @@ end
 ; Note: ACE plot not working yet.
 ;
 ; $LastChangedBy: rjolitz $
-; $LastChangedDate: 2026-10-18 19:08:12 -0700 (Sun, 18 Oct 2026) $
-; $LastChangedRevision: 34997 $
+; $LastChangedDate: 2026-10-28 15:39:19 -0700 (Wed, 28 Oct 2026) $
+; $LastChangedRevision: 35017 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/swfo_quicklook.pro $
 ; $ID: $
 
@@ -206,10 +206,6 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
               'swfo_stis_l1b_{}_HDR_ION_EFLUX', 'swfo_stis_l1b_{}_HDR_ELEC_EFLUX',$
               'swfo_stis_l1a_{}_NOISE_SIGMA', 'swfo_stis_l0b_{}_VALID_RATES']
 
-  ; - ACE compare:
-  ace_var = ['stis_l2_{}_ION_FLUX', 'stis_l2_{}_ELEC_FLUX',$
-             'ace_rtsw_epam_proton_flux', 'ace_rtsw_epam_elec_flux']
-
   ; - NOISE:
   noise_var = ['swfo_stis_l0b_GAP', 'swfo_stis_l1a_{}_NOISE_*',$
                'swfo_stis_l1a_{}_REACTION_WHEEL_SPEED_RPM',$
@@ -240,7 +236,7 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
     ; fill in the tplot variable info:
     tplot_hkp_var_i = strarr_replace(tplot_hkp_var, '{}', res_tplot_prefix)
     summ_var_i = strarr_replace(summ_var, '{}', res_tplot_prefix)
-    ace_var_i = strarr_replace(ace_var, '{}', res_tplot_prefix)
+    ; ace_var_i = strarr_replace(ace_var, '{}', res_tplot_prefix)
     noise_var_i = strarr_replace(noise_var, '{}', res_tplot_prefix)
 
     for interval=0, n_intervals-1 do begin
@@ -374,54 +370,9 @@ pro swfo_quicklook, trange=trange, plot_cadence=plot_cadence,$
 
         endif else if plot_name.startswith('ace') then begin
 
-          ; Enough room for the labels:
-          tplot_options,'title', data_res_name + 'SOLAR-1 STIS (color) versus ACE EPAM (gray, RTSW)'
-          tplot_options,'xmargin',[10,15]
-
-          options, 'ace_rtsw_epam_elec_flux',$
-            ytitle='5-min ACE Elec Flux', ysubtitle='[#/cm2-s-ster-keV]'
-          options, 'ace_rtsw_epam_proton_flux',$
-            ytitle='5-min ACE Proton Flux', ysubtitle='[#/cm2-s-ster-keV]'
-
-
-          stis_l2_ion_tplot_name = 'stis_l2_'+res_tplot_prefix+'_ION_FLUX'
-          stis_l2_elec_tplot_name = 'stis_l2_'+res_tplot_prefix+'_ELEC_FLUX'
-
-          options, stis_l2_ion_tplot_name,$
-            ytitle= data_res_name+'STIS Ion Flux', ysubtitle='[#/cm2-s-ster-keV]',$
-            labels=['30-50 keV','50-100 keV', '100-200 keV', '200-400 keV', '400-800 keV', '800-1600 keV', '1.6-3 MeV'],$
-              ylog=1, ystyle=1, labflag=-1
-          options, stis_l2_elec_tplot_name,$
-            ytitle=data_res_name +'STIS Elec Flux', ysubtitle='[#/cm2-s-ster-keV]',$
-            labels=['30-50 keV','50-100 keV', '100-200 keV', '200-400 keV', '400-800 keV', '800-1600 keV', '1.6-3 MeV'],$
-              ylog=1, ystyle=1, labflag=-1
-
-          ; make new plot:
-          if keyword_set(overlay_epam_stis) then begin
-
-            ; use B+W colortable to contrast the 
-            bw_ct = 42
-            options, 'ace_rtsw_epam_proton_flux', color_table=bw_ct,$
-              colors=55 + indgen(5)*(254-55)/4
-            options, 'ace_rtsw_epam_elec_flux', color_table=bw_ct,$
-              colors=[55, 254]
-
-            store_data, 'epam_stis_proton_flux',$
-              data=[stis_l2_ion_tplot_name, 'ace_rtsw_epam_proton_flux']
-            options, 'epam_stis_proton_flux',$
-              labflag=-1, ytitle="Ion Flux", ysubtitle='[#/cm2-s-ster-keV]', yrange=[1e-6, 1e6]
-
-            store_data, 'epam_stis_elec_flux',$
-              data=[stis_l2_elec_tplot_name, 'ace_rtsw_epam_elec_flux']
-            options, 'epam_stis_elec_flux',$
-              labflag=-1, ytitle="Elec Flux", ysubtitle='[#/cm2-s-ster-keV]', yrange=[1e-6, 1e6]
-
-            ace_var_i = ['epam_stis_elec_flux', 'epam_stis_proton_flux']
-
-
-          endif
-
-          tplot, ace_var_i, window=2
+          swfo_stis_epam_tplot, stis_res_tplot_prefix=res_tplot_prefix,$
+            stis_res_name=data_res_name,$
+            overlay=overlay_epam_stis, window=2
 
         endif else if plot_name.startswith('noise') then begin
 

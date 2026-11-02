@@ -11,8 +11,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2020-05-01 12:26:38 -0700 (Fri, 01 May 2020) $
-; $LastChangedRevision: 28659 $
+; $LastChangedDate: 2026-10-31 17:47:45 -0700 (Sat, 31 Oct 2026) $
+; $LastChangedRevision: 35033 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_convert.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -51,73 +51,76 @@ pro mvn_sta_cio_convert, data
     str_element, odata, 'vratio', !values.f_nan, /add
     str_element, odata, 'fbulk', !values.f_nan, /add
 
-    odata    = {time     : dblarr(npts)  , $   ; time
-                den_i    : fltarr(npts)  , $   ; ion number density (1/cc)
-                den_e    : fltarr(npts)  , $   ; electron number density (1/cc)
-                temp     : fltarr(npts)  , $   ; ion temperature (eV)
-                v_sc_x   : dblarr(npts)  , $   ; spacecraft X velocity (km/s)
-                v_sc_y   : dblarr(npts)  , $   ; spacecraft Y velocity (km/s)
-                v_sc_z   : dblarr(npts)  , $   ; spacecraft Z velocity (km/s)
-                v_tot    : dblarr(npts)  , $   ; spacecraft speed (km/s)
-                vel_x    : dblarr(npts)  , $   ; ion bulk X velocity in MSO frame (km/s)
-                vel_y    : dblarr(npts)  , $   ; ion bulk Y velocity in MSO frame (km/s)
-                vel_z    : dblarr(npts)  , $   ; ion bulk Z velocity in MSO frame (km/s)
-                vel_s    : dblarr(npts)  , $   ; ion bulk S velocity in MSO frame (km/s)
-                vel_r    : dblarr(npts)  , $   ; ion bulk radial velocity w.r.t. Mars (km/s)
-                vel_xe   : dblarr(npts)  , $   ; ion bulk X velocity in MSE frame (km/s)
-                vel_ye   : dblarr(npts)  , $   ; ion bulk Y velocity in MSE frame (km/s)
-                vel_ze   : dblarr(npts)  , $   ; ion bulk Z velocity in MSE frame (km/s)
-                vbulk    : dblarr(npts)  , $   ; ion bulk speed (km/s)
-                vel_phi  : dblarr(npts)  , $   ; ion bulk speed phi in YZ plane (deg)
-                vel_the  : dblarr(npts)  , $   ; ion bulk speed theta w.r.t. X (deg)
-                v_esc    : dblarr(npts)  , $   ; escape velocity (km/s)
-                vratio   : dblarr(npts)  , $   ; V_ion/V_esc
-                fbulk    : dblarr(npts)  , $   ; vbulk * den_i (cm-2 s-1)
-                fradial  : dblarr(npts)  , $   ; vel_r * den_i (cm-2 s-1)
-                logfrad  : dblarr(npts)  , $   ; sign(fradial) * log(abs(fradial))
-                v_app_x  : dblarr(npts)  , $   ; ion bulk X velocity in APP frame (km/s)
-                v_app_y  : dblarr(npts)  , $   ; ion bulk Y velocity in APP frame (km/s)
-                v_app_z  : dblarr(npts)  , $   ; ion bulk Z velocity in APP frame (km/s)
-                Bmag     : fltarr(npts)  , $   ; magnetic field amplitude (nT)
-                Bphi     : fltarr(npts)  , $   ; magnetic field MSO phi   (nT)
-                Bthe     : fltarr(npts)  , $   ; magnetic field MSO theta (nT)
-                Psw      : fltarr(npts)  , $   ; upstream solar wind dynamic pressure (nPa)
-                Bclk     : fltarr(npts)  , $   ; upstream IMF clock angle (0 = east, pi = west)
-                energy   : dblarr(npts)  , $   ; ion kinetic energy (eV)
-                VB_phi   : dblarr(npts)  , $   ; angle between V and B (deg)
-                VI_phi   : fltarr(npts)  , $   ; angle between V and APP-i (deg)
-                VK_the   : fltarr(npts)  , $   ; angle between V and APP-ij plane (deg)
-                sc_pot   : fltarr(npts)  , $   ; spacecraft potential (V)
-                mass     : 0.            , $   ; assumed ion mass (amu)
-                mrange   : [0.,0.]       , $   ; mass range for integration (amu)
-                frame    : ''            , $   ; reference frame (for all vectors)
-                shp_a    : fltarr(npts)  , $   ; e- shape parameter: away
-                shp_t    : fltarr(npts)  , $   ; e- shape parameter: toward
-                ratio    : fltarr(npts)  , $   ; e- flux ratio (away/toward)
-                flux40   : fltarr(npts)  , $   ; e- energy flux at 40 eV
-                topo     : intarr(npts)  , $   ; topology index (see below)
-                region   : intarr(npts)  , $   ; plasma region index
-                mso_x    : fltarr(npts)  , $   ; MSO X coordinate of spacecraft
-                mso_y    : fltarr(npts)  , $   ; MSO Y coordinate of spacecraft
-                mso_z    : fltarr(npts)  , $   ; MSO Z coordinate of spacecraft
-                mso_s    : fltarr(npts)  , $   ; sqrt(mso_y^2. + mso_z^2.)
-                mse_x    : fltarr(npts)  , $   ; MSE X coordinate of spacecraft
-                mse_y    : fltarr(npts)  , $   ; MSE Y coordinate of spacecraft
-                mse_z    : fltarr(npts)  , $   ; MSE Z coordinate of spacecraft
-                sza      : fltarr(npts)  , $   ; solar zenith angle
-                glon     : fltarr(npts)  , $   ; GEO longitude of spacecraft
-                glat     : fltarr(npts)  , $   ; GEO latitude of spacecraft
-                alt      : fltarr(npts)  , $   ; spacecraft altitude (ellipsoid)
-                slon     : fltarr(npts)  , $   ; GEO longitude of sub-solar point
-                slat     : fltarr(npts)  , $   ; GEO latitude of sub-solar point
-                Mdist    : fltarr(npts)  , $   ; Mars-Sun distance (A.U.)
-                L_s      : fltarr(npts)  , $   ; Mars season (L_s)
-                sthe     : fltarr(npts)  , $   ; elevation of Sun in s/c frame
-                sthe_app : fltarr(npts)  , $   ; elevation of Sun in APP frame
-                rthe_app : fltarr(npts)  , $   ; elevation of MSO RAM in APP frame
+    odata    = {time     : dblarr(npts)   , $   ; time
+                den_i    : fltarr(npts)   , $   ; ion number density (1/cc)
+                den_e    : fltarr(npts)   , $   ; electron number density (1/cc)
+                temp     : fltarr(npts)   , $   ; ion temperature (eV)
+                v_sc_x   : dblarr(npts)   , $   ; spacecraft X velocity (km/s)
+                v_sc_y   : dblarr(npts)   , $   ; spacecraft Y velocity (km/s)
+                v_sc_z   : dblarr(npts)   , $   ; spacecraft Z velocity (km/s)
+                v_tot    : dblarr(npts)   , $   ; spacecraft speed (km/s)
+                vel_x    : dblarr(npts)   , $   ; ion bulk X velocity in MSO frame (km/s)
+                vel_y    : dblarr(npts)   , $   ; ion bulk Y velocity in MSO frame (km/s)
+                vel_z    : dblarr(npts)   , $   ; ion bulk Z velocity in MSO frame (km/s)
+                vel_s    : dblarr(npts)   , $   ; ion bulk S velocity in MSO frame (km/s)
+                vel_r    : dblarr(npts)   , $   ; ion bulk radial velocity w.r.t. Mars (km/s)
+                vel_xe   : dblarr(npts)   , $   ; ion bulk X velocity in MSE frame (km/s)
+                vel_ye   : dblarr(npts)   , $   ; ion bulk Y velocity in MSE frame (km/s)
+                vel_ze   : dblarr(npts)   , $   ; ion bulk Z velocity in MSE frame (km/s)
+                vbulk    : dblarr(npts)   , $   ; ion bulk speed (km/s)
+                vel_phi  : dblarr(npts)   , $   ; ion bulk speed phi in YZ plane (deg)
+                vel_the  : dblarr(npts)   , $   ; ion bulk speed theta w.r.t. X (deg)
+                v_esc    : dblarr(npts)   , $   ; escape velocity (km/s)
+                vratio   : dblarr(npts)   , $   ; V_ion/V_esc
+                fbulk    : dblarr(npts)   , $   ; vbulk * den_i (cm-2 s-1)
+                fradial  : dblarr(npts)   , $   ; vel_r * den_i (cm-2 s-1)
+                logfrad  : dblarr(npts)   , $   ; sign(fradial) * log(abs(fradial))
+                v_app_x  : dblarr(npts)   , $   ; ion bulk X velocity in APP frame (km/s)
+                v_app_y  : dblarr(npts)   , $   ; ion bulk Y velocity in APP frame (km/s)
+                v_app_z  : dblarr(npts)   , $   ; ion bulk Z velocity in APP frame (km/s)
+                Bmag     : fltarr(npts)   , $   ; magnetic field amplitude (nT)
+                Bphi     : fltarr(npts)   , $   ; magnetic field MSO phi   (nT)
+                Bthe     : fltarr(npts)   , $   ; magnetic field MSO theta (nT)
+                Psw      : fltarr(npts)   , $   ; upstream solar wind dynamic pressure (nPa)
+                Bclk     : fltarr(npts)   , $   ; upstream IMF clock angle (0 = east, pi = west)
+                energy   : dblarr(npts)   , $   ; ion kinetic energy (eV)
+                VB_phi   : dblarr(npts)   , $   ; angle between V and B (deg)
+                VI_phi   : fltarr(npts)   , $   ; angle between V and APP-i (deg)
+                VK_the   : fltarr(npts)   , $   ; angle between V and APP-ij plane (deg)
+                sc_pot   : fltarr(npts)   , $   ; spacecraft potential (V)
+                mass     : 0.             , $   ; assumed ion mass (amu)
+                mrange   : [0.,0.]        , $   ; mass range for integration (amu)
+                frame    : ''             , $   ; reference frame (for all vectors)
+                shp_a    : fltarr(npts)   , $   ; e- shape parameter: away
+                shp_t    : fltarr(npts)   , $   ; e- shape parameter: toward
+                ratio    : fltarr(npts)   , $   ; e- flux ratio (away/toward)
+                flux40   : fltarr(npts)   , $   ; e- energy flux at 40 eV
+                topo     : intarr(npts)   , $   ; topology index (see below)
+                region   : intarr(npts)   , $   ; plasma region index
+                mso_x    : fltarr(npts)   , $   ; MSO X coordinate of spacecraft
+                mso_y    : fltarr(npts)   , $   ; MSO Y coordinate of spacecraft
+                mso_z    : fltarr(npts)   , $   ; MSO Z coordinate of spacecraft
+                mso_s    : fltarr(npts)   , $   ; sqrt(mso_y^2. + mso_z^2.)
+                mse_x    : fltarr(npts)   , $   ; MSE X coordinate of spacecraft
+                mse_y    : fltarr(npts)   , $   ; MSE Y coordinate of spacecraft
+                mse_z    : fltarr(npts)   , $   ; MSE Z coordinate of spacecraft
+                sza      : fltarr(npts)   , $   ; solar zenith angle
+                glon     : fltarr(npts)   , $   ; GEO longitude of spacecraft
+                glat     : fltarr(npts)   , $   ; GEO latitude of spacecraft
+                alt      : fltarr(npts)   , $   ; spacecraft altitude (ellipsoid)
+                slon     : fltarr(npts)   , $   ; GEO longitude of sub-solar point
+                slat     : fltarr(npts)   , $   ; GEO latitude of sub-solar point
+                Mdist    : fltarr(npts)   , $   ; Mars-Sun distance (A.U.)
+                L_s      : fltarr(npts)   , $   ; Mars season (L_s)
+                sthe     : fltarr(npts)   , $   ; elevation of Sun in s/c frame
+                sthe_app : fltarr(npts)   , $   ; elevation of Sun in APP frame
+                rthe_app : fltarr(npts)   , $   ; elevation of MSO RAM in APP frame
+                metric1  : fltarr(npts)   , $   ; elevation edge metric (see mvn_sta_d0_snap)
+                metric2  : fltarr(npts)   , $   ; elevation center metric (see mvn_sta_d0_snap)
+                metric3  : fltarr(npts,8) , $   ; azimuth center metric (see mvn_sta_d0_snap)
                 apid     : replicate('  ',npts) , $   ; STATIC APID used for calculation
-                flag     : intarr(npts)  , $   ; CIO configuration flag
-                valid    : intarr(npts)     }
+                flag     : intarr(npts)   , $   ; CIO configuration flag
+                valid    : intarr(npts)      }
 
     odata.time = data.time
     odata.den_i = data.den_i
@@ -281,7 +284,7 @@ pro mvn_sta_cio_convert, data
       endif
     endelse
 
-; CIO configuration flag
+; CIO configuration
 
     indx = where(abs(odata.sthe - 45.) lt 5., count)
     if (count gt 0) then odata.flag[indx] = 1  ; SWEA is optimized (twist)
@@ -292,6 +295,12 @@ pro mvn_sta_cio_convert, data
                  (abs(odata.sthe_app) le 5.) and $
                  (abs(odata.rthe_app) le 10.), count)
     if (count gt 0) then odata.flag[indx] = 3  ; both STATIC and SWEA are optimized
+
+; CIO field of view metrics
+
+    odata.metric1 = data.metric1
+    odata.metric2 = data.metric2
+    odata.metric3 = transpose(data.metric3)
 
 ; Stuff the result back into data
 

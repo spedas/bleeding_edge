@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" href="/new_menu/ddlevelsfiles/ddlevelsmenu-sidebar.css" />
 <link rel="stylesheet" type="text/css" href="/new_menu/menu.css" />
 
-<link rel="icon" type="image/png" href="http://themis.ssl.berkeley.edu/favicon.ico" />
+<link rel="icon" type="image/png" href="https://sprg.ssl.berkeley.edu/data/swfo/data/plots/stisicon.png" />
 
 <script type="text/javascript" src="/new_menu/ddlevelsfiles/ddlevelsmenu.js">
 
@@ -407,7 +407,8 @@ function changeImgSrc(delType)
 	interval = 1;
     }
 
-    var dur = parseInt(plotDuration.substring(0,1),10);  //warning, the parseInt function can be finicky if the required base is not provided
+    // var dur = parseInt(plotDuration.substring(0,1),10);  //warning, the parseInt function can be finicky if the required base is not provided
+    var dur = parseInt(document.getElementById("interval_days").value)
 
     interval *= dur*24
     console.log(interval)
@@ -555,7 +556,7 @@ function firstLoad()
 function nodata() {
     // var sumType = document.getElementById("sumplotType").value;
     // var type = document.getElementById("subtype").value ;
-    document.getElementById("showtheimg").src = "http://themis.ssl.berkeley.edu/no_file.gif" ;
+    document.getElementById("showtheimg").src = "https://sprg.ssl.berkeley.edu/data/swfo/data/plots/no_file.gif" ;
 }
 //updateMenus updates the menus
 function updateMenus(selectedcitygroup){
@@ -791,11 +792,17 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 <form action="" name="weboptions" id="weboptions">
 
 <table align='center' cellspacing=0 cellpadding=0 id="t1">
+<div>
+		<td>	
+		Plot Skip Interval: <input type="number" id="interval_days" min="1" step="1" max="50" value="1" onkeypress="return event.keyCode!=13"> Days
+        </td>
+</div>
+
   <tr>
 		<td nowrap>		
 
 		<input type='button' name='first_plot' onclick="changeImgSrc('first')" value='&#60;&#60; First'>		
-		<input type='button' name='last_plot' onclick="changeImgSrc('dec')" value='&#60; Last'>
+		<input type='button' name='last_plot' onclick="changeImgSrc('dec')" value='&#60; Previous'>
 		<input type="date" id="set_date" name="yyyy-mm-dd" onchange="syncBottomToTop()"/>
 		<input type='button' name='next_plot' onclick="changeImgSrc('inc')" value='Next &#62;'>
 		<input type='button' name='current_plot' onclick="changeImgSrc('now')" value='Today &#62;&#62;'>
@@ -860,9 +867,9 @@ ddlevelsmenu.setup("ddtopmenubar", "topbar") //ddlevelsmenu.setup("mainmenuid", 
 
 
 
-		<input type='button' name='last_plot_bottom' onclick="changeImgSrc('dec')" value='&#60;&#60; Last'>
+		<input type='button' name='last_plot_bottom' onclick="changeImgSrc('dec')" value='&#60; Previous'>
 		<input type="date" id="set_date_bottom" name="yyyy-mm-dd_bottom" onchange="syncTopToBottom()"/>
-		<input type='button' name='next_plot_bottom' onclick="changeImgSrc('inc')" value='Next &#62;&#62;'>
+		<input type='button' name='next_plot_bottom' onclick="changeImgSrc('inc')" value='Next &#62;'>
     	<select name='plotName' id="plotName_bottom" onchange="syncTopToBottom()">
 			<option value="summ" />Summary
 			<option value="health" />Health

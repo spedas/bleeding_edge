@@ -25,8 +25,8 @@
 ;NOTE: This procedure supercedes swe_restore_hires.pro.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-10-13 13:38:02 -0700 (Tue, 13 Oct 2026) $
-; $LastChangedRevision: 34969 $
+; $LastChangedDate: 2026-10-26 11:35:20 -0700 (Mon, 26 Oct 2026) $
+; $LastChangedRevision: 35008 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_swe_load_hires.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -141,7 +141,7 @@ pro mvn_swe_load_hires, trange=trange, tplot=tplot, noguff=noguff
     if (not ok) then if (!d.window ge 0) then Twin = !d.window else Twin = 0
     if (wstate[Twin]) then wset,Twin else win,Twin,/f
 
-    pans = ['mvn_swics_en_eflux','mvn_mag_l1_bamp','mvn_B_full_maven_mso','mvn_sun_bar',$
+    pans = ['mvn_swics_en_eflux','mvn_B_full_maven_mso','mvn_sun_bar',$
            'mvn_att_bar','swe_a3_bar',padpans,'TABNUM','swe_a4']
     tplot_options,'var_label',['alt','sza','lat']
     options,'alt','ytitle','ALT'

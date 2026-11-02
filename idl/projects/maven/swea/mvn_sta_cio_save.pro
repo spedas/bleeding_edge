@@ -27,23 +27,18 @@
 ;
 ;       L3:            Use STATIC L3 data for densities and temperatures.
 ;
-;       L2_VERSION:    STATIC L2 version to use.  Default = 2.
-;                      The STATIC loader does not use file_retreive, so the normal version
-;                      control doesn't work.
-;
 ;       MAILTO:        Send email to this address on job start and finish.
 ;                      Default = 'calif_dave@icloud.com'
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-03-19 15:27:07 -0700 (Thu, 19 Mar 2026) $
-; $LastChangedRevision: 34278 $
+; $LastChangedDate: 2026-10-30 13:34:57 -0700 (Fri, 30 Oct 2026) $
+; $LastChangedRevision: 35031 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_save.pro $
 ;
 ;CREATED BY:    David L. Mitchell
 ;FILE: mvn_sta_cio_save.pro
 ;-
-pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3=L3, mailto=mailto, $
-                              l2_version=l2_version
+pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3=L3, mailto=mailto
 
   common coldion, cio_h, cio_o1, cio_o2
 
@@ -53,11 +48,10 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
   if (size(dovel,/type) eq 0) then dovel = 1 else dovel = keyword_set(dovel)
   dovel = replicate(dovel,3)
   useL3 = keyword_set(L3)
-  l2_v = keyword_set(l2_version) ? l2_version[0] : 2
 
   dpath = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
   froot = 'mvn_sta_cio_'
-  version = '_v03'  ; iv4 background removal, L3 densities, and latest proxies
+  version = '_v04'  ; iv4 background removal, L3 densities, latest proxies, and FOV metrics
   oneday = 86400D  ; process one day at a time
 
   case n_elements(trange) of
@@ -117,7 +111,9 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
       print,'CIO save file already exists.  Updating.'
       mvn_sta_cio_update, time  ; no need for this anymore
     endif else begin
-      mvn_swe_spice_init, /force, /list
+      srange = [(time - oneday),(time + 2D*oneday)]  ; extra padding for SPICE init
+      print,'Setting SPICE timerange: ',time_string(srange)
+      mvn_swe_spice_init, trange=srange, /force, /list
       mvn_swe_load_l0
       mvn_swe_stat, npkt=npkt, /silent
       if (npkt[2] gt 0L) then begin
@@ -126,7 +122,7 @@ pro mvn_sta_cio_save, trange, ndays, doden=doden, dotemp=dotemp, dovel=dovel, L3
         mvn_sundir, frame='swe', /polar
 
         mvn_sta_coldion, L3=useL3, density=doden, temperature=dotemp, velocity=dovel, $
-              /reset, tavg=16, frame='mso', /doplot, pans=pans, l2_version=l2_v, success=ok
+              /reset, /reload, tavg=16, frame='mso', /doplot, pans=pans, success=ok
 
         if (ok) then begin
           save, cio_h, cio_o1, cio_o2, file=ofile

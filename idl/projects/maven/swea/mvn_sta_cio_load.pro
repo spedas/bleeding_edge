@@ -18,8 +18,8 @@
 ;     NPTS  : A named variable to hold the number of data points.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
-; $LastChangedRevision: 34858 $
+; $LastChangedDate: 2026-10-31 17:48:04 -0700 (Sat, 31 Oct 2026) $
+; $LastChangedRevision: 35034 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -42,8 +42,8 @@ pro mvn_sta_cio_load, ptr, species, froot=froot, tags=tags, npts=npts
   endif
 
   mvn_sta_cio_clear, ptr
-  path = '/Users/mitchell/Documents/Home/Mars/MAVEN/Cold Ion Outflow/'
-  if (size(froot,/type) ne 7) then froot = 'cio_AtoQ_'
+  path = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
+  if (size(froot,/type) ne 7) then froot = 'cio_AtoQ_v04_'
 
   if (size(species,/type) ne 7) then species = 'O2' else species = strupcase(species[0])
   case species of

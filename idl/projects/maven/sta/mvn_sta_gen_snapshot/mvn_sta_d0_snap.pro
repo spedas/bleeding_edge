@@ -128,6 +128,9 @@
 ;                 thinks is necessary.  This could include reinitializing
 ;                 SPICE, reloading data, and regenerating tplot variables.
 ;
+;       NOLOAD:   Do not perform any checks for data availability or SPICE
+;                 coverage.  Sets keywords NOGUFF and REFRESH.
+;
 ;       Passes many keywords to WIN (e.g. MONITOR, DX, DY, etc.).  If WIN is
 ;       enabled (win, /config), then by default the snapshot window will be 
 ;       placed in the secondary monitor.
@@ -147,8 +150,8 @@
 ;                 conflict, keywords set explicitly take precedence over KEY.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-30 20:09:50 -0700 (Wed, 30 Sep 2026) $
-; $LastChangedRevision: 34934 $
+; $LastChangedDate: 2026-10-30 11:16:00 -0700 (Fri, 30 Oct 2026) $
+; $LastChangedRevision: 35028 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/sta/mvn_sta_gen_snapshot/mvn_sta_d0_snap.pro $
 ;
 ;BASED ON:      tsnap.pro
@@ -157,7 +160,7 @@
 pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, erange=erange, keep=keep, $
                      refresh=refresh, key=key, lastcut=lastcut, tmark=tmark, showdir=showdir, $
                      showmass=showmass, mincounts=mincounts, bkg=bkg, result=result, nosnap=nosnap, $
-                     noguff=noguff, showeph=showeph, $
+                     noguff=noguff, noload=noload, showeph=showeph, $
 
               ; WIN
                 monitor=monitor, secondary=secondary, xsize=xsize, ysize=ysize, dx=dx, dy=dy, $
@@ -181,7 +184,7 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
   if (size(key,/type) eq 8) then begin
     ktag = tag_names(key)
     tlist = ['NAVG','SUM','APID','MASS','ERANGE','KEEP','REFRESH','LASTCUT','TMARK','SHOWDIR', $
-             'SHOWMASS','MINCOUNTS','BKG','RESULT','NOSNAP','NOGUFF','SHOWEPH', $
+             'SHOWMASS','MINCOUNTS','BKG','RESULT','NOSNAP','NOGUFF','NOLOAD','SHOWEPH', $
              'MONITOR','SECONDARY','XSIZE','YSIZE','DX','DY','CORNER','CENTER','XCENTER','YCENTER', $
              'NORM','XPOS','YPOS','FULL','XFULL','YFULL', $
              'TITLE','XTITLE','YTITLE','XLOG','YLOG','XRANGE','YRANGE','XSTYLE','YSTYLE','LINESTYLE', $
@@ -207,10 +210,11 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
   npts = keyword_set(sum) ? 2 : 1
   if ((n_elements(navg) gt 0) and (npts eq 1)) then k = (round(navg[0]) - 1)/2 > 0 else k = 0
 
-  refresh = keyword_set(refresh)
+  refresh = keyword_set(refresh) or keyword_set(noload)
   keep = keyword_set(keep)
   tmark = keyword_set(tmark)
-  noguff = keyword_set(noguff)
+  noguff = keyword_set(noguff) or keyword_set(noload)
+  docheck = ~keyword_set(noload)
   domso = (n_elements(showeph) gt 0) ? keyword_set(showeph) : 1
   dx = (n_elements(dx) gt 0) ? fix(dx[0]) : 10
   dy = (n_elements(dy) gt 0) ? fix(dy[0]) : 10
@@ -259,21 +263,23 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
 ; and magnetic field directions into the STATIC frame.  Create or
 ; refresh tplot variables as needed.
 
-    mvn_spice_stat, check=dtime, summary=sinfo, /silent
-    if (~sinfo.all_check) then begin
-      yn = 'Y'
-      if (~noguff) then begin
-        print,"  SPICE not initialized or insufficient coverage."
-        read, yn, prompt='  Initialize SPICE now (y|n) ? ', format='(a1)'
+    if (docheck) then begin
+      mvn_spice_stat, check=dtime, summary=sinfo, /silent
+      if (~sinfo.all_check) then begin
+        yn = 'Y'
+        if (~noguff) then begin
+          print,"  SPICE not initialized or insufficient coverage."
+          read, yn, prompt='  Initialize SPICE now (y|n) ? ', format='(a1)'
+        endif
+        if (strupcase(yn) eq 'Y') then begin
+          tstart = time_string(min(dtime) - 86400D, prec=-3)
+          tstop = time_string(max(dtime) + (2D*86400D), prec=-3)
+          mvn_swe_spice_init, trange=[tstart,tstop], /force
+          mvn_spice_stat, check=dtime, summary=sinfo, /silent
+        endif
       endif
-      if (strupcase(yn) eq 'Y') then begin
-        tstart = time_string(min(dtime) - 86400D, prec=-3)
-        tstop = time_string(max(dtime) + (2D*86400D), prec=-3)
-        mvn_swe_spice_init, trange=[tstart,tstop], /force
-        mvn_spice_stat, check=dtime, summary=sinfo, /silent
-      endif
-    endif
-    gotspice = sinfo.all_check
+      gotspice = sinfo.all_check
+    endif else gotspice = 1  ; assume SPICE is loaded and coverage is good
 
     if (gotspice) then begin
       get_data, 'Sun_STATIC_The', data=sun, index=i
@@ -588,7 +594,9 @@ pro mvn_sta_d0_snap, navg=navg, sum=sum, apid=apid, mass=mass, tmass=tmass, eran
     if (count eq 0L) then addnames = [addnames, vname]
   endif
 
-  if (n_elements(addnames) gt 1L) then tplot, addnames[1:*], /add else if (redraw) then tplot
+  tplot_options, get=topt
+  str_element, topt, 'varnames', success=gotvars
+  if (n_elements(addnames) gt 1L) then tplot, addnames[1:*], add=gotvars else if (redraw) then tplot
 
   result = {time:time, edge_el:metric1, cntr_el:metric2, cntr_az:metric3, species:sname[tmass], $
             mbin:tmass, erange:erange, apid:apid}

@@ -13,8 +13,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2018-09-09 18:05:59 -0700 (Sun, 09 Sep 2018) $
-; $LastChangedRevision: 25764 $
+; $LastChangedDate: 2026-10-26 11:37:05 -0700 (Mon, 26 Oct 2026) $
+; $LastChangedRevision: 35010 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_struct.pro $
 ;
 ;-
@@ -22,6 +22,7 @@ function mvn_sta_cio_struct, npts
 
   NaN = !values.f_nan
   NaN3 = replicate(NaN,3)
+  Nan83 = replicate(NaN,8,3)
   dNaN = !values.d_nan
   dNaN3 = replicate(dNaN,3)
 
@@ -66,6 +67,9 @@ function mvn_sta_cio_struct, npts
              sthe     : NaN         , $   ; elevation of Sun in s/c frame (SWEA twist)
              sthe_app : NaN         , $   ; elevation of Sun in APP frame (STA CIO config)
              rthe_app : NaN         , $   ; elevation of MSO RAM in APP frame (STA CIO config)
+             metric1  : NaN         , $   ; elevation edge metric (see mvn_sta_d0_snap)
+             metric2  : NaN         , $   ; elevation center metric (see mvn_sta_d0_snap)
+             metric3  : Nan83       , $   ; azimuth center metric (see mvn_sta_d0_snap)
              apid     : ''          , $   ; STATIC APID used for calculation
              valid    : 0              }
 

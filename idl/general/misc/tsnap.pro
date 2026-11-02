@@ -75,8 +75,8 @@
 ;       LASTCUT:  Named variable to hold data for the last plot.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-15 08:47:12 -0700 (Tue, 15 Sep 2026) $
-; $LastChangedRevision: 34898 $
+; $LastChangedDate: 2026-10-26 11:33:37 -0700 (Mon, 26 Oct 2026) $
+; $LastChangedRevision: 35007 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/general/misc/tsnap.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -96,7 +96,7 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
                 ymargin=ymargin, xminor=xminor, yminor=yminor, xthick=xthick, ythick=ythick, $
                 xtickformat=xtickformat, ytickformat=ytickformat, xtickinterval=xtickinterval, $
                 ytickinterval=ytickinterval, xticklen=xticklen, yticklen=yticklen, xticks=xticks, $
-                yticks=yticks
+                yticks=yticks, color=color
 
 ; Set keywords using the KEY structure
 
@@ -108,7 +108,7 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
              'TITLE','XTITLE','YTITLE','XLOG','YLOG','XRANGE','YRANGE','XSTYLE','YSTYLE','LINESTYLE', $
              'PSYM','SYMSIZE','THICK','TICKLEN','CHARSIZE','XMARGIN','YMARGIN','XMINOR','YMINOR', $
              'XTHICK','YTHICK','XTICKFORMAT','YTICKFORMAT','XTICKINTERVAL','YTICKINTERVAL', $
-             'XTICKLEN','YTICKLEN','XTICKS','YTICKS']
+             'XTICKLEN','YTICKLEN','XTICKS','YTICKS','COLOR']
     for j=0,(n_elements(ktag)-1) do begin
       i = strmatch(tlist, ktag[j]+'*', /fold)
       case (total(i)) of
@@ -290,6 +290,8 @@ pro tsnap, var, navg=navg, sum=sum, xsmo=xsmo, keep=keep, deriv=deriv, err=err, 
                   ythick=ythick, xtickformat=xtickformat, ytickformat=ytickformat, $
                   xtickinterval=xtickinterval, ytickinterval=ytickinterval, xticklen=xticklen, $
                   yticklen=yticklen, xticks=xticks, yticks=yticks
+      if (size(color,/type) gt 0) then oplot, x, y, color=color, linestyle=linestyle, $
+                  psym=psym, symsize=symsize, thick=thick
       if (err) then if (ylog) then errplot,x,(y-dy)>tiny,y+dy,width=0 else errplot,x,y-dy,y+dy,width=0
 
       lastcut = {x:x, y:y, dy:!values.f_nan, time:tsp, deriv:deriv}
