@@ -6,7 +6,7 @@
 ;
 ;    orange = Sun point
 ;    blue   = Earth point
-;    green  = Fly +/- Y
+;    green  = Fly +/- Y (including gravity-gradient and Fly-Rich variants)
 ;    red    = Fly-Z (including up and down variants)
 ;    purple = Fly+Z (including up and down variants)
 ;    blank  = none of the above (usually during transitions)
@@ -23,8 +23,8 @@
 ;       KEY:      Print out the color key and return.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-10-13 13:48:47 -0700 (Tue, 13 Oct 2026) $
-; $LastChangedRevision: 34970 $
+; $LastChangedDate: 2026-11-02 09:47:30 -0800 (Mon, 02 Nov 2026) $
+; $LastChangedRevision: 35036 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/quicklook/mvn_attitude_bar.pro $
 ;
 ;CREATED BY:    David L. Mitchell
@@ -110,7 +110,7 @@ printkey:
   print,'Attitude bar color key:'
   print,'  orange = Sun point'
   print,'  blue   = Earth point'
-  print,'  green  = Fly +/- Y'
+  print,'  green  = Fly +/- Y (including gravity-gradient and Fly-Rich variants)'
   print,'  red    = Fly-Z (including up and down variants)'
   print,'  purple = Fly+Z (including up and down variants)'
   print,'  blank  = none of the above (usually during transitions)'

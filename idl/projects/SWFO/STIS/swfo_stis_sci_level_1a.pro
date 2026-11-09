@@ -25,9 +25,9 @@
 ; Cribsheets that demonstrate Level 1a loading:
 ; - swfo_stis_sci_qflag_crib.pro: quality flag demo
 ;
-; $LastChangedBy: davin $
-; $LastChangedDate: 2026-06-03 10:25:50 -0700 (Wed, 03 Jun 2026) $
-; $LastChangedRevision: 34526 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-11-06 21:02:33 -0800 (Fri, 06 Nov 2026) $
+; $LastChangedRevision: 35045 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1a.pro $
 
 
@@ -148,6 +148,14 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
   index_F3 = cal.coincidence_map.F3
   index_F2 = cal.coincidence_map.F2
   index_F1 = cal.coincidence_map.F1
+
+  rw_ctr = cal.reaction_wheel_resonance_center
+  rw_delta = cal.reaction_wheel_resonance_width
+  diff_O_detector_flag_index = cal.diff_O_detector_flag_index
+  rxn_wheel_noise_flag_index = cal.rxn_wheel_noise_flag_index
+
+  diff_lim = cal.rxnwh_diff_between_O1_and_O3
+  noise_lim = cal.rxnwh_noise_cutoff
 
     ; print, nd
 
@@ -389,8 +397,8 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
         reax_wheel_flag = abs(l0b.reaction_wheel_speed_rpm) gt cal.reaction_wheel_speed_threshold        
       endif else begin
         ;dprint
-        rw_min = cal.reaction_wheel_resonance_center - cal.reaction_wheel_resonance_width
-        rw_max = cal.reaction_wheel_resonance_center + cal.reaction_wheel_resonance_width
+        rw_min = rw_ctr - rw_delta
+        rw_max = rw_ctr + rw_delta
         rw_dim = size(/dimen,rw_min)
         wheel_speed = replicate(1,rw_dim[0]) # l0b.reaction_wheel_speed_rpm
         reax_wheel_flag = wheel_speed gt rw_min and wheel_speed lt rw_max
@@ -401,6 +409,30 @@ function swfo_stis_sci_level_1a,l0b_structs , verbose=verbose, cal=cal
       q = q or ishft(reax_wheel_flag[1]*1ull, cal.high_reaction_wheel_speed_qflag_index[1])
       q = q or ishft(reax_wheel_flag[2]*1ull, cal.high_reaction_wheel_speed_qflag_index[2])
       q = q or ishft(reax_wheel_flag[3]*1ull, cal.high_reaction_wheel_speed_qflag_index[3])
+
+
+      ; New flag:
+      ; Sum over the wheels
+      any_wheel_in_possible_resonance = total(reax_wheel_flag,/preserve) ne 0
+      ; rxn_wheel_flag[i] = reax_wheel_flag
+
+
+      if any_wheel_in_possible_resonance then begin
+
+        diff_O1_O3 = rate6[0] - rate6[2]/100
+        O1_sigma = (noise_stats.s)[0]
+
+        diff_flag = diff_O1_O3 gt diff_lim
+        nse_flag = O1_sigma gt noise_lim
+        ; print, diff_flag, nse_flag
+        ; stop
+
+        q = q or ishft(diff_flag*1ull, diff_O_detector_flag_index)
+        q = q or ishft(nse_flag*1ull, rxn_wheel_noise_flag_index)
+
+        ; if diff_flag or nse_flag then stop
+
+      endif
 
       ; Q flag: bit at position 38 if any IRU invalid
       ; IRU order:

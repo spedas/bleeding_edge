@@ -16,11 +16,11 @@
 ;     alt_cal = swfo_ncdf_read(filenames='<NETCDF_FILENAME_HERE>')
 ;     printdat, alt_cal
 ; 
-; $LastChangedBy: davin $
-; $LastChangedDate: 2026-06-05 00:50:33 -0700 (Fri, 05 Jun 2026) $
-; $LastChangedRevision: 34537 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-11-06 21:02:33 -0800 (Fri, 06 Nov 2026) $
+; $LastChangedRevision: 35045 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_inst_response_calval.pro $
-; $Id: swfo_stis_inst_response_calval.pro 34537 2026-06-05 07:50:33Z davin $
+; $Id: swfo_stis_inst_response_calval.pro 35045 2026-11-07 05:02:33Z rjolitz $
 
 
 
@@ -287,7 +287,7 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     calval.epam_electron_edge_energies = [45., 62., 102., 175., 315.]
 
     calval.responses = orderedhash()
-    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 34537 2026-06-05 07:50:33Z davin $'
+    calval.rev_date = '$Id: swfo_stis_inst_response_calval.pro 35045 2026-11-07 05:02:33Z rjolitz $'
     dprint,'Using Revision: '+calval.rev_date
 
 
@@ -365,6 +365,14 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
   calval.coincidence_map = dictionary()
   for i=0, 13 do calval.coincidence_map[calval.coincidence[i]] = i
 
+; Added qflags
+  calval.diff_O_detector_flag_index = 37
+  calval.rxn_wheel_noise_flag_index = 36
+  calval.rxn_wheel_ion_en_cutoff = 50
+
+  calval.rxnwh_diff_between_O1_and_O3 = 200
+  calval.rxnwh_noise_cutoff = 1.2
+
   ; Labels for the quality flag:
   qflag_labels = strarr(64)
   qflag_labels[0] = "Playback"
@@ -383,6 +391,10 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
   qflag_labels[calval.bad_iru_qflag_index] = 'any IRU invalid'
   qflag_labels[calval.swfo_offpointing_qflag_index] = 's/c offpointing'
   qflag_labels[calval.sun_in_stis_fov_qflag_index] = 'Sun in FOV'
+
+  qflag_labels[calval.diff_O_detector_flag_index] = 'RxWh&O1-0.01xO3>200'
+  qflag_labels[calval.rxn_wheel_noise_flag_index] = 'RxWh&NSESIG>1.2'
+
   calval.qflag_labels = qflag_labels
 
 
@@ -418,12 +430,13 @@ function swfo_stis_inst_response_calval,reset=reset, save=save
     [ -4000, -2700, -2300, -1174.,  1174., 2300, 2700, 4000, 9999, 9999, 9999, 9999 ]  ,  $      ; Wheel 3
     [ -4000, -2700, -2300, -1174.,  1174., 2300, 2700, 4000, 9999, 9999, 9999, 9999 ]  ]         ; Wheel 4
 
-
+; Note 11/6/26: I expanded the range from 5->15 rpm for the middle
+;resonances since was missing some noise:
   calval.reaction_wheel_resonance_width =  [ $
-    [  1000.,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 1
-    [  1000,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 2
-    [  1000,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 3
-    [  1000,   100,   100,     5,     5,  100,  100, 1000, 0, 0, 0, 0 ]  ]         ; Wheel 4
+    [  1000.,   100,   100,     15,     15,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 1
+    [  1000,   100,   100,     15,     15,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 2
+    [  1000,   100,   100,     15,     15,  100,  100, 1000, 0, 0, 0, 0 ]  ,  $      ; Wheel 3
+    [  1000,   100,   100,     15,     15,  100,  100, 1000, 0, 0, 0, 0 ]  ]         ; Wheel 4
 
 
 

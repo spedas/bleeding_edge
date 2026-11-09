@@ -22,9 +22,9 @@
 ; Cribsheets that demonstrate Level 1b loading:
 ; - swfo_stis_sci_l1b_crib.pro
 ;
-; $LastChangedBy: davin $
-; $LastChangedDate: 2026-07-22 13:42:12 -0700 (Wed, 22 Jul 2026) $
-; $LastChangedRevision: 34660 $
+; $LastChangedBy: rjolitz $
+; $LastChangedDate: 2026-11-06 21:02:33 -0800 (Fri, 06 Nov 2026) $
+; $LastChangedRevision: 35045 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SWFO/STIS/swfo_stis_sci_level_1b.pro $
 
 ; Function that merges counts/fluxes/rates/efluxes from the small pixel
@@ -36,6 +36,8 @@ function swfo_stis_hdr, F_largepixel, F_smallpixel, eta_smallpixel=eta_smallpixe
 
     ; F_small eta_1 + F_big eta_2 / (eta2 + eta1)
     ; works for rates, fluxes, etc:
+
+    if eta_smallpixel eq 0 then return,F_largepixel
 
     A = (eta_smallpixel + eta_largepixel)
     hdr = (eta_smallpixel * F_smallpixel + eta_largepixel * F_largepixel)/A
@@ -117,6 +119,11 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
 
   contam_min_ion_energy = cal.contam_min_ion_energy
   contam_min_electron_energy = cal.contam_min_electron_energy
+
+  ; Flag indices for accessed qflag + ion energy cutoff
+  diff_O_detector_flag_index = cal.diff_O_detector_flag_index
+  rxn_wheel_noise_flag_index = cal.rxn_wheel_noise_flag_index
+  ion_en_cutoff = cal.rxn_wheel_ion_en_cutoff
 
   ; Get the deadlayer / spline info for access in forloop:
   if cal.energy_response_function then begin
@@ -233,6 +240,29 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     elec_flux_small = str.spec_F1 * deadtime_correction_F1
     elec_flux_big = str.spec_F3 * deadtime_correction_F3
 
+    ; NEW:
+    ; Mask out counts in O1 when the rxn wheel
+    ; is rattling:
+
+    ; First, retrieve the quality flag from level 1a
+    q = str.quality_bits
+
+    diff_trigger = (q and 2ull^diff_O_detector_flag_index) ne 0
+    noise_trigger = (q and 2ull^rxn_wheel_noise_flag_index) ne 0
+
+    if noise_trigger then begin
+      ; if diff_trigger then begin
+      low_en_index = where(ion_energy lt ion_en_cutoff, nlowen)
+      if nlowen gt 0 then begin
+        ion_rate_small[low_en_index] = !values.d_nan
+        ion_flux_small[low_en_index] = !values.d_nan
+        ; stop
+      endif
+
+    endif
+
+
+
     ; total counts in entire energy channel:
     ; 1/8/25: since reaction wheel noise affects
     ; O1, O2, F2, and F3 in decreasing magnitudes,
@@ -241,10 +271,10 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     N_ion_big   = ion_rate_big * integration_time
     N_ion_small = ion_rate_small * integration_time
     ;N_ion_tot   = total(N_ion_big)/100   ; line removed 2026-7-17
-    N_ion_tot = total(ion_rate_small) * integration_time
+    N_ion_tot = total(ion_rate_small, /nan) * integration_time
 
     N_elec = elec_rate_small * integration_time
-    N_elec_tot = total(elec_rate_small) * integration_time
+    N_elec_tot = total(elec_rate_small, /nan) * integration_time
 
     ; Make ratio
     norm_ion_rate_O3 = ion_rate_big/100
@@ -291,10 +321,6 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     hdr_elec_rate = hdr_elec_flux * str.geom_F3 * str.spec_F3_dnrg
 
     ; Quality flag determination:
-    ; First, retrieve the quality flag from level 1a
-    ; We will augment this:
-    q = str.quality_bits
-
     ; Q flag: bits at positional index 26-29 set if the pixel merging
     ; is suspect/anomalous for:
     ; - ion channel:
@@ -314,7 +340,7 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     ;    - if have zero counts in big pixel, can't determine, so NaN
     ;      it and move on. (will not set the qf in that case,
     ;      since can't be determined).
-    if total(ion_rate_big) gt 1 then ion_pixel_ratio = total(ion_rate_small) / total(ion_rate_big) else $
+    if total(ion_rate_big) gt 1 then ion_pixel_ratio = total(ion_rate_small, /nan) / total(ion_rate_big) else $
       ion_pixel_ratio = !values.d_nan
     if total(elec_rate_big) gt 1 then elec_pixel_ratio = total(elec_rate_small) / total(elec_rate_big) else $
       elec_pixel_ratio = !values.d_nan
@@ -433,6 +459,8 @@ function swfo_stis_sci_level_1b,L1a_strcts,format=format,reset=reset,cal=cal
     ; elec_energy = bins.energy
     ; w = where(bins.species eq 0,/null,nw)
     ; elec_energy= elec_energy[w]
+    ; if diff_trigger and nlowen gt 0 then print, hdr_ion_flux
+
 
     sci = {  $
       time:str.time, $

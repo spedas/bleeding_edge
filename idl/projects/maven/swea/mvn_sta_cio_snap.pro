@@ -43,8 +43,8 @@
 ;       This routine also passes keywords to PLOT.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-09-01 12:06:25 -0700 (Tue, 01 Sep 2026) $
-; $LastChangedRevision: 34858 $
+; $LastChangedDate: 2026-11-04 08:11:37 -0800 (Wed, 04 Nov 2026) $
+; $LastChangedRevision: 35041 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -107,12 +107,12 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
 
 ; Get a point on the original plot
 
-  ok = 1
+  keepgoing = 1
   wset, pwin
   crosshairs, cx, cy, /nolegend, /silent, /oneclick, lastbutton=button
   if (button eq 4) then ok = 0
 
-  while (ok) do begin
+  while (keepgoing) do begin
     dx = min(abs(data.x - cx), i)
     xi = data.x[i]
     if (pmode) then begin
@@ -121,13 +121,13 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
       z = reform(data.dist[i,j,*])
       indx = where(finite(z), count)
       valid = data.valid[i,j]
-      xtitle = data.zvar
+      xtitle = data.limits.ztitle
       ij = i + n_elements(data.x)*j
     endif else begin
       z = reform(data.dist[i,*])
       indx = where(finite(z), count)
       valid = data.valid[i]
-      xtitle = data.yvar
+      xtitle = data.limits.ytitle
       ij = i
     endelse
 
@@ -207,7 +207,7 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
     !p = psys
 
     crosshairs, cx, cy, /nolegend, /silent, /oneclick, lastbutton=button, /lastpoint
-    if (button eq 4) then ok = 0
+    if (button eq 4) then keepgoing = 0
 
   endwhile
 
