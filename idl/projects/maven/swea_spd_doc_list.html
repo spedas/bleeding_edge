@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov  7 03:16:43 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Nov 14 03:16:12 2026.<P>
  
 <HR>
  
@@ -48,7 +48,7 @@ This page was created by the IDL library routine
 <LI><A HREF="#MVN_STA_CIO_FILTER">MVN_STA_CIO_FILTER</A>
 <br>A tag 'filter' is added to the input data structure.  This tag holds
 <LI><A HREF="#MVN_STA_CIO_LOAD">MVN_STA_CIO_LOAD</A>
-<br>Loads all available MAVEN cold ion outflow data that were
+<br>Loads all available MAVEN cool ion outflow data that were processed by
 <LI><A HREF="#MVN_STA_CIO_PLOT">MVN_STA_CIO_PLOT</A>
 <LI><A HREF="#MVN_STA_CIO_RESTORE">MVN_STA_CIO_RESTORE</A>
 <br>Restores STATIC cold ion outflow results.
@@ -897,8 +897,8 @@ INPUTS:
 KEYWORDS:
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-10-31 17:47:45 -0700 (Sat, 31 Oct 2026) $
- $LastChangedRevision: 35033 $
+ $LastChangedDate: 2026-11-10 10:58:59 -0800 (Tue, 10 Nov 2026) $
+ $LastChangedRevision: 35049 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_convert.pro $
 
 CREATED BY:	David L. Mitchell
@@ -980,14 +980,20 @@ FILE:  mvn_sta_cio_filter.pro
 <PRE>
 PROCEDURE:   mvn_sta_cio_load
 PURPOSE:
-  Loads all available MAVEN cold ion outflow data that were 
-  processed by mvn_sta_coldion.pro.
+  Loads all available MAVEN cool ion outflow data that were processed by
+  mvn_sta_coldion.pro.  Note that this loader does not use file_retrieve.
+  You will need to manually download the save files and place them on your
+  local machine.
 
 INPUTS:
      ptr   : A named variable to hold a pointer to the data.
   species  : Which database to load?  ('h', 'o1', 'o2')
 
 KEYWORDS:
+
+    PATH   : Path to the CIO database.  Default is:
+
+                root_data_dir() + 'maven/data/sci/sta/l3/cio/'
 
     FROOT  : File root for save file (default = 'cio_AtoQ_').
 
@@ -997,8 +1003,8 @@ KEYWORDS:
      NPTS  : A named variable to hold the number of data points.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-11-02 09:48:48 -0800 (Mon, 02 Nov 2026) $
- $LastChangedRevision: 35037 $
+ $LastChangedDate: 2026-11-10 10:58:59 -0800 (Tue, 10 Nov 2026) $
+ $LastChangedRevision: 35049 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
 
 CREATED BY:	David L. Mitchell
@@ -1338,8 +1344,8 @@ KEYWORDS:
        This routine also passes keywords to PLOT.
 
  $LastChangedBy: dmitchell $
- $LastChangedDate: 2026-11-04 08:11:37 -0800 (Wed, 04 Nov 2026) $
- $LastChangedRevision: 35041 $
+ $LastChangedDate: 2026-11-10 10:58:59 -0800 (Tue, 10 Nov 2026) $
+ $LastChangedRevision: 35049 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 
 CREATED BY:	David L. Mitchell

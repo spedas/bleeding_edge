@@ -92,8 +92,8 @@
 ;                   maintained by Marc Pulupa, 2019-2023
 ;
 ; $LastChangedBy: pulupalap $
-; $LastChangedDate: 2026-10-23 12:15:27 -0700 (Fri, 23 Oct 2026) $
-; $LastChangedRevision: 35004 $
+; $LastChangedDate: 2026-11-13 23:04:51 -0800 (Fri, 13 Nov 2026) $
+; $LastChangedRevision: 35054 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/SPP/COMMON/spp_fld_load.pro $
 ;
 ;-
@@ -166,7 +166,8 @@ pro spp_fld_load, trange = trange, type = type, files = files, $
   ; SCaM data is Level 3
 
   if type eq 'merged_scam_wf' or type eq 'sqtn_rfs_V1V2' or $
-    type eq 'rfs_lfr_qtn' or type eq 'sqtn_rfs_V3V4' then level = 3
+    type eq 'rfs_lfr_qtn' or type eq 'sqtn_rfs_V3V4' or $
+    type eq 'dust' then level = 3
 
   ;
   ; If the type keyword is set to DFB AC or DC spectra or cross spectra,

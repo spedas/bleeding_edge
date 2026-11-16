@@ -1,14 +1,20 @@
 ;+
 ;PROCEDURE:   mvn_sta_cio_load
 ;PURPOSE:
-;  Loads all available MAVEN cold ion outflow data that were 
-;  processed by mvn_sta_coldion.pro.
+;  Loads all available MAVEN cool ion outflow data that were processed by
+;  mvn_sta_coldion.pro.  Note that this loader does not use file_retrieve.
+;  You will need to manually download the save files and place them on your
+;  local machine.
 ;
 ;INPUTS:
 ;     ptr   : A named variable to hold a pointer to the data.
 ;  species  : Which database to load?  ('h', 'o1', 'o2')
 ;
 ;KEYWORDS:
+;
+;    PATH   : Path to the CIO database.  Default is:
+;
+;                root_data_dir() + 'maven/data/sci/sta/l3/cio/'
 ;
 ;    FROOT  : File root for save file (default = 'cio_AtoQ_').
 ;
@@ -18,14 +24,14 @@
 ;     NPTS  : A named variable to hold the number of data points.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-11-02 09:48:48 -0800 (Mon, 02 Nov 2026) $
-; $LastChangedRevision: 35037 $
+; $LastChangedDate: 2026-11-10 10:58:59 -0800 (Tue, 10 Nov 2026) $
+; $LastChangedRevision: 35049 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_load.pro $
 ;
 ;CREATED BY:	David L. Mitchell
 ;FILE:  mvn_sta_cio_load.pro
 ;-
-pro mvn_sta_cio_load, ptr, species, froot=froot, tags=tags, npts=npts
+pro mvn_sta_cio_load, ptr, species, path=path, froot=froot, tags=tags, npts=npts
 
   common cio_com, cname, cstart, cstop
 
@@ -42,7 +48,7 @@ pro mvn_sta_cio_load, ptr, species, froot=froot, tags=tags, npts=npts
   endif
 
   mvn_sta_cio_clear, ptr
-  path = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
+  if (size(path,/type) ne 7) then path = root_data_dir() + 'maven/data/sci/sta/l3/cio/'
   if (size(froot,/type) ne 7) then froot = 'cio_AtoQ_v04_'
 
   if (size(species,/type) ne 7) then species = 'O2' else species = strupcase(species[0])

@@ -11,8 +11,8 @@
 ;KEYWORDS:
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-10-31 17:47:45 -0700 (Sat, 31 Oct 2026) $
-; $LastChangedRevision: 35033 $
+; $LastChangedDate: 2026-11-10 10:58:59 -0800 (Tue, 10 Nov 2026) $
+; $LastChangedRevision: 35049 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_convert.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -298,9 +298,12 @@ pro mvn_sta_cio_convert, data
 
 ; CIO field of view metrics
 
-    odata.metric1 = data.metric1
-    odata.metric2 = data.metric2
-    odata.metric3 = transpose(data.metric3)
+    str_element, data, 'metric1', success=ok
+    if (ok) then begin
+      odata.metric1 = data.metric1
+      odata.metric2 = data.metric2
+      odata.metric3 = transpose(data.metric3)
+    endif else print, "FOV metrics not present in database."
 
 ; Stuff the result back into data
 

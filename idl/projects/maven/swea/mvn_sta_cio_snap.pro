@@ -43,8 +43,8 @@
 ;       This routine also passes keywords to PLOT.
 ;
 ; $LastChangedBy: dmitchell $
-; $LastChangedDate: 2026-11-04 08:11:37 -0800 (Wed, 04 Nov 2026) $
-; $LastChangedRevision: 35041 $
+; $LastChangedDate: 2026-11-10 10:58:59 -0800 (Tue, 10 Nov 2026) $
+; $LastChangedRevision: 35049 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/maven/swea/mvn_sta_cio_snap.pro $
 ;
 ;CREATED BY:	David L. Mitchell
@@ -141,14 +141,22 @@ pro mvn_sta_cio_snap, data, keep=keep, result=result, range=range, nbins=nbins, 
       h = histogram(z[indx], binsize=dz, loc=hz, min=range[0], max=range[1])
       htop = sigfig(1.2*max(h),2)
 
+      drange = minmax(z[indx])
+      title = strcompress(string(drange, format='("Data range = ",g8.3," - ",g8.3)'))
+
       plot,hz,h,psym=4,charsize=1.8,xtitle=xtitle,ytitle='Sample Number', $
-           yrange=[0,htop], /ysty, _extra=extra
+           yrange=[0,htop], /ysty, title=title, _extra=extra
       hz = [hz[0] - dz, hz, max(hz) + dz]
       h = [0., h, 0.]
-      result = {x:hz, y:h, dx:dz, npts:data.npts[ij], mean:data.avg[ij], $
-                median:data.med[ij], skew:data.skew[ij], kurt:data.kurt[ij]}
+      result = {x:hz, y:h, dx:dz, npts:data.npts[ij], min:drange[0], max:drange[1], $
+                mean:data.avg[ij], median:data.med[ij], skew:data.skew[ij], kurt:data.kurt[ij]}
     
       oplot,hz,h,psym=10
+
+;     fit to an exponential probability distribution (p = N*lambda*exp(-lambda*x))
+;     looks like the observed distributions are strongly peaked at zero
+;       p(0) = h[0]
+;       lambda = 1/x(h=h[0]/e)
 
       for k=0,maxcst do begin
         x = [constant[k], constant[k]]
