@@ -43,9 +43,9 @@
 ;HISTORY:
 ;  This has replaced the older spd_ui_overplot.pro which was written specifically for GUI overview plots.
 ;
-;$LastChangedBy: jwl $
-;$LastChangedDate: 2026-09-02 16:45:53 -0700 (Wed, 02 Sep 2026) $
-;$LastChangedRevision: 34868 $
+;$LastChangedBy: nikos $
+;$LastChangedDate: 2026-11-16 12:33:27 -0800 (Mon, 16 Nov 2026) $
+;$LastChangedRevision: 35056 $
 ;$URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/themis/common/thm_gen_overplot.pro $
 ;-----------------------------------------------------------------------------------
 
@@ -72,7 +72,7 @@ pro thm_gen_overplot, probes = probes, date = date, dur = dur, $
                       directory = directory, makepng = makepng, $
                       fearless = fearless, dont_delete_data = dont_delete_data, $
                       no_draw=no_draw, gui_plot = gui_plot, error=error, $
-                      _extra=_extra
+                      cdf_legacy=cdf_legacy, _extra=_extra
 
 compile_opt idl2, hidden
 
@@ -828,7 +828,7 @@ SKIP_GMAG_LOAD:
 
 load_position='asi'
 
-thm_load_ask, /verbose
+thm_load_ask, /verbose, cdf_legacy=cdf_legacy
 
 SKIP_ASI_LOAD:
 

@@ -278,7 +278,7 @@ if keyword_set(autocenter) then begin
          endelse
       endelse
    endif else begin
-      thm_load_asi_cal,show[0],cal_file0
+      thm_load_asi_cal,show[0],cal_file0,cdf_legacy=cdf_legacy
       central_lat=*cal_file0.vars[21].dataptr
       central_lon=*cal_file0.vars[20].dataptr
    endelse

@@ -11,8 +11,8 @@
 ;
 ;LAST MODIFICATION:
 ; $LastChangedBy: hara $
-; $LastChangedDate: 2026-06-05 14:28:39 -0700 (Fri, 05 Jun 2026) $
-; $LastChangedRevision: 34550 $
+; $LastChangedDate: 2026-11-20 00:22:52 -0800 (Fri, 20 Nov 2026) $
+; $LastChangedRevision: 35060 $
 ; $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/misc/esc_tplot_var_labels.pro $
 ;
 ;-
@@ -31,7 +31,7 @@ PRO esc_tplot_var_labels, data=data, limits=limits
   mplot, data=data, limits=TEMPORARY(tlim)
 
   chsize = limits.charsize
-  col  = limits.colors
+  IF tag_exist(limits, 'colors', /quiet) THEN col = limits.colors ELSE col = 0
   pos = limits.position
   IF tag_exist(limits, 'labels', /quiet) THEN vtitle = limits.labels ELSE vtitle = limits.ytitle
   IF tag_exist(limits, 'format', /quiet) THEN format = limits.format ELSE format = '(F0.1)'

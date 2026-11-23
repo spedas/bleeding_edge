@@ -11,7 +11,7 @@ This page was created by the IDL library routine
 <CODE>mk_html_help2</CODE>.
 <br>
 <P>
-<STRONG>Last modified: </STRONG>Sat Nov 14 03:16:11 2026.<P>
+<STRONG>Last modified: </STRONG>Sat Nov 21 15:46:38 2026.<P>
  
 <HR>
  
@@ -126,21 +126,24 @@ LAST MODIFICATION:
 PROCEDURE:       ESC_SPICE_LOAD
 
 PURPOSE:         Loads the ESCAPADE SPICE kernels and creates several
-                 tplot variables on the spacecraft position.
+                 tplot variables containing the spacecraft position data.
 
 INPUTS:          None.
 
 KEYWORDS:
 
-       RES:      Specifies the time resolution to be created tplots.
+       RES:      Specifies the time resolution of the tplot variables to be created.
                  Default is 60 s.
 
-     HELIO:      Obsolete: No longer needed to specify the heliospheric frame kernel.
+        KM:      If set, uses kilometers as the distance unit.
 
-        km:      If set, the unit should be kilometer.
-                 Default is R_E (Earth Radii).
+   KERNELS:      Returns a string array containing the names of the loaded SPICE/kernels.
 
-   KERNELS:      Returns a string array of the loaded SPICE/kernels.
+DOWNLOAD_ONLY:   If set, only loading the SPICE/kernels.
+
+    LOITER:      If set, creates tplot variables optimized for the Earth L2 Loiter phase.
+
+    CRUISE:      If set, creates tplot variables optimized for the cruise phase.
 
 NOTE:            As of 2025-11-17, only ESCAPADE science team members  
                  are permitted to use this procedure only under the UCB-SSL remote servers.
@@ -149,8 +152,8 @@ CREATED BY:      Takuya Hara on 2025-11-17.
 
 LAST MODIFICATION:
  $LastChangedBy: hara $
- $LastChangedDate: 2026-08-06 17:10:47 -0700 (Thu, 06 Aug 2026) $
- $LastChangedRevision: 34712 $
+ $LastChangedDate: 2026-11-20 00:55:47 -0800 (Fri, 20 Nov 2026) $
+ $LastChangedRevision: 35062 $
  $URL: svn+ssh://thmsvn@ambrosia.ssl.berkeley.edu/repos/spdsoft/trunk/projects/escapade/spice/esc_spice_load.pro $
 
 </PRE><P>
